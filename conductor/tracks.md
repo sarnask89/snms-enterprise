@@ -6,3 +6,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [ ] **Track: Refine TERYT Integration and Address Sync**
   *Link: [./tracks/teryt_sync_20260416/](./tracks/teryt_sync_20260416/)*
+
+---
+
+- [ ] **Track: existing project comprehensive audit, testing and debugging including chrome extension**
+  *Link: [./tracks/audit_debug_20260416/](./tracks/audit_debug_20260416/)*
