@@ -1,0 +1,83 @@
+{% macro combobox(name, options, selected_id=None, placeholder="Wybierz opcję...", id=None, required=False) %}
+<div x-data="comboboxData('{{ selected_id or '' }}', {{ options | tojson | safe }})" 
+     class="relative w-full max-w-[450px]">
+    
+    <input type="hidden" name="{{ name }}" x-model="selected" {% if required %}required{% endif %}>
+    
+    <button type="button" 
+            @click="toggle()"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-left">
+        <span x-text="selectedText || '{{ placeholder }}'" :class="!selectedText && 'text-muted-foreground'"></span>
+        <i class="fas fa-chevron-down text-[10px] opacity-50"></i>
+    </button>
+
+    <div x-show="open" 
+         @click.away="open = false"
+         x-transition:enter="transition ease-out duration-100"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         class="absolute z-50 mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95"
+         x-cloak>
+        
+        <div class="flex items-center border-b px-3 bg-background">
+            <i class="fas fa-search mr-2 text-xs opacity-50"></i>
+            <input x-ref="searchInput"
+                   x-model="search"
+                   @keydown.escape="open = false"
+                   class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+                   placeholder="Szukaj...">
+        </div>
+
+        <div class="max-h-[200px] overflow-y-auto p-1 no-scrollbar bg-background">
+            <template x-for="option in filteredOptions" :key="option[0]">
+                <div @click="selectOption(option[0], option[1])"
+                     class="relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <span x-text="option[1]"></span>
+                    <i x-show="String(selected) === String(option[0])" class="fas fa-check ml-auto text-[10px] text-primary"></i>
+                </div>
+            </template>
+            <div x-show="filteredOptions.length === 0" class="py-6 text-center text-sm text-muted-foreground">
+                Nie znaleziono wyników.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+if (typeof comboboxData !== 'function') {
+    function comboboxData(initialId, options) {
+        return {
+            open: false,
+            search: '',
+            selected: initialId,
+            selectedText: '',
+            allOptions: options,
+            init() {
+                const found = this.allOptions.find(o => String(o[0]) === String(this.selected));
+                if (found) this.selectedText = found[1];
+            },
+            toggle() {
+                this.open = !this.open;
+                if (this.open) {
+                    this.$nextTick(() => { this.$refs.searchInput.focus(); });
+                }
+            },
+            get filteredOptions() {
+                if (!this.search) return this.allOptions;
+                return this.allOptions.filter(o => 
+                    o[1].toLowerCase().includes(this.search.toLowerCase())
+                );
+            },
+            selectOption(val, text) {
+                this.selected = val;
+                this.selectedText = text;
+                this.open = false;
+                this.search = '';
+                // Emituj zdarzenie dla HTMX lub innych skryptów
+                this.$dispatch('change-val', { value: val, text: text });
+            }
+        };
+    }
+}
+</script>
+{% endmacro %}

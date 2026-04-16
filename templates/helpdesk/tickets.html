@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "components/table.html" import badge %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <!-- Action Bar -->
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Szukaj zgłoszeń</label>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <input type="search" name="q" value="{{ search_q }}" 
+                       placeholder="Szukaj po tytule lub treści..."
+                       class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                       hx-get="/helpdesk/tickets" 
+                       hx-trigger="keyup changed delay:300ms, search" 
+                       hx-target="#ticket-table-body" 
+                       hx-indicator=".htmx-indicator">
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            {% if can_write_helpdesk %}
+            <a href="/helpdesk/tickets/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 transition-all shadow-sm">
+                <i class="fas fa-plus mr-2 text-xs"></i> Nowe zgłoszenie
+            </a>
+            {% endif %}
+            <a href="/helpdesk/tickets?assigned=me" class="inline-flex items-center justify-center rounded-lg text-sm font-semibold border bg-background hover:bg-accent h-10 px-4 transition-all {% if filter_assigned == 'me' %}border-primary text-primary bg-primary/5{% endif %}">
+                Moje przypisane
+            </a>
+        </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">ID</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Temat zgłoszenia</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Abonent</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Opiekun</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Status</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Utworzono</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody id="ticket-table-body" class="[&_tr:last-child]:border-0">
+                    {% include "helpdesk/ticket_list_rows.html" %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Floating HTMX Indicator -->
+<div class="htmx-indicator fixed bottom-8 right-8 bg-black/80 text-white px-4 py-2 rounded-full shadow-2xl text-xs font-bold flex items-center gap-2 z-50 backdrop-blur-sm border border-white/10 animate-in slide-in-from-right-4">
+    <i class="fas fa-circle-notch fa-spin"></i> Synchronizacja...
+</div>
+
+<style>
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator { display: flex; }
+.htmx-request.htmx-indicator { display: flex; }
+</style>
+{% endblock %}

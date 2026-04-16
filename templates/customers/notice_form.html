@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/customers/{{ customer.id }}/notices">Wstecz</a></p>
+<form method="post" action="/customers/{{ customer.id }}/notices/new" class="stack narrow">
+  <label>Tytul<input name="title" required></label>
+  <label>Tresc<textarea name="body" rows="4"></textarea></label>
+  <label>Kategoria<input name="category" value="info"></label>
+  <label>Wazne do (opcj.)<input name="valid_until" type="date"></label>
+  <label class="check-row"><input type="checkbox" name="is_active" checked> Aktywne</label>
+  <button type="submit">Zapisz</button>
+</form>
+{% endblock %}

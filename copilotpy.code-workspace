@@ -1,0 +1,38 @@
+{
+	"folders": [
+		{
+			"name": "copilotpy",
+			"path": ".."
+		},
+		{
+			"name": "strapi-local",
+			"path": "../../strapi-local"
+		},
+		{
+			"path": "../../Downloads/instrukcja_techniczna_uslugi_teryt_ws1"
+		}
+	],
+	"settings": {
+		"powershell.cwd": "copilotpy",
+		"livePreview.openPreviewTarget": "External Browser",
+		"vue.inlayHints.destructuredProps": true,
+		"vue.format.style.initialIndent": true,
+		"vue.format.script.initialIndent": true,
+		"git.ignoreLimitWarning": true
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-azuretools.vscode-docker",
+			"ms-vscode.live-server",
+			"oorzc.ssh-tools",
+			"anysphere.remote-containers",
+			"ms-azuretools.vscode-containers",
+			"antfu.browse-lite",
+			"ms-vscode.powershell",
+			"bmewburn.vscode-intelephense-client",
+			"aditya-amit-k.strapi-service-navigation",
+			"tikoci.lsp-routeros-ts",
+			"devmikeua.mikrotik-routeros-script"
+		]
+	}
+}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Wpisz nazwę węzła, IP, MAC lub kod klienta (powiązanie rozliczeniowe) — wyniki na liście węzłów sieci szkieletowej.</p>
+<form method="get" action="/customer-devices" class="row" style="gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+  <label style="margin:0;">Szukaj<input name="q" value="" placeholder="np. 192.168 lub AB-123" autofocus></label>
+  <button type="submit">Szukaj</button>
+</form>
+<p><a href="/customer-devices">Przejdź do pełnej listy</a></p>
+{% endblock %}

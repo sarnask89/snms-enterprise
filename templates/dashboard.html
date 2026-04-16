@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/table.html" import badge %}
+
+{% block content %}
+<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    
+    <!-- Statystyki Szybkie -->
+    {% call card(title=counts.customers, subtitle="Aktywnych abonentów") %}
+    <div class="flex items-center justify-between">
+        <i class="fas fa-users text-3xl text-primary opacity-20"></i>
+        <a href="/customers" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Szczegóły</a>
+    </div>
+    {% endcall %}
+
+    {% call card(title=counts.invoices, subtitle="Dokumentów w tym miesiącu") %}
+    <div class="flex items-center justify-between">
+        <i class="fas fa-file-invoice-dollar text-3xl text-primary opacity-20"></i>
+        <a href="/finances/invoices" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Finanse</a>
+    </div>
+    {% endcall %}
+
+    {% call card(title=counts.tickets_open, subtitle="Otwartych zgłoszeń") %}
+    <div class="flex items-center justify-between">
+        <i class="fas fa-headset text-3xl text-destructive opacity-20"></i>
+        <a href="/helpdesk" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Pomoc</a>
+    </div>
+    {% endcall %}
+
+    {% call card(title=counts.nodes, subtitle="Urządzeń w sieci") %}
+    <div class="flex items-center justify-between">
+        <i class="fas fa-server text-3xl text-primary opacity-20"></i>
+        <a href="/net-nodes" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Infrastruktura</a>
+    </div>
+    {% endcall %}
+</div>
+
+<div class="grid gap-6 md:grid-cols-2 mt-8">
+    {% call card(title="Integracja TERYT", subtitle="Status bazy adresowej") %}
+    <div class="space-y-4">
+        <div class="flex items-center gap-4 p-3 rounded-lg bg-muted/20 border border-dashed text-sm">
+            <i class="fas fa-database text-primary"></i>
+            <p>Twoja baza zawiera zsynchronizowane dane z rejestru GUS dla wybranych powiatów.</p>
+        </div>
+        <div class="flex justify-end gap-2">
+            <a href="/admin/teryt-sync" class="inline-flex items-center justify-center rounded-md text-xs font-bold border bg-background hover:bg-accent h-9 px-4 transition-colors">Synchronizuj</a>
+            <a href="/teryt/cities" class="inline-flex items-center justify-center rounded-md text-xs font-bold border bg-background hover:bg-accent h-9 px-4 transition-colors">Słownik</a>
+        </div>
+    </div>
+    {% endcall %}
+
+    {% call card(title="Zadania Systemowe", subtitle="Konserwacja i bezpieczeństwo") %}
+    <div class="space-y-2">
+        <a href="/admin/audit-logs" class="flex items-center justify-between p-2 rounded-md hover:bg-muted transition-colors group">
+            <span class="text-sm font-medium">Dziennik zdarzeń (Audit)</span>
+            <i class="fas fa-chevron-right text-[10px] text-muted-foreground group-hover:translate-x-1 transition-transform"></i>
+        </a>
+        <a href="/admin/backups" class="flex items-center justify-between p-2 rounded-md hover:bg-muted transition-colors group">
+            <span class="text-sm font-medium">Kopie zapasowe bazy</span>
+            <i class="fas fa-chevron-right text-[10px] text-muted-foreground group-hover:translate-x-1 transition-transform"></i>
+        </a>
+        <a href="/config/number-plans" class="flex items-center justify-between p-2 rounded-md hover:bg-muted transition-colors group">
+            <span class="text-sm font-medium">Konfiguracja numeracji</span>
+            <i class="fas fa-chevron-right text-[10px] text-muted-foreground group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+    {% endcall %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% from "components/table.html" import badge %}
+{% for c in customers %}
+<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+  <td class="p-4 align-middle font-medium">{{ c.customer_code }}</td>
+  <td class="p-4 align-middle">{{ c.first_name }} {{ c.last_name }}</td>
+  <td class="p-4 align-middle">
+    {% if c.city %}
+      <div class="font-medium text-xs">{{ c.city.name }}</div>
+      {% if c.district and c.district.name != c.city.name %}
+        <div class="text-[10px] text-muted-foreground uppercase tracking-tight">{{ c.district.name }}</div>
+      {% endif %}
+    {% else %}
+      <span class="text-muted-foreground italic text-xs">brak danych</span>
+    {% endif %}
+  </td>
+  <td class="p-4 align-middle">
+    {% if c.status.value == 'active' %}
+      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-colors bg-emerald-500/10 text-emerald-600 border-emerald-500/20 uppercase tracking-wider">
+        Aktywny
+      </div>
+    {% else %}
+      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-colors bg-slate-500/10 text-slate-600 border-slate-500/20 uppercase tracking-wider">
+        Nieaktywny
+      </div>
+    {% endif %}
+  </td>
+  <td class="p-4 align-middle text-right">
+    <div class="flex justify-end gap-1">
+      <a href="/customers/{{ c.id }}/edit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8" title="Edytuj">
+        <i class="fas fa-edit text-xs"></i>
+      </a>
+      {% if can_write_crm %}
+      <button @click="$dispatch('open-alert-delete-customer', { url: '/customers/{{ c.id }}/delete', name: '{{ c.last_name }} {{ c.first_name }}' })"
+              class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive/10 hover:text-destructive h-8 w-8 text-muted-foreground" title="Usuń">
+        <i class="fas fa-trash text-xs"></i>
+      </button>
+      {% endif %}
+    </div>
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="5" class="p-12 text-center text-muted-foreground italic">Brak klientów spełniających kryteria wyszukiwania.</td></tr>
+{% endfor %}

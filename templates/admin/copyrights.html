@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Tekst wyświetlany jako informacja o prawach (ustawienie <code>site.copyright_text</code> w <a href="/config">/config</a>).</p>
+{% if can_write_crm %}
+<form method="post" action="/admin/copyrights" style="max-width:42rem;">
+  <label>Treść <textarea name="value" rows="6" required style="width:100%;">{{ copyright_text }}</textarea></label>
+  <p><button type="submit">Zapisz</button></p>
+</form>
+{% else %}
+<pre style="white-space:pre-wrap;">{{ copyright_text }}</pre>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <form method="post" action="{% if edit_user %}/admin/users/{{ edit_user.id }}/edit{% else %}/admin/users/new{% endif %}">
+        {% if error %}
+        <div class="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm font-bold text-destructive animate-in shake-1">
+            <i class="fas fa-exclamation-triangle mr-2"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        {% call card(title="Dane konta", subtitle="Zarządzanie poświadczeniami i rolą") %}
+        <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Nazwa użytkownika (Login)", for="username") }}
+                {{ input("username", value=edit_user.username if edit_user else "", id="username", required=True, placeholder="np. jkowalski") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Hasło" ~ (" (zostaw puste, aby nie zmieniać)" if edit_user else ""), for="password") }}
+                {{ input("password", type="password", id="password", required=not edit_user, placeholder="••••••••") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Rola systemowa", for="role") }}
+                {% set role_options = [] %}
+                {% for r in roles %}
+                    {% do role_options.append((r.value, r.value|capitalize)) %}
+                {% endfor %}
+                {{ select("role", role_options, selected_id=edit_user.role.value if edit_user else "view", id="role") }}
+            </div>
+
+            <div class="flex items-center space-x-2 rounded-md border p-4 bg-muted/20">
+                <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" {% if not edit_user or edit_user.active %}checked{% endif %}>
+                <div class="grid gap-1.5 leading-none">
+                    {{ label("Konto aktywne", for="active", class="text-sm font-bold") }}
+                    <p class="text-xs text-muted-foreground">Nieaktywni użytkownicy nie mogą się zalogować.</p>
+                </div>
+            </div>
+        </div>
+        {% endcall %}
+
+        <div class="flex items-center justify-end gap-4 mt-8 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/admin/users" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> {% if edit_user %}Zapisz zmiany{% else %}Utwórz konto{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

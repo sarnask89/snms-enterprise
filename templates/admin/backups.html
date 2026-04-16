@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="bg-muted/30 p-4 rounded-xl border border-dashed flex items-center justify-between">
+        <p class="text-sm text-muted-foreground italic">Zarządzanie kopiami zapasowymi bazy danych SQLite.</p>
+        <form method="post" action="/admin/backups/create">
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all">
+                <i class="fas fa-plus mr-2"></i> Utwórz kopię teraz
+            </button>
+        </form>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Nazwa pliku</th>
+                        <th class="h-12 px-4 text-left align-middle">Data utworzenia</th>
+                        <th class="h-12 px-4 text-left align-middle">Rozmiar</th>
+                        <th class="h-12 px-4 text-right">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for b in backups %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-mono text-xs">{{ b.filename }}</td>
+                        <td class="p-4 align-middle text-xs">{{ b.created_at }}</td>
+                        <td class="p-4 align-middle text-xs font-bold">{{ b.size_kb }} KB</td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="/admin/backups/download/{{ b.filename }}" class="h-8 px-3 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-[10px] font-bold uppercase tracking-tighter">Pobierz</a>
+                                <form method="post" action="/admin/backups/delete/{{ b.filename }}" onsubmit="return confirm('Trwale usunąć ten plik?');">
+                                    <button type="submit" class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak dostępnych kopii zapasowych.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

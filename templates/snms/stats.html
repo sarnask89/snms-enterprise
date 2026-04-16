@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Wpisy zużycia ruchu (okres i bajty — dane z rozliczeń / importu).</p>
+{% if can_write_crm %}<p><a class="btn" href="/stats/new">+ Wpis</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Okres</th><th>Węzeł</th><th>In</th><th>Out</th><th>Notatka</th><th></th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.period_start }} — {{ r.period_end }}</td>
+      <td>{% if r.node_id %}{% set n = nodes_map.get(r.node_id) %}{{ n.hostname if n else r.node_id }}{% else %}—{% endif %}</td>
+      <td>{{ r.bytes_in }}</td>
+      <td>{{ r.bytes_out }}</td>
+      <td>{{ r.note or "—" }}</td>
+      <td class="actions">
+        {% if can_write_crm %}
+        <a href="/stats/{{ r.id }}/edit">Edytuj</a>
+        <form method="post" action="/stats/{{ r.id }}/delete" class="inline" onsubmit="return confirm('Usunąć?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}<span class="muted">tylko odczyt</span>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak wpisów.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

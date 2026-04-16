@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/stats/' ~ row.id ~ '/edit' if row else '/stats/new' }}" style="max-width:28rem;">
+  <label>Data od <input type="date" name="period_start" required value="{{ row.period_start.isoformat() if row else '' }}"></label>
+  <label>Data do <input type="date" name="period_end" required value="{{ row.period_end.isoformat() if row else '' }}"></label>
+  <label>Węzeł (opcjonalnie)
+    <select name="node_id">
+      <option value="">—</option>
+      {% for n in all_nodes %}<option value="{{ n.id }}" {% if row and row.node_id == n.id %}selected{% endif %}>{{ n.hostname }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Bajty przych. <input name="bytes_in" type="number" min="0" value="{{ row.bytes_in if row else 0 }}"></label>
+  <label>Bajty wych. <input name="bytes_out" type="number" min="0" value="{{ row.bytes_out if row else 0 }}"></label>
+  <label>Notatka <input name="note" value="{{ row.note if row and row.note else '' }}"></label>
+  <p><button type="submit">Zapisz</button> <a href="/stats">Anuluj</a></p>
+</form>
+{% endblock %}

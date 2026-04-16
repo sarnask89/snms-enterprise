@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="bg-muted/30 p-4 rounded-xl border border-dashed flex items-center justify-between">
+        <p class="text-sm text-muted-foreground italic">Ostatnie 200 zdarzeń zarejestrowanych w systemie.</p>
+        <div class="flex gap-2">
+            <i class="fas fa-shield-alt text-primary opacity-50"></i>
+        </div>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Data i Czas</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Użytkownik</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Akcja</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Zasób</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Szczegóły</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">IP Adres</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for row in rows %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                            {{ row.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if row.actor_id and users[row.actor_id] %}
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-user-circle text-muted-foreground text-xs"></i>
+                                    <span class="font-bold text-xs">{{ users[row.actor_id].username }}</span>
+                                </div>
+                            {% else %}
+                                <span class="text-[10px] uppercase font-bold text-muted-foreground/50 italic">system</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle">
+                            <span class="inline-flex items-center rounded-md bg-primary/5 px-2 py-0.5 text-[10px] font-bold text-primary border border-primary/10 uppercase tracking-widest">
+                                {{ row.action }}
+                            </span>
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if row.resource_type %}
+                                <span class="text-xs font-semibold">{{ row.resource_type }}</span>
+                                {% if row.resource_id %}<span class="text-[10px] text-muted-foreground ml-1">#{{ row.resource_id }}</span>{% endif %}
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground truncate max-w-[300px]">
+                            {{ row.details or '' }}
+                        </td>
+                        <td class="p-4 align-middle font-mono text-[10px] text-muted-foreground">
+                            {{ row.ip_address or '—' }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak logów audytowych.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

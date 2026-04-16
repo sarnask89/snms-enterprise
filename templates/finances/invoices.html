@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% from "components/table.html" import badge %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Szukaj faktur</label>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <input type="search" name="q" value="{{ search_q }}" 
+                       placeholder="Numer faktury..."
+                       class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                       hx-get="/finances/invoices" 
+                       hx-trigger="keyup changed delay:300ms, search" 
+                       hx-target="#invoice-table-body">
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            {% if can_write_crm %}
+            <a href="/finances/invoices/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+                <i class="fas fa-plus mr-2 text-xs"></i> Nowy dokument
+            </a>
+            {% endif %}
+            <a href="/finances/invoices/search" class="inline-flex items-center justify-center rounded-lg text-sm font-semibold border bg-background hover:bg-accent h-10 px-4">
+                Zaawansowane
+            </a>
+        </div>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Numer</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Typ</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Abonent</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Kwota</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Status</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Data</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody id="invoice-table-body" class="[&_tr:last-child]:border-0">
+                    {% for i in invoices %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-medium">{{ i.number }}</td>
+                        <td class="p-4 align-middle text-[10px] uppercase font-bold text-muted-foreground">{{ i.document_kind.value }}</td>
+                        <td class="p-4 align-middle">
+                            {% if i.customer_id and customers[i.customer_id] %}
+                                <div class="font-semibold text-xs">{{ customers[i.customer_id].last_name }}</div>
+                                <div class="text-[10px] text-muted-foreground">{{ customers[i.customer_id].customer_code }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle font-bold text-xs">{{ "%.2f"|format(i.amount) }} PLN</td>
+                        <td class="p-4 align-middle">
+                            {% if i.status.value == 'paid' %}
+                                <div class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 uppercase tracking-widest">opłacona</div>
+                            {% elif i.status.value == 'issued' %}
+                                <div class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-bold text-blue-600 uppercase tracking-widest">wystawiona</div>
+                            {% else %}
+                                <div class="inline-flex items-center rounded-full border border-slate-500/20 bg-slate-500/10 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 uppercase tracking-widest">draft</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-[11px] text-muted-foreground">{{ i.issue_date.strftime('%Y-%m-%d') if i.issue_date else '' }}</td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/finances/invoices/{{ i.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if can_write_crm and i.status.value == 'draft' %}
+                                <button @click="$dispatch('open-alert-delete-invoice', { url: '/finances/invoices/{{ i.id }}/delete', name: '{{ i.number }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-invoice", "Usuwanie dokumentu", "Czy na pewno chcesz usunąć dokument") }}
+{% endblock %}

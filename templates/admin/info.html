@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/table.html" import badge %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- System Info -->
+        {% call card(title="Informacje o systemie", subtitle="Wersja i środowisko uruchomieniowe") %}
+        <div class="space-y-4">
+            <div class="flex items-center justify-between py-2 border-b">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Aplikacja</span>
+                <span class="text-sm font-semibold">SNMS Enterprise CRM</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Wersja</span>
+                {{ badge("v2.4.0-shadcn", variant="secondary") }}
+            </div>
+            <div class="flex items-center justify-between py-2 border-b">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Silnik</span>
+                <span class="text-xs font-mono">FastAPI + Jinja2 + Alpine.js</span>
+            </div>
+            <div class="flex items-center justify-between py-2">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Status bazy</span>
+                <div class="flex items-center gap-2">
+                    <div class="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                    <span class="text-xs font-bold text-emerald-600">POŁĄCZONO</span>
+                </div>
+            </div>
+        </div>
+        {% endcall %}
+
+        <!-- Integrations -->
+        {% call card(title="Integracje zewnętrzne", subtitle="Status połączeń API") %}
+        <div class="space-y-4">
+            <div class="flex items-center justify-between py-2 border-b">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">GUS TERYT ws1</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-muted-foreground uppercase mr-2">Certyfikat ok</span>
+                    <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b opacity-50">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">UKE PUE (Placeholder)</span>
+                <span class="text-[10px] font-bold">NIEAKTYWNE</span>
+            </div>
+            <div class="mt-4 pt-4 border-t">
+                <p class="text-xs text-muted-foreground leading-relaxed italic">
+                    Wszystkie operacje zmiany danych są rejestrowane w dzienniku audytu ze względów bezpieczeństwa i wymogów RODO.
+                </p>
+            </div>
+        </div>
+        {% endcall %}
+    </div>
+
+    {% call card(title="Szybkie akcje administracyjne", subtitle="Narzędzia konserwacji") %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/admin/reload" class="flex flex-col items-center gap-2 p-4 rounded-xl border bg-muted/5 hover:bg-accent transition-all group text-center">
+            <i class="fas fa-sync text-primary group-hover:rotate-180 transition-transform duration-500"></i>
+            <span class="text-[10px] font-bold uppercase">Przeładuj Cache</span>
+        </a>
+        <a href="/admin/backups" class="flex flex-col items-center gap-2 p-4 rounded-xl border bg-muted/5 hover:bg-accent transition-all group text-center">
+            <i class="fas fa-database text-primary"></i>
+            <span class="text-[10px] font-bold uppercase">Baza danych</span>
+        </a>
+        <a href="/admin/audit-logs" class="flex flex-col items-center gap-2 p-4 rounded-xl border bg-muted/5 hover:bg-accent transition-all group text-center">
+            <i class="fas fa-history text-primary"></i>
+            <span class="text-[10px] font-bold uppercase">Dziennik zdarzeń</span>
+        </a>
+        <a href="/admin/users" class="flex flex-col items-center gap-2 p-4 rounded-xl border bg-muted/5 hover:bg-accent transition-all group text-center">
+            <i class="fas fa-user-shield text-primary"></i>
+            <span class="text-[10px] font-bold uppercase">Uprawnienia</span>
+        </a>
+    </div>
+    {% endcall %}
+</div>
+{% endblock %}

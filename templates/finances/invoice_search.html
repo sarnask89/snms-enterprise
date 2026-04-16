@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Wyszukiwanie zaawansowane faktur i dokumentów.</p>
+<form method="get" action="/finances/invoices" class="stack narrow">
+  <label>Numer dokumentu
+    <input name="q" placeholder="np. FV/2026" autofocus>
+  </label>
+  
+  <label>Rodzaj
+    <select name="kind">
+      <option value="">— wszystkie —</option>
+      {% for k in kinds %}
+      <option value="{{ k.value }}">{{ k.value }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Status
+    <select name="status">
+      <option value="">— wszystkie —</option>
+      {% for s in statuses %}
+      <option value="{{ s.value }}">{{ s.value }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="row" style="gap:1rem;">
+    <label>Data od
+      <input type="date" name="date_from">
+    </label>
+    <label>Data do
+      <input type="date" name="date_to">
+    </label>
+  </div>
+
+  <div class="row" style="margin-top:1rem;">
+    <button type="submit">Szukaj</button>
+    <a href="/finances/invoices">Wyczyść / Wszystkie</a>
+  </div>
+</form>
+{% endblock %}

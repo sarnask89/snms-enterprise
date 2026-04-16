@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Zapis „przeładowania” ma charakter operacyjny (odświeżenie konfiguracji SNMS) — każdy wpis to log w bazie.</p>
+{% if can_write_crm %}
+<form method="post" action="/admin/reload" class="card" style="margin-bottom:1rem;padding:1rem;">
+  <label>Komentarz <input name="note" placeholder="np. weryfikacja menu / restart" style="min-width:20rem;"></label>
+  <button type="submit">Zapisz wpis</button>
+</form>
+{% endif %}
+<table class="data">
+  <thead><tr><th>Kiedy</th><th>Kto</th><th>Notatka</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.created_at }}</td>
+      <td>{% if r.actor_id %}{{ users.get(r.actor_id).username if users.get(r.actor_id) else r.actor_id }}{% else %}—{% endif %}</td>
+      <td>{{ r.note or "—" }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">Brak wpisów.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

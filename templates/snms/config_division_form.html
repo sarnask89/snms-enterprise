@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/config/divisions/' ~ row.id ~ '/edit' if row else '/config/divisions/new' }}" class="stack narrow">
+  <label>Nazwa<input name="name" required maxlength="128" value="{{ row.name if row else '' }}"></label>
+  <label>Skrót<input name="short_name" maxlength="32" value="{{ row.short_name if row else '' }}"></label>
+  <label>Adres<input name="address" maxlength="255" value="{{ row.address if row else '' }}"></label>
+  <label>Miasto<input name="city" maxlength="128" value="{{ row.city if row else '' }}"></label>
+  <label>Kod pocztowy<input name="postal_code" maxlength="16" value="{{ row.postal_code if row else '' }}"></label>
+  <label>NIP<input name="nip" maxlength="20" value="{{ row.nip if row else '' }}"></label>
+  <label>REGON<input name="regon" maxlength="20" value="{{ row.regon if row else '' }}"></label>
+  <label><input type="checkbox" name="active" value="on" {% if not row or row.active %}checked{% endif %}> Aktywny</label>
+  <label><input type="checkbox" name="is_default" value="on" {% if row and row.is_default %}checked{% endif %}> Oddział domyślny</label>
+  <p><button type="submit">Zapisz</button> <a href="/config/divisions">Anuluj</a></p>
+</form>
+{% endblock %}

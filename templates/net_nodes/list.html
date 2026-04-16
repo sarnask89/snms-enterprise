@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Szukaj w węzłach</label>
+            <div class="relative">
+                <i class="fas fa-server absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <form method="get" action="/net-nodes">
+                    <input type="search" name="q" value="{{ search_q }}" 
+                           placeholder="Nazwa, notatki..."
+                           class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                </form>
+            </div>
+        </div>
+        
+        {% if can_write_crm %}
+        <a href="/net-nodes/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowy węzeł sieci
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nazwa węzła</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Oddział / Właściciel</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Typ</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Szczegóły</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for x in items %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-bold tracking-tight text-foreground">{{ x.name }}</td>
+                        <td class="p-4 align-middle text-xs">
+                            {% if x.division_id %}{% set div = divisions.get(x.division_id) %}{{ div.name if div else x.division_id }}{% else %}—{% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-[10px] uppercase font-bold text-muted-foreground/60">{{ x.location_type.value }}</td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground italic max-w-[250px] truncate">{{ x.location_detail or "—" }}</td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/net-nodes/{{ x.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if can_write_crm %}
+                                <button @click="$dispatch('open-alert-delete-node', { url: '/net-nodes/{{ x.id }}/delete', name: '{{ x.name }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak węzłów sieciowych.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-node", "Usuwanie węzła", "Czy na pewno chcesz usunąć węzeł") }}
+{% endblock %}

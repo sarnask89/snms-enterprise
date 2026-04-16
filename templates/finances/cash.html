@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    {% if can_write_crm %}
+    {% call card(title="Operacja kasowa (KP/KW)", subtitle="Rejestracja gotówki w kasie podręcznej") %}
+    <form method="post" action="/finances/cash/new">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="space-y-2">
+                {{ label("Kwota", for="amount") }}
+                {{ input("amount", id="amount", required=True, placeholder="0.00") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Abonent (opcj.)", for="customer_id") }}
+                {{ select("customer_id", [("", "—")] + [(c.id, c.customer_code) for c in customers.values()], id="customer_id") }}
+            </div>
+            <div class="space-y-2 lg:col-span-2">
+                {{ label("Opis / Tytuł", for="description") }}
+                {{ input("description", id="description", required=True, placeholder="np. Zakup materiałów biurowych") }}
+            </div>
+            <div class="space-y-2 lg:col-span-2">
+                {{ label("Data i godzina (opcj.)", for="issued_at") }}
+                {{ input("issued_at", type="datetime-local", id="issued_at") }}
+            </div>
+        </div>
+        <div class="flex justify-end mt-6 pt-6 border-t">
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all">
+                Wystaw dokument kasowy
+            </button>
+        </div>
+    </form>
+    {% endcall %}
+    {% endif %}
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Data</th>
+                        <th class="h-12 px-4 text-left align-middle">Kwota</th>
+                        <th class="h-12 px-4 text-left align-middle">Opis</th>
+                        <th class="h-12 px-4 text-left align-middle">Abonent</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for r in rows %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-mono text-[11px] text-muted-foreground">
+                            {{ r.issued_at.strftime('%Y-%m-%d %H:%M') if r.issued_at else '—' }}
+                        </td>
+                        <td class="p-4 align-middle font-bold text-xs">
+                            <span class="{% if r.amount|float > 0 %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                                {{ "%.2f"|format(r.amount|float) }} PLN
+                            </span>
+                        </td>
+                        <td class="p-4 align-middle font-medium text-xs">{{ r.description }}</td>
+                        <td class="p-4 align-middle text-xs">
+                            {% if r.customer_id %}
+                                {% set c = customers.get(r.customer_id) %}
+                                <span class="font-bold">{{ c.customer_code if c else r.customer_id }}</span>
+                            {% else %}
+                                <span class="text-muted-foreground italic">brak</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                            {% if can_write_crm %}
+                            <button @click="$dispatch('open-alert-delete-cash', { url: '/finances/cash/{{ r.id }}/delete', name: '{{ r.description }}' })"
+                                    class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="p-12 text-center text-muted-foreground italic tracking-tight">Kasa jest pusta.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-cash", "Usuwanie wpisu kasy", "Czy na pewno chcesz usunąć dokument") }}
+{% endblock %}

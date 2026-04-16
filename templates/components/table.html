@@ -1,0 +1,30 @@
+{% macro table(headers, class="") %}
+<div class="relative w-full overflow-auto">
+<table class="w-full caption-bottom text-sm {{ class }}">
+    <thead class="[&_tr]:border-b">
+        <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            {% for h in headers %}
+            <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                {{ h }}
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody class="[&_tr:last-child]:border-0">
+        {{ caller() }}
+    </tbody>
+</table>
+</div>
+{% endmacro %}
+
+{% macro badge(text, variant="default", class="") %}
+{% set variants = {
+    "default": "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+    "secondary": "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    "destructive": "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+    "outline": "text-foreground"
+} %}
+<div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {{ variants[variant] }} {{ class }}">
+    {{ text }}
+</div>
+{% endmacro %}

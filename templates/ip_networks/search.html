@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Nazwa, CIDR, brama, opis lub numer VLAN — wyniki na liście sieci.</p>
+<form method="get" action="/ip-networks" class="row" style="gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+  <label style="margin:0;">Szukaj<input name="q" value="" placeholder="np. 192.168. lub 100" autofocus></label>
+  <button type="submit">Szukaj</button>
+</form>
+<p><a href="/ip-networks">Pełna lista</a></p>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="/helpdesk/tickets/new" class="stack narrow">
+  <label>Tytuł<input name="title" required></label>
+  <label>Kolejka
+    <select name="queue_id">
+      {% for q in queues %}
+      <option value="{{ q.id }}">{{ q.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Kategoria (opcj.)
+    <select name="category_id">
+      <option value="">—</option>
+      {% for c in categories %}
+      <option value="{{ c.id }}">{{ c.queue.name if c.queue else '' }} / {{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Treść<textarea name="body" rows="4"></textarea></label>
+  <label>Klient (opcjonalnie)
+    <select name="customer_id">
+      <option value="">—</option>
+      {% for c in customers %}
+      <option value="{{ c.id }}">{{ c.customer_code }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit">Utwórz</button>
+  <a href="/helpdesk/tickets">Anuluj</a>
+</form>
+{% endblock %}

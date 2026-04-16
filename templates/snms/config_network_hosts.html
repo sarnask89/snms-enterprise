@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Tabela <code>hosts</code> — logiczny „serwer” rozdzielający sieci IP (pole <code>networks.hostid</code>).</p>
+<form method="post" action="/config/network-hosts/new" class="row" style="gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:flex-end;">
+  <label>Nazwa (unikalna)<input name="name" required placeholder="np. router-gw-01"></label>
+  <label>Opis<textarea name="description" rows="1" placeholder="opcjonalnie"></textarea></label>
+  <button type="submit">Dodaj host</button>
+</form>
+<table class="data">
+  <thead><tr><th>ID</th><th>Nazwa</th><th>Opis</th><th></th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.name }}</td>
+      <td>{{ r.description or "—" }}</td>
+      <td class="actions">
+        <form method="post" action="/config/network-hosts/{{ r.id }}/delete" class="inline" onsubmit="return confirm('Usunąć host? Powiązania w sieciach IP zostaną wyczyszczone.');"><button type="submit" class="link">Usuń</button></form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Brak hostów.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p><a href="/config/netdev-catalog">Katalog osprzętu</a> · <a href="/ip-networks">Sieci IP</a></p>
+{% endblock %}

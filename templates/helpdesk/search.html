@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="get" action="/helpdesk/search" class="stack narrow">
+  <label>Szukaj w temacie i treści<input name="q" value="{{ search_q }}" placeholder="…"></label>
+  <label>Status
+    <select name="status">
+      <option value="">— dowolny —</option>
+      <option value="open" {% if search_status == 'open' %}selected{% endif %}>open</option>
+      <option value="pending" {% if search_status == 'pending' %}selected{% endif %}>pending</option>
+      <option value="closed" {% if search_status == 'closed' %}selected{% endif %}>closed</option>
+    </select>
+  </label>
+  <label>Kolejka
+    <select name="queue_id">
+      <option value="">—</option>
+      {% for q in queues %}
+      <option value="{{ q.id }}" {% if search_queue_id == q.id %}selected{% endif %}>{{ q.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit">Szukaj</button>
+</form>
+<table class="data">
+  <thead><tr><th>ID</th><th>Tytuł</th><th>Kolejka</th><th>Klient</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for t in tickets %}
+    <tr>
+      <td><a href="/helpdesk/tickets/{{ t.id }}">{{ t.id }}</a></td>
+      <td><a href="/helpdesk/tickets/{{ t.id }}">{{ t.title }}</a></td>
+      <td>{{ t.queue }}</td>
+      <td>{% if t.customer_id %}{{ customers.get(t.customer_id).customer_code if customers.get(t.customer_id) else t.customer_id }}{% else %}—{% endif %}</td>
+      <td>{{ t.status.value }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Brak wyników.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+        <p class="text-sm text-muted-foreground italic">Definicje szablonów numeracji dla abonentów, faktur i umów.</p>
+        <a href="/config/number-plans/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowy plan
+        </a>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Nazwa planu</th>
+                        <th class="h-12 px-4 text-left align-middle">Typ</th>
+                        <th class="h-12 px-4 text-left align-middle">Wzór (Pattern)</th>
+                        <th class="h-12 px-4 text-left align-middle">Licznik</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for p in number_plans %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-bold text-xs">{{ p.name }}</td>
+                        <td class="p-4 align-middle">
+                            <span class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">{{ p.item_type.value }}</span>
+                        </td>
+                        <td class="p-4 align-middle font-mono text-[11px] text-primary"><code>{{ p.pattern_template }}</code></td>
+                        <td class="p-4 align-middle font-mono text-xs">{{ p.current_value }}</td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/config/number-plans/{{ p.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                <button @click="$dispatch('open-alert-delete-plan', { url: '/config/number-plans/{{ p.id }}/delete', name: '{{ p.name }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak planów numeracji.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-plan", "Usuwanie planu", "Czy na pewno chcesz usunąć wzór numeracji") }}
+{% endblock %}

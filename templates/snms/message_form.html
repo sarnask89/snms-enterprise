@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Wybierz <strong>szablon</strong> — temat i treść uzupełnią się automatycznie (możesz je potem edytować). Bez szablonu wpisz temat i treść ręcznie.</p>
+<form method="post" action="{{ '/messages/' ~ row.id ~ '/edit' if row else '/messages/new' }}" style="max-width:36rem;">
+  <p>
+    <label for="msg_template_id">Szablon wiadomości</label><br>
+    <select name="template_id" id="msg_template_id">
+      <option value="">— brak (tylko ręcznie) —</option>
+      {% for t in templates %}<option value="{{ t.id }}" {% if row and row.template_id == t.id %}selected{% elif not row and preselect_template_id == t.id %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
+    </select>
+  </p>
+  <p>
+    <label for="msg_subject">Temat</label><br>
+    <input id="msg_subject" name="subject" maxlength="255" style="width:100%;max-width:32rem;" value="{{ row.subject if row else '' }}" placeholder="Uzupełni się po wyborze szablonu">
+  </p>
+  <p>
+    <label for="msg_body">Treść</label><br>
+    <textarea id="msg_body" name="body" rows="8" style="width:100%;" placeholder="Uzupełni się po wyborze szablonu">{{ row.body if row else '' }}</textarea>
+  </p>
+  <p>
+    <label>Klient<br>
+    <select name="customer_id">
+      <option value="">—</option>
+      {% for c in customers %}<option value="{{ c.id }}" {% if row and row.customer_id == c.id %}selected{% endif %}>{{ c.customer_code }}</option>{% endfor %}
+    </select>
+    </label>
+  </p>
+  <p><label><input type="checkbox" name="mark_sent" {% if row and row.status.value == 'sent' %}checked{% endif %}> Oznacz jako wysłane</label></p>
+  <p><button type="submit">Zapisz</button> <a href="/messages">Anuluj</a></p>
+</form>
+<script>
+(function () {
+  var sel = document.getElementById('msg_template_id');
+  var subj = document.getElementById('msg_subject');
+  var body = document.getElementById('msg_body');
+  if (!sel || !subj || !body) return;
+
+  function applyTemplate(id) {
+    if (!id) return;
+    fetch('/messages/api/template/' + encodeURIComponent(id), { credentials: 'same-origin' })
+      .then(function (r) { if (!r.ok) throw new Error('404'); return r.json(); })
+      .then(function (j) {
+        subj.value = j.subject || '';
+        body.value = j.body || '';
+      })
+      .catch(function () {});
+  }
+
+  sel.addEventListener('change', function () {
+    applyTemplate(sel.value);
+  });
+
+  if (sel.value) {
+    var hadContent = (subj.value && subj.value.trim()) || (body.value && body.value.trim());
+    if (!hadContent) {
+      applyTemplate(sel.value);
+    }
+  }
+})();
+</script>
+{% endblock %}

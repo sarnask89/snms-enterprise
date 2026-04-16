@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Powiadomienia przypisane do węzłów (ostrzeżenia / komunikaty).</p>
+{% if can_write_crm %}
+<form method="post" action="/customer-devices/notices/new" class="card" style="margin-bottom:1rem;padding:1rem;">
+  <div class="row" style="gap:0.75rem;flex-wrap:wrap;align-items:flex-end;">
+    <label>Węzeł
+      <select name="node_id" required>
+        {% for n in all_nodes %}<option value="{{ n.id }}">{{ n.hostname }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Tytuł <input name="title" required maxlength="255" style="min-width:12rem;"></label>
+    <label>Ważne do <input type="date" name="valid_until"></label>
+    <label><input type="checkbox" name="is_active" checked> Aktywne</label>
+  </div>
+  <label style="display:block;margin-top:0.5rem;">Treść <textarea name="body" rows="3" style="width:100%;max-width:40rem;"></textarea></label>
+  <button type="submit" style="margin-top:0.5rem;">Dodaj</button>
+</form>
+{% endif %}
+<table class="data">
+  <thead><tr><th>Węzeł</th><th>Tytuł</th><th>Ważne do</th><th>Aktywne</th><th>Od</th><th></th></tr></thead>
+  <tbody>
+    {% for x in notices %}
+    <tr>
+      <td>{% set n = nodes_map.get(x.node_id) %}{{ n.hostname if n else x.node_id }}</td>
+      <td>{{ x.title }}</td>
+      <td>{{ x.valid_until or "—" }}</td>
+      <td>{{ "tak" if x.is_active else "nie" }}</td>
+      <td>{{ x.created_at }}</td>
+      <td class="actions">
+        {% if can_write_crm %}
+        <form method="post" action="/customer-devices/notices/{{ x.id }}/delete" class="inline" onsubmit="return confirm('Usunąć?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}<span class="muted">tylko odczyt</span>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak powiadomień.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

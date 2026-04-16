@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/messages">← Wiadomości</a></p>
+{% if can_write_messages %}<p><a class="btn" href="/messages/templates/new">+ Szablon</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Nazwa</th><th>Temat</th><th></th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.name }}</td>
+      <td>{{ r.subject }}</td>
+      <td class="actions">
+        {% if can_write_messages %}
+        <a href="/messages/new?template={{ r.id }}">Użyj w wiadomości</a>
+        <a href="/messages/templates/{{ r.id }}/edit">Edytuj</a>
+        <form method="post" action="/messages/templates/{{ r.id }}/delete" class="inline" onsubmit="return confirm('Usunąć?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}
+        <a href="/messages/new?template={{ r.id }}">Użyj w wiadomości</a>
+        <span class="muted">tylko odczyt</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">Brak szablonów.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% macro label(text, for=None, class="") %}
+<label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 {{ class }}"
+       {% if for %}for="{{ for }}"{% endif %}>
+    {{ text }}
+</label>
+{% endmacro %}
+
+{% macro input(name, value="", type="text", placeholder="", id=None, class="", required=False) %}
+<input type="{{ type }}"
+       name="{{ name }}"
+       value="{{ value }}"
+       placeholder="{{ placeholder }}"
+       {% if id %}id="{{ id }}"{% endif %}
+       {% if required %}required{% endif %}
+       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 {{ class }}"
+       {{ kwargs | xmlattr }}>
+{% endmacro %}
+
+{% macro select(name, options, selected_id=None, id=None, class="", required=False) %}
+<select name="{{ name }}"
+        {% if id %}id="{{ id }}"{% endif %}
+        {% if required %}required{% endif %}
+        class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 {{ class }}"
+        {{ kwargs | xmlattr }}>
+    {% for val, label in options %}
+    <option value="{{ val }}" {% if selected_id|string == val|string %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+</select>
+{% endmacro %}
+
+{% macro input_group(name, icon, value="", type="text", placeholder="", class="") %}
+<div class="relative w-full">
+    <i class="fas {{ icon }} absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+    <input type="{{ type }}"
+           name="{{ name }}"
+           value="{{ value }}"
+           placeholder="{{ placeholder }}"
+           class="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 {{ class }}"
+           {{ kwargs | xmlattr }}>
+</div>
+{% endmacro %}

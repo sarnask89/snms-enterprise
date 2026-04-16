@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="bg-card p-4 rounded-xl border shadow-sm flex items-center justify-between">
+        <p class="text-sm text-muted-foreground italic">Zdefiniowane klucze menu i ich ścieżki (tylko odczyt ze słownika).</p>
+        <div class="p-2 bg-primary/10 rounded-full text-primary">
+            <i class="fas fa-list-ul"></i>
+        </div>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Klucz (Key)</th>
+                        <th class="h-12 px-4 text-left align-middle">Etykieta (Label)</th>
+                        <th class="h-12 px-4 text-left align-middle">Ścieżka (URL)</th>
+                        <th class="h-12 px-4 text-left align-middle">Kolejność</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for item in items %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-mono text-[11px]">{{ item.key }}</td>
+                        <td class="p-4 align-middle font-bold text-xs">{{ item.label }}</td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground"><code>{{ item.url_path }}</code></td>
+                        <td class="p-4 align-middle font-mono text-xs">{{ item.sort_order }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="p-12 text-center text-muted-foreground italic tracking-tight">Słownik menu jest pusty.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

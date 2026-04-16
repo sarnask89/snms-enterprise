@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/combobox.html" import combobox %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8" 
+     x-data="{ 
+        docKind: '{{ invoice.document_kind.value if invoice else 'invoice' }}', 
+        planId: '',
+        manualNumber: '{{ invoice.number if invoice else '' }}',
+        numberPlans: {{ number_plans_json | safe if number_plans_json else '[]' }},
+        get isPlanSelected() {
+            if (!this.planId) return false;
+            const plan = this.numberPlans.find(p => String(p.id) === String(this.planId));
+            return plan && plan.doc_type === this.docKind;
+        }
+     }">
+    
+    <form method="post" action="{% if invoice %}/finances/invoices/{{ invoice.id }}/edit{% else %}/finances/invoices/new{% endif %}" class="space-y-8">
+        
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Column 1: Document Details -->
+            <div class="space-y-8">
+                {% call card(title="Szczegóły dokumentu", subtitle="Rodzaj i numeracja") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Rodzaj dokumentu", for="doc_kind") }}
+                        {% set kind_opts = [
+                            ("invoice", "Faktura VAT"),
+                            ("proforma", "Faktura Pro-forma"),
+                            ("debit_note", "Nota obciążeniowa")
+                        ] %}
+                        {{ select("document_kind", kind_opts, selected_id=invoice.document_kind.value if invoice else 'invoice', id="doc_kind", **({'x-model': 'docKind'} if not invoice else {'disabled': 'disabled'})) }}
+                        {% if invoice %}<input type="hidden" name="document_kind" value="{{ invoice.document_kind.value }}">{% endif %}
+                    </div>
+
+                    {% if not invoice %}
+                    <div class="space-y-2">
+                        {{ label("Plan numeracji", for="num_plan") }}
+                        {% set plan_opts = [("", "— ręczny numer —")] %}
+                        {% for p in number_plans %}
+                            {% do plan_opts.append((p.id, p.name ~ " (" ~ p.doc_type.value ~ ")")) %}
+                        {% endfor %}
+                        {{ combobox("number_plan_id", plan_opts, placeholder="Wybierz wzór...", id="num_plan", **{'@change-val.window': 'planId = $event.detail.value'}) }}
+                    </div>
+                    {% endif %}
+
+                    <div class="space-y-2">
+                        {{ label("Numer dokumentu", for="inv_number") }}
+                        <input name="number" id="inv_number" x-model="manualNumber" :required="!isPlanSelected" :disabled="isPlanSelected"
+                               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:bg-muted"
+                               placeholder="Zostanie wygenerowany automatycznie">
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Data wystawienia", for="issue_date") }}
+                        {{ input("issue_date", type="date", value=invoice.issue_date.isoformat() if invoice else today, id="issue_date", required=True) }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Kwota i Podatek", subtitle="Wartości finansowe") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Kwota brutto (PLN)", for="amount") }}
+                        {{ input("amount", value=invoice.amount if invoice else "", id="amount", required=True, placeholder="0.00") }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Stawka VAT", for="vat_rate_id") }}
+                        {% set vat_opts = [("", "— brak —")] %}
+                        {% for v in vat_rates %}
+                            {% do vat_opts.append((v.id, v.label ~ " (" ~ v.value ~ "%)")) %}
+                        {% endfor %}
+                        {{ select("vat_rate_id", vat_opts, selected_id=invoice.vat_rate_id if invoice else "", id="vat_rate_id") }}
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+
+            <!-- Column 2: Assignment -->
+            <div class="space-y-8">
+                {% call card(title="Odbiorca", subtitle="Dane nabywcy") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Wybierz abonenta", for="customer_id") }}
+                        {% set cust_opts = [] %}
+                        {% for c in customers %}
+                            {% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}
+                        {% endfor %}
+                        {{ combobox("customer_id", cust_opts, selected_id=invoice.customer_id if invoice else "", placeholder="Szukaj klienta...", required=True) }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Oddział wystawiający", for="division_id") }}
+                        {% set div_opts = [("", "— domyślny —")] %}
+                        {% for d in divisions %}
+                            {% do div_opts.append((d.id, d.name)) %}
+                        {% endfor %}
+                        {{ select("division_id", div_opts, selected_id=invoice.division_id if invoice else "", id="division_id") }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Status dokumentu", subtitle="Przebieg płatności") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Status", for="status") }}
+                        {% set status_opts = [
+                            ("draft", "Szkic (Draft)"),
+                            ("issued", "Wystawiona (Oczekuje)"),
+                            ("paid", "Opłacona")
+                        ] %}
+                        {{ select("status", status_opts, selected_id=invoice.status.value if invoice else "draft", id="status") }}
+                    </div>
+                    
+                    <div class="rounded-lg border p-4 bg-muted/20">
+                        <p class="text-[10px] text-muted-foreground uppercase font-bold mb-2">Informacja</p>
+                        <p class="text-xs italic text-muted-foreground">Faktury o statusie "Wystawiona" lub "Opłacona" stają się niemodyfikowalne w księdze głównej.</p>
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/finances/invoices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz dokument
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

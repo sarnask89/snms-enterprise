@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/config/vat-rates/' ~ row.id ~ '/edit' if row else '/config/vat-rates/new' }}" class="stack narrow">
+  <label>Etykieta<input name="label" required maxlength="128" value="{{ row.label if row else '' }}"></label>
+  <label>Stawka %<input name="rate_percent" required value="{{ row.rate_percent if row else '' }}"></label>
+  <label>Kolejność sortowania<input name="sort_order" type="number" value="{{ row.sort_order if row else 0 }}"></label>
+  <label><input type="checkbox" name="is_default" value="on" {% if row and row.is_default %}checked{% endif %}> Domyślna na listach</label>
+  <p><button type="submit">Zapisz</button> <a href="/config/vat-rates">Anuluj</a></p>
+</form>
+{% endblock %}

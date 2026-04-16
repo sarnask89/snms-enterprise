@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    <div class="bg-muted/30 p-4 rounded-xl border border-dashed flex items-center justify-between">
+        <p class="text-sm text-muted-foreground italic">Zarządzanie widocznością modułów dla poszczególnych ról systemowych.</p>
+        <div class="p-2 bg-rose-500/10 rounded-full text-rose-600">
+            <i class="fas fa-lock"></i>
+        </div>
+    </div>
+
+    <form method="post" action="/admin/menu-access">
+        <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+            <div class="relative w-full overflow-auto">
+                <table class="w-full caption-bottom text-sm">
+                    <thead class="bg-muted/40">
+                        <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            <th class="h-12 px-4 text-left align-middle">Moduł / Pozycja</th>
+                            {% for role in roles %}
+                            <th class="h-12 px-4 text-center align-middle">{{ role.value }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="[&_tr:last-child]:border-0">
+                        {% for item in menu_items %}
+                        <tr class="border-b transition-colors hover:bg-muted/50">
+                            <td class="p-4 align-middle font-medium text-xs">
+                                <div>{{ item.label }}</div>
+                                <div class="text-[9px] text-muted-foreground font-mono">{{ item.key }}</div>
+                            </td>
+                            {% for role in roles %}
+                            <td class="p-4 align-middle text-center">
+                                <input type="checkbox" name="perm_{{ role.value }}_{{ item.id }}" 
+                                       class="h-4 w-4 rounded border-input bg-background text-primary"
+                                       {% if permissions.get((role, item.id)) %}checked{% endif %}>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="flex justify-end mt-8 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz uprawnienia
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

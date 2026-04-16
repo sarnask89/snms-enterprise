@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Szukaj w słowniku</label>
+            <div class="relative">
+                <i class="fas fa-city absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <form method="get" action="/teryt/cities">
+                    <input type="search" name="q" value="{{ search_q }}" 
+                           placeholder="Nazwa miejscowości..."
+                           class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                </form>
+            </div>
+        </div>
+        
+        {% if can_write_crm %}
+        <a href="/teryt/cities/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowa miejscowość
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">ID</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nazwa miejscowości</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Powiat</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for c in rows %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-mono text-[10px] text-muted-foreground">#{{ c.id }}</td>
+                        <td class="p-4 align-middle font-semibold">{{ c.name }}</td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground">{{ c.district.name if c.district else '—' }}</td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/teryt/cities/{{ c.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if can_write_crm %}
+                                <button @click="$dispatch('open-alert-delete-city', { url: '/teryt/cities/{{ c.id }}/delete', name: '{{ c.name }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak miejscowości.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-city", "Usuwanie miejscowości", "Czy na pewno chcesz usunąć miejscowość") }}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="/helpdesk/queues/new" class="stack narrow">
+  <label>Nazwa<input name="name" required maxlength="64"></label>
+  <label>Opis<textarea name="description" rows="2"></textarea></label>
+  <button type="submit">Zapisz</button>
+  <a href="/helpdesk/queues">Anuluj</a>
+</form>
+{% endblock %}

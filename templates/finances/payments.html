@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    {% if can_write_crm %}
+    {% call card(title="Nowa płatność cykliczna", subtitle="Automatyczne naliczanie zobowiązań") %}
+    <form method="post" action="/finances/payments/new">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="space-y-2 lg:col-span-2">
+                {{ label("Abonent", for="customer_id") }}
+                {{ select("customer_id", [(c.id, c.customer_code ~ " — " ~ c.last_name) for c in customers.values()], id="customer_id", required=True) }}
+            </div>
+            <div class="space-y-2 lg:col-span-2">
+                {{ label("Nazwa usługi / Opis", for="name") }}
+                {{ input("name", id="name", required=True, placeholder="np. Abonament Internet 100M") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Kwota brutto", for="amount") }}
+                {{ input("amount", id="amount", required=True, placeholder="0.00") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Interwał (m-ce)", for="interval") }}
+                {{ input("interval_months", type="number", value="1", min="1", id="interval") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Dzień miesiąca", for="day") }}
+                {{ input("day_of_month", type="number", min="1", max="28", value="1", id="day") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Pierwsza data", for="next_run") }}
+                {{ input("next_run", type="date", id="next_run") }}
+            </div>
+        </div>
+        <div class="flex items-center justify-between mt-6 pt-6 border-t">
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" name="active" id="active_new" class="h-4 w-4 rounded border-gray-300 text-primary" checked>
+                {{ label("Aktywuj natychmiast", for="active_new", class="text-xs font-bold") }}
+            </div>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all">
+                Dodaj płatność
+            </button>
+        </div>
+    </form>
+    {% endcall %}
+    {% endif %}
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Abonent</th>
+                        <th class="h-12 px-4 text-left align-middle">Opis usługi</th>
+                        <th class="h-12 px-4 text-left align-middle">Kwota</th>
+                        <th class="h-12 px-4 text-left align-middle">Cykl</th>
+                        <th class="h-12 px-4 text-left align-middle">Dzień</th>
+                        <th class="h-12 px-4 text-left align-middle">Nast. naliczenie</th>
+                        <th class="h-12 px-4 text-left align-middle">Status</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for r in rows %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle">
+                            {% set c = customers.get(r.customer_id) %}
+                            <div class="font-bold text-xs">{{ c.last_name if c else '—' }}</div>
+                            <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else r.customer_id }}</div>
+                        </td>
+                        <td class="p-4 align-middle font-medium text-xs">{{ r.name }}</td>
+                        <td class="p-4 align-middle font-bold text-xs">{{ "%.2f"|format(r.amount|float) }}</td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground">{{ r.interval_months }} m-cy</td>
+                        <td class="p-4 align-middle font-mono text-xs">{{ r.day_of_month }}</td>
+                        <td class="p-4 align-middle text-xs font-semibold">{{ r.next_run or "—" }}</td>
+                        <td class="p-4 align-middle">
+                            {% if r.active %}
+                                <div class="inline-flex items-center rounded-full bg-emerald-500/10 text-emerald-600 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-emerald-500/20">Aktywna</div>
+                            {% else %}
+                                <div class="inline-flex items-center rounded-full bg-slate-500/10 text-slate-600 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-slate-500/20">Pauza</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                            {% if can_write_crm %}
+                            <button @click="$dispatch('open-alert-delete-payment', { url: '/finances/payments/{{ r.id }}/delete', name: '{{ r.name }}' })"
+                                    class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak aktywnych płatności cyklicznych.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-payment", "Usuwanie płatności", "Czy na pewno chcesz zatrzymać cykliczne naliczanie") }}
+{% endblock %}

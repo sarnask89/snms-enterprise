@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Wyszukaj w bazie TERYT</label>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <input type="search" name="q" placeholder="Szukaj miasta/wsi..."
+                       class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                       hx-get="/admin/addresses/search"
+                       hx-trigger="keyup changed delay:300ms, search"
+                       hx-target="#teryt-search-results">
+            </div>
+        </div>
+        <p class="text-xs text-muted-foreground italic">Dodaj miejscowości do listy zarządzanej, aby widzieć je w formularzach.</p>
+    </div>
+
+    <div id="teryt-search-results"></div>
+
+    <div class="space-y-4">
+        <h3 class="text-sm font-bold uppercase tracking-widest text-muted-foreground px-1">Zarządzane miejscowości</h3>
+        <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+            <div class="relative w-full overflow-auto">
+                <table class="w-full caption-bottom text-sm">
+                    <thead class="bg-muted/40">
+                        <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            <th class="h-12 px-4 text-left align-middle">Miejscowość</th>
+                            <th class="h-12 px-4 text-left align-middle">Powiat</th>
+                            <th class="h-12 px-4 text-center align-middle">Domyślna</th>
+                            <th class="h-12 px-4 text-right"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="[&_tr:last-child]:border-0">
+                        {% for c in cities %}
+                        <tr class="border-b transition-colors hover:bg-muted/50">
+                            <td class="p-4 align-middle font-bold text-xs">{{ c.name }}</td>
+                            <td class="p-4 align-middle text-xs text-muted-foreground">{{ c.district.name if c.district else '—' }}</td>
+                            <td class="p-4 align-middle text-center">
+                                {% if c.is_default %}
+                                    <span class="inline-flex items-center rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-primary/20">DOMYŚLNA</span>
+                                {% else %}
+                                    <form method="post" action="/admin/addresses/{{ c.id }}/set-default" class="inline">
+                                        <button type="submit" class="text-[9px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Ustaw</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                            <td class="p-4 align-middle text-right">
+                                <form method="post" action="/admin/addresses/{{ c.id }}/unmanage" class="inline">
+                                    <button type="submit" class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors" title="Usuń z zarządzanych">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="p-12 text-center text-muted-foreground italic tracking-tight">Lista zarządzanych miast jest pusta.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

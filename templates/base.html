@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ title or "Panel" }}{% endblock %} — {{ app_name }}</title>
+  <link rel="stylesheet" href="/static/css/output.css">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body class="min-h-screen bg-background font-sans antialiased text-foreground selection:bg-primary/10"
+      x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false' }">
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- SHADCN SIDEBAR -->
+    <aside class="sidebar-container shrink-0 flex flex-col transition-all duration-300 border-r"
+           :class="sidebarOpen ? 'w-64' : 'w-16'">
+      
+      <!-- Sidebar Header -->
+      <div class="flex h-14 items-center border-b px-4 gap-3 overflow-hidden bg-muted/10">
+        <i class="fas fa-network-wired text-primary text-lg shrink-0"></i>
+        <span class="font-bold tracking-tight truncate transition-opacity duration-300" 
+              x-show="sidebarOpen">SNMS Enterprise</span>
+      </div>
+
+      <!-- Sidebar Content (Scrollable, No Scrollbar) -->
+      <div class="flex-1 overflow-y-auto no-scrollbar p-2 py-4 space-y-6">
+        {% for section_title, items in nav_groups %}
+        <div class="space-y-1">
+          <h4 x-show="sidebarOpen" x-transition.opacity
+              class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            {{ section_title }}
+          </h4>
+          <div class="grid gap-1">
+            {% for item in items %}
+            <a href="{{ item.url_path }}" 
+               class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group {% if request.url.path == item.url_path %}bg-accent text-accent-foreground font-bold shadow-sm{% else %}text-muted-foreground{% endif %}"
+               :title="!sidebarOpen ? '{{ item.label }}' : ''">
+              <i class="fas fa-fw 
+                {% if item.key == 'dashboard' %}fa-home
+                {% elif 'customer' in item.key %}fa-users
+                {% elif 'invoice' in item.key %}fa-file-invoice-dollar
+                {% elif 'helpdesk' in item.key %}fa-headset
+                {% elif 'node' in item.key %}fa-server
+                {% elif 'config' in item.key %}fa-sliders-h
+                {% else %}fa-circle{% endif %} 
+                text-xs shrink-0 group-hover:scale-110 transition-transform"></i>
+              <span class="truncate" x-show="sidebarOpen">{{ item.label }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t bg-muted/5">
+        <div class="flex items-center gap-3">
+          <div class="flex-1 min-w-0" x-show="sidebarOpen">
+            <p class="text-[11px] font-bold truncate leading-none mb-1">{{ portal_user.username }}</p>
+            <p class="text-[9px] text-muted-foreground uppercase leading-none">{{ portal_user.role.value }}</p>
+          </div>
+          <button onclick="toggleTheme()" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-muted-foreground transition-colors shrink-0">
+            <i class="fas fa-moon dark:hidden text-xs"></i>
+            <i class="fas fa-sun hidden dark:block text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <div class="flex flex-col flex-1 min-w-0 overflow-hidden bg-background">
+      <!-- Top Header -->
+      <header class="flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur px-6 shrink-0">
+        <div class="flex items-center gap-6">
+          <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)"
+                  class="h-9 w-9 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-muted-foreground transition-colors">
+            <i class="fas fa-bars text-xs"></i>
+          </button>
+
+          <nav class="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            <a href="/" class="hover:text-primary transition-colors">Pulpit</a>
+            <i class="fas fa-chevron-right text-[8px] opacity-30"></i>
+            <span class="text-foreground">{{ title }}</span>
+          </nav>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="/logout" class="inline-flex items-center justify-center rounded-md text-xs font-bold text-destructive hover:bg-destructive/10 h-9 px-4 transition-colors">
+            <i class="fas fa-power-off mr-2 text-[10px]"></i> Wyloguj
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar scroll-smooth">
+        <div class="mx-auto max-w-6xl">
+          <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>

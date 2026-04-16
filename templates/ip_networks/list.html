@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <!-- Action Bar -->
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Szukaj w sieciach</label>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <form method="get" action="/ip-networks">
+                    <input type="search" name="q" value="{{ search_q }}" 
+                           placeholder="Nazwa, CIDR, VLAN..."
+                           class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                </form>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            {% if can_write_crm %}
+            <a href="/ip-networks/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+                <i class="fas fa-plus mr-2 text-xs"></i> Nowa sieć
+            </a>
+            {% endif %}
+            <a href="/ip-networks/usage" class="inline-flex items-center justify-center rounded-lg text-sm font-semibold border bg-background hover:bg-accent h-10 px-4 shadow-sm transition-all">
+                <i class="fas fa-chart-pie mr-2 text-xs"></i> Wykorzystanie
+            </a>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nazwa sieci</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Adresacja (CIDR)</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Brama</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">VLAN</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Status</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nodes</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for n in networks %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-medium">{{ n.name }}</td>
+                        <td class="p-4 align-middle"><code class="text-xs bg-muted px-1.5 py-0.5 rounded border">{{ n.cidr }}</code></td>
+                        <td class="p-4 align-middle text-xs font-mono">{{ n.gateway or "-" }}</td>
+                        <td class="p-4 align-middle"><span class="text-[10px] font-bold text-muted-foreground">{{ n.vlan_id or "-" }}</span></td>
+                        <td class="p-4 align-middle">
+                            {% if n.active %}
+                            <div class="inline-flex items-center rounded-full bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest">Online</div>
+                            {% else %}
+                            <div class="inline-flex items-center rounded-full bg-rose-500/10 text-rose-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest">Offline</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle font-bold text-xs">{{ device_counts.get(n.id, 0) }}</td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/ip-networks/{{ n.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if can_write_crm %}
+                                <button @click="$dispatch('open-alert-delete-network', { url: '/ip-networks/{{ n.id }}/delete', name: '{{ n.cidr }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak zdefiniowanych sieci IP.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-network", "Usuwanie sieci", "Czy na pewno chcesz usunąć sieć") }}
+{% endblock %}

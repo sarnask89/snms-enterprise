@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/customers/{{ customer.id }}/edit">Edycja klienta {{ customer.customer_code }}</a> | <a href="/customers">Lista</a></p>
+{% if can_write_crm %}<p><a class="btn" href="/customers/{{ customer.id }}/notices/new">+ Nowe powiadomienie</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Data</th><th>Tytul</th><th>Kategoria</th><th>Aktywne</th><th>Wazne do</th><th></th></tr></thead>
+  <tbody>
+    {% for n in notices %}
+    <tr>
+      <td>{{ n.created_at }}</td>
+      <td>{{ n.title }}</td>
+      <td>{{ n.category }}</td>
+      <td>{{ "tak" if n.is_active else "nie" }}</td>
+      <td>{{ n.valid_until or "-" }}</td>
+      <td>{% if can_write_crm %}<button class="link" 
+          hx-post="/customers/notices/{{ n.id }}/delete" 
+          hx-target="closest tr" 
+          hx-swap="outerHTML swap:500ms" 
+          hx-confirm="Usunac?">Usun</button>{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak powiadomien.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

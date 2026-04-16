@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/config/' ~ row.id ~ '/edit' if row else '/config/new' }}" style="max-width:36rem;">
+  <label>Klucz <input name="key" required maxlength="128" value="{{ row.key if row else '' }}" {% if row %}readonly{% endif %}></label>
+  {% if row %}<p class="muted">Klucz zablokowany przy edycji; usuń wpis i dodaj nowy, jeśli trzeba zmienić nazwę.</p>{% endif %}
+  <label>Wartość <textarea name="value" rows="8" required style="width:100%;">{{ row.value if row else '' }}</textarea></label>
+  <p><button type="submit">Zapisz</button> <a href="/config">Anuluj</a></p>
+</form>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Rejestr sesji węzłów (ręcznie lub z importu).</p>
+{% if can_write_crm %}
+<form method="post" action="/customer-devices/sessions/new" class="card" style="margin-bottom:1rem;padding:1rem;">
+  <div class="row" style="gap:0.75rem;flex-wrap:wrap;align-items:flex-end;">
+    <label>Węzeł
+      <select name="node_id" required>
+        {% for n in all_nodes %}<option value="{{ n.id }}">{{ n.hostname }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Rozpoczęto <input type="datetime-local" name="started_at" placeholder="(puste = teraz)"></label>
+    <label>Zakończono <input type="datetime-local" name="ended_at"></label>
+    <label>IP <input name="ip_address"></label>
+    <label>Źródło <input name="source" value="manual" maxlength="32"></label>
+  </div>
+  <label style="display:block;margin-top:0.5rem;">Notatki <textarea name="notes" rows="2" style="width:100%;max-width:40rem;"></textarea></label>
+  <button type="submit" style="margin-top:0.5rem;">Dodaj sesję</button>
+</form>
+{% endif %}
+<table class="data">
+  <thead><tr><th>Węzeł</th><th>Start</th><th>Koniec</th><th>IP</th><th>Źródło</th><th></th></tr></thead>
+  <tbody>
+    {% for s in sessions %}
+    <tr>
+      <td>{% set n = nodes_map.get(s.node_id) %}{{ n.hostname if n else s.node_id }}</td>
+      <td>{{ s.started_at }}</td>
+      <td>{{ s.ended_at or "—" }}</td>
+      <td>{{ s.ip_address or "—" }}</td>
+      <td>{{ s.source }}</td>
+      <td class="actions">
+        {% if can_write_crm %}
+        <form method="post" action="/customer-devices/sessions/{{ s.id }}/delete" class="inline" onsubmit="return confirm('Usunąć wpis?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}<span class="muted">tylko odczyt</span>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak sesji.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+{% if can_write_crm %}<p><a class="btn" href="/documents/new">+ Nowy dokument</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Tytuł</th><th>Typ</th><th>Klient</th><th>Utworzono</th></tr></thead>
+  <tbody>
+    {% for d in documents %}
+    <tr>
+      <td>{{ d.title }}</td>
+      <td>{{ d.doc_type }}</td>
+      <td>{% if d.customer_id %}{{ customers.get(d.customer_id).customer_code if customers.get(d.customer_id) else d.customer_id }}{% else %}—{% endif %}</td>
+      <td>{{ d.created_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak dokumentów.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

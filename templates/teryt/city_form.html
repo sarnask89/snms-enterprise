@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <form method="post" action="{% if row %}/teryt/cities/{{ row.id }}/edit{% else %}/teryt/cities/new{% endif %}" class="space-y-8">
+        
+        {% call card(title="Miejscowość", subtitle="Zarządzanie danymi słownikowymi SIMC") %}
+        <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Nazwa miejscowości", for="name") }}
+                {{ input("name", value=row.name if row else "", id="name", required=True, placeholder="np. Sandomierz", autofocus=True) }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Powiat", for="district_id") }}
+                {{ select("district_id", [("", "— wybierz powiat —")] + [(d.id, d.name ~ " (" ~ (d.state.name if d.state else '') ~ ")") for d in districts], selected_id=row.district_id if row else "", id="district_id", required=True) }}
+            </div>
+            
+            <div class="rounded-lg border p-4 bg-muted/20">
+                <p class="text-xs text-muted-foreground italic">
+                    <i class="fas fa-info-circle mr-2"></i> Pamiętaj, aby po dodaniu miejscowości pobrać dla niej ulice w sekcji <strong>Synchro TERYT</strong>.
+                </p>
+            </div>
+        </div>
+        {% endcall %}
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/teryt/cities" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> {% if row %}Zapisz zmiany{% else %}Dodaj miejscowość{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

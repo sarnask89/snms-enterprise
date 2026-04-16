@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="bg-card p-4 rounded-xl border shadow-sm flex items-center justify-between">
+        <p class="text-sm text-muted-foreground italic">Statystyki wykorzystania puli adresowych IPv4.</p>
+        <a href="/ip-networks" class="inline-flex items-center justify-center rounded-lg text-sm font-semibold border bg-background hover:bg-accent h-10 px-4 transition-all">
+            <i class="fas fa-arrow-left mr-2 text-xs"></i> Powrót do listy
+        </a>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nazwa sieci</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">CIDR</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Węzły w puli</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Zajęte IP (Urządzenia)</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Uwagi</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for r in usage_rows %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-medium">{{ r.network.name }}</td>
+                        <td class="p-4 align-middle"><code class="text-xs bg-muted px-1.5 py-0.5 rounded border">{{ r.network.cidr }}</code></td>
+                        <td class="p-4 align-middle font-bold text-xs">{{ r.nodes_in_net }}</td>
+                        <td class="p-4 align-middle font-bold text-xs">{{ r.devices }}</td>
+                        <td class="p-4 align-middle">
+                            {% if r.cidr_error %}
+                                <span class="text-rose-500 text-[10px] font-bold uppercase tracking-tight">{{ r.cidr_error }}</span>
+                            {% else %}
+                                <span class="text-emerald-500 text-[10px] font-bold uppercase tracking-tight">Pula poprawna</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak danych o sieciach.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

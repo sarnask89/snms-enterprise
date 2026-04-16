@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+        <p class="text-sm text-muted-foreground italic">Zarządzanie kategoriami tematycznymi zgłoszeń.</p>
+        {% if can_write_helpdesk %}
+        <a href="/helpdesk/categories/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowa kategoria
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Nazwa kategorii</th>
+                        <th class="h-12 px-4 text-left align-middle">Aktywna</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for c in categories %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-bold text-xs">{{ c.name }}</td>
+                        <td class="p-4 align-middle">
+                            {% if c.active %}
+                                <div class="inline-flex items-center rounded-full bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-emerald-500/20">TAK</div>
+                            {% else %}
+                                <div class="inline-flex items-center rounded-full bg-slate-500/10 text-slate-600 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-slate-500/20">NIE</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/helpdesk/categories/{{ c.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if can_write_helpdesk %}
+                                <button @click="$dispatch('open-alert-delete-cat', { url: '/helpdesk/categories/{{ c.id }}/delete', name: '{{ c.name }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak kategorii.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-cat", "Usuwanie kategorii", "Czy na pewno chcesz usunąć kategorię") }}
+{% endblock %}

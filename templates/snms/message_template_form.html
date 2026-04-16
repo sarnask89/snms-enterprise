@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/messages/templates/' ~ row.id ~ '/edit' if row else '/messages/templates/new' }}" style="max-width:36rem;">
+  <label>Nazwa (unikatowa) <input name="name" required maxlength="128" value="{{ row.name if row else '' }}"></label>
+  <label>Temat wiadomości <input name="subject" required maxlength="255" value="{{ row.subject if row else '' }}"></label>
+  <label>Treść <textarea name="body" rows="10" required style="width:100%;">{{ row.body if row else '' }}</textarea></label>
+  <p><button type="submit">Zapisz</button> <a href="/messages/templates">Anuluj</a></p>
+</form>
+{% endblock %}

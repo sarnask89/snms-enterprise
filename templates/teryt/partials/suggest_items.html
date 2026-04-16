@@ -1,0 +1,25 @@
+{% for item in items %}
+<div class="suggest-item" 
+     onclick="selectSuggestion(this, '{{ item.text }}', '{{ item.id or '' }}')">
+     {{ item.text }} <small class="muted">[{{ item.type }}]</small>
+</div>
+{% endfor %}
+
+<script>
+if (typeof selectSuggestion !== 'function') {
+    function selectSuggestion(el, text, id) {
+        const parentLabel = el.closest('label');
+        if (parentLabel) {
+            const input = parentLabel.querySelector('input[type=text], input[type=search]');
+            if (input) {
+                input.value = text;
+            }
+            const hiddenId = parentLabel.querySelector('input[type=hidden]');
+            if (hiddenId && id) {
+                hiddenId.value = id;
+            }
+        }
+        el.parentElement.innerHTML = '';
+    }
+}
+</script>

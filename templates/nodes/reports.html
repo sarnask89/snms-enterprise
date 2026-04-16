@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="row" style="gap:0.75rem;">
+  <a class="btn" href="/customer-devices/reports.csv">Eksport CSV</a>
+  <button type="button" class="btn" onclick="window.print()">Drukuj</button>
+  <a href="/customer-devices">Lista komputerów</a>
+</p>
+<table class="data">
+  <thead><tr><th>Hostname</th><th>Klient</th><th>IP</th><th>MAC</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for n in nodes %}
+    {% set c = customers.get(n.customer_id) %}
+    <tr>
+      <td>{{ n.hostname }}</td>
+      <td>{% if c %}{{ c.customer_code }} — {{ c.last_name }}{% else %}{{ n.customer_id }}{% endif %}</td>
+      <td>{{ n.ip_address or "—" }}</td>
+      <td>{{ n.mac_address or "—" }}</td>
+      <td>{{ n.status.value }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Brak węzłów.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

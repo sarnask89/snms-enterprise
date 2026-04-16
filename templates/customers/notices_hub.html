@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Zbiorczy widok powiadomień do klientów (odpowiednik <code>customerwarn</code>). Dodawanie: z <a href="/customers">listy klientów</a> → szczegóły → powiadomienia.</p>
+<p><a href="/customers">Lista klientów</a></p>
+<table class="data">
+  <thead><tr><th>Data</th><th>Klient</th><th>Tytuł</th><th>Kategoria</th><th>Aktywne</th><th>Ważne do</th><th></th></tr></thead>
+  <tbody>
+    {% for n in notices %}
+    {% set c = customers_map.get(n.customer_id) %}
+    <tr>
+      <td>{{ n.created_at }}</td>
+      <td>{% if c %}<a href="/customers/{{ c.id }}/notices">{{ c.customer_code }} — {{ c.last_name }}</a>{% else %}{{ n.customer_id }}{% endif %}</td>
+      <td>{{ n.title }}</td>
+      <td>{{ n.category }}</td>
+      <td>{{ "tak" if n.is_active else "nie" }}</td>
+      <td>{{ n.valid_until or "—" }}</td>
+      <td class="actions">{% if c and can_write_crm %}<a href="/customers/{{ c.id }}/notices/new">+ wpis</a>{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7">Brak powiadomień.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

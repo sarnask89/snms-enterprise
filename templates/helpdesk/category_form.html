@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="/helpdesk/categories/new" class="stack narrow">
+  <label>Kolejka
+    <select name="queue_id" required>
+      {% for q in queues %}
+      <option value="{{ q.id }}">{{ q.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Nazwa<input name="name" required maxlength="128"></label>
+  <button type="submit">Zapisz</button>
+  <a href="/helpdesk/categories">Anuluj</a>
+</form>
+{% endblock %}

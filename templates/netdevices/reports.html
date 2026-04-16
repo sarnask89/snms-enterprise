@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="row" style="gap:0.75rem;">
+  <a class="btn" href="/net-devices/reports.csv">Eksport CSV</a>
+  <button type="button" class="btn" onclick="window.print()">Drukuj</button>
+  <a href="/net-devices">Lista urządzeń</a>
+</p>
+<table class="data">
+  <thead><tr><th>Nazwa</th><th>Hostname</th><th>IP</th><th>Typ</th><th>Sieć IP</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for d in devices %}
+    {% set net = networks.get(d.ip_network_id) %}
+    <tr>
+      <td>{{ d.name }}</td>
+      <td>{{ d.hostname or "—" }}</td>
+      <td>{{ d.management_ip or "—" }}</td>
+      <td>{{ d.device_type }}</td>
+      <td>{% if net %}{{ net.name }}{% else %}—{% endif %}</td>
+      <td>{{ d.status.value }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak urządzeń.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

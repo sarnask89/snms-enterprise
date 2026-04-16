@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import select, label %}
+{% from "components/table.html" import badge %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Header info -->
+    <div class="flex items-center justify-between">
+        <a href="/helpdesk" class="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i> Powrót do listy
+        </a>
+        <div class="flex gap-2">
+            {% if ticket.status.value == 'open' %}
+                {{ badge("OTWARTE", variant="destructive") }}
+            {% elif ticket.status.value == 'pending' %}
+                {{ badge("OCZEKUJĄCE", variant="secondary", class="bg-amber-500/10 text-amber-600 border-amber-500/20") }}
+            {% else %}
+                {{ badge("ZAMKNIĘTE", variant="outline", class="opacity-50") }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="md:col-span-2 space-y-8">
+            {% call card(title=ticket.title, subtitle="Treść zgłoszenia") %}
+            <div class="bg-muted/30 p-6 rounded-xl border border-dashed text-sm leading-relaxed whitespace-pre-wrap min-h-[200px]">
+                {{ ticket.body or "(brak treści)" }}
+            </div>
+            {% endcall %}
+        </div>
+
+        <!-- Sidebar / metadata -->
+        <div class="space-y-8">
+            {% call card(title="Szczegóły", subtitle="Metadane ticketu") %}
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold uppercase text-muted-foreground">Abonent</p>
+                    {% if ticket.customer %}
+                        <p class="text-sm font-bold">{{ ticket.customer.last_name }} {{ ticket.customer.first_name }}</p>
+                        <p class="text-xs text-muted-foreground">{{ ticket.customer.customer_code }}</p>
+                    {% else %}
+                        <p class="text-sm italic text-muted-foreground">nieprzypisany</p>
+                    {% endif %}
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold uppercase text-muted-foreground">Kolejka</p>
+                    <p class="text-xs font-mono">{{ ticket.queue_id or 'Domyślna' }}</p>
+                </div>
+                <div class="space-y-1 pt-4 border-t">
+                    <p class="text-[10px] font-bold uppercase text-muted-foreground">Utworzono</p>
+                    <p class="text-xs text-muted-foreground">{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+            </div>
+            {% endcall %}
+
+            {% if can_write_helpdesk %}
+            {% call card(title="Obsługa", subtitle="Zarządzanie zgłoszeniem") %}
+            <form method="post" action="/helpdesk/tickets/{{ ticket.id }}/assign" class="space-y-4">
+                <div class="space-y-2">
+                    {{ label("Osoba odpowiedzialna", for="assignee") }}
+                    {% set staff_opts = [("", "— nieprzypisany —")] %}
+                    {% for u in service_staff %}
+                        {% do staff_opts.append((u.id, u.username)) %}
+                    {% endfor %}
+                    {{ select("assignee_id", staff_opts, selected_id=ticket.assignee_id, id="assignee") }}
+                </div>
+                <button type="submit" class="w-full inline-flex items-center justify-center rounded-md bg-secondary px-4 py-2 text-xs font-bold transition-all hover:bg-secondary/80">
+                    Przypisz
+                </button>
+            </form>
+
+            <div class="pt-6 mt-6 border-t space-y-3">
+                <p class="text-[10px] font-bold uppercase text-muted-foreground text-center">Zmień status</p>
+                <form method="post" action="/helpdesk/tickets/{{ ticket.id }}/status" class="grid grid-cols-1 gap-2">
+                    <button type="submit" name="status" value="open" 
+                            class="inline-flex items-center justify-center rounded-md h-9 text-xs font-bold border transition-colors {% if ticket.status.value == 'open' %}bg-primary text-primary-foreground border-transparent{% else %}hover:bg-accent{% endif %}"
+                            {% if ticket.status.value == 'open' %}disabled{% endif %}>OTWÓRZ</button>
+                    <button type="submit" name="status" value="pending" 
+                            class="inline-flex items-center justify-center rounded-md h-9 text-xs font-bold border transition-colors {% if ticket.status.value == 'pending' %}bg-amber-500 text-white border-transparent{% else %}hover:bg-accent{% endif %}"
+                            {% if ticket.status.value == 'pending' %}disabled{% endif %}>OCZEKUJĄCE</button>
+                    <button type="submit" name="status" value="closed" 
+                            class="inline-flex items-center justify-center rounded-md h-9 text-xs font-bold border transition-colors {% if ticket.status.value == 'closed' %}bg-slate-600 text-white border-transparent{% else %}hover:bg-accent{% endif %}"
+                            {% if ticket.status.value == 'closed' %}disabled{% endif %}>ZAMKNIJ</button>
+                </form>
+            </div>
+            {% endcall %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

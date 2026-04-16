@@ -1,0 +1,21 @@
+<div class="p-1 bg-panel border" style="max-height:300px;overflow-y:auto;">
+  {% for r in results %}
+  <div class="row border-bottom p-05" style="align-items:center;">
+    <div class="grow">
+      <strong>{{ r.name }}</strong> 
+      <small class="muted">({{ r.district.name if r.district else '?' }}, {{ r.district.state.name if r.district and r.district.state else '?' }})</small>
+    </div>
+    <div>
+      {% if r.is_managed %}
+        <span class="badge success">Już na liście</span>
+      {% else %}
+        <form method="post" action="/admin/addresses/city/{{ r.id }}/toggle-managed" class="inline">
+          <button type="submit" class="btn small">+ Dodaj do moich miast</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <p class="muted">Nie znaleziono w słowniku TERYT.</p>
+  {% endfor %}
+</div>

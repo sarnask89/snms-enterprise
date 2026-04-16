@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/timetable/' ~ row.id ~ '/edit' if row else '/timetable/new' }}" style="max-width:32rem;">
+  <label>Tytuł <input name="title" required maxlength="255" value="{{ row.title if row else '' }}"></label>
+  <label>Opis <textarea name="description" rows="3" style="width:100%;">{{ row.description if row and row.description else '' }}</textarea></label>
+  <label>Rozpoczęcie <input type="datetime-local" name="starts_at" required value="{% if row and row.starts_at %}{{ row.starts_at.strftime('%Y-%m-%dT%H:%M') }}{% endif %}"></label>
+  <label>Zakończenie <input type="datetime-local" name="ends_at" required value="{% if row and row.ends_at %}{{ row.ends_at.strftime('%Y-%m-%dT%H:%M') }}{% endif %}"></label>
+  <label>Klient
+    <select name="customer_id">
+      <option value="">—</option>
+      {% for c in customers %}<option value="{{ c.id }}" {% if row and row.customer_id == c.id %}selected{% endif %}>{{ c.customer_code }}</option>{% endfor %}
+    </select>
+  </label>
+  <label><input type="checkbox" name="done" {% if row and row.done %}checked{% endif %}> Zrobione</label>
+  <p><button type="submit">Zapisz</button> <a href="/timetable">Anuluj</a></p>
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/messages/templates">Szablony wiadomości</a></p>
+{% if can_write_messages %}<p><a class="btn" href="/messages/new">+ Nowa wiadomość</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Temat</th><th>Status</th><th>Klient</th><th>Szablon</th><th>Utworzono</th><th></th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.subject }}</td>
+      <td>{{ r.status.value }}</td>
+      <td>{% set c = customers.get(r.customer_id) %}{{ c.customer_code if c else "—" }}</td>
+      <td>{% if r.template_id %}{{ templates.get(r.template_id).name if templates.get(r.template_id) else r.template_id }}{% else %}—{% endif %}</td>
+      <td>{{ r.created_at }}</td>
+      <td class="actions">
+        {% if can_write_messages %}
+        <a href="/messages/{{ r.id }}/edit">Edytuj</a>
+        <form method="post" action="/messages/{{ r.id }}/delete" class="inline" onsubmit="return confirm('Usunąć?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}<span class="muted">tylko odczyt</span>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak wiadomości.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

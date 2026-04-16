@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/combobox.html" import combobox %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8" x-data="{ showMap: false, lat: {{ customer.latitude if customer and customer.latitude else 52.231 }}, lng: {{ customer.longitude if customer and customer.longitude else 21.012 }} }">
+  <form method="post" action="{% if customer %}/customers/{{ customer.id }}/edit{% else %}/customers/new{% endif %}">
+    {% if error or request.query_params.get('error') %}
+      <div class="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm font-bold text-destructive animate-in shake-1">
+        <i class="fas fa-exclamation-triangle mr-2"></i> {{ error or request.query_params.get('error') }}
+      </div>
+    {% endif %}
+
+    <div class="space-y-6">
+      <!-- Sekcja: Dane Konta -->
+      {% call card(title="Identyfikacja i Status", subtitle="Podstawowe informacje o abonencie i umowie") %}
+      <div class="grid gap-6">
+        {% if not customer %}
+        <div class="space-y-2">
+          {{ label("Plan numeracji umowy", for="number_plan_id") }}
+          {{ combobox("number_plan_id", plan_options, placeholder="Wybierz plan numeracji...") }}
+        </div>
+        {% endif %}
+
+        <div class="space-y-2">
+          {{ label("Numer abonenta / ID", for="customer_code") }}
+          {{ input("customer_code", value=customer.customer_code if customer else "", id="customer_code", placeholder="Zostaw puste dla auto-generacji", required=customer is not none) }}
+        </div>
+
+        <div class="space-y-2">
+          {{ label("Status konta", for="status") }}
+          {{ select("status", [("active", "Aktywny"), ("inactive", "Nieaktywny")], selected_id=customer.status.value if customer else "active", id="status") }}
+        </div>
+      </div>
+      {% endcall %}
+
+      <!-- Sekcja: Dane Osobowe -->
+      {% call card(title="Dane Osobowe", subtitle="Informacje kontaktowe") %}
+      <div class="grid gap-6">
+        <div class="space-y-2">
+          {{ label("Imię", for="first_name") }}
+          {{ input("first_name", value=customer.first_name if customer else "", id="first_name", required=True) }}
+        </div>
+        <div class="space-y-2">
+          {{ label("Nazwisko", for="last_name") }}
+          {{ input("last_name", value=customer.last_name if customer else "", id="last_name", required=True) }}
+        </div>
+        <div class="space-y-2">
+          {{ label("Adres e-mail", for="email") }}
+          {{ input("email", value=customer.email if customer else "", type="email", id="email", placeholder="klient@domena.pl") }}
+        </div>
+        <div class="space-y-2">
+          {{ label("Numer telefonu", for="phone") }}
+          {{ input("phone", value=customer.phone if customer else "", id="phone", placeholder="+48 ...") }}
+        </div>
+      </div>
+      {% endcall %}
+
+      <!-- Sekcja: Adres -->
+      {% call card(title="Adres instalacji", subtitle="Lokalizacja TERYT (oficjalna)") %}
+      <div class="grid gap-6">
+        <div class="space-y-2">
+          {{ label("Miejscowość", for="location_city_id") }}
+          {{ combobox("location_city_id", city_options, selected_id=customer.location_city_id if customer else default_city_id, placeholder="Wybierz miejscowość...", required=True) }}
+        </div>
+
+        <div class="space-y-2 relative">
+          {{ label("Ulica", for="street_suggest") }}
+          <input type="text" name="street_name" id="street_suggest"
+                 value="{{ customer.street.name if customer and customer.street else '' }}"
+                 placeholder="Wpisz min. 3 znaki..."
+                 autocomplete="off"
+                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                 hx-get="/teryt/api/suggest?kind=street"
+                 hx-trigger="keyup changed delay:300ms"
+                 hx-target="next .suggest-results-box"
+                 hx-include="[name='location_city_id']">
+          <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-cloak></div>
+          <input type="hidden" name="location_street_id" value="{{ customer.location_street_id if customer else '' }}">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+                {{ label("Nr budynku / lokalu", for="street_number") }}
+                {{ input("street_number", value=customer.street_number if customer else "", id="street_number", placeholder="np. 12/4") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Kod pocztowy", for="zip_code") }}
+                {{ input("zip_code", value=customer.zip_code if customer else "", id="zip_code", placeholder="00-000") }}
+            </div>
+        </div>
+
+        <div class="pt-4 border-t">
+            <button type="button" @click="showMap = !showMap" class="text-xs font-bold text-primary hover:underline">
+                <i class="fas fa-map-marker-alt mr-1"></i> <span x-text="showMap ? 'Ukryj mapę GPS' : 'Ustaw położenie GPS (opcjonalnie)'"></span>
+            </button>
+            <div x-show="showMap" x-transition class="mt-4 space-y-4">
+                <div id="customer-map" class="h-48 w-full rounded-lg border"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="hidden" name="latitude" x-model="lat">
+                    <input type="hidden" name="longitude" x-model="lng">
+                    <p class="col-span-2 text-[10px] text-muted-foreground">Współrzędne zostaną zapisane dla potrzeb raportów zasięgu.</p>
+                </div>
+            </div>
+        </div>
+      </div>
+      {% endcall %}
+
+      <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+        <a href="/customers" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj zmiany</a>
+        <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+          <i class="fas fa-save mr-2 text-xs"></i> Zapisz abonenta
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<style>
+.suggest-item { padding: 0.75rem 1rem; cursor: pointer; transition: background 0.2s; font-size: 0.85rem; border-bottom: 1px solid hsl(var(--border)/0.5); }
+.suggest-item:hover { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+.suggest-item:last-child { border-bottom: none; }
+</style>
+{% endblock %}

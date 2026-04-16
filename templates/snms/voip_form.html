@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/voip/' ~ row.id ~ '/edit' if row else '/voip/new' }}" style="max-width:28rem;">
+  <label>Etykieta <input name="label" required maxlength="128" value="{{ row.label if row else '' }}"></label>
+  <label>Numer <input name="phone_number" required maxlength="32" value="{{ row.phone_number if row else '' }}"></label>
+  <label>Klient
+    <select name="customer_id">
+      <option value="">—</option>
+      {% for c in customers %}<option value="{{ c.id }}" {% if row and row.customer_id == c.id %}selected{% endif %}>{{ c.customer_code }} — {{ c.last_name }}</option>{% endfor %}
+    </select>
+  </label>
+  <label><input type="checkbox" name="active" {% if not row or row.active %}checked{% endif %}> Aktywne</label>
+  <label>Notatki <textarea name="notes" rows="3" style="width:100%;">{{ row.notes if row and row.notes else '' }}</textarea></label>
+  <p><button type="submit">Zapisz</button> <a href="/voip">Anuluj</a></p>
+</form>
+{% endblock %}

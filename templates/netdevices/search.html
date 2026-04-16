@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Wpisz nazwę, hostname, IP zarządzania lub typ urządzenia — wyniki na liście osprzętu.</p>
+<form method="get" action="/net-devices" class="row" style="gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+  <label style="margin:0;">Szukaj<input name="q" value="" placeholder="np. 10.0. lub router" autofocus></label>
+  <button type="submit">Szukaj</button>
+</form>
+<p><a href="/net-devices">Pełna lista</a></p>
+{% endblock %}

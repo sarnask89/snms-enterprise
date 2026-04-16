@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <form method="post" action="{% if device %}/net-devices/{{ device.id }}/edit{% else %}/net-devices/new{% endif %}" class="space-y-8">
+        
+        {% call card(title="Sprzęt Sieciowy", subtitle="Szczegóły inwentaryzacyjne urządzenia") %}
+        <div class="grid gap-6">
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Producent", for="producer_id") }}
+                    {% set prod_opts = [("", "— wybierz —")] %}
+                    {% for p in producers %}
+                        {% do prod_opts.append((p.id, p.name)) %}
+                    {% endfor %}
+                    {{ select("producer_id", prod_opts, selected_id=device.producer_id if device else "", id="producer_id", required=True) }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Model", for="model_id") }}
+                    {% set mod_opts = [("", "— wybierz —")] %}
+                    {% for m in models %}
+                        {% do mod_opts.append((m.id, m.name)) %}
+                    {% endfor %}
+                    {{ select("model_id", mod_opts, selected_id=device.model_id if device else "", id="model_id", required=True) }}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Numer seryjny (SN)", for="serial_number") }}
+                {{ input("serial_number", value=device.serial_number if device else "", id="serial_number", placeholder="np. 12345ABCDE") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Adres MAC", for="mac_address") }}
+                {{ input("mac_address", value=device.mac_address if device else "", id="mac_address", placeholder="00:11:22:33:44:55") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Lokalizacja (Węzeł)", for="net_node_id") %}
+                {% set node_opts = [("", "— nieprzypisane —")] %}
+                {% for n in net_nodes %}
+                    {% do node_opts.append((n.id, n.name)) %}
+                {% endfor %}
+                {{ select("net_node_id", node_opts, selected_id=device.net_node_id if device else "", id="net_node_id") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Status urządzenia", for="status") %}
+                {{ select("status", [("active", "Aktywne"), ("inactive", "Magazyn"), ("maintenance", "Serwis")], selected_id=device.status.value if device else "active", id="status") }}
+            </div>
+        </div>
+        {% endcall %}
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/net-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz urządzenie
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

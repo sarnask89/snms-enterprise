@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <form method="post" action="/subscriptions/new" class="space-y-8">
+        
+        {% call card(title="Przypisanie usługi", subtitle="Nadanie taryfy abonentowi") %}
+        <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Wybierz abonenta", for="customer_id") }}
+                {% set cust_opts = [] %}
+                {% for c in customers %}
+                    {% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}
+                {% endfor %}
+                {{ select("customer_id", cust_opts, id="customer_id", required=True) }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Wybierz taryfę", for="tariff_id") }}
+                {% set tar_opts = [] %}
+                {% for t in tariffs %}
+                    {% do tar_opts.append((t.id, t.name ~ " (" ~ t.monthly_price ~ " PLN)")) %}
+                {% endfor %}
+                {{ select("tariff_id", tar_opts, id="tariff_id", required=True) }}
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Data rozpoczęcia", for="start_date") }}
+                    {{ input("start_date", type="date", value=today, id="start_date", required=True) }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Data zakończenia (opcj.)", for="end_date") }}
+                    {{ input("end_date", type="date", id="end_date") }}
+                </div>
+            </div>
+        </div>
+        {% endcall %}
+
+        {% call card(title="Parametry UKE / PIT", subtitle="Technologia i parametry techniczne łącza") %}
+        <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Technologia dostępu", for="technology") }}
+                {{ select("technology", [
+                    ("FTTH", "FTTH (Światłowód)"),
+                    ("HFC", "HFC (Kablowa)"),
+                    ("Ethernet", "Ethernet (LAN)"),
+                    ("Wireless", "Wireless (Radiowa)"),
+                    ("Copper", "Copper (Miedź/xDSL)"),
+                    ("Other", "Inna")
+                ], selected_id="FTTH", id="technology") }}
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Prędkość pobierania (Mbps)", for="speed_down") }}
+                    {{ input("speed_down_mbps", type="number", id="speed_down", placeholder="np. 300") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Prędkość wysyłania (Mbps)", for="speed_up") }}
+                    {{ input("speed_up_mbps", type="number", id="speed_up", placeholder="np. 50") }}
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 p-4 border rounded-lg bg-emerald-500/5">
+                <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary" checked>
+                <div class="grid gap-1.5 leading-none">
+                    {{ label("Usługa aktywna", for="active", class="text-sm font-bold") }}
+                    <p class="text-[10px] text-muted-foreground uppercase">Tylko aktywne usługi generują faktury cykliczne.</p>
+                </div>
+            </div>
+        </div>
+        {% endcall %}
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/subscriptions" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Uruchom usługę
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

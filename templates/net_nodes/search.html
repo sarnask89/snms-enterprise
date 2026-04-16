@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="get" action="/net-nodes" class="row" style="gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+  <label>Szukaj<input type="search" name="q" placeholder="nazwa, notatka…"></label>
+  <button type="submit">Szukaj</button>
+</form>
+<p><a href="/net-nodes">Pełna lista węzłów sieci</a></p>
+{% endblock %}

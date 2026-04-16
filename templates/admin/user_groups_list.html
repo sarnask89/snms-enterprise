@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+{% if can_write_crm %}<p><a class="btn" href="/admin/user-groups/new">+ Nowa grupa</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Nazwa</th><th>Opis</th><th>Użytkownicy</th><th></th></tr></thead>
+  <tbody>
+    {% for g in groups %}
+    <tr>
+      <td>{{ g.name }}</td>
+      <td>{{ g.description or "—" }}</td>
+      <td>{{ g.users|length }}</td>
+      <td class="actions">
+        {% if can_write_crm %}
+        <a href="/admin/user-groups/{{ g.id }}/edit">Edytuj</a>
+        <form method="post" action="/admin/user-groups/{{ g.id }}/delete" class="inline" onsubmit="return confirm('Usunąć grupę?');"><button type="submit" class="link">Usuń</button></form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Brak grup (niezależnie od ról RBAC).</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

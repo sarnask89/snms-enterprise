@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex flex-col sm:flex-row items-end justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm">
+        <div class="w-full max-w-sm space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Katalog sprzętu</label>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <form method="get" action="/net-devices">
+                    <input type="search" name="q" value="{{ search_q }}" 
+                           placeholder="SN, MAC, producent..."
+                           class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                </form>
+            </div>
+        </div>
+        
+        {% if can_write_crm %}
+        <a href="/net-devices/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowy sprzęt
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Urządzenie (Model)</th>
+                        <th class="h-12 px-4 text-left align-middle">SN / MAC</th>
+                        <th class="h-12 px-4 text-left align-middle">Lokalizacja</th>
+                        <th class="h-12 px-4 text-left align-middle">Status</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for d in devices %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle">
+                            <div class="font-bold text-xs">{{ d.producer.name if d.producer else '—' }}</div>
+                            <div class="text-[10px] text-primary font-semibold uppercase">{{ d.net_device_model.name if d.net_device_model else '—' }}</div>
+                        </td>
+                        <td class="p-4 align-middle">
+                            <div class="font-mono text-[10px] text-foreground">{{ d.serial_number or '—' }}</div>
+                            <div class="font-mono text-[9px] text-muted-foreground">{{ d.mac_address or '—' }}</div>
+                        </td>
+                        <td class="p-4 align-middle text-xs">
+                            {% if d.net_node %}
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-server text-[9px] opacity-50"></i>
+                                    {{ d.net_node.name }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted-foreground italic tracking-tight opacity-50">magazyn</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if d.status.value == 'active' %}
+                                <div class="inline-flex items-center rounded-full bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 text-[9px] font-bold uppercase border border-emerald-500/20">W użyciu</div>
+                            {% elif d.status.value == 'inactive' %}
+                                <div class="inline-flex items-center rounded-full bg-slate-500/10 text-slate-600 px-2.5 py-0.5 text-[9px] font-bold uppercase border border-slate-500/20">Magazyn</div>
+                            {% else %}
+                                <div class="inline-flex items-center rounded-full bg-amber-500/10 text-amber-600 px-2.5 py-0.5 text-[9px] font-bold uppercase border border-amber-500/20">Serwis</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/net-devices/{{ d.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if can_write_crm %}
+                                <button @click="$dispatch('open-alert-delete-dev', { url: '/net-devices/{{ d.id }}/delete', name: '{{ d.serial_number }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak sprzętu w katalogu.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-dev", "Usuwanie sprzętu", "Czy na pewno chcesz usunąć z inwentarza urządzenie") }}
+{% endblock %}

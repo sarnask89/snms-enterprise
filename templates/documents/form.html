@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="/documents/new" class="stack narrow">
+  <label>Tytuł<input name="title" required></label>
+  <label>Typ<input name="doc_type" value="contract"></label>
+  <label>Klient
+    <select name="customer_id">
+      <option value="">—</option>
+      {% for c in customers %}
+      <option value="{{ c.id }}">{{ c.customer_code }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Notatki<textarea name="notes" rows="3"></textarea></label>
+  <label>Plik (PDF, obraz, TXT, DOC…) <input name="file" type="file"></label>
+  <button type="submit">Zapisz</button>
+  <a href="/documents">Anuluj</a>
+</form>
+{% endblock %}

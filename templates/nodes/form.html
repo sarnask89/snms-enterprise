@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/combobox.html" import combobox %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <form method="post" action="{% if node %}/customer-devices/{{ node.id }}/edit{% else %}/customer-devices/new{% endif %}" class="space-y-8">
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-8">
+                {% call card(title="Urządzenie klienta", subtitle="Konfiguracja dostępu abonenta") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Abonent", for="customer_id") }}
+                        {% set cust_opts = [] %}
+                        {% for c in customers %}
+                            {% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}
+                        {% endfor %}
+                        {{ combobox("customer_id", cust_opts, selected_id=node.customer_id if node else "", placeholder="Szukaj abonenta...") }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Nazwa / Hostname", for="name") }}
+                        {{ input("name", value=node.name if node else "", id="name", required=True, placeholder="np. Dom-Router") }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Grupa urządzeń", for="node_group_id") }}
+                        {% set ng_opts = [] %}
+                        {% for g in node_groups %}
+                            {% do ng_opts.append((g.id, g.name)) %}
+                        {% endfor %}
+                        {{ combobox("node_group_id", ng_opts, selected_id=node.node_group_id if node else "", placeholder="Wybierz grupę...") }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Logowanie i Autoryzacja", subtitle="Parametry PPPoE / DHCP / Statyczne") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Login (Username)", for="login") }}
+                        {{ input("login", value=node.login if node else "", id="login", placeholder="użytkownik@snms") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Hasło", for="passwd") }}
+                        {{ input("passwd", value=node.passwd if node else "", type="password", id="passwd", placeholder="••••••••") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Adres IP (Statyczny)", for="ip_address") }}
+                        {{ input("ip_address", value=node.ip_address if node else "", id="ip_address", placeholder="10.x.x.x") }}
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+
+            <div class="space-y-8">
+                {% call card(title="Parametry Sieciowe", subtitle="VLAN i routing") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Adres MAC", for="mac_address") }}
+                        {{ input("mac_address", value=node.mac_address if node else "", id="mac_address", placeholder="00:11:22:33:44:55") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Sieć (VLAN / Pula)", for="ip_network_id") %}
+                        {% set net_opts = [] %}
+                        {% for n in ip_networks %}
+                            {% do net_opts.append((n.id, n.name ~ " (" ~ n.cidr ~ ")")) %}
+                        {% endfor %}
+                        {{ combobox("ip_network_id", net_opts, selected_id=node.ip_network_id if node else "", placeholder="Wybierz sieć...") }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Infrastruktura (UKE)", subtitle="Miejsce podłączenia") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Węzeł nadrzędny", for="net_node_id") }}
+                        {% set nn_opts = [] %}
+                        {% for nn in net_nodes %}
+                            {% do nn_opts.append((nn.id, nn.name)) %}
+                        {% endfor %}
+                        {{ combobox("net_node_id", nn_opts, selected_id=node.net_node_id if node else "", placeholder="Wybierz węzeł...") }}
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 p-4 border rounded-lg bg-muted/10">
+                        <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary" {% if not node or node.active %}checked{% endif %}>
+                        <div class="grid gap-1.5 leading-none">
+                            {{ label("Urządzenie aktywne", for="active", class="text-sm font-bold") }}
+                            <p class="text-[10px] text-muted-foreground uppercase">Pozwala na autoryzację w sieci.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/customer-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz urządzenie
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

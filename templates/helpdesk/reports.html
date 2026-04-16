@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="muted">Zestawienie zgłoszeń (SNMS) — według statusu i kolejki. <a href="/helpdesk/reports.csv">Pobierz CSV (wszystkie zgłoszenia)</a></p>
+<p><strong>Wszystkie zgłoszenia:</strong> {{ total_tickets }}</p>
+{% if no_queue_count %}
+<p class="notice">Bez przypisanej kolejki (queue_id null): <strong>{{ no_queue_count }}</strong></p>
+{% endif %}
+
+<h2>Według statusu</h2>
+<table class="data">
+  <thead><tr><th>Status</th><th>Liczba</th></tr></thead>
+  <tbody>
+    {% for st, cnt in by_status %}
+    <tr><td>{{ st.value }}</td><td>{{ cnt }}</td></tr>
+    {% else %}
+    <tr><td colspan="2">Brak danych.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Według kolejki</h2>
+<table class="data">
+  <thead><tr><th>Kolejka</th><th>Liczba</th></tr></thead>
+  <tbody>
+    {% for name, cnt in by_queue %}
+    <tr><td>{{ name }}</td><td>{{ cnt }}</td></tr>
+    {% else %}
+    <tr><td colspan="2">Brak kolejek.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p><a href="/helpdesk/tickets">← Lista zgłoszeń</a></p>
+{% endblock %}

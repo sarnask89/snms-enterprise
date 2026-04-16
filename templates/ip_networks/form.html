@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <form method="post" action="{% if network %}/ip-networks/{{ network.id }}/edit{% else %}/ip-networks/new{% endif %}" class="space-y-8">
+        
+        {% call card(title="Konfiguracja sieci", subtitle="Definicja puli adresowej i parametrów L2/L3") %}
+        <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Nazwa opisowa sieci", for="name") }}
+                {{ input("name", value=network.name if network else "", id="name", required=True, placeholder="np. Zarządzanie Radiolinie") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("CIDR (Pula adresowa)", for="cidr") }}
+                {{ input("cidr", value=network.cidr if network else "", id="cidr", required=True, placeholder="np. 10.0.87.0/24") }}
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Brama domyślna", for="gateway") }}
+                    {{ input("gateway", value=network.gateway if network else "", id="gateway", placeholder="np. 10.0.87.1") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("VLAN ID", for="vlan_id") }}
+                    {{ input("vlan_id", type="number", value=network.vlan_id if network and network.vlan_id is not none else "", id="vlan_id", placeholder="np. 100") }}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Host rozdzielczy (Uplink)", for="network_host_id") }}
+                {% set host_options = [("", "— brak —")] %}
+                {% for h in network_hosts %}
+                    {% do host_options.append((h.id, h.name)) %}
+                {% endfor %}
+                {{ select("network_host_id", host_options, selected_id=network.network_host_id if network else "", id="network_host_id") }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Notatki / Opis techniczny", for="description") }}
+                <textarea name="description" id="description" rows="3" 
+                          class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">{{ network.description if network else '' }}</textarea>
+            </div>
+
+            <div class="flex items-center space-x-2 rounded-md border p-4 bg-emerald-500/5">
+                <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary" {% if not network or network.active %}checked{% endif %}>
+                <div class="grid gap-1.5 leading-none">
+                    {{ label("Sieć aktywna", for="active", class="text-sm font-bold") }}
+                    <p class="text-[10px] text-muted-foreground">Nieaktywny sieci są ukryte przy przydzielaniu IP.</p>
+                </div>
+            </div>
+        </div>
+        {% endcall %}
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/ip-networks" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz sieć
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

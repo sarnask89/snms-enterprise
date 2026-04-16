@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="bg-muted/30 p-6 rounded-xl border border-dashed flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-primary/10 rounded-full text-primary">
+                <i class="fas fa-map-marked-alt text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg leading-none">Państwowy Rejestr TERYT</h3>
+                <p class="text-sm text-muted-foreground mt-1">Podgląd lokalnej kopii bazy jednostek terytorialnych (TERC).</p>
+            </div>
+        </div>
+        <div class="flex gap-2 shrink-0">
+            <a href="/teryt/ws/check" target="_blank" class="h-9 px-4 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-xs font-bold transition-colors">
+                <i class="fas fa-plug mr-2"></i> Status API GUS
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {% for s in states %}
+        <div class="group p-4 rounded-xl border bg-card hover:border-primary transition-all hover:shadow-md cursor-default">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Województwo</span>
+                <span class="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded">{{ s.teryt_code or '??' }}</span>
+            </div>
+            <h4 class="font-bold text-foreground group-hover:text-primary transition-colors">{{ s.name }}</h4>
+        </div>
+        {% else %}
+        <div class="col-span-full p-20 text-center border rounded-xl bg-card border-dashed">
+            <i class="fas fa-database text-4xl text-muted-foreground/20 mb-4"></i>
+            <p class="text-muted-foreground italic">Baza województw jest pusta. Uruchom synchronizację w panelu administratora.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="p-6 rounded-xl border bg-muted/5 space-y-4">
+        <h5 class="text-xs font-bold uppercase tracking-widest text-muted-foreground">Wskazówki techniczne</h5>
+        <div class="grid md:grid-cols-2 gap-8 text-xs text-muted-foreground leading-relaxed">
+            <div class="space-y-2">
+                <p><strong class="text-foreground">SIMC (Miejscowości):</strong> Adresy abonentów są wiązane bezpośrednio z identyfikatorami SIMC, co zapewnia 100% zgodności z raportami UKE.</p>
+                <p><strong class="text-foreground">ULIC (Ulice):</strong> Słownik ulic jest budowany dynamicznie dla zarządzanych miast w celu optymalizacji wydajności bazy.</p>
+            </div>
+            <div class="space-y-2">
+                <p><strong class="text-foreground">Raportowanie PIT:</strong> System automatycznie mapuje współrzędne geograficzne węzłów na kody TERYT jednostek administracyjnych.</p>
+                <p><a href="/admin/teryt-sync" class="text-primary font-bold hover:underline">Otwórz panel synchronizacji →</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

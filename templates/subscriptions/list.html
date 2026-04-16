@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+        <p class="text-sm text-muted-foreground italic">Zestawienie aktywnych i historycznych usług przypisanych do abonentów.</p>
+        {% if can_write_crm %}
+        <a href="/subscriptions/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowa subskrypcja
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Abonent</th>
+                        <th class="h-12 px-4 text-left align-middle">Taryfa (Usługa)</th>
+                        <th class="h-12 px-4 text-left align-middle">Od</th>
+                        <th class="h-12 px-4 text-left align-middle">Do</th>
+                        <th class="h-12 px-4 text-left align-middle">Status</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for s in subscriptions %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle">
+                            {% set c = customers.get(s.customer_id) %}
+                            <div class="font-bold text-xs">{{ c.last_name if c else '—' }}</div>
+                            <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else s.customer_id }}</div>
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% set t = tariffs.get(s.tariff_id) %}
+                            <div class="font-semibold text-xs text-primary">{{ t.name if t else s.tariff_id }}</div>
+                            <div class="text-[9px] text-muted-foreground font-mono uppercase">{{ "%.2f"|format(t.monthly_price|float) if t else '0.00' }} PLN</div>
+                        </td>
+                        <td class="p-4 align-middle text-xs">{{ s.start_date }}</td>
+                        <td class="p-4 align-middle text-xs">{{ s.end_date or "—" }}</td>
+                        <td class="p-4 align-middle">
+                            {% if s.active %}
+                                <div class="inline-flex items-center rounded-full bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-emerald-500/20">AKTYWNA</div>
+                            {% else %}
+                                <div class="inline-flex items-center rounded-full bg-slate-500/10 text-slate-600 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-slate-500/20">WYGASŁA</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                {% if can_write_crm %}
+                                <form method="post" action="/subscriptions/{{ s.id }}/toggle" class="inline">
+                                    <button type="submit" class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-accent transition-colors" title="Zmień status">
+                                        <i class="fas fa-power-off text-xs"></i>
+                                    </button>
+                                </form>
+                                <button @click="$dispatch('open-alert-delete-sub', { url: '/subscriptions/{{ s.id }}/delete', name: 'usługę' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak subskrypcji.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-sub", "Usuwanie usługi", "Czy na pewno chcesz usunąć przypisaną") }}
+{% endblock %}

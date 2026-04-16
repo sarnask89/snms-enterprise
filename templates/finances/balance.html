@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    {% if can_write_crm %}
+    {% call card(title="Nowa operacja księgowa", subtitle="Ręczne wpisy do księgi głównej (LMS Ledger)") %}
+    <form method="post" action="/finances/balance/new">
+        <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div class="space-y-2 lg:col-span-1">
+                {{ label("Abonent", for="customer_id") }}
+                {{ select("customer_id", [(c.id, c.customer_code) for c in customers.values()], id="customer_id", required=True) }}
+            </div>
+            <div class="space-y-2 lg:col-span-1">
+                {{ label("Rodzaj", for="kind") }}
+                {{ select("kind", [(k.value, k.value|capitalize) for k in kinds], id="kind", required=True) }}
+            </div>
+            <div class="space-y-2 lg:col-span-1">
+                {{ label("Kwota", for="amount") }}
+                {{ input("amount", id="amount", required=True, placeholder="0.00") }}
+            </div>
+            <div class="space-y-2 lg:col-span-2">
+                {{ label("Tytuł operacji", for="description") }}
+                {{ input("description", id="description", required=True, placeholder="np. Wpłata własna - gotówka") }}
+            </div>
+            <div class="space-y-2 lg:col-span-2">
+                {{ label("Data księgowania (opcj.)", for="posted_at") }}
+                {{ input("posted_at", type="datetime-local", id="posted_at") }}
+            </div>
+        </div>
+        <div class="flex justify-end mt-6 pt-6 border-t">
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all">
+                Zaksięguj operację
+            </button>
+        </div>
+    </form>
+    {% endcall %}
+    {% endif %}
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Data</th>
+                        <th class="h-12 px-4 text-left align-middle">Abonent</th>
+                        <th class="h-12 px-4 text-left align-middle">Typ</th>
+                        <th class="h-12 px-4 text-left align-middle">Kwota</th>
+                        <th class="h-12 px-4 text-left align-middle">Opis</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for r in rows %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-mono text-[11px] text-muted-foreground">
+                            {{ r.posted_at.strftime('%Y-%m-%d %H:%M') if r.posted_at else '—' }}
+                        </td>
+                        <td class="p-4 align-middle font-bold text-xs">
+                            {% set c = customers.get(r.customer_id) %}
+                            {{ c.customer_code if c else r.customer_id }}
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if r.kind.value == 'credit' %}
+                                <span class="text-emerald-600 font-bold uppercase text-[9px] tracking-widest">Ma (WP)</span>
+                            {% else %}
+                                <span class="text-rose-600 font-bold uppercase text-[9px] tracking-widest">Winien (NB)</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle font-bold text-xs {% if r.kind.value == 'credit' %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                            {{ "%.2f"|format(r.amount|float) }}
+                        </td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground truncate max-w-[250px]">{{ r.description }}</td>
+                        <td class="p-4 align-middle text-right">
+                            {% if can_write_crm %}
+                            <button @click="$dispatch('open-alert-delete-entry', { url: '/finances/balance/{{ r.id }}/delete', name: '{{ r.description }}' })"
+                                    class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak wpisów w księdze.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-entry", "Usuwanie wpisu", "Czy na pewno chcesz usunąć operację") }}
+{% endblock %}

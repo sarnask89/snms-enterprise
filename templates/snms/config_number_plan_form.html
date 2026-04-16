@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="{{ '/config/number-plans/' ~ row.id ~ '/edit' if row else '/config/number-plans/new' }}" class="stack narrow">
+  <label>Nazwa<input name="name" required maxlength="128" value="{{ row.name if row else '' }}"></label>
+  <label>Typ dokumentu
+    <select name="doc_type">
+      {% set dk = row.doc_type.value if row else 'invoice' %}
+      <option value="invoice" {% if dk == 'invoice' %}selected{% endif %}>Faktura</option>
+      <option value="proforma" {% if dk == 'proforma' %}selected{% endif %}>Pro forma</option>
+      <option value="debit_note" {% if dk == 'debit_note' %}selected{% endif %}>Nota obciążeniowa</option>
+      <option value="customer" {% if dk == 'customer' %}selected{% endif %}>Abonent / Umowa</option>
+    </select>
+  </label>
+  <label>Wzorzec numeru <span class="muted">({year}, {n} — zero do 4 cyfr)</span>
+    <input name="pattern_template" required maxlength="128" value="{{ row.pattern_template if row else 'FV/{year}/{n}' }}">
+  </label>
+  <label>Następny numer (licznik)<input name="next_number" type="number" min="1" value="{{ row.next_number if row else 1 }}"></label>
+  <label>Oddział (opcj.)
+    <select name="division_id">
+      <option value="">—</option>
+      {% for d in divisions %}
+      <option value="{{ d.id }}" {% if row and row.division_id == d.id %}selected{% endif %}>{{ d.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label><input type="checkbox" name="active" value="on" {% if not row or row.active %}checked{% endif %}> Aktywny</label>
+  <p><button type="submit">Zapisz</button> <a href="/config/number-plans">Anuluj</a></p>
+</form>
+{% endblock %}

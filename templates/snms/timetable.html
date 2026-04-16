@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+{% if can_write_crm %}<p><a class="btn" href="/timetable/new">+ Wydarzenie</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Tytuł</th><th>Od</th><th>Do</th><th>Klient</th><th>Zrobione</th><th></th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.title }}</td>
+      <td>{{ r.starts_at }}</td>
+      <td>{{ r.ends_at }}</td>
+      <td>{% set c = customers.get(r.customer_id) %}{{ c.customer_code if c else "—" }}</td>
+      <td>{{ "tak" if r.done else "nie" }}</td>
+      <td class="actions">
+        {% if can_write_crm %}
+        <a href="/timetable/{{ r.id }}/edit">Edytuj</a>
+        <form method="post" action="/timetable/{{ r.id }}/delete" class="inline" onsubmit="return confirm('Usunąć?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}<span class="muted">tylko odczyt</span>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Brak wydarzeń.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

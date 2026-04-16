@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "components/alert_dialog.html" import alert_dialog %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+        <p class="text-sm text-muted-foreground italic">Lista osób z dostępem do panelu administracyjnego.</p>
+        <a href="/admin/users/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+            <i class="fas fa-plus mr-2 text-xs"></i> Nowy użytkownik
+        </a>
+    </div>
+
+    <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div class="relative w-full overflow-auto no-scrollbar">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="bg-muted/40">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Login</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Rola</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Status</th>
+                        <th class="h-12 px-4 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for u in users %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-medium">{{ u.username }}</td>
+                        <td class="p-4 align-middle">
+                            <span class="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-[10px] font-bold uppercase tracking-wider">{{ u.role.value }}</span>
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if u.active %}
+                            <div class="inline-flex items-center rounded-full bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest">Aktywny</div>
+                            {% else %}
+                            <div class="inline-flex items-center rounded-full bg-slate-500/10 text-slate-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest">Nieaktywny</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/admin/users/{{ u.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                                {% if portal_user and portal_user.role.value == "admin" and u.id != portal_user.id %}
+                                <button @click="$dispatch('open-alert-delete-user', { url: '/admin/users/{{ u.id }}/delete', name: '{{ u.username }}' })"
+                                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="p-12 text-center text-muted-foreground italic">Brak użytkowników.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{ alert_dialog("delete-user", "Usuwanie konta", "Czy na pewno chcesz odebrać dostęp użytkownikowi") }}
+{% endblock %}

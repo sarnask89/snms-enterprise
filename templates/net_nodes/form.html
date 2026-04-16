@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/combobox.html" import combobox %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8" x-data="mapPicker()">
+    <form method="post" action="{% if node %}/net-nodes/{{ node.id }}/edit{% else %}/net-nodes/new{% endif %}" class="space-y-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div class="space-y-8">
+                {% call card(title="Identyfikacja Węzła", subtitle="Podstawowe parametry infrastruktury") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Nazwa węzła (identyfikator)", for="name") }}
+                        {{ input("name", value=node.name if node else "", id="name", required=True, autofocus=True, placeholder="np. POP-01-KRK") }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Oddział / Właściciel", for="division_id") }}
+                        {% set div_options = [] %}
+                        {% for d in divisions %}
+                            {% do div_options.append((d.id, d.name)) %}
+                        {% endfor %}
+                        {{ combobox("division_id", div_options, selected_id=node.division_id if node else "", placeholder="Wybierz oddział...") }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Lokalizacja TERYT", subtitle="Oficjalny adres węzła") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Miejscowość", for="location_city_id") }}
+                        {% set city_options = [] %}
+                        {% for c in managed_cities %}
+                            {% do city_options.append((c.id, c.name)) %}
+                        {% endfor %}
+                        {{ combobox("location_city_id", city_options, selected_id=node.location_city_id if node else (managed_cities|selectattr('is_default')|first).id if managed_cities|selectattr('is_default')|first else "", placeholder="Wybierz miejscowość...", required=True) }}
+                    </div>
+
+                    <div class="space-y-2 relative">
+                        {{ label("Ulica", for="street_suggest") }}
+                        <input type="text" name="street_name" id="street_suggest"
+                               value="{{ node.street.name if node and node.street else '' }}"
+                               placeholder="Zacznij pisać..."
+                               autocomplete="off"
+                               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                               hx-get="/teryt/api/suggest?kind=street"
+                               hx-trigger="keyup changed delay:300ms"
+                               hx-target="next .suggest-results-box"
+                               hx-include="[name='location_city_id']">
+                        <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-cloak></div>
+                        <input type="hidden" name="location_street_id" value="{{ node.location_street_id if node else '' }}">
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Nr budynku", for="street_number") }}
+                        {{ input("street_number", value=node.street_number if node else "", id="street_number", placeholder="np. 12A") }}
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+
+            <div class="space-y-8">
+                {% call card(title="Położenie GPS (UKE/PIT)", subtitle="Kliknij na mapie, aby pobrać współrzędne") %}
+                <div class="space-y-4">
+                    <div id="map" class="h-64 w-full rounded-lg border shadow-inner z-0"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            {{ label("Szerokość (Lat)", for="latitude") }}
+                            <input type="number" step="0.000001" name="latitude" id="latitude" x-model="lat" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                        </div>
+                        <div class="space-y-2">
+                            {{ label("Długość (Lon)", for="longitude") }}
+                            <input type="number" step="0.000001" name="longitude" id="longitude" x-model="lng" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-muted-foreground italic text-center">Możesz przeciągnąć marker na mapie.</p>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Dane Techniczne", subtitle="Pola wymagane do raportów") %}
+                <div class="grid gap-6">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            {{ label("Typ punktu", for="node_type") }}
+                            {{ select("node_type", [("Szafa", "Szafa zewnętrzna"), ("Kontener", "Kontener"), ("Budynek", "Budynek"), ("Inny", "Inny")], selected_id=node.node_type if node else "Szafa", id="node_type") }}
+                        </div>
+                        <div class="space-y-2">
+                            {{ label("Status własności", for="owner_type") }}
+                            {{ select("owner_type", [("Własny", "Własny"), ("Dzierżawa", "Dzierżawa")], selected_id=node.owner_type if node else "Własny", id="owner_type") }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg bg-muted/10">
+                        <div class="flex items-center space-x-2 grow">
+                            <input type="checkbox" name="has_power" id="has_power" class="h-4 w-4 rounded border-gray-300 text-primary" {% if node and node.has_power %}checked{% endif %}>
+                            {{ label("Zasilanie", for="has_power", class="text-xs font-bold") }}
+                        </div>
+                        <div class="flex items-center space-x-2 grow">
+                            <input type="checkbox" name="has_env_control" id="has_env_control" class="h-4 w-4 rounded border-gray-300 text-primary" {% if node and node.has_env_control %}checked{% endif %}>
+                            {{ label("Klimatyzacja / Wentylacja", for="has_env_control", class="text-xs font-bold") }}
+                        </div>
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/net-nodes" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz węzeł
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function mapPicker() {
+    return {
+        lat: {{ node.latitude if node and node.latitude else 52.231 }},
+        lng: {{ node.longitude if node and node.longitude else 21.012 }},
+        map: null,
+        marker: null,
+        init() {
+            this.$nextTick(() => {
+                this.map = L.map('map').setView([this.lat, this.lng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap'
+                }).addTo(this.map);
+
+                this.marker = L.marker([this.lat, this.lng], { draggable: true }).addTo(this.map);
+                
+                this.marker.on('dragend', (e) => {
+                    const pos = e.target.getLatLng();
+                    this.lat = pos.lat.toFixed(6);
+                    this.lng = pos.lng.toFixed(6);
+                });
+
+                this.map.on('click', (e) => {
+                    this.lat = e.latlng.lat.toFixed(6);
+                    this.lng = e.latlng.lng.toFixed(6);
+                    this.marker.setLatLng(e.latlng);
+                });
+            });
+        }
+    }
+}
+</script>
+
+<style>
+.suggest-item { padding: 0.75rem 1rem; cursor: pointer; transition: background 0.2s; font-size: 0.85rem; border-bottom: 1px solid hsl(var(--border)/0.5); background: hsl(var(--background)); color: hsl(var(--foreground)); }
+.suggest-item:hover { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+.leaflet-container { font-family: inherit; }
+</style>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+{% if can_write_crm %}<p><a class="btn" href="/hosting/new">+ Konto hosting</a></p>{% endif %}
+<table class="data">
+  <thead><tr><th>Login</th><th>Domena</th><th>Klient</th><th>Aktywne</th><th></th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.account_login }}</td>
+      <td>{{ r.domain or "—" }}</td>
+      <td>{% set c = customers.get(r.customer_id) %}{{ c.customer_code if c else "—" }}</td>
+      <td>{{ "tak" if r.active else "nie" }}</td>
+      <td class="actions">
+        {% if can_write_crm %}
+        <a href="/hosting/{{ r.id }}/edit">Edytuj</a>
+        <form method="post" action="/hosting/{{ r.id }}/delete" class="inline" onsubmit="return confirm('Usunąć?');"><button type="submit" class="link">Usuń</button></form>
+        {% else %}<span class="muted">tylko odczyt</span>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Brak kont.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
