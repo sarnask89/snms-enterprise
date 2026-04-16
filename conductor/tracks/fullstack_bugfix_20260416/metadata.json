@@ -1,0 +1,8 @@
+{
+  "track_id": "fullstack_bugfix_20260416",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-04-16T21:20:00Z",
+  "updated_at": "2026-04-16T21:20:00Z",
+  "description": "bug fix in back-end and front-end, test how it looks in mcp chrome browser extension"
+}
