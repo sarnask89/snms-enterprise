@@ -14,6 +14,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: bug fix in back-end and front-end, test how it looks in mcp chrome browser extension**
+- [~] **Track: bug fix in back-end and front-end, test how it looks in mcp chrome browser extension**
   *Link: [./tracks/fullstack_bugfix_20260416/](./tracks/fullstack_bugfix_20260416/)*
+
+---
+
+- [ ] **Track: Enhance 3D Audio Visualizer (Mirror & Objects)**
+  *Link: [./tracks/visualizer_20260418/](./tracks/visualizer_20260418/)*
 
