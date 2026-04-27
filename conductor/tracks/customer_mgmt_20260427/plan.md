@@ -9,11 +9,11 @@
     - [x] Implement live-search UI with HTMX
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Address Discovery' (Protocol in workflow.md)
 
-## Phase 2: Customer CRM Integration
+## Phase 2: Customer CRM Integration [checkpoint: 392d76f]
 - [x] Task: Extend Customer model for TERYT links (1e11574)
     - [x] Add migration for TERYT relationship columns
     - [x] Update SQLModel definitions
 - [x] Task: Implement Customer CRUD with address linking (e95773f)
     - [x] Write integration tests for Customer creation with TERYT address
     - [x] Build Customer form with integrated address lookup
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Customer CRM Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Customer CRM Integration' (Protocol in workflow.md)
