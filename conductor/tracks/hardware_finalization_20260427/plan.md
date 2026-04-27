@@ -1,12 +1,12 @@
 # Implementation Plan - Finalize Hardware Integration
 
 ## Phase 1: Client Diagnostics UI
-- [ ] Task: Create "Network & Diagnostics" UI component
-    - [ ] Update `templates/nodes/form.html` to include the diagnostics card
-    - [ ] Implement HTMX buttons for Ping and OLT Lookup
-- [ ] Task: Implement Lease Sync UI
-    - [ ] Add [Sync Lease] button to the Node form
-    - [ ] Connect button to `/diagnostics/sync-lease/{node_id}`
+- [x] Task: Create "Network & Diagnostics" UI component (a826f78)
+    - [x] Update `templates/nodes/form.html` to include the diagnostics card
+    - [x] Implement HTMX buttons for Ping and OLT Lookup
+- [x] Task: Implement Lease Sync UI (a826f78)
+    - [x] Add [Sync Lease] button to the Node form
+    - [x] Connect button to `/diagnostics/sync-lease/{node_id}`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Client Diagnostics UI' (Protocol in workflow.md)
 
 ## Phase 2: Logic Refinement & Imports
