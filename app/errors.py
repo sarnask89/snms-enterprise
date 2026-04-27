@@ -28,6 +28,10 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handler for FastAPI HTTPExceptions."""
+    if 300 <= exc.status_code < 400:
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url=exc.headers.get("Location", "/"), status_code=exc.status_code)
+        
     logger.warning(f"HTTP {exc.status_code}: {exc.detail}")
     
     if _is_htmx(request):
