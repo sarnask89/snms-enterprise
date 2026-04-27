@@ -7,10 +7,10 @@
 - [x] Task: Create Request/Response logging middleware (30e595c)
     - [x] Implement middleware to log URL, method, user, and execution time
     - [x] Add unit tests for middleware context logging
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Logging Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Logging Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Error Resilience
-- [ ] Task: Implement global FastAPI exception handlers
+- [~] Task: Implement global FastAPI exception handlers
     - [ ] Write handlers for `SQLAlchemyError` and `HTTPException`
     - [ ] Implement HTMX-aware response logic (return fragments vs pages)
 - [ ] Task: Refactor silent failures in critical services
