@@ -36,10 +36,10 @@ async def import_lease(
     mac: str = Form(...),
     ip: str = Form(...),
     customer_id: int | None = Form(None),
-    last_name: str = Form(None),
+    last_name: str | None = Form(None),
     street_id: int | None = Form(None),
-    street_number: str = Form(None),
-    apartment_number: str = Form(None),
+    street_number: str | None = Form(None),
+    apartment_number: str | None = Form(None),
     device_id: int = Form(...),
     status: str = Form("active")
 ):
