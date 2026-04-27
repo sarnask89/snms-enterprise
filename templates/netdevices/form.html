@@ -38,7 +38,7 @@
             </div>
 
             <div class="space-y-2">
-                {{ label("Lokalizacja (Węzeł)", for="net_node_id") %}
+                {{ label("Lokalizacja (Węzeł)", for="net_node_id") }}
                 {% set node_opts = [("", "— nieprzypisane —")] %}
                 {% for n in net_nodes %}
                     {% do node_opts.append((n.id, n.name)) %}
