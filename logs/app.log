@@ -461,3 +461,74 @@ sqlalchemy.exc.SQLAlchemyError: DB Fail
 2026-04-27 18:01:00,117 - INFO - httpx - HTTP Request: GET http://testserver/trigger-db "HTTP/1.1 500 Internal Server Error"
 2026-04-27 18:01:00,122 - WARNING - app.errors - HTTP 400: HTMX Error
 2026-04-27 18:01:00,123 - INFO - httpx - HTTP Request: GET http://testserver/trigger-htmx "HTTP/1.1 400 Bad Request"
+2026-04-27 18:49:29,522 - INFO - root - Logging system initialized.
+2026-04-27 18:49:30,705 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:49:30,706 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:49:30,706 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:49:30,707 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:49:30,707 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:49:30,709 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:50:05,012 - INFO - root - Logging system initialized.
+2026-04-27 18:50:05,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:50:05,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:50:05,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:50:05,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:50:05,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:50:05,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:50:07,268 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-27 18:50:07,602 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 333.78ms
+2026-04-27 18:50:07,604 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-27 18:50:07,612 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-27 18:50:07,645 - INFO - app.middleware - Completed: GET / Status: 200 Time: 33.18ms
+2026-04-27 18:50:07,647 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-27 18:50:07,659 - INFO - app.middleware - Incoming: GET /customer-devices/1/edit (User: admin)
+2026-04-27 18:50:07,700 - INFO - app.middleware - Completed: GET /customer-devices/1/edit Status: 200 Time: 40.43ms
+2026-04-27 18:50:07,701 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices/1/edit "HTTP/1.1 200 OK"
+2026-04-27 18:50:44,331 - INFO - root - Logging system initialized.
+2026-04-27 18:50:44,671 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:50:44,671 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:50:44,671 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:50:44,671 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:50:44,672 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:50:44,672 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:50:46,541 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-27 18:50:46,876 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 334.30ms
+2026-04-27 18:50:46,878 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-27 18:50:46,886 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-27 18:50:46,916 - INFO - app.middleware - Completed: GET / Status: 200 Time: 29.95ms
+2026-04-27 18:50:46,918 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-27 18:50:46,930 - INFO - app.middleware - Incoming: GET /customer-devices/1/edit (User: admin)
+2026-04-27 18:50:46,983 - INFO - app.middleware - Completed: GET /customer-devices/1/edit Status: 200 Time: 52.95ms
+2026-04-27 18:50:46,985 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices/1/edit "HTTP/1.1 200 OK"
+2026-04-27 18:52:26,323 - INFO - root - Logging system initialized.
+2026-04-27 18:52:26,663 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:52:26,663 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:52:26,663 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:52:26,663 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:52:26,663 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:52:26,663 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:52:28,579 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-27 18:52:28,924 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 344.88ms
+2026-04-27 18:52:28,926 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-27 18:52:28,934 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-27 18:52:28,960 - INFO - app.middleware - Completed: GET / Status: 200 Time: 25.92ms
+2026-04-27 18:52:28,962 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-27 18:52:28,975 - INFO - app.middleware - Incoming: GET /customer-devices/1/edit (User: admin)
+2026-04-27 18:52:29,016 - INFO - app.middleware - Completed: GET /customer-devices/1/edit Status: 200 Time: 41.38ms
+2026-04-27 18:52:29,018 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices/1/edit "HTTP/1.1 200 OK"
+2026-04-27 18:53:41,735 - INFO - root - Logging system initialized.
+2026-04-27 18:53:42,651 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:53:42,651 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:53:42,651 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:53:42,652 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:53:42,653 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:53:42,654 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:55:26,128 - INFO - root - Logging system initialized.
+2026-04-27 18:55:27,497 - INFO - root - Logging system initialized.
+2026-04-27 18:55:28,128 - INFO - root - Logging system initialized.
+2026-04-27 18:55:29,206 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:55:29,207 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:55:29,207 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:55:29,207 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:55:29,208 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:55:29,209 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
