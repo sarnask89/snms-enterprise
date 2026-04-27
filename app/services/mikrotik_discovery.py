@@ -91,6 +91,7 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
                         customer_code=f"AUTO-{mac.replace(':', '')[-6:]}",
                         first_name="Abonent",
                         last_name=parsed["last_name"],
+                        location_city_id=street.city_id,
                         location_street_id=street.id,
                         street_number=parsed["street_number"],
                         apartment_number=parsed["apartment_number"],

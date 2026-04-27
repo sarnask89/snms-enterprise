@@ -40,14 +40,22 @@ async def import_lease(
     street_id: int | None = Form(None),
     street_number: str = Form(None),
     apartment_number: str = Form(None),
-    device_id: int = Form(...)
+    device_id: int = Form(...),
+    status: str = Form("active")
 ):
     # 1. Jeśli nie ma customer_id, utwórz klienta
     if not customer_id:
+        city_id = None
+        if street_id:
+            street = db.get(models.LocationStreet, street_id)
+            if street:
+                city_id = street.city_id
+                
         customer = models.Customer(
             customer_code=f"IMP-{mac.replace(':', '')[-6:]}",
             first_name="Abonent",
             last_name=last_name or "Importowany",
+            location_city_id=city_id,
             location_street_id=street_id,
             street_number=street_number,
             apartment_number=apartment_number,
@@ -65,7 +73,7 @@ async def import_lease(
         ip_address=ip,
         mac_address=mac,
         net_device_id=device_id,
-        status=models.NodeStatus.active,
+        status=models.NodeStatus(status),
         provisioning_status=models.ProvisioningStatus.idle
     )
     db.add(node)
