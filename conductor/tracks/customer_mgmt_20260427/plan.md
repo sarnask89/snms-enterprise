@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Address Discovery' (Protocol in workflow.md)
 
 ## Phase 2: Customer CRM Integration
-- [ ] Task: Extend Customer model for TERYT links
-    - [ ] Add migration for TERYT relationship columns
-    - [ ] Update SQLModel definitions
+- [x] Task: Extend Customer model for TERYT links (1e11574)
+    - [x] Add migration for TERYT relationship columns
+    - [x] Update SQLModel definitions
 - [ ] Task: Implement Customer CRUD with address linking
     - [ ] Write integration tests for Customer creation with TERYT address
     - [ ] Build Customer form with integrated address lookup
