@@ -87,6 +87,37 @@
             </div>
         </div>
 
+        {% if node %}
+        <div class="space-y-8">
+            {% call card(title="Network & Diagnostics", subtitle="Narzędzia diagnostyczne i synchronizacja") %}
+            <div class="grid sm:grid-cols-3 gap-4 mb-4">
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
+                        hx-post="/diagnostics/ping/{{ node.id }}" 
+                        hx-target="#diag-results">
+                    <i class="fas fa-network-wired mr-2 text-primary"></i> Ping (ICMP)
+                </button>
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
+                        hx-post="/diagnostics/olt-lookup/{{ node.id }}" 
+                        hx-target="#diag-results">
+                    <i class="fas fa-search mr-2 text-primary"></i> OLT Lookup
+                </button>
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
+                        hx-post="/diagnostics/sync-lease/{{ node.id }}" 
+                        hx-target="#diag-results">
+                    <i class="fas fa-sync mr-2 text-primary"></i> Sync Lease
+                </button>
+            </div>
+            <div id="diag-results" class="bg-black text-green-500 font-mono text-[11px] p-4 rounded-lg min-h-[100px] whitespace-pre-wrap overflow-x-auto">
+                <!-- HTMX Results -->
+                Wyniki diagnostyki pojawią się tutaj...
+            </div>
+            {% endcall %}
+        </div>
+        {% endif %}
+
         <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
             <a href="/customer-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
             <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
