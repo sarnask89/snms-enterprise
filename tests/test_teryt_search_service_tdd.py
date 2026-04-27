@@ -25,6 +25,7 @@ def test_teryt_router_building_suggest(admin_client):
     assert "building" in resp.text
     assert "1" in resp.text
 
+
 def test_customer_new_form_renders(admin_client):
     resp = admin_client.get("/customers/new")
     assert resp.status_code == 200
@@ -32,3 +33,26 @@ def test_customer_new_form_renders(admin_client):
     assert "Ulica" in resp.text
     assert "Nr budynku" in resp.text
     assert "teryt-lookup-container" in resp.text
+
+def test_allocate_next_document_number_templates(session):
+    from app import models
+    from app.snms_numbering import allocate_next_document_number
+    
+    plan = models.NumberPlan(name="Test Plan", doc_type=models.NumberPlanDocType.customer, pattern_template="KLI/{n}", next_number=1)
+    session.add(plan)
+    session.commit()
+    
+    num = allocate_next_document_number(session, plan)
+    assert num == "KLI/0001"
+    assert plan.next_number == 2
+    
+    plan.pattern_template = "{year}-CUST-{n}"
+    num = allocate_next_document_number(session, plan)
+    import datetime
+    y = datetime.date.today().year
+    assert num == f"{y}-CUST-0002"
+
+    # Test template without placeholders
+    plan.pattern_template = "STATIC-NUMBER"
+    num = allocate_next_document_number(session, plan)
+    assert num == "STATIC-NUMBER"

@@ -190,7 +190,7 @@ class Customer(Base):
     __tablename__ = "customers"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    customer_code: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
+    customer_code: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     first_name: Mapped[str] = mapped_column(String(128), nullable=False)
     last_name: Mapped[str] = mapped_column(String(128), nullable=False)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
