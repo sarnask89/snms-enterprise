@@ -6,6 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import BASE_DIR, SECRET_KEY
 from app.middleware_portal import PortalUserMiddleware
+from app.middleware_logging import RequestLoggingMiddleware
 from app.init_db import init_all
 from app.routers import (
     admin,
@@ -38,6 +39,7 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="CRM Portal", lifespan=lifespan)
 # PortalUserMiddleware musi być wewnętrzny względem SessionMiddleware (dodany wcześniej).
+app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(PortalUserMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
