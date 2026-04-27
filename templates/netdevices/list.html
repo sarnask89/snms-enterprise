@@ -28,6 +28,7 @@
             <table class="w-full caption-bottom text-sm">
                 <thead class="bg-muted/40">
                     <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <th class="h-12 px-4 text-left align-middle">Nazwa / IP</th>
                         <th class="h-12 px-4 text-left align-middle">Urządzenie (Model)</th>
                         <th class="h-12 px-4 text-left align-middle">SN / MAC</th>
                         <th class="h-12 px-4 text-left align-middle">Lokalizacja</th>
@@ -38,6 +39,10 @@
                 <tbody class="[&_tr:last-child]:border-0">
                     {% for d in devices %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle">
+                            <div class="font-bold text-xs">{{ d.name or '—' }}</div>
+                            <div class="text-[10px] text-muted-foreground font-mono">{{ d.management_ip or 'brak IP' }}</div>
+                        </td>
                         <td class="p-4 align-middle">
                             <div class="font-bold text-xs">{{ d.producer.name if d.producer else '—' }}</div>
                             <div class="text-[10px] text-primary font-semibold uppercase">{{ d.net_device_model.name if d.net_device_model else '—' }}</div>
