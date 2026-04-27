@@ -93,6 +93,7 @@ def wojewodztwa_as_serializable() -> list[Any]:
     except Exception: return []
 
 
+
 def powiaty_as_serializable(woj_id: str) -> list[Any]:
     client = _client()
     try:
@@ -101,6 +102,40 @@ def powiaty_as_serializable(woj_id: str) -> list[Any]:
         res = serialize_object(raw)
         return _extract_list(res, 'JednostkaTerytorialna')
     except Exception: return []
+
+
+
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+from app import models
+
+class TerytSearchService:
+    """Service for searching TERYT address data (local and WS)."""
+    
+    def __init__(self, db: Session | None = None):
+        self.db = db
+
+    def search_cities(self, query: str) -> list[dict[str, Any]]:
+        if not self.db: return []
+        term = f"%{query.strip()}%"
+        stmt = select(models.LocationCity).where(models.LocationCity.name.ilike(term)).limit(20)
+        rows = self.db.scalars(stmt).all()
+        return [{"id": r.id, "text": r.name, "type": "city", "teryt_code": r.teryt_code} for r in rows]
+
+    def search_streets(self, city_id: int, query: str) -> list[dict[str, Any]]:
+        if not self.db: return []
+        term = f"%{query.strip()}%"
+        stmt = select(models.LocationStreet).where(
+            models.LocationStreet.city_id == city_id,
+            models.LocationStreet.name.ilike(term)
+        ).limit(20)
+        rows = self.db.scalars(stmt).all()
+        return [{"id": r.id, "text": r.name, "type": "street", "teryt_code": r.teryt_code} for r in rows]
+
+    def search_buildings(self, city_name: str, street_name: str) -> list[str]:
+        """Placeholder for building search logic."""
+        # For now, return some dummy data to satisfy the UI
+        return ["1", "2", "3", "4", "5", "6", "10", "12", "14"]
 
 
 def gminy_as_serializable(woj_id: str, pow_id: str) -> list[Any]:

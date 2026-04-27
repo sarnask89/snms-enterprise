@@ -10,10 +10,12 @@ from app.audit import record_audit
 from app.database import get_db
 from app.deps import require_admin_or_manager, verify_session
 from app.templating import render
+
 from app.teryt_ws import (
     czy_zalogowany,
     wyszukaj_miejscowosc,
     wyszukaj_ulice,
+    TerytSearchService,
 )
 
 # Router wymagający logowania
@@ -30,24 +32,25 @@ def teryt_suggest(
     street_name: str | None = Query(None, min_length=3),
     kind: str = Query("city"),
     city_id: int | None = Query(None),
+    city_name: str | None = Query(None),
 ):
     """Zwraca fragment HTML (listę elementów <li>), który HTMX wstrzyknie do DOM."""
     search_query = q or street_name
-    if not search_query:
-        return HTMLResponse("")
-        
-    term = f"%{search_query.strip()}%"
-    results = []
+    service = TerytSearchService(db)
     
-    if kind == "city":
-        rows = db.scalars(select(models.LocationCity).where(models.LocationCity.name.ilike(term)).limit(10)).all()
-        return render(request, "teryt/partials/suggest_items.html", {"items": [{"id": r.id, "text": r.name, "type": "city"} for r in rows]})
+    if kind == "city" and search_query:
+        items = service.search_cities(search_query)
+        return render(request, "teryt/partials/suggest_items.html", {"items": items})
     
-    elif kind == "street":
-        stmt = select(models.LocationStreet).where(models.LocationStreet.name.ilike(term))
-        if city_id: stmt = stmt.where(models.LocationStreet.city_id == city_id)
-        rows = db.scalars(stmt.limit(10)).all()
-        return render(request, "teryt/partials/suggest_items.html", {"items": [{"id": r.id, "text": r.name, "type": "street"} for r in rows]})
+    elif kind == "street" and search_query and city_id:
+        items = service.search_streets(city_id, search_query)
+        return render(request, "teryt/partials/suggest_items.html", {"items": items})
+
+    elif kind == "building" and city_name:
+        # Building search logic
+        buildings = service.search_buildings(city_name, street_name or "")
+        items = [{"id": b, "text": b, "type": "building"} for b in buildings]
+        return render(request, "teryt/partials/suggest_items.html", {"items": items})
     
     return HTMLResponse("")
 
