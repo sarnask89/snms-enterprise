@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Implement core customer and address management with TERYT integration**
+- [x] **Track: Implement core customer and address management with TERYT integration**
   *Link: [./tracks/customer_mgmt_20260427/](./tracks/customer_mgmt_20260427/)*
