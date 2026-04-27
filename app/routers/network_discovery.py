@@ -74,7 +74,6 @@ async def import_lease(
         mac_address=mac,
         net_device_id=device_id,
         status=models.NodeStatus(status),
-        provisioning_status=models.ProvisioningStatus.idle
     )
     db.add(node)
     db.commit()
