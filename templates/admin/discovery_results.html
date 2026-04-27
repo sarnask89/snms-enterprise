@@ -71,6 +71,7 @@
                         <input type="hidden" name="mac" value="{{ item.mac }}">
                         <input type="hidden" name="ip" value="{{ item.ip }}">
                         <input type="hidden" name="device_id" value="{{ device.id }}">
+                        <input type="hidden" name="status" value="{{ item.status.value }}">
                         
                         {% if item.parsed %}
                             <input type="hidden" name="customer_id" value="{{ item.customer_id or '' }}">

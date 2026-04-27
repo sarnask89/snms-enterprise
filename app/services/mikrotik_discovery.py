@@ -27,10 +27,19 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
     discovered = []
 
     for lease in raw_leases:
+        # Ignore disabled leases
+        if str(lease.get('disabled', 'false')).lower() == 'true':
+            logger.debug(f"Pominięto wyłączoną dzierżawę dla {lease.get('mac-address')}.")
+            continue
+            
         mac = lease.get('mac-address')
         if not mac: 
             logger.debug("Pominięto dzierżawę bez adresu MAC.")
             continue
+
+        # Determine node status based on blocked attribute
+        is_blocked = str(lease.get('blocked', 'false')).lower() == 'true'
+        node_status = models.NodeStatus.inactive if is_blocked else models.NodeStatus.active
 
         # 2. Czy ten MAC już istnieje w CRM?
         existing_node = db.scalar(select(models.Node).where(models.Node.mac_address == mac))
@@ -50,7 +59,8 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
             "parsed": parsed,
             "customer_id": None,
             "street_id": None,
-            "can_auto_import": False
+            "can_auto_import": False,
+            "status": node_status
         }
 
         if parsed:
@@ -96,7 +106,7 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
                     ip_address=lease.get('address'),
                     mac_address=mac,
                     net_device_id=device.id,
-                    status=models.NodeStatus.active
+                    status=node_status
                 )
                 db.add(node)
                 db.commit()
