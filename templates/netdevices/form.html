@@ -15,7 +15,7 @@
                     {% for p in producers %}
                         {% do prod_opts.append((p.id, p.name)) %}
                     {% endfor %}
-                    {{ select("producer_id", prod_opts, selected_id=device.producer_id if device else "", id="producer_id", required=True) }}
+                    {{ select("producer_id", prod_opts, selected_id=device.net_device_model.producer_id if device and device.net_device_model else "", id="producer_id", required=False) }}
                 </div>
                 <div class="space-y-2">
                     {{ label("Model", for="model_id") }}
@@ -23,7 +23,7 @@
                     {% for m in models %}
                         {% do mod_opts.append((m.id, m.name)) %}
                     {% endfor %}
-                    {{ select("model_id", mod_opts, selected_id=device.model_id if device else "", id="model_id", required=True) }}
+                    {{ select("net_device_model_id", mod_opts, selected_id=device.net_device_model_id if device else "", id="model_id", required=False) }}
                 </div>
             </div>
 

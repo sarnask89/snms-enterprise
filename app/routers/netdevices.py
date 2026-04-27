@@ -121,6 +121,8 @@ def netdevice_new_form(request: Request, db: Session = Depends(get_db)):
     nets = list(db.scalars(select(models.IpNetwork).order_by(models.IpNetwork.name)).all())
     net_nodes = list(db.scalars(select(models.NetNode).order_by(models.NetNode.name)).all())
     customers = list(db.scalars(select(models.Customer).order_by(models.Customer.last_name)).all())
+    producers = list(db.scalars(select(models.NetDeviceProducer).order_by(models.NetDeviceProducer.name)).all())
+    device_models = list(db.scalars(select(models.NetDeviceModel).order_by(models.NetDeviceModel.name)).all())
     return render(
         request,
         "netdevices/form.html",
@@ -130,6 +132,8 @@ def netdevice_new_form(request: Request, db: Session = Depends(get_db)):
             "networks": nets,
             "net_nodes": net_nodes,
             "customers": customers,
+            "producers": producers,
+            "models": device_models,
         },
     )
 
@@ -180,7 +184,7 @@ def netdevice_new_submit(
         notes=(notes or None) and notes.strip() or None,
         driver_type=driver_type,
         mgmt_username=mgmt_username,
-        mgmt_password_encrypted=encrypt_password(mgmt_password_encrypted),
+        mgmt_password_encrypted=encrypt_password(mgmt_password_encrypted) if mgmt_password_encrypted else None,
     )
     db.add(d)
     db.commit()
@@ -195,6 +199,8 @@ def netdevice_edit_form(dev_id: int, request: Request, db: Session = Depends(get
     nets = list(db.scalars(select(models.IpNetwork).order_by(models.IpNetwork.name)).all())
     net_nodes = list(db.scalars(select(models.NetNode).order_by(models.NetNode.name)).all())
     customers = list(db.scalars(select(models.Customer).order_by(models.Customer.last_name)).all())
+    producers = list(db.scalars(select(models.NetDeviceProducer).order_by(models.NetDeviceProducer.name)).all())
+    device_models = list(db.scalars(select(models.NetDeviceModel).order_by(models.NetDeviceModel.name)).all())
     return render(
         request,
         "netdevices/form.html",
@@ -204,6 +210,8 @@ def netdevice_edit_form(dev_id: int, request: Request, db: Session = Depends(get
             "networks": nets,
             "net_nodes": net_nodes,
             "customers": customers,
+            "producers": producers,
+            "models": device_models,
         },
     )
 
