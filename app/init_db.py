@@ -281,6 +281,23 @@ def ensure_app_settings() -> None:
         db.close()
 
 
+def ensure_message_templates_seed() -> None:
+    db = SessionLocal()
+    try:
+        if db.scalar(select(func.count()).select_from(models.MessageTemplate)) == 0:
+            db.add(models.MessageTemplate(
+                name="Domyślny",
+                subject="Wiadomość z CRM",
+                body="Dzień dobry,\n\nTo jest wiadomość testowa."
+            ))
+            db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 def run_migrations() -> None:
     """Uruchamia migracje Alembic programowo (D6)."""
     from app.config import BASE_DIR
@@ -293,10 +310,11 @@ def init_all() -> None:
     UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
     # Rely only on metadata for now to ensure startup
     Base.metadata.create_all(bind=engine)
-    # run_migrations()
+    run_migrations()
     seed()
     ensure_default_catalog_seed()
     ensure_plan_extensions()
     ensure_portal_rbac()
     ensure_helpdesk_seed()
     ensure_app_settings()
+    ensure_message_templates_seed()

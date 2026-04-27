@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, Form, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+import sqlalchemy as sa
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
@@ -71,5 +72,3 @@ def search_teryt_cities(
         "addresses/teryt_search_results.html", 
         {"results": rows}
     )
-
-import sqlalchemy as sa # potrzebne do update

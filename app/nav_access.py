@@ -134,9 +134,19 @@ def path_allowed_for_portal(path: str, visible_urls: list[str], visible_menu_key
     # Specyficzne reguły dla powiązanych ścieżek
     if "customers" in visible_menu_keys and _under_prefix(p, "/customers"):
         return True
+    if "customer_groups" in visible_menu_keys and _under_prefix(p, "/customer-groups"):
+        return True
     if "helpdesk" in visible_menu_keys and _under_prefix(p, "/helpdesk"):
         return True
     if "invoices" in visible_menu_keys and _under_prefix(p, "/finances"):
+        return True
+    if "nodes" in visible_menu_keys and _under_prefix(p, "/customer-devices"):
+        return True
+    if "node_groups" in visible_menu_keys and _under_prefix(p, "/node-groups"):
+        return True
+    if "net_nodes" in visible_menu_keys and _under_prefix(p, "/net-nodes"):
+        return True
+    if "netdevices" in visible_menu_keys and _under_prefix(p, "/net-devices"):
         return True
     return False
 

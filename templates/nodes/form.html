@@ -14,9 +14,7 @@
                     <div class="space-y-2">
                         {{ label("Abonent", for="customer_id") }}
                         {% set cust_opts = [] %}
-                        {% for c in customers %}
-                            {% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}
-                        {% endfor %}
+                        {% for c in customers %}{% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}{% endfor %}
                         {{ combobox("customer_id", cust_opts, selected_id=node.customer_id if node else "", placeholder="Szukaj abonenta...") }}
                     </div>
 
@@ -28,9 +26,7 @@
                     <div class="space-y-2">
                         {{ label("Grupa urządzeń", for="node_group_id") }}
                         {% set ng_opts = [] %}
-                        {% for g in node_groups %}
-                            {% do ng_opts.append((g.id, g.name)) %}
-                        {% endfor %}
+                        {% for g in node_groups %}{% do ng_opts.append((g.id, g.name)) %}{% endfor %}
                         {{ combobox("node_group_id", ng_opts, selected_id=node.node_group_id if node else "", placeholder="Wybierz grupę...") }}
                     </div>
                 </div>
@@ -62,11 +58,9 @@
                         {{ input("mac_address", value=node.mac_address if node else "", id="mac_address", placeholder="00:11:22:33:44:55") }}
                     </div>
                     <div class="space-y-2">
-                        {{ label("Sieć (VLAN / Pula)", for="ip_network_id") %}
+                        {{ label("Sieć (VLAN / Pula)", for="ip_network_id") }}
                         {% set net_opts = [] %}
-                        {% for n in ip_networks %}
-                            {% do net_opts.append((n.id, n.name ~ " (" ~ n.cidr ~ ")")) %}
-                        {% endfor %}
+                        {% for n in ip_networks %}{% do net_opts.append((n.id, n.name ~ " (" ~ n.cidr ~ ")")) %}{% endfor %}
                         {{ combobox("ip_network_id", net_opts, selected_id=node.ip_network_id if node else "", placeholder="Wybierz sieć...") }}
                     </div>
                 </div>
@@ -77,9 +71,7 @@
                     <div class="space-y-2">
                         {{ label("Węzeł nadrzędny", for="net_node_id") }}
                         {% set nn_opts = [] %}
-                        {% for nn in net_nodes %}
-                            {% do nn_opts.append((nn.id, nn.name)) %}
-                        {% endfor %}
+                        {% for nn in net_nodes %}{% do nn_opts.append((nn.id, nn.name)) %}{% endfor %}
                         {{ combobox("net_node_id", nn_opts, selected_id=node.net_node_id if node else "", placeholder="Wybierz węzeł...") }}
                     </div>
                     
@@ -104,3 +96,4 @@
     </form>
 </div>
 {% endblock %}
+

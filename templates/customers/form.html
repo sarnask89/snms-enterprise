@@ -66,7 +66,8 @@
           street_id=customer.location_street_id if customer else "",
           street_name=customer.street.name if customer and customer.street else "",
           street_number=customer.street_number if customer else "",
-          zip_code=customer.zip_code if customer else ""
+          apartment_number=customer.apartment_number if customer else "",
+          city_options=city_options
       ) }}
 
       <div class="grid gap-6">

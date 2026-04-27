@@ -1,34 +1,40 @@
 {% for item in items %}
-<div class="suggest-item" 
+<div class="suggest-item p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground border-b border-border/50 last:border-0" 
      onclick="selectSuggestion(this, '{{ item.text }}', '{{ item.id or '' }}', '{{ item.type }}')">
-     {{ item.text }} <small class="muted">[{{ item.type }}]</small>
+     <div class="flex justify-between items-center">
+        <span>{{ item.text }}</span>
+        <span class="text-[9px] uppercase tracking-widest text-muted-foreground">{{ item.type }}</span>
+     </div>
 </div>
 {% endfor %}
 
 <script>
 if (typeof selectSuggestion !== 'function') {
     function selectSuggestion(el, text, id, type) {
-        const container = el.closest('.teryt-lookup-container') || el.closest('label') || el.parentElement;
+        const container = el.closest('.teryt-lookup-container') || document.body;
+        const parentDiv = el.closest('.space-y-2');
         
-        const parentDiv = el.closest('.space-y-2') || el.closest('label');
         const input = parentDiv.querySelector('input[type=text]');
         if (input) {
             input.value = text;
+            input.dispatchEvent(new Event('input'));
+            input.dispatchEvent(new Event('change'));
         }
         
         const hiddenId = parentDiv.querySelector('input[type=hidden]');
         if (hiddenId) {
             hiddenId.value = id;
+            hiddenId.dispatchEvent(new Event('change'));
         }
 
-        // Update Alpine state if available in the container
         if (container && container._x_dataStack) {
+            const data = container._x_dataStack[0];
             if (type === 'city') {
-                container._x_dataStack[0].selectedCityId = id;
-                container._x_dataStack[0].selectedCityName = text;
+                data.selectedCityId = id;
+                data.selectedCityName = text;
             } else if (type === 'street') {
-                container._x_dataStack[0].selectedStreetId = id;
-                container._x_dataStack[0].selectedStreetName = text;
+                data.selectedStreetId = id;
+                data.selectedStreetName = text;
             }
         }
 

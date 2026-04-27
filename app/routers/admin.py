@@ -105,6 +105,12 @@ def portal_user_new_form(request: Request):
     return render(request, "admin/user_form.html", {"title": "Nowy użytkownik", "edit_user": None, "roles": list(models.UserRole)})
 
 
+@router.get("/users/add", dependencies=[Depends(require_admin_or_manager)])
+def portal_user_add_alias():
+    return RedirectResponse("/admin/users/new", status_code=303)
+
+
+
 @router.post("/users/new", dependencies=[Depends(require_admin_or_manager)])
 def portal_user_new_submit(request: Request, db: Session = Depends(get_db), username: str = Form(...), password: str = Form(...), role: str = Form(...), active: str | None = Form(None)):
     try:
@@ -115,6 +121,45 @@ def portal_user_new_submit(request: Request, db: Session = Depends(get_db), user
         record_audit(db, "create", resource_type="portal_user", resource_id=u.id, details=f"user: {u.username}", request=request)
         db.commit()
     except Exception: db.rollback()
+    return RedirectResponse("/admin/users", status_code=303)
+
+
+@router.get("/users/{user_id}/edit", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
+def portal_user_edit_form(user_id: int, request: Request, db: Session = Depends(get_db)):
+    u = db.get(models.PortalUser, user_id)
+    if not u:
+        return RedirectResponse("/admin/users", status_code=303)
+    if _manager_cannot_touch(request.state.portal_user, u, u.role):
+        return RedirectResponse("/admin/users?error=Brak+uprawnień", status_code=303)
+    return render(request, "admin/user_form.html", {"title": f"Edycja użytkownika: {u.username}", "edit_user": u, "roles": list(models.UserRole)})
+
+
+@router.post("/users/{user_id}/edit", dependencies=[Depends(require_admin_or_manager)])
+def portal_user_edit_submit(
+    user_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    username: str = Form(...),
+    role: str = Form(...),
+    active: str | None = Form(None),
+    password: str | None = Form(None),
+):
+    u = db.get(models.PortalUser, user_id)
+    if not u:
+        return RedirectResponse("/admin/users", status_code=303)
+    
+    new_role = models.UserRole(role)
+    if _manager_cannot_touch(request.state.portal_user, u, new_role):
+        return RedirectResponse("/admin/users?error=Brak+uprawnień", status_code=303)
+        
+    u.username = username.strip()
+    u.role = new_role
+    u.active = active in ("on", "true", "1", "yes")
+    if password and password.strip():
+        u.password_hash = hash_password(password.strip())
+    
+    db.commit()
+    record_audit(db, "update", resource_type="portal_user", resource_id=u.id, details=f"user: {u.username}", request=request)
     return RedirectResponse("/admin/users", status_code=303)
 
 
@@ -130,12 +175,56 @@ def admin_user_groups_new_form(request: Request, db: Session = Depends(get_db)):
     return render(request, "admin/user_group_form.html", {"title": "Nowa grupa", "group": None, "all_users": users, "selected_ids": set()})
 
 
+@router.get("/user-groups/add")
+def admin_user_groups_add_redirect():
+    return RedirectResponse("/admin/user-groups/new", status_code=303)
+
+
 @router.post("/user-groups/new", dependencies=[Depends(require_admin_or_manager)])
 async def admin_user_groups_new_submit(request: Request, db: Session = Depends(get_db)):
     form = await request.form()
     g = models.PortalUserGroup(name=str(form.get("name")).strip(), description=str(form.get("description")).strip())
     db.add(g)
     db.commit()
+    record_audit(db, "create", resource_type="portal_user_group", resource_id=g.id, details=f"group: {g.name}", request=request)
+    return RedirectResponse("/admin/user-groups", status_code=303)
+
+
+@router.get("/user-groups/{group_id}/edit", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
+def admin_user_groups_edit_form(group_id: int, request: Request, db: Session = Depends(get_db)):
+    g = db.get(models.PortalUserGroup, group_id)
+    if not g:
+        return RedirectResponse("/admin/user-groups", status_code=303)
+    users = list(db.scalars(select(models.PortalUser).order_by(models.PortalUser.username)).all())
+    sel_ids = {u.id for u in g.users}
+    return render(request, "admin/user_group_form.html", {"title": f"Edycja grupy: {g.name}", "group": g, "all_users": users, "selected_ids": sel_ids})
+
+
+@router.post("/user-groups/{group_id}/edit", dependencies=[Depends(require_admin_or_manager)])
+async def admin_user_groups_edit_submit(group_id: int, request: Request, db: Session = Depends(get_db)):
+    g = db.get(models.PortalUserGroup, group_id)
+    if not g:
+        return RedirectResponse("/admin/user-groups", status_code=303)
+    form = await request.form()
+    g.name = str(form.get("name")).strip()
+    g.description = str(form.get("description")).strip()
+    
+    # Update user assignments
+    uids = form.getlist("user_ids")
+    g.users = list(db.scalars(select(models.PortalUser).where(models.PortalUser.id.in_([int(i) for i in uids]))).all())
+    
+    db.commit()
+    record_audit(db, "update", resource_type="portal_user_group", resource_id=g.id, details=f"group: {g.name}", request=request)
+    return RedirectResponse("/admin/user-groups", status_code=303)
+
+
+@router.post("/user-groups/{group_id}/delete", dependencies=[Depends(require_admin)])
+def admin_user_groups_delete(group_id: int, request: Request, db: Session = Depends(get_db)):
+    g = db.get(models.PortalUserGroup, group_id)
+    if g:
+        record_audit(db, "delete", resource_type="portal_user_group", resource_id=g.id, details=f"group: {g.name}", request=request)
+        db.delete(g)
+        db.commit()
     return RedirectResponse("/admin/user-groups", status_code=303)
 
 

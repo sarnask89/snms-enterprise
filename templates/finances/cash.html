@@ -15,7 +15,9 @@
             </div>
             <div class="space-y-2">
                 {{ label("Abonent (opcj.)", for="customer_id") }}
-                {{ select("customer_id", [("", "—")] + [(c.id, c.customer_code) for c in customers.values()], id="customer_id") }}
+                {% set cust_opts = [("", "—")] %}
+                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
+                {{ select("customer_id", cust_opts, id="customer_id") }}
             </div>
             <div class="space-y-2 lg:col-span-2">
                 {{ label("Opis / Tytuł", for="description") }}

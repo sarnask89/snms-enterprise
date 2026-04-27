@@ -213,6 +213,7 @@ class Customer(Base):
         ForeignKey("location_streets.id", ondelete="SET NULL"), nullable=True
     )
     street_number: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    apartment_number: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
     state: Mapped["LocationState | None"] = relationship()
     district: Mapped["LocationDistrict | None"] = relationship()
@@ -275,13 +276,20 @@ class Node(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=False)
+    name: Mapped[str | None] = mapped_column(String(128), nullable=True)
     hostname: Mapped[str] = mapped_column(String(255), nullable=False)
+    login: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    passwd: Mapped[str | None] = mapped_column(String(64), nullable=True)
     ip_address: Mapped[str | None] = mapped_column(String(64), nullable=True)
     mac_address: Mapped[str | None] = mapped_column(String(32), nullable=True)
     status: Mapped[NodeStatus] = mapped_column(
         Enum(NodeStatus), default=NodeStatus.active, nullable=False
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    @property
+    def active(self) -> bool:
+        return self.status == NodeStatus.active
     net_device_id: Mapped[int | None] = mapped_column(
         ForeignKey("net_devices.id", ondelete="SET NULL"),
         nullable=True,
@@ -721,6 +729,8 @@ class NetDevice(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     hostname: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    serial_number: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    mac_address: Mapped[str | None] = mapped_column(String(32), nullable=True)
     management_ip: Mapped[str | None] = mapped_column(String(64), nullable=True)
     device_type: Mapped[str] = mapped_column(String(64), default="other", nullable=False)
     snmp_community: Mapped[str | None] = mapped_column(String(128), nullable=True)

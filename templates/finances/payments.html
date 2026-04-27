@@ -11,7 +11,9 @@
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="space-y-2 lg:col-span-2">
                 {{ label("Abonent", for="customer_id") }}
-                {{ select("customer_id", [(c.id, c.customer_code ~ " — " ~ c.last_name) for c in customers.values()], id="customer_id", required=True) }}
+                {% set cust_opts = [] %}
+                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}{% endfor %}
+                {{ select("customer_id", cust_opts, id="customer_id", required=True) }}
             </div>
             <div class="space-y-2 lg:col-span-2">
                 {{ label("Nazwa usługi / Opis", for="name") }}

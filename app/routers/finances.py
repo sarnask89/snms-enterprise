@@ -265,6 +265,16 @@ def tariff_new(
     return RedirectResponse("/finances/tariffs", status_code=303)
 
 
+@router.post("/tariffs/{tariff_id}/delete", dependencies=[Depends(require_business_write)])
+def tariff_delete(tariff_id: int, request: Request, db: Session = Depends(get_db)):
+    t = db.get(models.Tariff, tariff_id)
+    if t:
+        record_audit(db, "delete", resource_type="tariff", resource_id=t.id, details=f"name: {t.name}", request=request)
+        db.delete(t)
+        db.commit()
+    return RedirectResponse("/finances/tariffs", status_code=303)
+
+
 @router.get("/invoices/search", response_class=HTMLResponse)
 def invoice_search_form(request: Request, db: Session = Depends(get_db)):
     return render(
@@ -414,7 +424,7 @@ def invoice_new_submit(
     inv = models.Invoice(
         number=num[:64],
         customer_id=customer_id,
-        amount=float(gross),
+        amount=gross,
         status=models.InvoiceStatus(status),
         issue_date=_parse_issue_date(issue_date),
         division_id=did,
@@ -430,7 +440,10 @@ def invoice_new_submit(
         db.commit()
     except IntegrityError:
         db.rollback()
-        return RedirectResponse("/finances/invoices/new", status_code=303)
+        return RedirectResponse("/finances/invoices/new?error=Numer+dokumentu+już+istnieje", status_code=303)
+    except Exception:
+        db.rollback()
+        raise
     return RedirectResponse("/finances/invoices", status_code=303)
 
 
@@ -506,7 +519,7 @@ def invoice_edit_submit(
 
     inv.number = num
     inv.customer_id = customer_id
-    inv.amount = float(gross)
+    inv.amount = gross
     inv.status = models.InvoiceStatus(status)
     inv.issue_date = _parse_issue_date(issue_date)
     inv.division_id = did
@@ -519,7 +532,10 @@ def invoice_edit_submit(
         db.commit()
     except IntegrityError:
         db.rollback()
-        return RedirectResponse(f"/finances/invoices/{invoice_id}/edit", status_code=303)
+        return RedirectResponse(f"/finances/invoices/{invoice_id}/edit?error=Numer+dokumentu+już+istnieje", status_code=303)
+    except Exception:
+        db.rollback()
+        raise
     return RedirectResponse("/finances/invoices", status_code=303)
 
 

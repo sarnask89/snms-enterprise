@@ -6,51 +6,48 @@ from app.config import CRM_ADMIN_PASSWORD, CRM_ADMIN_USER
 from app.main import app
 
 
-def test_login_page_ok():
-    with TestClient(app) as client:
-        r = client.get("/login")
-        assert r.status_code == 200
+def test_login_page_ok(client):
+    r = client.get("/login")
+    assert r.status_code == 200
 
 
-def test_root_redirects_when_not_logged_in():
-    with TestClient(app) as client:
-        r = client.get("/", follow_redirects=False)
-        assert r.status_code == 303
-        assert r.headers.get("location") == "/login"
+def test_root_redirects_when_not_logged_in(client):
+    r = client.get("/", follow_redirects=False)
+    assert r.status_code == 303
+    assert r.headers.get("location") == "/login"
 
 
-def test_dashboard_and_snms_config_pages_with_admin_session():
-    with TestClient(app) as client:
-        r = client.post(
-            "/login",
-            data={"username": CRM_ADMIN_USER, "password": CRM_ADMIN_PASSWORD},
-            follow_redirects=False,
-        )
-        assert r.status_code == 302
-        assert r.headers.get("location") == "/"
-        home = client.get("/")
-        assert home.status_code == 200
-        assert "Pulpit" in home.text or "dashboard" in home.text.lower()
+def test_dashboard_and_snms_config_pages_with_admin_session(client):
+    r = client.post(
+        "/login",
+        data={"username": CRM_ADMIN_USER, "password": CRM_ADMIN_PASSWORD},
+        follow_redirects=False,
+    )
+    assert r.status_code == 302
+    assert r.headers.get("location") == "/"
+    home = client.get("/")
+    assert home.status_code == 200
+    assert "Pulpit" in home.text or "dashboard" in home.text.lower()
 
-        for path in (
-            "/config",
-            "/config/divisions",
-            "/config/vat-rates",
-            "/config/number-plans",
-            "/messages",
-            "/messages/new",
-            "/messages/api/template/1",
-            "/helpdesk/reports",
-            "/finances/invoices/new",
-            "/customer-devices/search",
-            "/customers/search",
-            "/admin/users",
-            "/admin/users/new",
-            "/admin/user-groups",
-            "/admin/user-groups/new",
-        ):
-            resp = client.get(path, follow_redirects=False)
-            assert resp.status_code == 200, f"{path} -> {resp.status_code}"
+    for path in (
+        "/config",
+        "/config/divisions",
+        "/config/vat-rates",
+        "/config/number-plans",
+        "/messages",
+        "/messages/new",
+        "/messages/api/template/1",
+        "/helpdesk/reports",
+        "/finances/invoices/new",
+        "/customer-devices/search",
+        "/customers/search",
+        "/admin/users",
+        "/admin/users/new",
+        "/admin/user-groups",
+        "/admin/user-groups/new",
+    ):
+        resp = client.get(path, follow_redirects=False)
+        assert resp.status_code == 200, f"{path} -> {resp.status_code}"
 
         add_alias = client.get("/admin/users/add", follow_redirects=False)
         assert add_alias.status_code == 303
@@ -59,13 +56,13 @@ def test_dashboard_and_snms_config_pages_with_admin_session():
         ug_alias = client.get("/admin/user-groups/add", follow_redirects=False)
         assert ug_alias.status_code == 303
         assert ug_alias.headers.get("location") == "/admin/user-groups/new"
-
         cust_add = client.get("/customers/add", follow_redirects=False)
         assert cust_add.status_code == 303
         assert cust_add.headers.get("location") == "/customers/new"
 
-        notices_hub = client.get("/customers/notices", follow_redirects=False)
+        notices_hub = client.get("/customer-devices/notices", follow_redirects=False)
         assert notices_hub.status_code == 200
+
         warn_alias = client.get("/customers/warn", follow_redirects=False)
         assert warn_alias.status_code == 303
         assert warn_alias.headers.get("location") == "/customers/notices"
@@ -158,12 +155,11 @@ def test_dashboard_and_snms_config_pages_with_admin_session():
         assert del_r.status_code == 303
         assert del_r.headers.get("location") == "/finances/invoices"
 
+def test_static_health_no_crash_on_finances_list(client):
+    client.post(
+        "/login",
+        data={"username": CRM_ADMIN_USER, "password": CRM_ADMIN_PASSWORD},
+    )
+    r = client.get("/finances/invoices")
+    assert r.status_code == 200
 
-def test_static_health_no_crash_on_finances_list():
-    with TestClient(app) as client:
-        client.post(
-            "/login",
-            data={"username": CRM_ADMIN_USER, "password": CRM_ADMIN_PASSWORD},
-        )
-        r = client.get("/finances/invoices")
-        assert r.status_code == 200

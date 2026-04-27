@@ -148,6 +148,13 @@ def validate_node_ip_assignment(
         if o and o == ip_norm:
             return False, "Ten adres IP jest już przypisany do innego komputera."
 
+    # Globalny duplikat na osprzęcie (net devices)
+    dev_others = list(db.scalars(select(models.NetDevice)).all())
+    for d in dev_others:
+        o = _norm_ipv4(d.management_ip)
+        if o and o == ip_norm:
+            return False, "Ten adres IP jest już przypisany do urządzenia sieciowego (management)."
+
     if ip_network_id is None:
         return True, None
 

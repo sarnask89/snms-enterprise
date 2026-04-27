@@ -1,48 +1,45 @@
-{% macro teryt_lookup(city_id=None, city_name="", street_id=None, street_name="", street_number="", zip_code="") %}
+{% macro teryt_lookup(city_id=None, city_name="", street_id=None, street_name="", street_number="", apartment_number="", city_options=[]) %}
 <div class="grid gap-6 teryt-lookup-container" x-data="{ 
     selectedCityId: '{{ city_id or '' }}', 
     selectedCityName: '{{ city_name or '' }}',
     selectedStreetId: '{{ street_id or '' }}',
     selectedStreetName: '{{ street_name or '' }}'
 }">
-    <!-- Miejscowość -->
-    <div class="space-y-2 relative">
-        <label class="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="city_suggest">Miejscowość</label>
-        <input type="text" id="city_suggest" 
-               placeholder="Wyszukaj miejscowość..."
-               value="{{ city_name }}"
-               autocomplete="off"
-               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-               hx-get="/teryt/api/suggest?kind=city"
-               hx-trigger="keyup changed delay:300ms"
-               hx-target="next .suggest-results-box"
-               @input="selectedCityId = ''; selectedCityName = $el.value">
-        <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-show="true" x-cloak></div>
-        <input type="hidden" name="location_city_id" :value="selectedCityId">
+    <!-- Miejscowość (Select menu) -->
+    <div class="space-y-2">
+        <label class="text-sm font-bold leading-none" for="location_city_id">Miejscowość</label>
+        <select name="location_city_id" id="location_city_id" 
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                x-model="selectedCityId"
+                @change="selectedCityName = $el.options[$el.selectedIndex].text; selectedStreetId = ''; selectedStreetName = ''">
+            <option value="">-- Wybierz miejscowość --</option>
+            {% for cid, cname in city_options %}
+                <option value="{{ cid }}" {% if cid == city_id %}selected{% endif %}>{{ cname }}</option>
+            {% endfor %}
+        </select>
     </div>
 
     <!-- Ulica -->
-    <div class="space-y-2 relative">
-        <label class="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="street_suggest">Ulica</label>
+    <div class="space-y-2 relative" id="street-container">
+        <label class="text-sm font-bold leading-none" for="street_suggest">Ulica</label>
         <input type="text" name="street_name" id="street_suggest"
-               value="{{ street_name }}"
+               x-model="selectedStreetName"
                placeholder="Wpisz min. 3 znaki..."
                autocomplete="off"
                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                :disabled="!selectedCityId"
                hx-get="/teryt/api/suggest?kind=street"
                hx-trigger="keyup changed delay:300ms"
-               hx-target="next .suggest-results-box"
-               hx-include="[name='location_city_id']"
-               @input="selectedStreetId = ''; selectedStreetName = $el.value">
-        <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-show="true" x-cloak></div>
+               hx-target="#street-results"
+               hx-include="#location_city_id">
+        <div id="street-results" class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95"></div>
         <input type="hidden" name="location_street_id" :value="selectedStreetId">
     </div>
 
-    <!-- Numer i Kod -->
+    <!-- Numer i Apartament -->
     <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-2 relative">
-            <label class="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="street_number">Nr budynku</label>
+        <div class="space-y-2 relative" id="building-container">
+            <label class="text-sm font-bold leading-none" for="street_number">Nr budynku</label>
             <input type="text" name="street_number" id="street_number" 
                    value="{{ street_number }}" 
                    placeholder="np. 12"
@@ -50,13 +47,16 @@
                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                    hx-get="/teryt/api/suggest?kind=building"
                    hx-trigger="focus, keyup changed delay:300ms"
-                   hx-target="next .suggest-results-box"
-                   hx-include="[name='location_city_id'], [name='street_name']">
-            <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-show="true" x-cloak></div>
+                   hx-target="#building-results"
+                   hx-include="#location_city_id, #street_suggest">
+            <div id="building-results" class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95"></div>
         </div>
         <div class="space-y-2">
-            <label class="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="zip_code">Kod pocztowy</label>
-            <input type="text" name="zip_code" id="zip_code" value="{{ zip_code }}" placeholder="00-000" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <label class="text-sm font-bold leading-none" for="apartment_number">Nr lokalu</label>
+            <input type="text" name="apartment_number" id="apartment_number" 
+                   value="{{ apartment_number }}" 
+                   placeholder="np. 4"
+                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         </div>
     </div>
 </div>
@@ -65,12 +65,13 @@
 if (typeof selectSuggestion !== 'function') {
     function selectSuggestion(el, text, id, type) {
         const container = el.closest('.teryt-lookup-container');
-        const AlpineEl = container.__x ? container : container.querySelector('[x-data]');
-        
+        if (!container) return;
+
         const parentDiv = el.closest('.space-y-2');
         const input = parentDiv.querySelector('input[type=text]');
         if (input) {
             input.value = text;
+            input.dispatchEvent(new Event('input')); // Trigger Alpine x-model
         }
         
         const hiddenId = parentDiv.querySelector('input[type=hidden]');
@@ -78,13 +79,13 @@ if (typeof selectSuggestion !== 'function') {
             hiddenId.value = id;
         }
 
-        // Update Alpine state if available
-        if (type === 'city' && container._x_dataStack) {
-            container._x_dataStack[0].selectedCityId = id;
-            container._x_dataStack[0].selectedCityName = text;
-        } else if (type === 'street' && container._x_dataStack) {
-            container._x_dataStack[0].selectedStreetId = id;
-            container._x_dataStack[0].selectedStreetName = text;
+        // Update Alpine state
+        if (container._x_dataStack) {
+            const data = container._x_dataStack[0];
+            if (type === 'street') {
+                data.selectedStreetId = id;
+                data.selectedStreetName = text;
+            }
         }
 
         el.parentElement.innerHTML = '';

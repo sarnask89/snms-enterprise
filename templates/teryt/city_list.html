@@ -29,6 +29,7 @@
                 <thead class="bg-muted/40">
                     <tr class="border-b transition-colors">
                         <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">ID</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Status</th>
                         <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nazwa miejscowości</th>
                         <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Powiat</th>
                         <th class="h-12 px-4 text-right"></th>
@@ -36,12 +37,34 @@
                 </thead>
                 <tbody class="[&_tr:last-child]:border-0">
                     {% for c in rows %}
-                    <tr class="border-b transition-colors hover:bg-muted/50">
+                    <tr class="border-b transition-colors hover:bg-muted/50 {% if c.is_default %}bg-primary/5{% endif %}">
                         <td class="p-4 align-middle font-mono text-[10px] text-muted-foreground">#{{ c.id }}</td>
+                        <td class="p-4 align-middle">
+                            <div class="flex gap-1">
+                                {% if c.is_managed %}
+                                    <span class="badge success text-[9px]">Zarządzane</span>
+                                {% endif %}
+                                {% if c.is_default %}
+                                    <span class="badge info text-[9px]"><i class="fas fa-star mr-1"></i>Domyślne</span>
+                                {% endif %}
+                            </div>
+                        </td>
                         <td class="p-4 align-middle font-semibold">{{ c.name }}</td>
                         <td class="p-4 align-middle text-xs text-muted-foreground">{{ c.district.name if c.district else '—' }}</td>
                         <td class="p-4 align-middle text-right">
                             <div class="flex justify-end gap-1">
+                                <form method="post" action="/admin/addresses/city/{{ c.id }}/toggle-managed" class="inline">
+                                    <button type="submit" class="h-8 px-2 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-[10px] font-bold transition-colors" title="Zarządzaj">
+                                        {{ 'Usuń z zarz.' if c.is_managed else 'Dodaj do zarz.' }}
+                                    </button>
+                                </form>
+                                {% if c.is_managed and not c.is_default %}
+                                <form method="post" action="/admin/addresses/city/{{ c.id }}/set-default" class="inline">
+                                    <button type="submit" class="h-8 px-2 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-[10px] font-bold transition-colors" title="Ustaw jako domyślne">
+                                        Domyślne
+                                    </button>
+                                </form>
+                                {% endif %}
                                 <a href="/teryt/cities/{{ c.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
                                     <i class="fas fa-edit text-xs"></i>
                                 </a>

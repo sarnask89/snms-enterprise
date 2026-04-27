@@ -152,6 +152,8 @@ def net_node_edit_submit(
     sidusis_id: str | None = Form(None),
     has_power: str | None = Form(None),
     has_env_control: str | None = Form(None),
+    uke_node_kind: str | None = Form(None),
+    uke_access_rules: str | None = Form(None),
 ):
     n = db.get(models.NetNode, node_id)
     if not n: return RedirectResponse("/net-nodes", status_code=303)
@@ -171,4 +173,13 @@ def net_node_edit_submit(
     n.uke_access_rules = uke_access_rules
     db.commit()
     record_audit(db, "update", "net_node", n.id, f"Node: {n.name}", request)
+    return RedirectResponse("/net-nodes", status_code=303)
+
+@router.post("/{node_id}/delete", dependencies=[Depends(require_business_write)])
+def net_node_delete(node_id: int, request: Request, db: Session = Depends(get_db)):
+    n = db.get(models.NetNode, node_id)
+    if n:
+        record_audit(db, "delete", "net_node", n.id, f"Node: {n.name}", request)
+        db.delete(n)
+        db.commit()
     return RedirectResponse("/net-nodes", status_code=303)

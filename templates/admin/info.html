@@ -20,12 +20,21 @@
                 <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Silnik</span>
                 <span class="text-xs font-mono">FastAPI + Jinja2 + Alpine.js</span>
             </div>
-            <div class="flex items-center justify-between py-2">
+            <div class="flex items-center justify-between py-2 border-b">
                 <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Status bazy</span>
                 <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-mono text-muted-foreground mr-2">{{ db_kind }}</span>
                     <div class="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                     <span class="text-xs font-bold text-emerald-600">POŁĄCZONO</span>
                 </div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Python</span>
+                <span class="text-xs font-mono">{{ python_version }}</span>
+            </div>
+            <div class="flex items-center justify-between py-2">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">System OS</span>
+                <span class="text-[10px] text-muted-foreground truncate max-w-[150px]">{{ platform }}</span>
             </div>
         </div>
         {% endcall %}

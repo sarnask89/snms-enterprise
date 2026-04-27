@@ -24,8 +24,28 @@ document.addEventListener('DOMContentLoaded', () => {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    const nodes = {{ nodes | tojson | safe if nodes else '[]' }};
-    const links = {{ links | tojson | safe if links else '[]' }};
+    {% set serialized_nodes = [] %}
+    {% for n in nodes %}
+        {% do serialized_nodes.append({
+            "id": n.id,
+            "name": n.name,
+            "latitude": n.latitude,
+            "longitude": n.longitude,
+            "node_type": n.node_type
+        }) %}
+    {% endfor %}
+    const nodes = {{ serialized_nodes | tojson | safe }};
+
+    {% set serialized_links = [] %}
+    {% for l in links %}
+        {% do serialized_links.append({
+            "source_node_id": l.source_node_id,
+            "target_node_id": l.target_node_id,
+            "medium_type": l.medium_type,
+            "capacity_mbps": l.capacity_mbps
+        }) %}
+    {% endfor %}
+    const links = {{ serialized_links | tojson | safe }};
     const bounds = [];
 
     // Rysowanie węzłów

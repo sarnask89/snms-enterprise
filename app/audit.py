@@ -34,9 +34,12 @@ def record_audit(
         actor = getattr(request.state, "portal_user", None)
 
     try:
+        # Bezpieczniejszy dostęp do id aktora (PortalUser)
+        aid = getattr(actor, "id", None) if actor else None
+        
         db.add(
             models.AuditLog(
-                actor_id=actor.id if actor else None,
+                actor_id=aid,
                 action=action,
                 resource_type=resource_type,
                 resource_id=resource_id,

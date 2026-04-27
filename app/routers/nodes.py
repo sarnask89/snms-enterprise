@@ -321,25 +321,32 @@ def node_new_submit(
     request: Request,
     db: Session = Depends(get_db),
     customer_id: int = Form(...),
-    hostname: str = Form(...),
+    name: str = Form(...),
+    login: str | None = Form(None),
+    passwd: str | None = Form(None),
     ip_address: str | None = Form(None),
     mac_address: str | None = Form(None),
-    status: str = Form("active"),
+    active: str | None = Form(None),
     notes: str | None = Form(None),
     net_device_id: str | None = Form(None),
     ip_network_id: str | None = Form(None),
 ):
     net_id = _opt_int(ip_network_id)
+    # Using name as hostname for non-nullable field
+    hostname = name.strip()
+    status = "active" if active in ("on", "true", "1", "yes") else "inactive"
+    
     ok, err = validate_node_ip_assignment(db, net_id, ip_address, exclude_node_id=None)
     if not ok:
         sticky = {
             "customer_id": customer_id,
-            "hostname": hostname,
+            "name": name,
+            "login": login or "",
             "ip_address": ip_address or "",
             "mac_address": mac_address or "",
             "ip_network_id": ip_network_id or "",
             "net_device_id": net_device_id or "",
-            "status": status,
+            "active": active,
             "notes": notes or "",
         }
         return _render_node_form(
@@ -347,7 +354,10 @@ def node_new_submit(
         )
     n = models.Node(
         customer_id=customer_id,
-        hostname=hostname.strip(),
+        name=name.strip(),
+        hostname=hostname,
+        login=(login or None) and login.strip() or None,
+        passwd=(passwd or None) and passwd.strip() or None,
         ip_address=(ip_address or None) and ip_address.strip() or None,
         mac_address=(mac_address or None) and mac_address.strip() or None,
         status=models.NodeStatus(status),
@@ -374,10 +384,12 @@ def node_edit_submit(
     node_id: int,
     db: Session = Depends(get_db),
     customer_id: int = Form(...),
-    hostname: str = Form(...),
+    name: str = Form(...),
+    login: str | None = Form(None),
+    passwd: str | None = Form(None),
     ip_address: str | None = Form(None),
     mac_address: str | None = Form(None),
-    status: str = Form("active"),
+    active: str | None = Form(None),
     notes: str | None = Form(None),
     net_device_id: str | None = Form(None),
     ip_network_id: str | None = Form(None),
@@ -386,25 +398,31 @@ def node_edit_submit(
     if not n:
         return RedirectResponse("/customer-devices", status_code=303)
     net_id = _opt_int(ip_network_id)
+    status = "active" if active in ("on", "true", "1", "yes") else "inactive"
+    
     ok, err = validate_node_ip_assignment(
         db, net_id, ip_address, exclude_node_id=node_id
     )
     if not ok:
         sticky = {
             "customer_id": customer_id,
-            "hostname": hostname,
+            "name": name,
+            "login": login or "",
             "ip_address": ip_address or "",
             "mac_address": mac_address or "",
             "ip_network_id": ip_network_id or "",
             "net_device_id": net_device_id or "",
-            "status": status,
+            "active": active,
             "notes": notes or "",
         }
         return _render_node_form(
             request, db, node=n, sticky=sticky, ip_error=err, status_code=400
         )
     n.customer_id = customer_id
-    n.hostname = hostname.strip()
+    n.name = name.strip()
+    n.hostname = name.strip()
+    n.login = (login or None) and login.strip() or None
+    n.passwd = (passwd or None) and passwd.strip() or None
     n.ip_address = (ip_address or None) and ip_address.strip() or None
     n.mac_address = (mac_address or None) and mac_address.strip() or None
     n.status = models.NodeStatus(status)

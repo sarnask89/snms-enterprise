@@ -11,11 +11,15 @@
         <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             <div class="space-y-2 lg:col-span-1">
                 {{ label("Abonent", for="customer_id") }}
-                {{ select("customer_id", [(c.id, c.customer_code) for c in customers.values()], id="customer_id", required=True) }}
+                {% set cust_opts = [] %}
+                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
+                {{ select("customer_id", cust_opts, id="customer_id", required=True) }}
             </div>
             <div class="space-y-2 lg:col-span-1">
                 {{ label("Rodzaj", for="kind") }}
-                {{ select("kind", [(k.value, k.value|capitalize) for k in kinds], id="kind", required=True) }}
+                {% set kind_opts = [] %}
+                {% for k in kinds %}{% do kind_opts.append((k.value, k.value|capitalize)) %}{% endfor %}
+                {{ select("kind", kind_opts, id="kind", required=True) }}
             </div>
             <div class="space-y-2 lg:col-span-1">
                 {{ label("Kwota", for="amount") }}

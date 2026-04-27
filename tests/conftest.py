@@ -49,25 +49,50 @@ def client_fixture(session):
     yield client
     app.dependency_overrides.clear()
 
+@pytest.fixture(name="admin_client")
+def admin_client_fixture(client):
+    from app.config import CRM_ADMIN_USER, CRM_ADMIN_PASSWORD
+    client.post(
+        "/login",
+        data={"username": CRM_ADMIN_USER, "password": CRM_ADMIN_PASSWORD},
+    )
+    return client
+
 def seed_with_db(db):
     """Modified seed logic that takes a session directly for testing."""
     # This is a helper to run our seed functions on the test session
     from app.nav_access import seed_nav_menu_and_permissions, sync_new_nav_items_and_permissions
-    from app.models import UserRole, PortalUser
+    from app import models
     from app.security import hash_password
     from app.config import CRM_ADMIN_USER, CRM_ADMIN_PASSWORD
     import os
 
-    # Re-implementing the core of init_all logic but scoped to the test db session
+    # Seed navigation
     seed_nav_menu_and_permissions(db)
     sync_new_nav_items_and_permissions(db)
     
     # Minimal user seed for tests
-    if db.query(PortalUser).count() == 0:
-        db.add(PortalUser(
+    if db.query(models.PortalUser).count() == 0:
+        db.add(models.PortalUser(
             username=CRM_ADMIN_USER,
             password_hash=hash_password(CRM_ADMIN_PASSWORD),
-            role=UserRole.admin,
+            role=models.UserRole.admin,
             active=True
         ))
+    
+    # Add other catalog seeds
+    if db.query(models.NetDeviceType).count() == 0:
+        for n in ("router", "switch", "ont", "server", "other"):
+            db.add(models.NetDeviceType(name=n))
+    
+    if db.query(models.MessageTemplate).count() == 0:
+        t = models.MessageTemplate(
+            name="Domyślny",
+            subject="Wiadomość z CRM",
+            body="Dzień dobry,\n\nTo jest wiadomość testowa."
+        )
+        db.add(t)
+        db.flush()
+        print(f"DEBUG: Seeded message template with ID={t.id}")
+
     db.commit()

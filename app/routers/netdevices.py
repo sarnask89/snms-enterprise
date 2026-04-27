@@ -138,6 +138,8 @@ def netdevice_new_submit(
     db: Session = Depends(get_db),
     name: str = Form(...),
     hostname: str | None = Form(None),
+    serial_number: str | None = Form(None),
+    mac_address: str | None = Form(None),
     management_ip: str | None = Form(None),
     device_type: str = Form("other"),
     snmp_community: str | None = Form(None),
@@ -160,6 +162,8 @@ def netdevice_new_submit(
     d = models.NetDevice(
         name=name.strip()[:128],
         hostname=(hostname or None) and hostname.strip()[:255] or None,
+        serial_number=(serial_number or None) and serial_number.strip()[:128] or None,
+        mac_address=(mac_address or None) and mac_address.strip()[:32] or None,
         management_ip=(management_ip or None) and management_ip.strip()[:64] or None,
         device_type=dtype,
         snmp_community=(snmp_community or None) and snmp_community.strip()[:128] or None,
@@ -203,6 +207,8 @@ def netdevice_edit_submit(
     db: Session = Depends(get_db),
     name: str = Form(...),
     hostname: str | None = Form(None),
+    serial_number: str | None = Form(None),
+    mac_address: str | None = Form(None),
     management_ip: str | None = Form(None),
     device_type: str = Form("other"),
     snmp_community: str | None = Form(None),
@@ -225,6 +231,8 @@ def netdevice_edit_submit(
             dtype = m.device_type.name[:64]
     d.name = name.strip()[:128]
     d.hostname = (hostname or None) and hostname.strip()[:255] or None
+    d.serial_number = (serial_number or None) and serial_number.strip()[:128] or None
+    d.mac_address = (mac_address or None) and mac_address.strip()[:32] or None
     d.management_ip = (management_ip or None) and management_ip.strip()[:64] or None
     d.device_type = dtype
     d.snmp_community = (snmp_community or None) and snmp_community.strip()[:128] or None

@@ -2,7 +2,7 @@
 <div x-data="comboboxData('{{ selected_id or '' }}', {{ options | tojson | safe }})" 
      class="relative w-full max-w-[450px]">
     
-    <input type="hidden" name="{{ name }}" x-model="selected" {% if required %}required{% endif %}>
+    <input type="hidden" name="{{ name }}" x-model="selected" {% if required %}required{% endif %} {{ kwargs | xmlattr }}>
     
     <button type="button" 
             @click="toggle()"

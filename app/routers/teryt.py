@@ -32,18 +32,20 @@ def teryt_suggest(
     street_name: str | None = Query(None, min_length=3),
     kind: str = Query("city"),
     city_id: int | None = Query(None),
+    location_city_id: int | None = Query(None),
     city_name: str | None = Query(None),
 ):
     """Zwraca fragment HTML (listę elementów <li>), który HTMX wstrzyknie do DOM."""
     search_query = q or street_name
     service = TerytSearchService(db)
+    target_city_id = city_id or location_city_id
     
     if kind == "city" and search_query:
         items = service.search_cities(search_query)
         return render(request, "teryt/partials/suggest_items.html", {"items": items})
     
-    elif kind == "street" and search_query and city_id:
-        items = service.search_streets(city_id, search_query)
+    elif kind == "street" and search_query and target_city_id:
+        items = service.search_streets(target_city_id, search_query)
         return render(request, "teryt/partials/suggest_items.html", {"items": items})
 
     elif kind == "building" and city_name:

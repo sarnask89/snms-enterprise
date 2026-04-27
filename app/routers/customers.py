@@ -51,8 +51,18 @@ def customer_list(
 
     return render(request, "customers/list.html", {"title": "Klienci", "customers": rows, "search_q": q or ""})
 
+@router.get("/search", response_class=HTMLResponse)
+def customer_search_form(request: Request):
+    return render(
+        request,
+        "customers/search.html",
+        {"title": "Szukaj abonentów"},
+    )
+
+
 @router.get("/new", response_class=HTMLResponse)
 def customer_new_form(request: Request, db: Session = Depends(get_db)):
+
     # Pobierz plany numeracji dla klientów
     number_plans = list(db.scalars(
         select(models.NumberPlan)
@@ -86,6 +96,7 @@ def customer_new_submit(
     location_city_id: int | None = Form(None),
     location_street_id: int | None = Form(None),
     street_number: str | None = Form(None),
+    apartment_number: str | None = Form(None),
 ):
     code = (customer_code or "").strip()
     
@@ -99,6 +110,11 @@ def customer_new_submit(
         # Fallback: jeśli brak kodu i planu, wróć z błędem
         return RedirectResponse("/customers/new?error=Wymagany+numer+abonenta", status_code=303)
 
+    # Check for existing duplicate code
+    existing = db.scalars(select(models.Customer).where(models.Customer.customer_code == code)).first()
+    if existing:
+        return RedirectResponse(f"/customers/new?error=Numer+abonenta+{code}+jest+już+zajęty", status_code=303)
+
     c = models.Customer(
         customer_code=code,
         first_name=first_name.strip(),
@@ -109,12 +125,18 @@ def customer_new_submit(
         location_city_id=location_city_id,
         location_street_id=location_street_id,
         street_number=(street_number or None) and street_number.strip() or None,
+        apartment_number=(apartment_number or None) and apartment_number.strip() or None,
     )
     db.add(c)
     db.flush()
     record_audit(db, "create", "customer", c.id, f"Abonent: {c.customer_code}", request)
     db.commit()
     return RedirectResponse("/customers", status_code=303)
+
+@router.get("/add")
+def customer_add_redirect():
+    return RedirectResponse("/customers/new", status_code=303)
+
 
 @router.get("/{customer_id}/edit", response_class=HTMLResponse)
 def customer_edit_form(customer_id: int, request: Request, db: Session = Depends(get_db)):
@@ -145,10 +167,18 @@ def customer_edit_submit(
     location_city_id: int | None = Form(None),
     location_street_id: int | None = Form(None),
     street_number: str | None = Form(None),
+    apartment_number: str | None = Form(None),
 ):
     c = db.get(models.Customer, customer_id)
     if not c: return RedirectResponse("/customers", status_code=303)
-    c.customer_code = customer_code.strip()
+
+    new_code = customer_code.strip()
+    if new_code != c.customer_code:
+        existing = db.scalars(select(models.Customer).where(models.Customer.customer_code == new_code)).first()
+        if existing:
+            return RedirectResponse(f"/customers/{customer_id}/edit?error=Numer+abonenta+{new_code}+jest+już+zajęty", status_code=303)
+
+    c.customer_code = new_code
     c.first_name = first_name.strip()
     c.last_name = last_name.strip()
     c.email = (email or None) and email.strip() or None
@@ -157,6 +187,16 @@ def customer_edit_submit(
     c.location_city_id = location_city_id
     c.location_street_id = location_street_id
     c.street_number = (street_number or None) and street_number.strip() or None
+    c.apartment_number = (apartment_number or None) and apartment_number.strip() or None
     db.commit()
     record_audit(db, "update", "customer", c.id, f"Abonent: {c.customer_code}", request)
+    return RedirectResponse("/customers", status_code=303)
+
+@router.post("/{customer_id}/delete", dependencies=[Depends(require_business_write)])
+def customer_delete(customer_id: int, request: Request, db: Session = Depends(get_db)):
+    c = db.get(models.Customer, customer_id)
+    if c:
+        record_audit(db, "delete", "customer", c.id, f"Abonent: {c.customer_code}", request)
+        db.delete(c)
+        db.commit()
     return RedirectResponse("/customers", status_code=303)
