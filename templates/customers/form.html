@@ -59,38 +59,17 @@
 
       <!-- Sekcja: Adres -->
       {% call card(title="Adres instalacji", subtitle="Lokalizacja TERYT (oficjalna)") %}
+      {% from "components/teryt_lookup.html" import teryt_lookup %}
+      {{ teryt_lookup(
+          city_id=customer.location_city_id if customer else default_city_id,
+          city_name=customer.city.name if customer and customer.city else "",
+          street_id=customer.location_street_id if customer else "",
+          street_name=customer.street.name if customer and customer.street else "",
+          street_number=customer.street_number if customer else "",
+          zip_code=customer.zip_code if customer else ""
+      ) }}
+
       <div class="grid gap-6">
-        <div class="space-y-2">
-          {{ label("Miejscowość", for="location_city_id") }}
-          {{ combobox("location_city_id", city_options, selected_id=customer.location_city_id if customer else default_city_id, placeholder="Wybierz miejscowość...", required=True) }}
-        </div>
-
-        <div class="space-y-2 relative">
-          {{ label("Ulica", for="street_suggest") }}
-          <input type="text" name="street_name" id="street_suggest"
-                 value="{{ customer.street.name if customer and customer.street else '' }}"
-                 placeholder="Wpisz min. 3 znaki..."
-                 autocomplete="off"
-                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                 hx-get="/teryt/api/suggest?kind=street"
-                 hx-trigger="keyup changed delay:300ms"
-                 hx-target="next .suggest-results-box"
-                 hx-include="[name='location_city_id']">
-          <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-cloak></div>
-          <input type="hidden" name="location_street_id" value="{{ customer.location_street_id if customer else '' }}">
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-                {{ label("Nr budynku / lokalu", for="street_number") }}
-                {{ input("street_number", value=customer.street_number if customer else "", id="street_number", placeholder="np. 12/4") }}
-            </div>
-            <div class="space-y-2">
-                {{ label("Kod pocztowy", for="zip_code") }}
-                {{ input("zip_code", value=customer.zip_code if customer else "", id="zip_code", placeholder="00-000") }}
-            </div>
-        </div>
-
         <div class="pt-4 border-t">
             <button type="button" @click="showMap = !showMap" class="text-xs font-bold text-primary hover:underline">
                 <i class="fas fa-map-marker-alt mr-1"></i> <span x-text="showMap ? 'Ukryj mapę GPS' : 'Ustaw położenie GPS (opcjonalnie)'"></span>

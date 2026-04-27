@@ -1,24 +1,37 @@
 {% for item in items %}
 <div class="suggest-item" 
-     onclick="selectSuggestion(this, '{{ item.text }}', '{{ item.id or '' }}')">
+     onclick="selectSuggestion(this, '{{ item.text }}', '{{ item.id or '' }}', '{{ item.type }}')">
      {{ item.text }} <small class="muted">[{{ item.type }}]</small>
 </div>
 {% endfor %}
 
 <script>
 if (typeof selectSuggestion !== 'function') {
-    function selectSuggestion(el, text, id) {
-        const parentLabel = el.closest('label');
-        if (parentLabel) {
-            const input = parentLabel.querySelector('input[type=text], input[type=search]');
-            if (input) {
-                input.value = text;
-            }
-            const hiddenId = parentLabel.querySelector('input[type=hidden]');
-            if (hiddenId && id) {
-                hiddenId.value = id;
+    function selectSuggestion(el, text, id, type) {
+        const container = el.closest('.teryt-lookup-container') || el.closest('label') || el.parentElement;
+        
+        const parentDiv = el.closest('.space-y-2') || el.closest('label');
+        const input = parentDiv.querySelector('input[type=text]');
+        if (input) {
+            input.value = text;
+        }
+        
+        const hiddenId = parentDiv.querySelector('input[type=hidden]');
+        if (hiddenId) {
+            hiddenId.value = id;
+        }
+
+        // Update Alpine state if available in the container
+        if (container && container._x_dataStack) {
+            if (type === 'city') {
+                container._x_dataStack[0].selectedCityId = id;
+                container._x_dataStack[0].selectedCityName = text;
+            } else if (type === 'street') {
+                container._x_dataStack[0].selectedStreetId = id;
+                container._x_dataStack[0].selectedStreetName = text;
             }
         }
+
         el.parentElement.innerHTML = '';
     }
 }
