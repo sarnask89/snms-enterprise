@@ -10,6 +10,9 @@ from zeep.helpers import serialize_object
 from zeep.wsse.username import UsernameToken
 
 from app.config import TERYT_WS_PASSWORD, TERYT_WS_USER, TERYT_WS_WSDL
+from app.logging import get_logger
+
+logger = get_logger("teryt_ws")
 
 
 class TerytWsConfigError(RuntimeError):
@@ -19,17 +22,22 @@ class TerytWsConfigError(RuntimeError):
 def _client() -> Client:
     if not TERYT_WS_USER or not TERYT_WS_PASSWORD:
         raise TerytWsConfigError("Brak poświadczeń TERYT.")
-    return Client(
-        TERYT_WS_WSDL,
-        wsse=UsernameToken(TERYT_WS_USER, TERYT_WS_PASSWORD),
-    )
+    try:
+        return Client(
+            TERYT_WS_WSDL,
+            wsse=UsernameToken(TERYT_WS_USER, TERYT_WS_PASSWORD),
+        )
+    except Exception as e:
+        logger.error(f"Failed to initialize TERYT client: {e}")
+        raise
 
 
 def czy_zalogowany() -> bool:
-    client = _client()
     try:
+        client = _client()
         return bool(client.service.CzyZalogowany())
-    except Exception:
+    except Exception as e:
+        logger.warning(f"TERYT login check failed: {e}")
         return False
 
 
@@ -60,48 +68,54 @@ def _extract_list(res: Any, key: str | None = None) -> list[Any]:
 
 def wyszukaj_miejscowosc(nazwa: str) -> list[Any]:
     """Wyszukuje miejscowości po fragmencie nazwy bezpośrednio w GUS."""
-    client = _client()
     try:
+        client = _client()
         raw = client.service.WyszukajMiejscowosc(nazwaMiejscowosci=nazwa)
         res = serialize_object(raw)
         return _extract_list(res, 'Miejscowosc')
-    except Exception:
+    except Exception as e:
+        logger.error(f"TERYT city search failed for '{nazwa}': {e}")
         return []
 
 
 def wyszukaj_ulice(nazwa_ulicy: str, nazwa_miejscowosci: str) -> list[Any]:
     """Wyszukuje ulice online w GUS."""
-    client = _client()
     try:
+        client = _client()
         raw = client.service.WyszukajUlice(
             nazwaUlicy=nazwa_ulicy, 
             nazwaMiejscowosci=nazwa_miejscowosci
         )
         res = serialize_object(raw)
         return _extract_list(res, 'Ulica')
-    except Exception:
+    except Exception as e:
+        logger.error(f"TERYT street search failed for '{nazwa_ulicy}' in '{nazwa_miejscowosci}': {e}")
         return []
 
 
 def wojewodztwa_as_serializable() -> list[Any]:
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatTerc()
         raw = client.service.PobierzListeWojewodztw(DataStanu=ds)
         res = serialize_object(raw)
         return _extract_list(res, 'JednostkaTerytorialna')
-    except Exception: return []
+    except Exception as e:
+        logger.error(f"TERYT wojewodztwa fetch failed: {e}")
+        return []
 
 
 
 def powiaty_as_serializable(woj_id: str) -> list[Any]:
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatTerc()
         raw = client.service.PobierzListePowiatow(Woj=woj_id, DataStanu=ds)
         res = serialize_object(raw)
         return _extract_list(res, 'JednostkaTerytorialna')
-    except Exception: return []
+    except Exception as e:
+        logger.error(f"TERYT powiaty fetch failed for woj={woj_id}: {e}")
+        return []
 
 
 
@@ -139,25 +153,29 @@ class TerytSearchService:
 
 
 def gminy_as_serializable(woj_id: str, pow_id: str) -> list[Any]:
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatTerc()
         raw = client.service.PobierzListeGminPowiecie(Woj=woj_id, Pow=pow_id, DataStanu=ds)
         res = serialize_object(raw)
         return _extract_list(res, 'JednostkaTerytorialna')
-    except Exception: return []
+    except Exception as e:
+        logger.error(f"TERYT gminy fetch failed for pow={pow_id}, woj={woj_id}: {e}")
+        return []
 
 
 def miejscowości_as_serializable(woj_id: str, pow_id: str, gmi_id: str) -> list[Any]:
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatTerc()
         raw = client.service.PobierzListeMiejscowosciWGminie(
             Wojewodztwo=woj_id, Powiat=pow_id, Gmina=gmi_id, DataStanu=ds
         )
         res = serialize_object(raw)
         return _extract_list(res, 'Miejscowosc')
-    except Exception: return []
+    except Exception as e:
+        logger.error(f"TERYT miejscowości fetch failed for gmi={gmi_id}, pow={pow_id}, woj={woj_id}: {e}")
+        return []
 
 
 def _get_file_content(res: Any) -> bytes | None:
@@ -173,29 +191,35 @@ def _get_file_content(res: Any) -> bytes | None:
 
 def pobierz_pelny_terc_zip() -> bytes | None:
     """Pobiera pełny katalog TERC (województwa, powiaty, gminy) w formacie ZIP."""
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatTerc()
         res = client.service.PobierzKatalogTERC(DataStanu=ds)
         return _get_file_content(res)
-    except Exception: return None
+    except Exception as e:
+        logger.error(f"TERYT TERC ZIP download failed: {e}")
+        return None
 
 
 def pobierz_pelny_simc_zip() -> bytes | None:
     """Pobiera pełny katalog SIMC (miejscowości) w formacie ZIP."""
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatSimc()
         res = client.service.PobierzKatalogSIMC(DataStanu=ds)
         return _get_file_content(res)
-    except Exception: return None
+    except Exception as e:
+        logger.error(f"TERYT SIMC ZIP download failed: {e}")
+        return None
 
 
 def pobierz_pelny_ulic_zip() -> bytes | None:
     """Pobiera pełny katalog ULIC (ulice) w formacie ZIP."""
-    client = _client()
     try:
+        client = _client()
         ds = client.service.PobierzDateAktualnegoKatUlic()
         res = client.service.PobierzKatalogULIC(DataStanu=ds)
         return _get_file_content(res)
-    except Exception: return None
+    except Exception as e:
+        logger.error(f"TERYT ULIC ZIP download failed: {e}")
+        return None

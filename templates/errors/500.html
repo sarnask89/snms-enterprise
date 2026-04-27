@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+    <div class="bg-destructive/10 p-4 rounded-full mb-6">
+        <i class="fas fa-exclamation-triangle text-destructive text-5xl"></i>
+    </div>
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl mb-2">Błąd serwera</h1>
+    <p class="text-muted-foreground max-w-md mb-8">
+        Wystąpił nieoczekiwany problem po stronie serwera. Administrator został powiadomiony.
+    </p>
+    <div class="flex gap-4">
+        <a href="/" class="inline-flex items-center justify-center rounded-md text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 shadow transition-colors">
+            Wróć do pulpitu
+        </a>
+        <button onclick="window.location.reload()" class="inline-flex items-center justify-center rounded-md text-sm font-bold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 transition-colors">
+            Odśwież stronę
+        </button>
+    </div>
+</div>
+{% endblock %}
