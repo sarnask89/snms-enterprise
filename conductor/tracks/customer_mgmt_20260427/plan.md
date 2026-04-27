@@ -13,7 +13,7 @@
 - [x] Task: Extend Customer model for TERYT links (1e11574)
     - [x] Add migration for TERYT relationship columns
     - [x] Update SQLModel definitions
-- [ ] Task: Implement Customer CRUD with address linking
-    - [ ] Write integration tests for Customer creation with TERYT address
-    - [ ] Build Customer form with integrated address lookup
+- [x] Task: Implement Customer CRUD with address linking (e95773f)
+    - [x] Write integration tests for Customer creation with TERYT address
+    - [x] Build Customer form with integrated address lookup
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Customer CRM Integration' (Protocol in workflow.md)
