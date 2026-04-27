@@ -20,6 +20,8 @@ DATABASE_URL = os.environ.get(
 CRM_ADMIN_USER = os.environ.get("CRM_ADMIN_USER", "admin")
 CRM_ADMIN_PASSWORD = os.environ.get("CRM_ADMIN_PASSWORD", "test")
 SECRET_KEY = os.environ.get("CRM_SECRET_KEY", "change-me-in-production-use-long-random")
+# Key for encrypting device management passwords (must be 32 url-safe base64-encoded bytes)
+CRM_ENCRYPTION_KEY = os.environ.get("CRM_ENCRYPTION_KEY", "7T-zN-Wf3k7VzYxZ-gH1R9_Y7m6_Z8x1Y2_X3z4v5w6=")
 
 UPLOAD_ROOT = Path(os.environ.get("CRM_UPLOAD_ROOT", str(BASE_DIR / "uploads")))
 _max_mb = float(os.environ.get("CRM_MAX_UPLOAD_MB", "20"))

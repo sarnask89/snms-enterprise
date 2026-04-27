@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight">Odkrywanie Urządzeń (Mikrotik)</h1>
+            <p class="text-muted-foreground text-sm">Wybierz router, aby przeskanować aktywne dzierżawy DHCP i zaimportować klientów.</p>
+        </div>
+    </div>
+
+    {% call card(title="Dostępne Bramy (Gateways)") %}
+    <div class="divide-y border rounded-lg bg-background">
+        {% for router in routers %}
+        <div class="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div>
+                    <div class="font-bold">{{ router.name }}</div>
+                    <div class="text-xs text-muted-foreground">{{ router.management_ip }} • {{ router.driver_type }}</div>
+                </div>
+            </div>
+            <a href="/admin/discovery/{{ router.id }}" 
+               class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
+                Skanuj dzierżawy <i class="fas fa-search ml-2"></i>
+            </a>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-muted-foreground">
+            Nie znaleziono urządzeń z włączonym sterownikiem <strong>mikrotik_v7</strong>.
+            <br>Włącz automatyzację w edycji urządzenia sieciowego.
+        </div>
+        {% endfor %}
+    </div>
+    {% endcall %}
+</div>
+{% endblock %}

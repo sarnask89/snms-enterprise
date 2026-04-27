@@ -12,8 +12,9 @@ async def global_exception_handler(request: Request, exc: Exception):
     
     if _is_htmx(request):
         return _render_htmx_error("Wystąpił nieoczekiwany błąd serwera.")
-        
-    return render(request, "errors/500.html", {"detail": "Błąd serwera"}, status_code=500)
+    
+    user = getattr(request.state, "portal_user", None)
+    return render(request, "errors/500.html", {"detail": "Błąd serwera", "portal_user": user}, status_code=500)
 
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     """Handler for database errors."""
@@ -21,8 +22,9 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     
     if _is_htmx(request):
         return _render_htmx_error("Błąd bazy danych. Spróbuj ponownie później.")
-        
-    return render(request, "errors/db_error.html", {"detail": str(exc)}, status_code=500)
+    
+    user = getattr(request.state, "portal_user", None)
+    return render(request, "errors/db_error.html", {"detail": str(exc), "portal_user": user}, status_code=500)
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handler for FastAPI HTTPExceptions."""
@@ -32,7 +34,8 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         return _render_htmx_error(exc.detail, status_code=exc.status_code)
         
     template = "errors/404.html" if exc.status_code == 404 else "errors/error.html"
-    return render(request, template, {"detail": exc.detail, "status_code": exc.status_code}, status_code=exc.status_code)
+    user = getattr(request.state, "portal_user", None)
+    return render(request, template, {"detail": exc.detail, "status_code": exc.status_code, "portal_user": user}, status_code=exc.status_code)
 
 def _is_htmx(request: Request) -> bool:
     """Check if request is from HTMX."""

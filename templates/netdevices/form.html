@@ -47,13 +47,37 @@
             </div>
 
             <div class="space-y-2">
-                {{ label("Status urządzenia", for="status") %}
+                {{ label("Status urządzenia", for="status") }}
                 {{ select("status", [("active", "Aktywne"), ("inactive", "Magazyn"), ("maintenance", "Serwis")], selected_id=device.status.value if device else "active", id="status") }}
             </div>
-        </div>
-        {% endcall %}
+            </div>
+            {% endcall %}
 
-        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            {% call card(title="Automatyzacja i Zarządzanie", subtitle="Dane do logowania i autokonfiguracji") %}
+            <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Typ sterownika (Driver)", for="driver_type") }}
+                {{ select("driver_type", [("", "— brak automatyzacji —"), ("mikrotik_v7", "Mikrotik RouterOS v7 (REST)"), ("dasan_nos", "DASAN NOS (SSH)")], selected_id=device.driver_type if device else "", id="driver_type") }}
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Użytkownik zarządzania", for="mgmt_username") }}
+                    {{ input("mgmt_username", value=device.mgmt_username if device else "", id="mgmt_username", placeholder="np. api_user") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Hasło zarządzania", for="mgmt_password_encrypted") }}
+                    <input type="password" name="mgmt_password_encrypted" id="mgmt_password_encrypted" 
+                           value="{{ device.mgmt_password_encrypted if device else '' }}"
+                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                </div>
+            </div>
+            <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700">
+                <i class="fas fa-info-circle mr-1"></i> Te dane są wymagane do działania modułu <strong>Odkrywania Mikrotik</strong> oraz <strong>Diagnostyki GPON</strong>.
+            </div>
+            </div>
+            {% endcall %}
+
+            <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
             <a href="/net-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
             <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
                 <i class="fas fa-save mr-2 text-xs"></i> Zapisz urządzenie

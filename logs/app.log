@@ -1,0 +1,463 @@
+2026-04-27 17:24:19,273 - INFO - root - Logging system initialized.
+2026-04-27 17:24:19,274 - INFO - app.test - Test log message
+2026-04-27 17:26:14,142 - INFO - root - Logging system initialized.
+2026-04-27 17:26:19,925 - INFO - root - Logging system initialized.
+2026-04-27 17:27:11,649 - INFO - root - Logging system initialized.
+2026-04-27 17:27:12,837 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:27:12,838 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:27:12,838 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:27:12,839 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:27:12,841 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:27:12,842 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:27:37,609 - INFO - root - Logging system initialized.
+2026-04-27 17:27:38,709 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:27:38,710 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:27:38,710 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:27:38,711 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:27:38,712 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:27:38,713 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:27:42,493 - INFO - root - Logging system initialized.
+2026-04-27 17:27:43,479 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:27:43,480 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:27:43,480 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:27:43,480 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:27:43,481 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:27:43,482 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:27:53,937 - INFO - root - Logging system initialized.
+2026-04-27 17:27:54,926 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:27:54,926 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:27:54,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:27:54,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:27:54,928 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:27:54,930 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:28:02,539 - INFO - root - Logging system initialized.
+2026-04-27 17:28:03,510 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:28:03,511 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:28:03,511 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:28:03,511 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:28:03,512 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:28:03,513 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:28:13,128 - INFO - root - Logging system initialized.
+2026-04-27 17:28:13,468 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:28:13,469 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:28:13,469 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:28:13,469 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:28:13,469 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:28:13,469 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:28:14,526 - INFO - httpx - HTTP Request: GET http://testserver/test-path "HTTP/1.1 200 OK"
+2026-04-27 17:30:01,412 - INFO - root - Logging system initialized.
+2026-04-27 17:30:02,600 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:30:02,600 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:30:02,602 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:30:02,603 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:30:02,604 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:30:02,604 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:30:14,778 - INFO - root - Logging system initialized.
+2026-04-27 17:30:15,835 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:30:15,836 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:30:15,836 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:30:15,837 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:30:15,838 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:30:15,840 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:30:35,217 - INFO - root - Logging system initialized.
+2026-04-27 17:30:35,564 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:30:35,564 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:30:35,564 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:30:35,564 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:30:35,565 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:30:35,565 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:30:36,650 - INFO - root - Logging system initialized.
+2026-04-27 17:30:36,651 - INFO - app.test - Test log message
+2026-04-27 17:30:36,678 - INFO - httpx - HTTP Request: GET http://testserver/test-path "HTTP/1.1 200 OK"
+2026-04-27 17:30:44,480 - INFO - root - Logging system initialized.
+2026-04-27 17:30:45,570 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:30:45,570 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:30:45,571 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:30:45,571 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:30:45,572 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:30:45,572 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:31:06,138 - INFO - root - Logging system initialized.
+2026-04-27 17:31:07,230 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:31:07,230 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:31:07,231 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:31:07,232 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:31:07,234 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:31:07,234 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:34:07,243 - INFO - root - Logging system initialized.
+2026-04-27 17:34:08,722 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:34:08,723 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:34:08,723 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:34:08,723 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:34:08,724 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:34:08,724 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:34:18,466 - INFO - root - Logging system initialized.
+2026-04-27 17:34:19,980 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:34:19,981 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:34:19,981 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:34:19,981 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:34:19,982 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:34:19,983 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:34:52,641 - INFO - root - Logging system initialized.
+2026-04-27 17:34:54,016 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:34:54,016 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:34:54,017 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:34:54,017 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:34:54,018 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:34:54,019 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:39:41,116 - INFO - root - Logging system initialized.
+2026-04-27 17:39:42,754 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:39:42,754 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:39:42,754 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:39:42,755 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:39:42,756 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:39:42,757 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:41:32,071 - INFO - root - Logging system initialized.
+2026-04-27 17:41:33,264 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:41:33,264 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:41:33,264 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:41:33,265 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:41:33,265 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:41:33,266 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:41:42,041 - INFO - root - Logging system initialized.
+2026-04-27 17:41:42,846 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:41:42,846 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:41:42,846 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:41:42,846 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:41:42,846 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:41:42,847 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:42:43,219 - INFO - root - Logging system initialized.
+2026-04-27 17:42:44,305 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:42:44,306 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:42:44,306 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:42:44,308 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:42:44,309 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:42:44,310 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:42:58,052 - INFO - root - Logging system initialized.
+2026-04-27 17:43:00,233 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:43:00,240 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:43:00,242 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:43:00,243 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:43:00,244 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:43:00,250 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:43:19,304 - INFO - root - Logging system initialized.
+2026-04-27 17:43:20,061 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:43:20,061 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:43:20,061 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:43:20,061 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:43:20,061 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:43:20,061 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:43:21,811 - INFO - app.middleware - Incoming: GET / (User: Anonymous)
+2026-04-27 17:43:21,814 - INFO - app.middleware - Completed: GET / Status: 303 Time: 2.53ms
+2026-04-27 17:43:21,816 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 303 See Other"
+2026-04-27 17:43:21,818 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-27 17:43:21,823 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 4.44ms
+2026-04-27 17:43:21,824 - INFO - httpx - HTTP Request: GET http://testserver/login "HTTP/1.1 200 OK"
+2026-04-27 17:43:21,827 - INFO - app.middleware - Incoming: GET /customers (User: Anonymous)
+2026-04-27 17:43:21,830 - INFO - app.middleware - Completed: GET /customers Status: 303 Time: 2.86ms
+2026-04-27 17:43:21,834 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 303 See Other"
+2026-04-27 17:43:21,836 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-27 17:43:21,838 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 1.37ms
+2026-04-27 17:43:21,839 - INFO - httpx - HTTP Request: GET http://testserver/login "HTTP/1.1 200 OK"
+2026-04-27 17:43:55,086 - INFO - root - Logging system initialized.
+2026-04-27 17:43:56,275 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:43:56,279 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:43:56,282 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:43:56,284 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:43:56,284 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:43:56,284 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:43:59,376 - INFO - root - Logging system initialized.
+2026-04-27 17:44:00,700 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:44:00,701 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:44:00,701 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:44:00,702 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:44:00,703 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:44:00,704 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:47:32,853 - INFO - root - Logging system initialized.
+2026-04-27 17:47:33,583 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:47:33,583 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:47:33,583 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:47:33,583 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:47:33,584 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:47:33,584 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:47:35,506 - INFO - app.middleware - Incoming: GET / (User: Anonymous)
+2026-04-27 17:47:35,508 - INFO - app.middleware - Completed: GET / Status: 303 Time: 2.42ms
+2026-04-27 17:47:35,511 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 303 See Other"
+2026-04-27 17:47:35,513 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-27 17:47:35,518 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 4.64ms
+2026-04-27 17:47:35,519 - INFO - httpx - HTTP Request: GET http://testserver/login "HTTP/1.1 200 OK"
+2026-04-27 17:47:35,522 - INFO - app.middleware - Incoming: GET /customers (User: Anonymous)
+2026-04-27 17:47:35,524 - INFO - app.middleware - Completed: GET /customers Status: 303 Time: 2.45ms
+2026-04-27 17:47:35,526 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 303 See Other"
+2026-04-27 17:47:35,528 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-27 17:47:35,530 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 1.56ms
+2026-04-27 17:47:35,532 - INFO - httpx - HTTP Request: GET http://testserver/login "HTTP/1.1 200 OK"
+2026-04-27 17:47:48,961 - INFO - root - Logging system initialized.
+2026-04-27 17:47:49,972 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:47:49,973 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:47:49,973 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:47:49,974 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:47:49,975 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:47:49,977 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:48:46,384 - INFO - root - Logging system initialized.
+2026-04-27 17:48:47,393 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:48:47,394 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:48:47,394 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:48:47,395 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:48:47,396 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:48:47,397 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:49:27,820 - INFO - root - Logging system initialized.
+2026-04-27 17:49:29,292 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:49:29,294 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:49:29,294 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:49:29,295 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:49:29,295 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:49:29,296 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:49:32,173 - INFO - root - Logging system initialized.
+2026-04-27 17:49:33,414 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:49:33,415 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:49:33,415 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:49:33,416 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:49:33,417 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:49:33,418 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:50:43,867 - INFO - root - Logging system initialized.
+2026-04-27 17:50:44,969 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:50:44,970 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:50:44,970 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:50:44,970 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:50:44,972 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:50:44,973 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:50:53,162 - INFO - root - Logging system initialized.
+2026-04-27 17:50:54,315 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:50:54,315 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:50:54,315 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:50:54,316 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:50:54,317 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:50:54,318 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:51:13,254 - INFO - root - Logging system initialized.
+2026-04-27 17:51:15,225 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:51:15,229 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:51:15,229 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:51:15,231 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:51:15,232 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:51:15,233 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:56:33,388 - INFO - root - Logging system initialized.
+2026-04-27 17:56:34,508 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:56:34,508 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:56:34,509 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:56:34,509 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:56:34,511 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:56:34,512 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:57:24,842 - INFO - root - Logging system initialized.
+2026-04-27 17:57:25,210 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:57:25,210 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:57:25,210 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:57:25,210 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:57:25,210 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:57:25,210 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 17:57:26,622 - WARNING - app.errors - HTTP 404: Not Found
+2026-04-27 17:57:26,642 - ERROR - app.errors - Unhandled Exception: 'None' has no attribute 'role'
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 104, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 428, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\tests\test_errors.py", line 13, in trigger_404
+    raise HTTPException(status_code=404, detail="Not Found")
+fastapi.exceptions.HTTPException: 404: Not Found
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 118, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 59, in wrapped_app
+    response = await handler(conn, exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\app\errors.py", line 35, in http_exception_handler
+    return render(request, template, {"detail": exc.detail, "status_code": exc.status_code}, status_code=exc.status_code)
+  File "C:\Users\xxx\crm-portal\app\templating.py", line 55, in render
+    resp = templates.TemplateResponse(request, name, ctx)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\templating.py", line 210, in TemplateResponse
+    return _TemplateResponse(
+        template,
+    ...<4 lines>...
+        background=background,
+    )
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\templating.py", line 41, in __init__
+    content = template.render(context)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\xxx\crm-portal\templates\errors\404.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\Users\xxx\crm-portal\templates\base.html", line 69, in top-level template code
+    <p class="text-[9px] text-muted-foreground uppercase leading-none">{{ portal_user.role.value }}</p>
+    ^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+jinja2.exceptions.UndefinedError: 'None' has no attribute 'role'
+2026-04-27 17:57:27,562 - WARNING - app.errors - HTTP 400: HTMX Error
+2026-04-27 17:57:27,563 - INFO - httpx - HTTP Request: GET http://testserver/trigger-htmx "HTTP/1.1 400 Bad Request"
+2026-04-27 17:58:13,950 - INFO - root - Logging system initialized.
+2026-04-27 17:58:15,819 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 17:58:15,820 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 17:58:15,822 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 17:58:15,824 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 17:58:15,825 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 17:58:15,826 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:00:05,660 - INFO - root - Logging system initialized.
+2026-04-27 18:00:06,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:00:06,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:00:06,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:00:06,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:00:06,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:00:06,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:00:07,563 - WARNING - app.errors - HTTP 404: Not Found
+2026-04-27 18:00:07,649 - INFO - httpx - HTTP Request: GET http://testserver/trigger-404 "HTTP/1.1 404 Not Found"
+2026-04-27 18:00:07,654 - ERROR - app.errors - Unhandled Exception: Unhandled
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 118, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 104, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 428, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\tests\test_errors.py", line 17, in trigger_500
+    raise Exception("Unhandled")
+Exception: Unhandled
+2026-04-27 18:00:08,372 - WARNING - app.errors - HTTP 400: HTMX Error
+2026-04-27 18:00:08,373 - INFO - httpx - HTTP Request: GET http://testserver/trigger-htmx "HTTP/1.1 400 Bad Request"
+2026-04-27 18:00:37,150 - INFO - root - Logging system initialized.
+2026-04-27 18:00:38,368 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:00:38,369 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:00:38,369 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:00:38,369 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:00:38,370 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:00:38,371 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:00:58,218 - INFO - root - Logging system initialized.
+2026-04-27 18:00:58,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:00:58,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:00:58,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:00:58,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:00:58,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:00:58,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:01:00,085 - WARNING - app.errors - HTTP 404: Not Found
+2026-04-27 18:01:00,097 - INFO - httpx - HTTP Request: GET http://testserver/trigger-404 "HTTP/1.1 404 Not Found"
+2026-04-27 18:01:00,099 - ERROR - app.errors - Unhandled Exception: Unhandled
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 118, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 104, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 428, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\tests\test_errors.py", line 17, in trigger_500
+    raise Exception("Unhandled")
+Exception: Unhandled
+2026-04-27 18:01:00,111 - INFO - httpx - HTTP Request: GET http://testserver/trigger-500 "HTTP/1.1 500 Internal Server Error"
+2026-04-27 18:01:00,113 - ERROR - app.errors - Database Error: DB Fail
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 104, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 428, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\tests\test_errors.py", line 21, in trigger_db
+    raise SQLAlchemyError("DB Fail")
+sqlalchemy.exc.SQLAlchemyError: DB Fail
+2026-04-27 18:01:00,117 - INFO - httpx - HTTP Request: GET http://testserver/trigger-db "HTTP/1.1 500 Internal Server Error"
+2026-04-27 18:01:00,122 - WARNING - app.errors - HTTP 400: HTMX Error
+2026-04-27 18:01:00,123 - INFO - httpx - HTTP Request: GET http://testserver/trigger-htmx "HTTP/1.1 400 Bad Request"

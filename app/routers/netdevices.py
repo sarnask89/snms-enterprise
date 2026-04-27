@@ -10,6 +10,7 @@ from app import models
 from app.database import get_db
 from app.deps import require_business_write, verify_session
 from app.templating import render
+from app.security_utils import encrypt_password
 
 router = APIRouter(prefix="/net-devices", dependencies=[Depends(verify_session)])
 
@@ -124,7 +125,7 @@ def netdevice_new_form(request: Request, db: Session = Depends(get_db)):
         request,
         "netdevices/form.html",
         {
-            "title": "Nowe urządzenie",
+            "title": "Nowy urządzenie",
             "device": None,
             "networks": nets,
             "net_nodes": net_nodes,
@@ -150,6 +151,9 @@ def netdevice_new_submit(
     net_device_model_id: str | None = Form(None),
     status: str = Form("active"),
     notes: str | None = Form(None),
+    driver_type: str | None = Form(None),
+    mgmt_username: str | None = Form(None),
+    mgmt_password_encrypted: str | None = Form(None),
 ):
     nid = _opt_int(ip_network_id)
     mid = _opt_int(net_device_model_id)
@@ -174,6 +178,9 @@ def netdevice_new_submit(
         net_device_model_id=mid,
         status=models.NetDeviceStatus(status),
         notes=(notes or None) and notes.strip() or None,
+        driver_type=driver_type,
+        mgmt_username=mgmt_username,
+        mgmt_password_encrypted=encrypt_password(mgmt_password_encrypted),
     )
     db.add(d)
     db.commit()
@@ -219,6 +226,9 @@ def netdevice_edit_submit(
     net_device_model_id: str | None = Form(None),
     status: str = Form("active"),
     notes: str | None = Form(None),
+    driver_type: str | None = Form(None),
+    mgmt_username: str | None = Form(None),
+    mgmt_password_encrypted: str | None = Form(None),
 ):
     d = db.get(models.NetDevice, dev_id)
     if not d:
@@ -243,6 +253,10 @@ def netdevice_edit_submit(
     d.net_device_model_id = mid
     d.status = models.NetDeviceStatus(status)
     d.notes = (notes or None) and notes.strip() or None
+    d.driver_type = driver_type
+    d.mgmt_username = mgmt_username
+    if mgmt_password_encrypted:
+        d.mgmt_password_encrypted = encrypt_password(mgmt_password_encrypted)
     db.commit()
     return RedirectResponse("/net-devices", status_code=303)
 

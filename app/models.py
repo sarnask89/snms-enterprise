@@ -758,6 +758,11 @@ class NetDevice(Base):
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    # Management / Automation fields
+    driver_type: Mapped[str | None] = mapped_column(String(32), nullable=True)  # mikrotik_v7, dasan_nos
+    mgmt_username: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    mgmt_password_encrypted: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
     net_device_model: Mapped["NetDeviceModel | None"] = relationship(back_populates="devices")
     ip_network: Mapped["IpNetwork | None"] = relationship(back_populates="devices")
     net_node: Mapped["NetNode | None"] = relationship(back_populates="devices")

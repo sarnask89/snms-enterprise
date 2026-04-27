@@ -21,6 +21,7 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
     ("net_map", "Mapa topologii", "/net-nodes/topology", 20.5),
     ("nodes", "Urządzenia klientów", "/customer-devices", 21),
     ("netdevices", "Katalog osprzętu", "/net-devices", 22),
+    ("admin_discovery", "Odkrywanie Mikrotik", "/admin/discovery", 23),
     
     # Sieci
     ("ip_networks", "Adresacja IPv4", "/ip-networks", 30),
@@ -61,7 +62,7 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
 NAV_GROUPS: list[tuple[str, tuple[str, ...]]] = [
     ("Start", ("dashboard",)),
     ("Klienci", ("customers", "customer_add", "customer_groups")),
-    ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices")),
+    ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices", "admin_discovery")),
     ("Sieci IP", ("ip_networks", "net_usage")),
     ("Finanse", ("invoices", "subscriptions", "tariffs", "finances_payments", "finances_balance", "finances_cash")),
     ("Helpdesk", ("helpdesk", "helpdesk_queues", "helpdesk_categories", "helpdesk_reports")),

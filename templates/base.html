@@ -65,8 +65,10 @@
       <div class="p-4 border-t bg-muted/5">
         <div class="flex items-center gap-3">
           <div class="flex-1 min-w-0" x-show="sidebarOpen">
-            <p class="text-[11px] font-bold truncate leading-none mb-1">{{ portal_user.username }}</p>
+            <p class="text-[11px] font-bold truncate leading-none mb-1">{{ portal_user.username if portal_user else 'Gość' }}</p>
+            {% if portal_user and portal_user.role %}
             <p class="text-[9px] text-muted-foreground uppercase leading-none">{{ portal_user.role.value }}</p>
+            {% endif %}
           </div>
           <button onclick="toggleTheme()" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-muted-foreground transition-colors shrink-0">
             <i class="fas fa-moon dark:hidden text-xs"></i>

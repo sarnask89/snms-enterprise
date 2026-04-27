@@ -87,6 +87,61 @@
       </div>
       {% endcall %}
 
+      {% if customer %}
+      <!-- Sekcja: Sieć i Diagnostyka -->
+      {% call card(title="Sieć i Diagnostyka", subtitle="Podgląd na żywo i narzędzia sieciowe") %}
+      <div class="space-y-4">
+        {% for node in customer.nodes %}
+        <div class="p-4 border rounded-lg bg-muted/10 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                <i class="fas fa-desktop text-xs"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold">{{ node.hostname or 'Urządzenie' }}</div>
+                <div class="text-[10px] font-mono text-muted-foreground">{{ node.mac_address }} • {{ node.ip_address }}</div>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" 
+                      hx-post="/diagnostics/sync-lease/{{ node.id }}" 
+                      hx-target="#diag-result-{{ node.id }}"
+                      hx-indicator="#loading-{{ node.id }}"
+                      class="inline-flex items-center px-3 py-1.5 bg-background border border-primary text-primary rounded text-[10px] font-bold hover:bg-primary hover:text-white transition-colors">
+                <i class="fas fa-sync-alt mr-1"></i> SYNC LEASE
+              </button>
+              <button type="button" 
+                      hx-post="/diagnostics/ping/{{ node.id }}" 
+                      hx-target="#diag-result-{{ node.id }}"
+                      hx-indicator="#loading-{{ node.id }}"
+                      class="inline-flex items-center px-3 py-1.5 bg-background border rounded text-[10px] font-bold hover:bg-accent transition-colors">
+                <i class="fas fa-satellite-dish mr-1 text-primary"></i> PING
+              </button>
+              <button type="button" 
+                      hx-post="/diagnostics/olt-lookup/{{ node.id }}" 
+                      hx-target="#diag-result-{{ node.id }}"
+                      hx-indicator="#loading-{{ node.id }}"
+                      class="inline-flex items-center px-3 py-1.5 bg-background border rounded text-[10px] font-bold hover:bg-accent transition-colors">
+                <i class="fas fa-search-location mr-1 text-blue-500"></i> LOKALIZUJ ONU
+              </button>
+            </div>
+          </div>
+          
+          <div id="loading-{{ node.id }}" class="htmx-indicator py-2 flex items-center justify-center gap-2 text-[10px] text-muted-foreground italic">
+            <i class="fas fa-spinner fa-spin"></i> Trwa komunikacja z infrastrukturą...
+          </div>
+          <div id="diag-result-{{ node.id }}"></div>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-muted-foreground text-xs italic border border-dashed rounded-lg">
+          Brak przypisanych urządzeń sieciowych do tego abonenta.
+        </div>
+        {% endfor %}
+      </div>
+      {% endcall %}
+      {% endif %}
+
       <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
         <a href="/customers" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj zmiany</a>
         <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
