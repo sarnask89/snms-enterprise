@@ -1,9 +1,9 @@
 # Implementation Plan - Customer & Address Management
 
 ## Phase 1: Foundation & Address Discovery
-- [ ] Task: Implement TERYT address search backend
-    - [ ] Write unit tests for TERYT search service
-    - [ ] Implement search logic for cities/streets/buildings
+- [x] Task: Implement TERYT address search backend (a3ef152)
+    - [x] Write unit tests for TERYT search service
+    - [x] Implement search logic for cities/streets/buildings
 - [ ] Task: Create HTMX address lookup component
     - [ ] Create Jinja2 templates for address search result fragments
     - [ ] Implement live-search UI with HTMX
