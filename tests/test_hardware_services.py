@@ -87,16 +87,14 @@ async def test_mikrotik_discovery_import(session, monkeypatch):
     results = await get_discoverable_leases(session, dev)
 
     # 4. Assertions
-    assert len(results) == 2
+    assert len(results) == 1
     
-    match1 = results[0]
-    assert match1["mac"] == "AA:BB:CC:11:22:33"
-    assert match1["parsed"]["last_name"] == "Krupka"
-    assert match1["street_id"] == street.id
-    assert match1["customer_id"] == c.id
-    assert match1["can_auto_import"] is True
+    # Verify auto-imported node exists in DB
+    auto_node = session.query(models.Node).filter_by(mac_address="AA:BB:CC:11:22:33").first()
+    assert auto_node is not None
+    assert auto_node.customer_id == c.id
 
-    match2 = results[1]
+    match2 = results[0]
     assert match2["mac"] == "AA:BB:CC:44:55:66"
     assert match2["parsed"]["last_name"] == "Nowak"
     assert match2["street_id"] is None

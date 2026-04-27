@@ -532,3 +532,358 @@ sqlalchemy.exc.SQLAlchemyError: DB Fail
 2026-04-27 18:55:29,207 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
 2026-04-27 18:55:29,208 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
 2026-04-27 18:55:29,209 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:59:23,921 - INFO - root - Logging system initialized.
+2026-04-27 18:59:24,985 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:59:24,985 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:59:24,986 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:59:24,986 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:59:24,986 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:59:24,986 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:59:34,317 - INFO - root - Logging system initialized.
+2026-04-27 18:59:35,240 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:59:35,240 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:59:35,240 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:59:35,241 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:59:35,241 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:59:35,241 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 18:59:43,443 - INFO - root - Logging system initialized.
+2026-04-27 18:59:43,759 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 18:59:43,759 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 18:59:43,759 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 18:59:43,759 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 18:59:43,759 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 18:59:43,759 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:00:10,857 - INFO - root - Logging system initialized.
+2026-04-27 19:00:11,872 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:00:11,873 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:00:11,873 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:00:11,874 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:00:11,874 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:00:11,875 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:00:18,699 - INFO - root - Logging system initialized.
+2026-04-27 19:00:19,039 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:00:19,039 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:00:19,039 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:00:19,039 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:00:19,039 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:00:19,039 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:00:35,113 - INFO - root - Logging system initialized.
+2026-04-27 19:00:36,099 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:00:36,100 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:00:36,100 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:00:36,102 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:00:36,103 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:00:36,104 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:00:45,675 - INFO - root - Logging system initialized.
+2026-04-27 19:00:46,022 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:00:46,022 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:00:46,022 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:00:46,022 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:00:46,023 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:00:46,023 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:02:05,355 - INFO - root - Logging system initialized.
+2026-04-27 19:02:05,693 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:02:05,693 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:02:05,694 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:02:05,694 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:02:05,694 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:02:05,694 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:05:54,568 - INFO - root - Logging system initialized.
+2026-04-27 19:05:55,624 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:05:55,625 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:05:55,625 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:05:55,627 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:05:55,628 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:05:55,629 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:06:04,811 - INFO - root - Logging system initialized.
+2026-04-27 19:06:07,012 - INFO - root - Logging system initialized.
+2026-04-27 19:06:08,032 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:06:08,033 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:06:08,033 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:06:08,034 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:06:08,036 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:06:08,037 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:32:23,279 - INFO - root - Logging system initialized.
+2026-04-27 19:32:24,355 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:32:24,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:32:24,356 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:32:24,357 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:32:24,357 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:32:24,358 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:35:58,132 - INFO - root - Logging system initialized.
+2026-04-27 19:36:00,101 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:36:00,106 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:36:00,109 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:36:00,109 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:36:00,110 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:36:00,110 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:36:19,255 - INFO - root - Logging system initialized.
+2026-04-27 19:36:21,337 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:36:21,338 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:36:21,338 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:36:21,338 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:36:21,338 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:36:21,339 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:41:45,135 - INFO - root - Logging system initialized.
+2026-04-27 19:41:46,407 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:41:46,408 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:41:46,408 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:41:46,408 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:41:46,409 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:41:46,410 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:41:54,843 - INFO - root - Logging system initialized.
+2026-04-27 19:41:55,659 - INFO - app.services.mikrotik - Mikrotik: Pobieranie dzierżaw DHCP z https://10.0.222.86:443/rest
+2026-04-27 19:41:57,822 - ERROR - app.services.mikrotik - Mikrotik API error (get_leases): All connection attempts failed
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pool_request.request
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection.py", line 124, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_backends\auto.py", line 31, in connect_tcp
+    return await self._backend.connect_tcp(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_backends\anyio.py", line 113, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 23, in get_leases
+    resp = await client.get(f"{self.base_url}/ip/dhcp-server/lease")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1768, in get
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<9 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: All connection attempts failed
+2026-04-27 19:42:10,795 - INFO - root - Logging system initialized.
+2026-04-27 19:42:12,045 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:42:12,046 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:42:12,046 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:42:12,047 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:42:12,048 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:42:12,049 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:42:18,326 - INFO - root - Logging system initialized.
+2026-04-27 19:42:19,102 - INFO - app.services.mikrotik - Mikrotik: Pobieranie dzierżaw DHCP z http://10.0.222.86/rest
+2026-04-27 19:42:21,238 - ERROR - app.services.mikrotik - Mikrotik API error (get_leases): All connection attempts failed
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pool_request.request
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_async\connection.py", line 124, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_backends\auto.py", line 31, in connect_tcp
+    return await self._backend.connect_tcp(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_backends\anyio.py", line 113, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 23, in get_leases
+    resp = await client.get(f"{self.base_url}/ip/dhcp-server/lease")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1768, in get
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<9 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: All connection attempts failed
+2026-04-27 19:43:46,457 - INFO - root - Logging system initialized.
+2026-04-27 19:43:47,793 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 19:43:47,793 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 19:43:47,794 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 19:43:47,795 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 19:43:47,796 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 19:43:47,797 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 19:43:58,353 - INFO - root - Logging system initialized.
+2026-04-27 19:43:58,387 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-04-27 19:43:58,849 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 1167 dzierżaw z portu 8728.
+2026-04-27 20:40:02,259 - INFO - root - Logging system initialized.
+2026-04-27 20:40:03,983 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 20:40:03,990 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 20:40:03,993 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 20:40:03,999 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 20:40:04,003 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 20:40:04,008 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 20:40:16,094 - INFO - root - Logging system initialized.
+2026-04-27 20:40:16,579 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 20:40:16,579 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 20:40:16,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 20:40:16,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 20:40:16,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 20:40:16,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 20:40:20,588 - INFO - app.services.mikrotik_discovery - Rozpoczęcie procesu odkrywania dla urządzenia Test Router (192.168.1.1)
+2026-04-27 20:40:20,589 - WARNING - app.services.mikrotik_discovery - Brak hasła dla urządzenia Test Router. Autoryzacja może się nie powieść.
+2026-04-27 20:40:20,590 - INFO - app.services.mikrotik_discovery - Otrzymano 2 surowych dzierżaw DHCP z urządzenia Test Router
+2026-04-27 20:40:20,593 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:11:22:33: '1825 Krupka M/33 Mic25'
+2026-04-27 20:40:20,593 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:11:22:33: {'external_id': '1825', 'last_name': 'Krupka', 'apartment_number': '33', 'street_name': 'Adama Mickiewicza', 'street_number': '25'}
+2026-04-27 20:40:20,595 - DEBUG - app.services.mikrotik_discovery - Dopasowano ulicę: 'Adama Mickiewicza' (ID: 1) dla MAC AA:BB:CC:11:22:33
+2026-04-27 20:40:20,597 - INFO - app.services.mikrotik_discovery - Auto-import węzła dla MAC AA:BB:CC:11:22:33 do klienta ID 1
+2026-04-27 20:40:37,190 - INFO - root - Logging system initialized.
+2026-04-27 20:40:38,783 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 20:40:38,784 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 20:40:38,786 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 20:40:38,788 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 20:40:38,790 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 20:40:38,791 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 20:40:49,550 - INFO - root - Logging system initialized.
+2026-04-27 20:40:50,310 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 20:40:50,310 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 20:40:50,310 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 20:40:50,310 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 20:40:50,310 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 20:40:50,311 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 20:40:54,827 - INFO - app.services.mikrotik_discovery - Rozpoczęcie procesu odkrywania dla urządzenia Test Router (192.168.1.1)
+2026-04-27 20:40:54,827 - WARNING - app.services.mikrotik_discovery - Brak hasła dla urządzenia Test Router. Autoryzacja może się nie powieść.
+2026-04-27 20:40:54,827 - INFO - app.services.mikrotik_discovery - Otrzymano 2 surowych dzierżaw DHCP z urządzenia Test Router
+2026-04-27 20:40:54,830 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:11:22:33: '1825 Krupka M/33 Mic25'
+2026-04-27 20:40:54,831 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:11:22:33: {'external_id': '1825', 'last_name': 'Krupka', 'apartment_number': '33', 'street_name': 'Adama Mickiewicza', 'street_number': '25'}
+2026-04-27 20:40:54,832 - DEBUG - app.services.mikrotik_discovery - Dopasowano ulicę: 'Adama Mickiewicza' (ID: 1) dla MAC AA:BB:CC:11:22:33
+2026-04-27 20:40:54,842 - INFO - app.services.mikrotik_discovery - Auto-import węzła dla MAC AA:BB:CC:11:22:33 do klienta ID 1
+2026-04-27 20:40:54,847 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:44:55:66: '1826 Nowak slo12'
+2026-04-27 20:40:54,847 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:44:55:66: {'external_id': '1826', 'last_name': 'Nowak', 'apartment_number': '', 'street_name': 'Słowackiego', 'street_number': '12'}
+2026-04-27 20:40:54,848 - DEBUG - app.services.mikrotik_discovery - Nie dopasowano ulicy 'Słowackiego' dla MAC AA:BB:CC:44:55:66
+2026-04-27 20:40:54,849 - INFO - app.services.mikrotik_discovery - Zakończono odkrywanie dla Test Router. Zwrócono 1 nowych dzierżaw do ewentualnego importu.
+2026-04-27 20:41:12,282 - INFO - root - Logging system initialized.
+2026-04-27 20:41:14,577 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 20:41:14,578 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 20:41:14,578 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 20:41:14,580 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 20:41:14,582 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 20:41:14,583 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 20:41:40,256 - INFO - root - Logging system initialized.
+2026-04-27 20:41:41,312 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-27 20:41:41,312 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-27 20:41:41,312 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-27 20:41:41,313 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-27 20:41:41,313 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-27 20:41:41,313 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-27 20:41:46,264 - INFO - app.services.mikrotik_discovery - Rozpoczęcie procesu odkrywania dla urządzenia Test Router (192.168.1.1)
+2026-04-27 20:41:46,265 - WARNING - app.services.mikrotik_discovery - Brak hasła dla urządzenia Test Router. Autoryzacja może się nie powieść.
+2026-04-27 20:41:46,265 - INFO - app.services.mikrotik_discovery - Otrzymano 2 surowych dzierżaw DHCP z urządzenia Test Router
+2026-04-27 20:41:46,293 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:11:22:33: '1825 Krupka M/33 Mic25'
+2026-04-27 20:41:46,294 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:11:22:33: {'external_id': '1825', 'last_name': 'Krupka', 'apartment_number': '33', 'street_name': 'Adama Mickiewicza', 'street_number': '25'}
+2026-04-27 20:41:46,314 - DEBUG - app.services.mikrotik_discovery - Dopasowano ulicę: 'Adama Mickiewicza' (ID: 1) dla MAC AA:BB:CC:11:22:33
+2026-04-27 20:41:46,334 - INFO - app.services.mikrotik_discovery - Auto-import węzła dla MAC AA:BB:CC:11:22:33 do klienta ID 1
+2026-04-27 20:41:46,354 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:44:55:66: '1826 Nowak slo12'
+2026-04-27 20:41:46,357 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:44:55:66: {'external_id': '1826', 'last_name': 'Nowak', 'apartment_number': '', 'street_name': 'Słowackiego', 'street_number': '12'}
+2026-04-27 20:41:46,358 - DEBUG - app.services.mikrotik_discovery - Nie dopasowano ulicy 'Słowackiego' dla MAC AA:BB:CC:44:55:66
+2026-04-27 20:41:46,360 - INFO - app.services.mikrotik_discovery - Zakończono odkrywanie dla Test Router. Zwrócono 1 nowych dzierżaw do ewentualnego importu.
