@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 
 from app.config import CRM_ADMIN_PASSWORD, CRM_ADMIN_USER
 from app.main import app
+from app import models
 
 
 def _first_queue_id(html: str) -> str | None:
@@ -159,15 +160,81 @@ def test_net_device_create_edit_delete(admin_client):
 
 
 @pytest.mark.integration
+def test_tariff_create_edit_delete(admin_client, session):
+    client = admin_client
+    # 1. Create a VAT rate if not exists
+    vat = session.query(models.VatRate).first()
+    if not vat:
+        vat = models.VatRate(label="23%", rate_percent=23.0, is_default=True)
+        session.add(vat)
+        session.commit()
+    
+    tag = uuid.uuid4().hex[:6]
+    name = f"T-Fiber-{tag}"
+    
+    # 2. Create
+    r = client.post(
+        "/finances/tariffs/new",
+        data={
+            "name": name,
+            "monthly_price": "100.00",
+            "vat_rate_id": str(vat.id),
+            "speed_down_mbps": "1000",
+            "speed_up_mbps": "300",
+            "description": "pytest e2e"
+        },
+        follow_redirects=False
+    )
+    assert r.status_code == 303
+    
+    # 3. Verify in list
+    page = client.get("/finances/tariffs")
+    assert name in page.text
+    # Check if Brutto is calculated in HTML
+    assert "123.00 PLN" in page.text
+
+    # 4. Edit
+    m = re.search(f'href="/finances/tariffs/(\\d+)/edit"', page.text)
+    assert m
+    tid = m.group(1)
+    
+    r = client.post(
+        f"/finances/tariffs/{tid}/edit",
+        data={
+            "name": name + "-UPD",
+            "monthly_price": "200.00",
+            "vat_rate_id": str(vat.id),
+            "speed_down_mbps": "2000",
+            "speed_up_mbps": "600",
+            "active": "on"
+        },
+        follow_redirects=False
+    )
+    assert r.status_code == 303
+    
+    # 5. Delete
+    r = client.post(f"/finances/tariffs/{tid}/delete", follow_redirects=False)
+    assert r.status_code == 303
+
+
+@pytest.mark.integration
 def test_net_node_create_edit_delete(admin_client):
     client = admin_client
+    # Need a city for net node
+    page = client.get("/net-nodes/new")
+    m = re.search(r'<option value="(\d+)"[^>]*>Sandomierz', page.text)
+    city_id = m.group(1) if m else "1"
+
     r = client.post(
         "/net-nodes/new",
         data={
             "name": "E2E-POP-NODE",
+            "location_city_id": city_id,
             "location_type": "staircase",
             "location_detail": "klatka B",
             "street_number": "12",
+            "latitude": "50.68",
+            "longitude": "21.74",
             "info": "pytest POP",
         },
         follow_redirects=False,
