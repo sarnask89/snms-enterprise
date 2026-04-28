@@ -10,7 +10,7 @@ The CRM Portal is a centralized management system designed to streamline ISP ope
 ## Core Goals
 - **Data Integrity:** Leveraging official TERYT dictionaries for precise address management.
 - **Network Awareness:** Proactive monitoring, alerting, and diagnostics for network infrastructure.
-- **Automation:** Reducing manual tasks through automated billing, notifications, and scheduled tasks.
+- **Automation & Reliability:** Reducing manual tasks through automated billing and ensuring system stability through comprehensive automated testing.
 - **User Experience:** Utilizing HTMX and Tailwind for a modern, responsive, and efficient interface.
 
 ## Key Features
@@ -24,5 +24,6 @@ The CRM Portal is a centralized management system designed to streamline ISP ope
 - **Network Management:**
   - **MikroTik:** Diagnostics and management via REST-API, SSH, and SNMP data collection.
   - **Dasan OLTs:** Management through SSH (CLI-in-CLI) and SNMP data collection.
+  - **Hardware Mocking:** Isolated testing of hardware logic using a "Digital Twin" (MockMikrotikService).
 - **Service Providers:**
   - **Avios TV:** Integration with television service provisioning.

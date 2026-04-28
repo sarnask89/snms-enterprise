@@ -18,6 +18,8 @@
 
 ## External Integrations & Utilities
 - **SOAP Client:** Zeep (For integration with the GUS TERYT API)
+- **Geocoding:** GUGiK Geoportal (UUG/PUWG 1992) for authoritative Polish address-to-GPS conversion.
 - **Testing:** Pytest (A mature full-featured Python testing tool)
+- **E2E Testing:** Playwright (Automated browser testing for critical flows)
 - **HTTP Client:** HTTPX (Next-generation HTTP client for Python)
 - **Environment Management:** python-dotenv (For managing configuration via `.env` files)
