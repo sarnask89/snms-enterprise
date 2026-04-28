@@ -139,6 +139,10 @@ def init_all() -> None:
     # Rely only on metadata for now to ensure startup
     Base.metadata.create_all(bind=engine)
     run_migrations()
+    
+    from app.config_validation import report_startup_config
+    report_startup_config()
+    
     seed()
     ensure_default_catalog_seed()
     ensure_plan_extensions()
