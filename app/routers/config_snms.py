@@ -266,11 +266,19 @@ def number_plan_new_submit(
     next_number: int = Form(1),
     division_id: str | None = Form(None),
     active: str | None = Form(None),
+    is_default: str | None = Form(None),
 ):
     try:
         dt = models.NumberPlanDocType(doc_type)
     except ValueError:
         dt = models.NumberPlanDocType.invoice
+    
+    is_def = is_default in ("on", "true", "1", "yes")
+    if is_def:
+        # Reset current defaults for this type
+        for p in db.scalars(select(models.NumberPlan).where(models.NumberPlan.doc_type == dt)).all():
+            p.is_default = False
+
     did = int(division_id) if division_id and str(division_id).strip().isdigit() else None
     plan = models.NumberPlan(
         name=name.strip()[:128],
@@ -279,6 +287,7 @@ def number_plan_new_submit(
         next_number=max(1, int(next_number or 1)),
         division_id=did,
         active=active in ("on", "true", "1", "yes", None),
+        is_default=is_def,
     )
     db.add(plan)
     db.flush()
@@ -311,6 +320,7 @@ def number_plan_edit_submit(
     next_number: int = Form(1),
     division_id: str | None = Form(None),
     active: str | None = Form(None),
+    is_default: str | None = Form(None),
 ):
     row = db.get(models.NumberPlan, row_id)
     if not row:
@@ -319,6 +329,13 @@ def number_plan_edit_submit(
         dt = models.NumberPlanDocType(doc_type)
     except ValueError:
         dt = models.NumberPlanDocType.invoice
+    
+    is_def = is_default in ("on", "true", "1", "yes")
+    if is_def:
+        # Reset current defaults for this type
+        for p in db.scalars(select(models.NumberPlan).where(models.NumberPlan.doc_type == dt, models.NumberPlan.id != row_id)).all():
+            p.is_default = False
+
     did = int(division_id) if division_id and str(division_id).strip().isdigit() else None
     row.name = name.strip()[:128]
     row.doc_type = dt
@@ -326,6 +343,8 @@ def number_plan_edit_submit(
     row.next_number = max(1, int(next_number or 1))
     row.division_id = did
     row.active = active in ("on", "true", "1", "yes")
+    row.is_default = is_def
+    
     record_audit(db, "update", resource_type="number_plan", resource_id=row.id, details=f"name: {row.name}", request=request)
     db.commit()
     return RedirectResponse("/config/number-plans", status_code=303)

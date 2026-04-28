@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         {% do serialized_nodes.append({
             "id": n.id,
             "name": n.name,
-            "latitude": n.latitude,
-            "longitude": n.longitude,
+            "latitude": n.latitude|float if n.latitude else None,
+            "longitude": n.longitude|float if n.longitude else None,
             "node_type": n.node_type
         }) %}
     {% endfor %}

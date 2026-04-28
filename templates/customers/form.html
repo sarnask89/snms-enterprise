@@ -13,19 +13,40 @@
     {% endif %}
 
     <div class="space-y-6">
+      <!-- Hidden import data if present -->
+      {% if request.query_params.get('mac') %}
+      <input type="hidden" name="import_mac" value="{{ request.query_params.get('mac') }}">
+      <input type="hidden" name="import_ip" value="{{ request.query_params.get('ip') }}">
+      <input type="hidden" name="import_device_id" value="{{ request.query_params.get('device_id') }}">
+      {% endif %}
+
       <!-- Sekcja: Dane Konta -->
       {% call card(title="Identyfikacja i Status", subtitle="Podstawowe informacje o abonencie i umowie") %}
       <div class="grid gap-6">
-        {% if not customer %}
         <div class="space-y-2">
-          {{ label("Plan numeracji umowy", for="number_plan_id") }}
-          {{ combobox("number_plan_id", plan_options, placeholder="Wybierz plan numeracji...") }}
+          <div class="flex items-center justify-between">
+            {{ label("Plan numeracji umowy", for="number_plan_id") }}
+            <div id="number-preview"></div>
+          </div>
+          {% set plan_opts = [("", "— Wybierz plan (automatyczny numer) —")] %}
+          {% for p_id, p_label in plan_options %}
+            {% do plan_opts.append((p_id, p_label)) %}
+          {% endfor %}
+          {{ select("number_plan_id", plan_opts, selected_id=default_plan_id, id="number_plan_id", **{
+              "hx-get": "/customers/preview-number", 
+              "hx-target": "#number-preview",
+              "hx-trigger": "change, load"
+          }) }}
+          {% if customer %}
+          <p class="text-[10px] text-muted-foreground uppercase italic">Wybór planu spowoduje nadanie NOWEGO numeru.</p>
+          {% endif %}
         </div>
-        {% endif %}
 
         <div class="space-y-2">
-          {{ label("Numer abonenta / ID", for="customer_code") }}
-          {{ input("customer_code", value=customer.customer_code if customer else "", id="customer_code", placeholder="Zostaw puste dla auto-generacji", required=customer is not none) }}
+          {{ label("Obecny Numer abonenta / ID", for="customer_code_display") }}
+          <input type="text" id="customer_code_display" value="{{ customer.customer_code if customer else '' }}" disabled class="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm font-mono font-bold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+          <input type="hidden" name="customer_code" value="{{ customer.customer_code if customer else '' }}">
+          <p class="text-[10px] text-muted-foreground italic">Numer jest nadawany automatycznie na podstawie wybranego planu.</p>
         </div>
 
         <div class="space-y-2">
@@ -40,11 +61,11 @@
       <div class="grid gap-6">
         <div class="space-y-2">
           {{ label("Imię", for="first_name") }}
-          {{ input("first_name", value=customer.first_name if customer else "", id="first_name", required=True) }}
+          {{ input("first_name", value=customer.first_name if customer else "Abonent", id="first_name", required=True) }}
         </div>
         <div class="space-y-2">
           {{ label("Nazwisko", for="last_name") }}
-          {{ input("last_name", value=customer.last_name if customer else "", id="last_name", required=True) }}
+          {{ input("last_name", value=customer.last_name if customer else (pre_last_name or ""), id="last_name", required=True) }}
         </div>
         <div class="space-y-2">
           {{ label("Adres e-mail", for="email") }}
@@ -63,10 +84,10 @@
       {{ teryt_lookup(
           city_id=customer.location_city_id if customer else default_city_id,
           city_name=customer.city.name if customer and customer.city else "",
-          street_id=customer.location_street_id if customer else "",
-          street_name=customer.street.name if customer and customer.street else "",
-          street_number=customer.street_number if customer else "",
-          apartment_number=customer.apartment_number if customer else "",
+          street_id=customer.location_street_id if customer else (pre_street_id or ""),
+          street_name=customer.street.name if customer and customer.street else (pre_street_name or ""),
+          street_number=customer.street_number if customer else (pre_street_number or ""),
+          apartment_number=customer.apartment_number if customer else (pre_apartment_number or ""),
           city_options=city_options
       ) }}
 
@@ -112,11 +133,11 @@
                 <i class="fas fa-sync-alt mr-1"></i> SYNC LEASE
               </button>
               <button type="button" 
-                      hx-post="/diagnostics/ping/{{ node.id }}" 
+                      hx-post="/diagnostics/check/{{ node.id }}" 
                       hx-target="#diag-result-{{ node.id }}"
                       hx-indicator="#loading-{{ node.id }}"
                       class="inline-flex items-center px-3 py-1.5 bg-background border rounded text-[10px] font-bold hover:bg-accent transition-colors">
-                <i class="fas fa-satellite-dish mr-1 text-primary"></i> PING
+                <i class="fas fa-satellite-dish mr-1 text-primary"></i> SPRAWDŹ
               </button>
               <button type="button" 
                       hx-post="/diagnostics/olt-lookup/{{ node.id }}" 

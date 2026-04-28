@@ -2,8 +2,9 @@ import re
 
 # Mapowanie skrótów ulic na pełne nazwy w systemie CRM
 SUFFIX_MAP = {
-    "kos": "Romana Kosely",
+    "kos": "Romana Koseły",
     "kro": "Tadeusza Króla",
+    "krol": "Tadeusza Króla",
     "mic": "Adama Mickiewicza",
     "mac": "Ignacego Maciejowskiego",
     "mil": "Milberta",
@@ -19,6 +20,8 @@ SUFFIX_MAP = {
     "zar": "Zarzekowice",
     "zam": "Zamkowa",
     "obr": "Obrońców",
+    "zol": "Żółkiewskiego",
+
 }
 
 def parse_mikrotik_comment(comment: str):

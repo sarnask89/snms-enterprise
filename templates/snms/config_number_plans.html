@@ -23,14 +23,19 @@
                     </tr>
                 </thead>
                 <tbody class="[&_tr:last-child]:border-0">
-                    {% for p in number_plans %}
+                    {% for p in rows %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
-                        <td class="p-4 align-middle font-bold text-xs">{{ p.name }}</td>
+                        <td class="p-4 align-middle font-bold text-xs">
+                            {{ p.name }}
+                            {% if p.is_default %}
+                            <span class="ml-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[8px] font-bold text-primary uppercase tracking-tighter border border-primary/20">Domyślny</span>
+                            {% endif %}
+                        </td>
                         <td class="p-4 align-middle">
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">{{ p.item_type.value }}</span>
+                            <span class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">{{ p.doc_type.value }}</span>
                         </td>
                         <td class="p-4 align-middle font-mono text-[11px] text-primary"><code>{{ p.pattern_template }}</code></td>
-                        <td class="p-4 align-middle font-mono text-xs">{{ p.current_value }}</td>
+                        <td class="p-4 align-middle font-mono text-xs">{{ p.next_number }}</td>
                         <td class="p-4 align-middle text-right">
                             <div class="flex justify-end gap-1">
                                 <a href="/config/number-plans/{{ p.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent transition-colors">

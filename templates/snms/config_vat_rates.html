@@ -22,10 +22,10 @@
                     </tr>
                 </thead>
                 <tbody class="[&_tr:last-child]:border-0">
-                    {% for v in vat_rates %}
+                    {% for v in rows %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle font-bold text-xs">{{ v.label }}</td>
-                        <td class="p-4 align-middle font-mono text-xs">{{ v.value }}%</td>
+                        <td class="p-4 align-middle font-mono text-xs">{{ v.rate_percent }}%</td>
                         <td class="p-4 align-middle">
                             {% if v.is_default %}
                                 <span class="inline-flex items-center rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-primary/20">DOMYŚLNA</span>

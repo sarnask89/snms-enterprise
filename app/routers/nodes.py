@@ -57,6 +57,15 @@ def _render_node_form(
         if node
         else "Nowy komputer / urządzenie klienta"
     )
+    
+    # Pobierz aktywną subskrypcję dla tego węzła
+    active_sub = None
+    if node:
+        active_sub = db.scalar(
+            select(models.Subscription)
+            .where(models.Subscription.node_id == node.id, models.Subscription.active == True)
+        )
+
     return render(
         request,
         "nodes/form.html",
@@ -69,6 +78,7 @@ def _render_node_form(
             "ip_suggestions": ip_suggestions,
             "sticky": sticky,
             "ip_error": ip_error,
+            "active_sub": active_sub,
         },
         status_code=status_code,
     )
@@ -178,6 +188,17 @@ def node_list(
         stmt = stmt.where(or_(*parts))
     rows = list(db.scalars(stmt).all())
     customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    
+    # Pobierz aktywne subskrypcje dla wyświetlanych węzłów
+    node_ids = [n.id for n in rows]
+    subs = {}
+    if node_ids:
+        active_subs = db.scalars(
+            select(models.Subscription)
+            .where(models.Subscription.node_id.in_(node_ids), models.Subscription.active == True)
+        ).all()
+        subs = {s.node_id: s for s in active_subs}
+
     return render(
         request,
         "nodes/list.html",
@@ -185,6 +206,7 @@ def node_list(
             "title": "Komputery / urządzenia klientów",
             "nodes": rows,
             "customers": customers,
+            "subscriptions": subs,
             "search_q": q or "",
         },
     )
@@ -312,8 +334,24 @@ def node_notice_delete(notice_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/new", response_class=HTMLResponse)
-def node_new_form(request: Request, db: Session = Depends(get_db)):
-    return _render_node_form(request, db, node=None)
+def node_new_form(
+    request: Request, 
+    db: Session = Depends(get_db),
+    customer_id: int | None = Query(None),
+    mac_address: str | None = Query(None),
+    ip_address: str | None = Query(None),
+    net_device_id: int | None = Query(None),
+):
+    sticky = None
+    if customer_id or mac_address or ip_address or net_device_id:
+        sticky = {
+            "customer_id": customer_id,
+            "mac_address": mac_address or "",
+            "ip_address": ip_address or "",
+            "net_device_id": net_device_id or "",
+            "name": f"node-{mac_address.replace(':', '')[-4:]}" if mac_address else ""
+        }
+    return _render_node_form(request, db, node=None, sticky=sticky)
 
 
 @router.post("/new", dependencies=[Depends(require_business_write)])

@@ -32,11 +32,19 @@
                             {% set c = customers.get(s.customer_id) %}
                             <div class="font-bold text-xs">{{ c.last_name if c else '—' }}</div>
                             <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else s.customer_id }}</div>
+                            {% if s.node_id %}
+                                <div class="mt-1 flex items-center text-[9px] text-blue-600 font-bold uppercase">
+                                    <i class="fas fa-microchip mr-1"></i> URZĄDZENIE: {{ s.node.hostname if s.node else s.node_id }}
+                                </div>
+                            {% endif %}
                         </td>
                         <td class="p-4 align-middle">
                             {% set t = tariffs.get(s.tariff_id) %}
                             <div class="font-semibold text-xs text-primary">{{ t.name if t else s.tariff_id }}</div>
-                            <div class="text-[9px] text-muted-foreground font-mono uppercase">{{ "%.2f"|format(t.monthly_price|float) if t else '0.00' }} PLN</div>
+                            <div class="text-[9px] text-muted-foreground font-mono uppercase">
+                                {{ "%.2f"|format(t.monthly_price|float) if t else '0.00' }} NET / 
+                                <span class="font-bold text-primary">{{ "%.2f"|format(t.monthly_price_gross|float) if t else '0.00' }} BRUT</span>
+                            </div>
                         </td>
                         <td class="p-4 align-middle text-xs">{{ s.start_date }}</td>
                         <td class="p-4 align-middle text-xs">{{ s.end_date or "—" }}</td>

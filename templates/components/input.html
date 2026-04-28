@@ -8,7 +8,7 @@
 {% macro input(name, value="", type="text", placeholder="", id=None, class="", required=False) %}
 <input type="{{ type }}"
        name="{{ name }}"
-       value="{{ value }}"
+       value="{{ value if value is not none else '' }}"
        placeholder="{{ placeholder }}"
        {% if id %}id="{{ id }}"{% endif %}
        {% if required %}required{% endif %}
@@ -33,7 +33,7 @@
     <i class="fas {{ icon }} absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
     <input type="{{ type }}"
            name="{{ name }}"
-           value="{{ value }}"
+           value="{{ value if value is not none else '' }}"
            placeholder="{{ placeholder }}"
            class="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 {{ class }}"
            {{ kwargs | xmlattr }}>

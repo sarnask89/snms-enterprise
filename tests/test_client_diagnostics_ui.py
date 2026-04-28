@@ -35,6 +35,7 @@ def test_node_edit_form_has_diagnostics(admin_client, session):
     # Verify Network & Diagnostics card is present
     assert "Network &amp; Diagnostics" in resp.text or "Network & Diagnostics" in resp.text or "Diagnostyka" in resp.text
     
-    # Verify HTMX buttons for Ping and OLT Lookup
-    assert f"/diagnostics/ping/{n.id}" in resp.text
+    # Verify HTMX buttons for Check, OLT Lookup, Sync
+    assert f"/diagnostics/check/{n.id}" in resp.text
+
     assert f"/diagnostics/olt-lookup/{n.id}" in resp.text

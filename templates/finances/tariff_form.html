@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, label %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a href="/finances/tariffs" class="text-xs font-bold text-primary flex items-center mb-1">
+            <i class="fas fa-arrow-left mr-1"></i> Powrót do listy
+        </a>
+        <h1 class="text-2xl font-bold tracking-tight">{{ title }}</h1>
+    </div>
+
+    <form method="post" action="{{ '/finances/tariffs/' ~ row.id ~ '/edit' if row else '/finances/tariffs/new' }}" 
+          x-data="{ 
+            net: {{ row.monthly_price if row else 0 }}, 
+            gross: {{ row.monthly_price_gross if row else 0 }},
+            vat: {{ row.vat_rate.rate_percent if row and row.vat_rate else 23 }},
+            updateGross() { this.gross = (parseFloat(this.net) * (1 + this.vat/100)).toFixed(2) },
+            updateNet() { this.net = (parseFloat(this.gross) / (1 + this.vat/100)).toFixed(2) }
+          }">
+        <div class="space-y-6">
+            {% call card(title="Dane taryfy", subtitle="Konfiguracja parametrów usługi") %}
+            <div class="grid gap-6">
+                <div class="space-y-2">
+                    {{ label("Nazwa taryfy", for="name") }}
+                    {{ input("name", value=row.name if row else "", id="name", required=True, placeholder="np. Internet Fiber 300") }}
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        {{ label("Pobieranie (Mbps)", for="speed_down_mbps") }}
+                        {{ input("speed_down_mbps", type="number", value=row.speed_down_mbps if row else "", id="speed_down_mbps", placeholder="300") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Wysyłanie (Mbps)", for="speed_up_mbps") }}
+                        {{ input("speed_up_mbps", type="number", value=row.speed_up_mbps if row else "", id="speed_up_mbps", placeholder="30") }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        {{ label("Stawka VAT", for="vat_rate_id") }}
+                        <select name="vat_rate_id" id="vat_rate_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                @change="vat = $el.options[$el.selectedIndex].text.match(/\((.*)%\)/)[1]; updateGross()">
+                            {% for v in vat_rates %}
+                            <option value="{{ v.id }}" {% if row and row.vat_rate_id == v.id %}selected{% endif %}>{{ v.label }} ({{ v.rate_percent }}%)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div></div> <!-- empty cell -->
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        {{ label("Cena Netto (PLN)", for="monthly_price") }}
+                        {{ input("monthly_price", value="%.2f"|format(row.monthly_price|float) if row else "", id="monthly_price", required=True, placeholder="79.00", **{"x-model": "net", "@input": "updateGross()"}) }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Cena Brutto (PLN)", for="gross_input") }}
+                        <input type="text" id="gross_input" class="flex h-10 w-full rounded-md border border-input bg-primary/5 px-3 py-2 text-sm font-bold text-primary ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" 
+                               x-model="gross" @input="updateNet()" placeholder="79.00">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    {{ label("Opis taryfy", for="description") }}
+                    <textarea name="description" id="description" rows="3" 
+                              class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder="Szczegóły pakietu...">{{ row.description if row else "" }}</textarea>
+                </div>
+
+                <div class="flex items-center space-x-2 p-4 border rounded-lg bg-muted/10">
+                    <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary" {% if not row or row.active %}checked{% endif %}>
+                    <div class="grid gap-1.5 leading-none">
+                        {{ label("Taryfa aktywna", for="active", class="text-sm font-bold") }}
+                        <p class="text-[10px] text-muted-foreground uppercase">Pozwala na przypisywanie taryfy do nowych subskrypcji.</p>
+                    </div>
+                </div>
+            </div>
+            {% endcall %}
+
+            <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+                <a href="/finances/tariffs" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                    <i class="fas fa-save mr-2 text-xs"></i> Zapisz taryfę
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

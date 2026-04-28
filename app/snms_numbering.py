@@ -12,27 +12,30 @@ from app import models
 def allocate_next_document_number(db: Session, plan: models.NumberPlan) -> str:
     """
     Zwraca kolejny numer i zwiększa licznik planu.
-    Wzorzec: placeholdery {year} (4 cyfry) i {n} (numer).
-    Obsługuje wzorce bez obu placeholderów, używając tylko dostępnych.
+    Wzorzec: {year}, {month}, {day}, {n} (liczba).
     """
-    y = date.today().year
+    today = date.today()
     n = max(1, int(plan.next_number or 1))
     tpl = (plan.pattern_template or "{year}/{n}").strip()
     
-    # Przygotuj dane do formatowania
     fmt_data = {
-        "year": str(y),
-        "n": f"{n:04d}" # Domyślnie 4 cyfry
+        "year": today.year,
+        "month": f"{today.month:02d}",
+        "day": f"{today.day:02d}",
+        "n": n
     }
     
-    # Sprytne formatowanie: usuń nieobecne klucze z tpl jeśli format() by rzucił KeyError
-    # Ale format() rzuca KeyError tylko gdy w tpl SĄ klamry których nie ma w fmt_data.
-    # Jeśli w fmt_data są klucze których nie ma w tpl, jest ok.
+    # Próba formatowania. Jeśli w tpl jest samo {n}, zadziała domyślne str(n).
+    # Jeśli jest {n:04d}, zadziała padding.
     try:
-        rendered = tpl.format(**fmt_data)
-    except (KeyError, ValueError) as e:
-        # Fallback jeśli formatowanie zawiedzie
-        rendered = f"{tpl}-{y}-{n:04d}"
+        # Jeśli tpl nie ma jawnego formatu dla n, wymuś 4 cyfry dla kompatybilności wstecznej
+        # ale tylko jeśli użytkownik nie użył klamerek z formatowaniem.
+        if "{n}" in tpl and "{n:" not in tpl:
+            rendered = tpl.replace("{n}", f"{n:04d}").format(**fmt_data)
+        else:
+            rendered = tpl.format(**fmt_data)
+    except (KeyError, ValueError):
+        rendered = f"{tpl}-{today.year}-{n:04d}"
         
     plan.next_number = n + 1
     db.add(plan)

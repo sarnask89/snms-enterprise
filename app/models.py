@@ -265,10 +265,26 @@ class Tariff(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     monthly_price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    vat_rate_id: Mapped[int | None] = mapped_column(
+        ForeignKey("vat_rates.id", ondelete="SET NULL"), nullable=True
+    )
+    speed_down_mbps: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    speed_up_mbps: Mapped[int | None] = mapped_column(Integer, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     subscriptions: Mapped[list["Subscription"]] = relationship(back_populates="tariff")
+    vat_rate: Mapped["VatRate | None"] = relationship()
+
+    @property
+    def monthly_price_gross(self) -> Decimal:
+        """Zwraca wyliczoną cenę brutto."""
+        from decimal import Decimal
+        net = Decimal(str(self.monthly_price))
+        if not self.vat_rate:
+            return net
+        rate = Decimal(str(self.vat_rate.rate_percent))
+        return (net * (Decimal("1") + (rate / Decimal("100")))).quantize(Decimal("0.01"))
 
 
 class Node(Base):
@@ -314,6 +330,10 @@ class Node(Base):
         cascade="all, delete-orphan",
     )
     notices: Mapped[list["NodeNotice"]] = relationship(
+        back_populates="node",
+        cascade="all, delete-orphan",
+    )
+    subscriptions: Mapped[list["Subscription"]] = relationship(
         back_populates="node",
         cascade="all, delete-orphan",
     )
@@ -381,6 +401,9 @@ class Subscription(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=False)
+    node_id: Mapped[int | None] = mapped_column(
+        ForeignKey("nodes.id", ondelete="SET NULL"), nullable=True
+    )
     tariff_id: Mapped[int] = mapped_column(ForeignKey("tariffs.id"), nullable=False)
     start_date: Mapped[date] = mapped_column(Date, default=date.today, nullable=False)
     end_date: Mapped[date | None] = mapped_column(Date, nullable=True)
@@ -397,6 +420,7 @@ class Subscription(Base):
 
     customer: Mapped["Customer"] = relationship(back_populates="subscriptions")
     tariff: Mapped["Tariff"] = relationship(back_populates="subscriptions")
+    node: Mapped["Node | None"] = relationship(back_populates="subscriptions")
 
 
 class Division(Base):
@@ -588,6 +612,7 @@ class NumberPlan(Base):
         String(128), default="FV/{year}/{n}", nullable=False
     )
     next_number: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    is_default: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     division_id: Mapped[int | None] = mapped_column(
         ForeignKey("divisions.id", ondelete="SET NULL"),
         nullable=True,
@@ -1030,8 +1055,20 @@ class NavMenuItem(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     key: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     label: Mapped[str] = mapped_column(String(128), nullable=False)
+    icon: Mapped[str | None] = mapped_column(String(64), nullable=True)
     url_path: Mapped[str] = mapped_column(String(255), nullable=False)
+    parent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("nav_menu_items.id", ondelete="CASCADE"), nullable=True
+    )
     sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    category: Mapped[str] = mapped_column(String(64), default="main", nullable=False)
+
+    children: Mapped[list["NavMenuItem"]] = relationship(
+        back_populates="parent", cascade="all, delete-orphan"
+    )
+    parent: Mapped[NavMenuItem | None] = relationship(
+        back_populates="children", remote_side=[id]
+    )
 
 
 class RoleMenuPermission(Base):

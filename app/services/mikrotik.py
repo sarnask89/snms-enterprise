@@ -71,18 +71,88 @@ class MikrotikService:
                 
         return await asyncio.to_thread(sync_upsert)
 
-    async def remote_ping(self, target: str, count: int = 5):
-        """Wykonuje ping z routera do celu."""
+    async def remote_ping(self, target: str, count: int = 4):
+        """Wykonuje ping ICMP z routera do celu."""
         def sync_ping():
             try:
                 conn, api = self._get_api()
-                ping_resource = api.get_resource('/ping')
-                # Wait, ping usually doesn't work directly with simple GET, it's an API call
-                res = api.get_binary_resource('/').call('ping', {'address': target.encode(), 'count': str(count).encode()})
+                res = api.get_binary_resource('/').call('ping', {
+                    'address': target.encode(), 
+                    'count': str(count).encode()
+                })
                 conn.disconnect()
-                return [{"result": "Ping executed"}] # simplified
+                decoded = []
+                for r in res:
+                    item = {}
+                    for k, v in r.items():
+                        item[k.decode() if isinstance(k, bytes) else k] = \
+                            v.decode() if isinstance(v, bytes) else v
+                    decoded.append(item)
+                return decoded
             except Exception as e:
                 logger.error(f"Mikrotik API error (ping): {e}", exc_info=True)
                 return []
-                
         return await asyncio.to_thread(sync_ping)
+
+    async def remote_arp_ping(self, target: str, count: int = 3):
+        """Wykonuje ARP ping. Automatycznie wykrywa interfejs z tablicy ARP."""
+        def sync_arp_ping():
+            try:
+                conn, api = self._get_api()
+                arp_res = api.get_resource('/ip/arp')
+                entry = arp_res.get(address=target)
+                if not entry:
+                    conn.disconnect()
+                    return [{"status": "ARP entry not found"}]
+                interface = entry[0].get('interface')
+                if not interface:
+                    conn.disconnect()
+                    return [{"status": "Interface not found in ARP"}]
+                res = api.get_binary_resource('/').call('ping', {
+                    'address': target.encode(), 
+                    'count': str(count).encode(),
+                    'arp-ping': b'yes',
+                    'interface': interface.encode()
+                })
+                conn.disconnect()
+                decoded = []
+                for r in res:
+                    item = {"interface": interface}
+                    for k, v in r.items():
+                        item[k.decode() if isinstance(k, bytes) else k] = \
+                            v.decode() if isinstance(v, bytes) else v
+                    decoded.append(item)
+                return decoded
+            except Exception as e:
+                logger.error(f"Mikrotik API error (arp-ping): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(sync_arp_ping)
+
+    async def get_lease_info(self, mac: str) -> Dict[str, Any]:
+        """Pobiera status dzierżawy DHCP dla danego adresu MAC."""
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                leases_resource = api.get_resource('/ip/dhcp-server/lease')
+                data = leases_resource.get(**{'mac-address': mac})
+                conn.disconnect()
+                return data[0] if data else None
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_lease_info): {e}", exc_info=True)
+                return None
+        return await asyncio.to_thread(fetch)
+
+    async def get_bridge_host_info(self, mac: str) -> List[Dict[str, Any]]:
+        """Sprawdza czy adres MAC jest widoczny w tablicy hostów bridge."""
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                bridge_resource = api.get_resource('/interface/bridge/host')
+                data = bridge_resource.get(**{'mac-address': mac})
+                conn.disconnect()
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_bridge_host): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(fetch)
+

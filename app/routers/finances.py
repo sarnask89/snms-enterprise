@@ -238,10 +238,22 @@ def tariff_add_alias():
 @router.get("/tariffs", response_class=HTMLResponse)
 def tariff_list(request: Request, db: Session = Depends(get_db)):
     rows = list(db.scalars(select(models.Tariff).order_by(models.Tariff.id)).all())
+    vat_rates = list(db.scalars(select(models.VatRate).order_by(models.VatRate.sort_order)).all())
+    
+    # Znajdź domyślną stawkę
+    default_vat_id = next((v.id for v in vat_rates if v.is_default), None)
+    if not default_vat_id and vat_rates:
+        default_vat_id = vat_rates[0].id
+
     return render(
         request,
         "finances/tariffs.html",
-        {"title": "Taryfy", "tariffs": rows},
+        {
+            "title": "Taryfy", 
+            "tariffs": rows, 
+            "vat_rates": vat_rates,
+            "default_vat_id": default_vat_id
+        },
     )
 
 
@@ -251,11 +263,17 @@ def tariff_new(
     db: Session = Depends(get_db),
     name: str = Form(...),
     monthly_price: str = Form(...),
+    vat_rate_id: int | None = Form(None),
+    speed_down_mbps: int | None = Form(None),
+    speed_up_mbps: int | None = Form(None),
     description: str | None = Form(None),
 ):
     t = models.Tariff(
         name=name.strip(),
         monthly_price=Decimal(monthly_price.replace(",", ".")),
+        vat_rate_id=vat_rate_id,
+        speed_down_mbps=speed_down_mbps,
+        speed_up_mbps=speed_up_mbps,
         description=(description or None) and description.strip() or None,
     )
     db.add(t)
@@ -265,10 +283,65 @@ def tariff_new(
     return RedirectResponse("/finances/tariffs", status_code=303)
 
 
+@router.get("/tariffs/{tariff_id}/edit", response_class=HTMLResponse)
+def tariff_edit_form(tariff_id: int, request: Request, db: Session = Depends(get_db)):
+    t = db.get(models.Tariff, tariff_id)
+    if not t:
+        return RedirectResponse("/finances/tariffs", status_code=302)
+    vat_rates = list(db.scalars(select(models.VatRate).order_by(models.VatRate.sort_order)).all())
+    return render(
+        request,
+        "finances/tariff_form.html",
+        {"title": f"Edycja taryfy: {t.name}", "row": t, "vat_rates": vat_rates},
+    )
+
+
+@router.post("/tariffs/{tariff_id}/edit", dependencies=[Depends(require_business_write)])
+def tariff_edit_submit(
+    tariff_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    name: str = Form(...),
+    monthly_price: str = Form(...),
+    vat_rate_id: int | None = Form(None),
+    speed_down_mbps: int | None = Form(None),
+    speed_up_mbps: int | None = Form(None),
+    description: str | None = Form(None),
+    active: str | None = Form(None),
+):
+    t = db.get(models.Tariff, tariff_id)
+    if not t:
+        return RedirectResponse("/finances/tariffs", status_code=303)
+
+    t.name = name.strip()
+    t.monthly_price = Decimal(monthly_price.replace(",", "."))
+    t.vat_rate_id = vat_rate_id
+    t.speed_down_mbps = speed_down_mbps
+    t.speed_up_mbps = speed_up_mbps
+    t.description = (description or None) and description.strip() or None
+    t.active = active in ("on", "true", "1", "yes")
+
+    db.commit()
+    record_audit(db, "update", resource_type="tariff", resource_id=t.id, details=f"name: {t.name}", request=request)
+    return RedirectResponse("/finances/tariffs", status_code=303)
+
+
 @router.post("/tariffs/{tariff_id}/delete", dependencies=[Depends(require_business_write)])
 def tariff_delete(tariff_id: int, request: Request, db: Session = Depends(get_db)):
     t = db.get(models.Tariff, tariff_id)
     if t:
+        # Sprawdź czy taryfa jest używana
+        from sqlalchemy import func
+        usage_count = db.scalar(
+            select(func.count(models.Subscription.id)).where(models.Subscription.tariff_id == tariff_id)
+        )
+        if usage_count > 0:
+            # Nie usuwamy jeśli jest używana, przekazujemy błąd przez URL
+            return RedirectResponse(
+                f"/finances/tariffs?error=Nie+można+usunąć+taryfy+będącej+w+użyciu+({usage_count}+subskrypcji)",
+                status_code=303
+            )
+
         record_audit(db, "delete", resource_type="tariff", resource_id=t.id, details=f"name: {t.name}", request=request)
         db.delete(t)
         db.commit()

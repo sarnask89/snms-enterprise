@@ -11,10 +11,14 @@ async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled Exception: {str(exc)}", exc_info=True)
     
     if _is_htmx(request):
-        return _render_htmx_error("Wystąpił nieoczekiwany błąd serwera.")
+        return _render_htmx_error(f"Serwer zwrócił błąd: {str(exc)}")
     
     user = getattr(request.state, "portal_user", None)
-    return render(request, "errors/500.html", {"detail": "Błąd serwera", "portal_user": user}, status_code=500)
+    try:
+        return render(request, "errors/500.html", {"detail": str(exc), "portal_user": user}, status_code=500)
+    except Exception as e:
+        logger.error(f"Double fault in 500 handler: {str(e)}")
+        return HTMLResponse("<h1>500 Internal Server Error</h1>", status_code=500)
 
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     """Handler for database errors."""
@@ -24,7 +28,10 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
         return _render_htmx_error("Błąd bazy danych. Spróbuj ponownie później.")
     
     user = getattr(request.state, "portal_user", None)
-    return render(request, "errors/db_error.html", {"detail": str(exc), "portal_user": user}, status_code=500)
+    try:
+        return render(request, "errors/error.html", {"detail": "Błąd bazy danych", "status_code": 500, "portal_user": user}, status_code=500)
+    except Exception:
+        return HTMLResponse("<h1>Database Error</h1>", status_code=500)
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handler for FastAPI HTTPExceptions."""
@@ -39,7 +46,10 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         
     template = "errors/404.html" if exc.status_code == 404 else "errors/error.html"
     user = getattr(request.state, "portal_user", None)
-    return render(request, template, {"detail": exc.detail, "status_code": exc.status_code, "portal_user": user}, status_code=exc.status_code)
+    try:
+        return render(request, template, {"detail": exc.detail, "status_code": exc.status_code, "portal_user": user}, status_code=exc.status_code)
+    except Exception:
+        return HTMLResponse(f"<h1>Error {exc.status_code}</h1><p>{exc.detail}</p>", status_code=exc.status_code)
 
 def _is_htmx(request: Request) -> bool:
     """Check if request is from HTMX."""
@@ -47,8 +57,6 @@ def _is_htmx(request: Request) -> bool:
 
 def _render_htmx_error(message: str, status_code: int = 200):
     """Renders a small error fragment for HTMX."""
-    # We use 200 so HTMX actually swaps the content, but we could also use 
-    # custom headers like HX-Retarget to show it in a specific place.
     html = f'<div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200" role="alert">' \
            f'<span class="font-bold">Błąd!</span> {message}' \
            f'</div>'

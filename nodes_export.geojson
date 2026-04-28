@@ -1,0 +1,192 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.012,
+          52.231
+        ]
+      },
+      "properties": {
+        "name": "MAC4-SER",
+        "type": "Budynek",
+        "owner": "Własny",
+        "street_number": "44",
+        "description": "ID: 35, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.012,
+          52.231
+        ]
+      },
+      "properties": {
+        "name": "NODE-TEST-01-FINAL",
+        "type": "Szafa",
+        "owner": "Własny",
+        "street_number": null,
+        "description": "ID: 36, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.949508,
+          52.221827
+        ]
+      },
+      "properties": {
+        "name": "MAC4-SR",
+        "type": "Budynek",
+        "owner": "Własny",
+        "street_number": "44",
+        "description": "ID: 37, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.012863,
+          52.22904
+        ]
+      },
+      "properties": {
+        "name": "MA4SR",
+        "type": "Szafa",
+        "owner": "Własny",
+        "street_number": "44",
+        "description": "ID: 38, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.012,
+          52.231001
+        ]
+      },
+      "properties": {
+        "name": "MA4-SERW",
+        "type": "Szafa",
+        "owner": "Własny",
+        "street_number": "44",
+        "description": "ID: 39, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.749281,
+          50.679406
+        ]
+      },
+      "properties": {
+        "name": "GEO-RETRY-01",
+        "type": "Szafa",
+        "owner": "Własny",
+        "street_number": "1",
+        "description": "ID: 40, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.745678,
+          50.681234
+        ]
+      },
+      "properties": {
+        "name": "INTEGRATION-STREET-GPS-OK",
+        "type": "Budynek",
+        "owner": "Własny",
+        "street_number": "10",
+        "description": "ID: 41, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.745678,
+          50.681234
+        ]
+      },
+      "properties": {
+        "name": "INTEGRATION-STREET-GPS-OK",
+        "type": "Budynek",
+        "owner": "Własny",
+        "street_number": "10",
+        "description": "ID: 42, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.012,
+          52.231
+        ]
+      },
+      "properties": {
+        "name": "FINAL-GEO-VERIFY",
+        "type": "Szafa",
+        "owner": "Własny",
+        "street_number": "44",
+        "description": "ID: 43, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.745678,
+          50.681234
+        ]
+      },
+      "properties": {
+        "name": "INTEGRATION-STREET-GPS-OK",
+        "type": "Budynek",
+        "owner": "Własny",
+        "street_number": "10",
+        "description": "ID: 44, Status: Własny"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.749375,
+          50.681801
+        ]
+      },
+      "properties": {
+        "name": "FINAL-GEO-TEST",
+        "type": "Szafa",
+        "owner": "Własny",
+        "street_number": "1",
+        "description": "ID: 45, Status: Własny"
+      }
+    }
+  ]
+}

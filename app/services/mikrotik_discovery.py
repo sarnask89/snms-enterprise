@@ -56,6 +56,7 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
             "mac": mac,
             "ip": lease.get('address'),
             "comment": comment,
+            "rate_limit": lease.get('rate-limit'),
             "parsed": parsed,
             "customer_id": None,
             "street_id": None,
@@ -110,6 +111,51 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
                     status=node_status
                 )
                 db.add(node)
+
+                # 7. TARIFF AUTO-IMPORT
+                rl = lease.get('rate-limit')
+                if rl and "/" in rl:
+                    try:
+                        def to_mbps(val: str) -> int:
+                            val = val.lower().strip()
+                            if 'm' in val: return int(float(val.replace('m', '')))
+                            if 'k' in val: return int(float(val.replace('k', '')) / 1024)
+                            return int(int(val) / (1024 * 1024))
+                        rx, tx = rl.split('/')
+                        up, down = to_mbps(rx), to_mbps(tx)
+                        
+                        tariff = db.scalar(
+                            select(models.Tariff).where(models.Tariff.speed_up_mbps == up, models.Tariff.speed_down_mbps == down)
+                        )
+                        if not tariff:
+                            from decimal import Decimal
+                            # Znajdź domyślny VAT
+                            def_vat = db.scalar(select(models.VatRate).where(models.VatRate.is_default == True))
+                            def_vat_id = def_vat.id if def_vat else None
+
+                            tariff = models.Tariff(
+                                name=f"Import {down}/{up} Mbps",
+                                monthly_price=Decimal("0.00"),
+                                vat_rate_id=def_vat_id,
+                                speed_up_mbps=up,
+                                speed_down_mbps=down,
+                                description=f"Auto-import z Mikrotika ({rl})"
+                            )
+                            db.add(tariff)
+                            db.flush()
+                        
+                        sub = models.Subscription(
+                            customer_id=customer.id,
+                            node_id=node.id,
+                            tariff_id=tariff.id,
+                            speed_up_mbps=up,
+                            speed_down_mbps=down,
+                            active=True
+                        )
+                        db.add(sub)
+                    except Exception as e:
+                        logger.error(f"Błąd przy auto-imporcie taryfy ({rl}): {e}")
+
                 db.commit()
                 continue  # Successfully auto-imported, skip adding to discovery UI
             else:

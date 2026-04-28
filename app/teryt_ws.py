@@ -10,7 +10,7 @@ from zeep.helpers import serialize_object
 from zeep.wsse.username import UsernameToken
 
 from app.config import TERYT_WS_PASSWORD, TERYT_WS_USER, TERYT_WS_WSDL
-from app.logging import get_logger
+from app.logger_utils import get_logger
 
 logger = get_logger("teryt_ws")
 

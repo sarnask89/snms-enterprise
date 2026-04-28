@@ -1,27 +1,63 @@
 {% extends "base.html" %}
 {% from "components/card.html" import card %}
 {% from "components/input.html" import input, label %}
+{% from "components/alert_dialog.html" import alert_dialog %}
 
 {% block content %}
 <div class="flex flex-col gap-8">
+    {% if request.query_params.get('error') %}
+    <div class="bg-destructive/10 p-4 rounded-xl border border-destructive/20 text-destructive text-sm font-bold animate-in shake-1">
+        <i class="fas fa-exclamation-triangle mr-2"></i> {{ request.query_params.get('error') }}
+    </div>
+    {% endif %}
+
     {% if can_write_crm %}
     {% call card(title="Nowy plan taryfowy", subtitle="Definicja usług abonamentowych") %}
-    <form method="post" action="/finances/tariffs/new" class="space-y-6">
-        <div class="grid sm:grid-cols-2 gap-6">
-            <div class="space-y-2">
+    <form method="post" action="/finances/tariffs/new" class="space-y-6" 
+          x-data="{ 
+            net: 0, 
+            gross: 0,
+            vat: 23, 
+            updateGross() { this.gross = (parseFloat(this.net) * (1 + this.vat/100)).toFixed(2) },
+            updateNet() { this.net = (parseFloat(this.gross) / (1 + this.vat/100)).toFixed(2) }
+          }">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div class="space-y-2 lg:col-span-2">
                 {{ label("Nazwa taryfy", for="name") }}
                 {{ input("name", id="name", required=True, placeholder="np. Internet Fiber 300") }}
             </div>
             <div class="space-y-2">
-                {{ label("Cena miesięczna (Brutto)", for="monthly_price") }}
-                {{ input("monthly_price", id="monthly_price", required=True, placeholder="79.00") }}
+                {{ label("Pobieranie (Mbps)", for="speed_down_mbps") }}
+                {{ input("speed_down_mbps", type="number", id="speed_down_mbps", placeholder="300") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Wysyłanie (Mbps)", for="speed_up_mbps") }}
+                {{ input("speed_up_mbps", type="number", id="speed_up_mbps", placeholder="30") }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Stawka VAT", for="vat_rate_id") }}
+                <select name="vat_rate_id" id="vat_rate_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        @change="vat = $el.options[$el.selectedIndex].text.match(/\((.*)%\)/)[1]; updateGross()">
+                    {% for v in vat_rates %}
+                    <option value="{{ v.id }}" {% if v.id == default_vat_id %}selected{% endif %}>{{ v.label }} ({{ v.rate_percent }}%)</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
-        <div class="space-y-2">
-            {{ label("Opis taryfy", for="description") }}
-            <textarea name="description" id="description" rows="2" 
-                      class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      placeholder="Szczegóły pakietu..."></textarea>
+        <div class="grid sm:grid-cols-3 gap-6">
+            <div class="space-y-2">
+                {{ label("Cena Netto (PLN)", for="monthly_price") }}
+                {{ input("monthly_price", id="monthly_price", required=True, placeholder="64.23", **{"x-model": "net", "@input": "updateGross()"}) }}
+            </div>
+            <div class="space-y-2">
+                {{ label("Cena Brutto (PLN)", for="gross_input") }}
+                <input type="text" id="gross_input" class="flex h-10 w-full rounded-md border border-input bg-primary/5 px-3 py-2 text-sm font-bold text-primary ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" 
+                       x-model="gross" @input="updateNet()" placeholder="79.00">
+            </div>
+            <div class="space-y-2">
+                {{ label("Opis taryfy", for="description") }}
+                <input name="description" id="description" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="Krótki opis...">
+            </div>
         </div>
         <div class="flex justify-end pt-4 border-t">
             <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
@@ -38,23 +74,59 @@
                 <thead class="bg-muted/40">
                     <tr class="border-b transition-colors">
                         <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Nazwa planu</th>
-                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Cena (PLN / MC)</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Cena Netto</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">VAT</th>
+                        <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Cena Brutto</th>
                         <th class="h-12 px-4 text-left align-middle font-bold text-muted-foreground uppercase text-[10px] tracking-widest">Szczegóły</th>
                     </tr>
                 </thead>
                 <tbody class="[&_tr:last-child]:border-0">
                     {% for t in tariffs %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
-                        <td class="p-4 align-middle font-bold text-foreground">{{ t.name }}</td>
-                        <td class="p-4 align-middle font-mono font-bold text-primary text-xs">{{ "%.2f"|format(t.monthly_price|float) }} PLN</td>
-                        <td class="p-4 align-middle text-xs text-muted-foreground italic">{{ t.description or "—" }}</td>
+                        <td class="p-4 align-middle">
+                            <div class="font-bold text-foreground">{{ t.name }}</div>
+                            {% if t.speed_down_mbps or t.speed_up_mbps %}
+                            <div class="text-[10px] text-muted-foreground uppercase font-mono mt-1">
+                                <i class="fas fa-arrow-down mr-1"></i>{{ t.speed_down_mbps or 0 }}M / 
+                                <i class="fas fa-arrow-up mr-1"></i>{{ t.speed_up_mbps or 0 }}M
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle font-mono text-xs">{{ "%.2f"|format(t.monthly_price|float) }} PLN</td>
+                        <td class="p-4 align-middle text-xs font-bold text-muted-foreground">
+                            {% if t.vat_rate %}
+                                {{ t.vat_rate.label }} ({{ t.vat_rate.rate_percent }}%)
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle font-mono font-bold text-primary text-xs">
+                            {{ "%.2f"|format(t.monthly_price_gross|float) }} PLN
+                        </td>
+                        <td class="p-4 align-middle text-xs text-muted-foreground italic">
+                            <div class="flex items-center justify-between">
+                                <span>{{ t.description or "—" }}</span>
+                                <div class="flex items-center gap-2">
+                                    <a href="/finances/tariffs/{{ t.id }}/edit" class="p-2 text-muted-foreground hover:text-primary transition-colors">
+                                        <i class="fas fa-edit text-xs"></i>
+                                    </a>
+                                    <button type="button" 
+                                            @click="$dispatch('open-alert-delete-tariff', { url: '/finances/tariffs/{{ t.id }}/delete' })"
+                                            class="p-2 text-muted-foreground hover:text-destructive transition-colors">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="3" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak zdefiniowanych taryf.</td></tr>
+                    <tr><td colspan="5" class="p-12 text-center text-muted-foreground italic tracking-tight">Brak zdefiniowanych taryf.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+{{ alert_dialog("delete-tariff", "Usuwanie taryfy", "Czy na pewno chcesz trwale usunąć tę taryfę? Operacja jest nieodwracalna.") }}
 {% endblock %}

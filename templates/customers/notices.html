@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="bg-card p-4 rounded-xl border shadow-sm flex items-center justify-between">
+        <p class="text-sm text-muted-foreground italic">Zarządzanie powiadomieniami dla klientów.</p>
+    </div>
+
+    <div class="grid gap-4">
+        {% for notice in notices %}
+        <div class="p-4 bg-card border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="font-bold text-primary">{{ notice.title }}</h4>
+                <div class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-muted text-muted-foreground">
+                    {{ notice.category }}
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground mb-4">{{ notice.body }}</p>
+            <div class="flex items-center justify-between pt-2 border-t text-[10px]">
+                <span class="text-muted-foreground">Klient: <b>{{ notice.customer.last_name if notice.customer else 'Wszyscy' }}</b></span>
+                <span class="text-muted-foreground">Utworzono: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-muted-foreground italic">Brak powiadomień.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

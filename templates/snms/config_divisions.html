@@ -21,10 +21,10 @@
                     </tr>
                 </thead>
                 <tbody class="[&_tr:last-child]:border-0">
-                    {% for d in divisions %}
+                    {% for d in rows %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle font-bold text-xs">{{ d.name }}</td>
-                        <td class="p-4 align-middle font-mono text-[10px] text-muted-foreground">{{ d.label or '—' }}</td>
+                        <td class="p-4 align-middle font-mono text-[10px] text-muted-foreground">{{ d.short_name or '—' }}</td>
                         <td class="p-4 align-middle text-right">
                             <div class="flex justify-end gap-1">
                                 <a href="/config/divisions/{{ d.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent transition-colors">

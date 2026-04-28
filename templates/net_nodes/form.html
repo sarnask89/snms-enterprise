@@ -4,7 +4,10 @@
 {% from "components/combobox.html" import combobox %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto space-y-8" x-data="mapPicker()">
+<div class="max-w-5xl mx-auto space-y-8" 
+     x-data="mapPicker()" 
+     @change-val.window="if($event.detail.text) { city_name = $event.detail.text; geocode(); }">
+    
     <form method="post" action="{% if node %}/net-nodes/{{ node.id }}/edit{% else %}/net-nodes/new{% endif %}" class="space-y-8">
         <div class="grid lg:grid-cols-2 gap-8">
             <div class="space-y-8">
@@ -34,10 +37,12 @@
                         {% for c in managed_cities %}
                             {% do city_options.append((c.id, c.name)) %}
                         {% endfor %}
-                        {{ combobox("location_city_id", city_options, selected_id=node.location_city_id if node else (managed_cities|selectattr('is_default')|first).id if managed_cities|selectattr('is_default')|first else "", placeholder="Wybierz miejscowość...", required=True) }}
+                        {% set def_city = (managed_cities|selectattr('is_default')|first) %}
+                        {% set initial_city_id = node.location_city_id if node else def_city.id if def_city else "" %}
+                        {{ combobox("location_city_id", city_options, selected_id=initial_city_id, placeholder="Wybierz miejscowość...", required=True) }}
                     </div>
 
-                    <div class="space-y-2 relative">
+                    <div class="space-y-2 relative teryt-lookup-container" id="street-lookup-container">
                         {{ label("Ulica", for="street_suggest") }}
                         <input type="text" name="street_name" id="street_suggest"
                                value="{{ node.street.name if node and node.street else '' }}"
@@ -49,12 +54,20 @@
                                hx-target="next .suggest-results-box"
                                hx-include="[name='location_city_id']">
                         <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-cloak></div>
-                        <input type="hidden" name="location_street_id" value="{{ node.location_street_id if node else '' }}">
+                        <input type="hidden" name="location_street_id" id="location_street_id" value="{{ node.location_street_id if (node and node.location_street_id) else '' }}">
                     </div>
 
                     <div class="space-y-2">
                         {{ label("Nr budynku", for="street_number") }}
-                        {{ input("street_number", value=node.street_number if node else "", id="street_number", placeholder="np. 12A") }}
+                        <input type="text" name="street_number" id="street_number"
+                               value="{{ node.street_number if node and node.street_number else '' }}"
+                               placeholder="np. 12A"
+                               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                               @input.debounce.500ms="geocode()">
+                    </div>
+
+                    <div x-show="is_geocoding" class="text-[10px] text-primary animate-pulse font-bold">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Pobieranie współrzędnych...
                     </div>
                 </div>
                 {% endcall %}
@@ -67,11 +80,15 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-2">
                             {{ label("Szerokość (Lat)", for="latitude") }}
-                            <input type="number" step="0.000001" name="latitude" id="latitude" x-model="lat" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                            <input type="number" step="0.000001" name="latitude" id="latitude" 
+                                   :value="lat"
+                                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                         </div>
                         <div class="space-y-2">
                             {{ label("Długość (Lon)", for="longitude") }}
-                            <input type="number" step="0.000001" name="longitude" id="longitude" x-model="lng" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                            <input type="number" step="0.000001" name="longitude" id="longitude" 
+                                   :value="lng"
+                                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                         </div>
                     </div>
                     <p class="text-[10px] text-muted-foreground italic text-center">Możesz przeciągnąć marker na mapie.</p>
@@ -107,7 +124,15 @@
 
         <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
             <a href="/net-nodes" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
-            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+            <button type="submit" 
+                    @click="console.log('SUBMITTING NET NODE:', {
+                        name: document.getElementById('name').value,
+                        city_id: document.querySelector('[name=location_city_id]').value,
+                        street_id: document.getElementById('location_street_id').value,
+                        lat: document.getElementById('latitude').value,
+                        lng: document.getElementById('longitude').value
+                    })"
+                    class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
                 <i class="fas fa-save mr-2 text-xs"></i> Zapisz węzeł
             </button>
         </div>
@@ -119,6 +144,8 @@ function mapPicker() {
     return {
         lat: {{ node.latitude if node and node.latitude else 52.231 }},
         lng: {{ node.longitude if node and node.longitude else 21.012 }},
+        city_name: '{% if node and node.city %}{{ node.city.name }}{% elif managed_cities|selectattr("is_default")|first %}{{ (managed_cities|selectattr("is_default")|first).name }}{% else %}{% endif %}',
+        is_geocoding: false,
         map: null,
         marker: null,
         init() {
@@ -142,6 +169,61 @@ function mapPicker() {
                     this.marker.setLatLng(e.latlng);
                 });
             });
+            
+            // Global hook for suggestion selection
+            window.addEventListener('suggestion-selected', (e) => {
+                console.log("Form received suggestion-selected:", e.detail);
+                if (e.detail.type === 'street') {
+                    // Manually update the hidden input because Alpine might miss it
+                    const streetIdInput = document.getElementById('location_street_id');
+                    if (streetIdInput) streetIdInput.value = e.detail.id;
+                    
+                    // Trigger geocode
+                    this.geocode();
+                }
+            });
+        },
+        async geocode() {
+            const streetEl = document.getElementById('street_suggest');
+            const street = streetEl ? streetEl.value : "";
+            const numberEl = document.getElementById('street_number');
+            const number = numberEl ? numberEl.value : "";
+            const city = this.city_name;
+            
+            console.log("Geocoding triggered for:", {street, number, city});
+            if (!city || !street || !number) return;
+            
+            this.is_geocoding = true;
+            try {
+                const query = `${street} ${number}, ${city}, Polska`;
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                const resp = await fetch(url, { headers: { 'Accept-Language': 'pl', 'User-Agent': 'SNMS-Enterprise-CRM' } });
+                const data = await resp.json();
+                
+                if (data && data.length > 0) {
+                    const newLat = parseFloat(data[0].lat).toFixed(6);
+                    const newLng = parseFloat(data[0].lon).toFixed(6);
+                    this.lat = newLat;
+                    this.lng = newLng;
+                    
+                    // Manually update DOM to ensure form submission
+                    const latEl = document.getElementById('latitude');
+                    const lngEl = document.getElementById('longitude');
+                    if(latEl) latEl.value = newLat;
+                    if(lngEl) lngEl.value = newLng;
+                    
+                    const newPos = [newLat, newLng];
+                    this.marker.setLatLng(newPos);
+                    this.map.setView(newPos, 16);
+                    console.log("Geocoding success:", newLat, newLng);
+                } else {
+                    console.warn("Geocoding: no results for", query);
+                }
+            } catch (e) {
+                console.error("Geocoding failed:", e);
+            } finally {
+                this.is_geocoding = false;
+            }
         }
     }
 }

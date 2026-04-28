@@ -8,6 +8,11 @@
         
         {% call card(title="Sprzęt Sieciowy", subtitle="Szczegóły inwentaryzacyjne urządzenia") %}
         <div class="grid gap-6">
+            <div class="space-y-2">
+                {{ label("Nazwa urządzenia (identyfikator)", for="name") }}
+                {{ input("name", value=device.name if device else "", id="name", required=True, placeholder="np. Router-Główny") }}
+            </div>
+
             <div class="grid sm:grid-cols-2 gap-4">
                 <div class="space-y-2">
                     {{ label("Producent", for="producer_id") }}
@@ -27,14 +32,26 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                {{ label("Numer seryjny (SN)", for="serial_number") }}
-                {{ input("serial_number", value=device.serial_number if device else "", id="serial_number", placeholder="np. 12345ABCDE") }}
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Hostname", for="hostname") }}
+                    {{ input("hostname", value=device.hostname if device else "", id="hostname", placeholder="np. router.local") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("IP Zarządzania", for="management_ip") }}
+                    {{ input("management_ip", value=device.management_ip if device else "", id="management_ip", placeholder="np. 10.0.0.1") }}
+                </div>
             </div>
 
-            <div class="space-y-2">
-                {{ label("Adres MAC", for="mac_address") }}
-                {{ input("mac_address", value=device.mac_address if device else "", id="mac_address", placeholder="00:11:22:33:44:55") }}
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Numer seryjny (SN)", for="serial_number") }}
+                    {{ input("serial_number", value=device.serial_number if device else "", id="serial_number", placeholder="np. 12345ABCDE") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Adres MAC", for="mac_address") }}
+                    {{ input("mac_address", value=device.mac_address if device else "", id="mac_address", placeholder="00:11:22:33:44:55") }}
+                </div>
             </div>
 
             <div class="space-y-2">
@@ -46,38 +63,57 @@
                 {{ select("net_node_id", node_opts, selected_id=device.net_node_id if device else "", id="net_node_id") }}
             </div>
 
-            <div class="space-y-2">
-                {{ label("Status urządzenia", for="status") }}
-                {{ select("status", [("active", "Aktywne"), ("inactive", "Magazyn"), ("maintenance", "Serwis")], selected_id=device.status.value if device else "active", id="status") }}
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Sieć IP", for="ip_network_id") }}
+                    {% set net_opts = [("", "— wybierz sieć —")] %}
+                    {% for n in networks %}
+                        {% do net_opts.append((n.id, n.name)) %}
+                    {% endfor %}
+                    {{ select("ip_network_id", net_opts, selected_id=device.ip_network_id if device else "", id="ip_network_id") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Status urządzenia", for="status") }}
+                    {{ select("status", [("active", "Aktywne"), ("inactive", "Magazyn"), ("maintenance", "Serwis")], selected_id=device.status.value if device else "active", id="status") }}
+                </div>
             </div>
-            </div>
-            {% endcall %}
+        </div>
+        {% endcall %}
 
-            {% call card(title="Automatyzacja i Zarządzanie", subtitle="Dane do logowania i autokonfiguracji") %}
-            <div class="grid gap-6">
-            <div class="space-y-2">
-                {{ label("Typ sterownika (Driver)", for="driver_type") }}
-                {{ select("driver_type", [("", "— brak automatyzacji —"), ("mikrotik_v7", "Mikrotik RouterOS v7 (REST)"), ("dasan_nos", "DASAN NOS (SSH)")], selected_id=device.driver_type if device else "", id="driver_type") }}
+        {% call card(title="Automatyzacja i Zarządzanie", subtitle="Dane do logowania i autokonfiguracji") %}
+        <div class="grid gap-6">
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Typ sterownika (Driver)", for="driver_type") }}
+                    {{ select("driver_type", [("", "— brak automatyzacji —"), ("mikrotik_v7", "Mikrotik RouterOS v7 (REST)"), ("dasan_nos", "DASAN NOS (SSH)")], selected_id=device.driver_type if device else "", id="driver_type") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("SNMP Community", for="snmp_community") }}
+                    {{ input("snmp_community", value=device.snmp_community if device else "", id="snmp_community", placeholder="public") }}
+                </div>
             </div>
+            
             <div class="grid sm:grid-cols-2 gap-4">
                 <div class="space-y-2">
                     {{ label("Użytkownik zarządzania", for="mgmt_username") }}
-                    {{ input("mgmt_username", value=device.mgmt_username if device else "", id="mgmt_username", placeholder="np. api_user") }}
+                    {{ input("mgmt_username", value=device.mgmt_username if device else "", id="mgmt_username", placeholder="np. api_user", autocomplete="new-password") }}
                 </div>
                 <div class="space-y-2">
                     {{ label("Hasło zarządzania", for="mgmt_password_encrypted") }}
                     <input type="password" name="mgmt_password_encrypted" id="mgmt_password_encrypted" 
-                           value="{{ device.mgmt_password_encrypted if device else '' }}"
+                           value=""
+                           placeholder="Zostaw puste aby nie zmieniać"
+                           autocomplete="new-password"
                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 </div>
             </div>
             <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700">
                 <i class="fas fa-info-circle mr-1"></i> Te dane są wymagane do działania modułu <strong>Odkrywania Mikrotik</strong> oraz <strong>Diagnostyki GPON</strong>.
             </div>
-            </div>
-            {% endcall %}
+        </div>
+        {% endcall %}
 
-            <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
             <a href="/net-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
             <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
                 <i class="fas fa-save mr-2 text-xs"></i> Zapisz urządzenie

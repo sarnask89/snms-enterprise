@@ -250,11 +250,24 @@ def test_customer_device_links_net_and_device(admin_client):
     assert m2, "brak urządzenia po utworzeniu"
     dev_id = int(m2.group(1))
 
-    cust = client.get("/customers")
+    # 3. Create Customer
+    cust_code = f"CUST-{tag}"
+    r = client.post(
+        "/customers/new",
+        data={
+            "customer_code": cust_code,
+            "first_name": "E2E",
+            "last_name": "Tester",
+            "status": "active"
+        },
+        follow_redirects=False
+    )
+    assert r.status_code == 303
+
+    cust = client.get("/customers", params={"q": cust_code})
     mc = re.search(r'href="/customers/(\d+)/edit"', cust.text)
     assert mc
     customer_id = int(mc.group(1))
-
     r = client.post(
         "/customer-devices/new",
         data={

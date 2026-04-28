@@ -51,6 +51,44 @@ def customer_list(
 
     return render(request, "customers/list.html", {"title": "Klienci", "customers": rows, "search_q": q or ""})
 
+@router.get("/notices", response_class=HTMLResponse)
+def customer_notices_list(request: Request, db: Session = Depends(get_db)):
+    notices = db.scalars(
+        select(models.CustomerNotice).options(joinedload(models.CustomerNotice.customer)).order_by(models.CustomerNotice.id.desc())
+    ).all()
+    return render(request, "customers/notices.html", {
+        "title": "Ogłoszenia i powiadomienia",
+        "notices": notices
+    })
+
+@router.get("/preview-number", response_class=HTMLResponse)
+def preview_next_number(
+    db: Session = Depends(get_db),
+    plan_id: int | None = Query(None)
+):
+    if not plan_id:
+        return HTMLResponse("")
+    
+    plan = db.get(models.NumberPlan, plan_id)
+    if not plan:
+        return HTMLResponse('<span class="text-destructive text-xs">Nie znaleziono planu</span>')
+    
+    # Symulacja generowania (bez zapisu w bazie)
+    today = date.today()
+    n = max(1, int(plan.next_number or 1))
+    tpl = (plan.pattern_template or "{year}/{n}").strip()
+    fmt_data = {"year": today.year, "month": f"{today.month:02d}", "day": f"{today.day:02d}", "n": n}
+    
+    try:
+        if "{n}" in tpl and "{n:" not in tpl:
+            rendered = tpl.replace("{n}", f"{n:04d}").format(**fmt_data)
+        else:
+            rendered = tpl.format(**fmt_data)
+    except Exception:
+        rendered = "Błąd formatu"
+
+    return HTMLResponse(f'<span class="text-primary font-mono font-bold text-sm animate-in fade-in slide-in-from-left-2">{rendered}</span>')
+
 @router.get("/search", response_class=HTMLResponse)
 def customer_search_form(request: Request):
     return render(
@@ -61,7 +99,15 @@ def customer_search_form(request: Request):
 
 
 @router.get("/new", response_class=HTMLResponse)
-def customer_new_form(request: Request, db: Session = Depends(get_db)):
+def customer_new_form(
+    request: Request, 
+    db: Session = Depends(get_db),
+    last_name: str | None = Query(None),
+    city_id: int | None = Query(None),
+    street_id: int | None = Query(None),
+    street_number: str | None = Query(None),
+    apartment_number: str | None = Query(None),
+):
 
     # Pobierz plany numeracji dla klientów
     number_plans = list(db.scalars(
@@ -72,14 +118,36 @@ def customer_new_form(request: Request, db: Session = Depends(get_db)):
     cities = _get_managed_cities(db)
     city_options = [(c.id, c.name + (f" ({c.district.name})" if c.district else "")) for c in cities]
     plan_options = [(p.id, f"{p.name} ({p.pattern_template})") for p in number_plans]
-    def_city = next((c for c in cities if c.is_default), None)
+    
+    # Find default plan for customers
+    default_plan = next((p for p in number_plans if p.is_default), None)
+    default_plan_id = default_plan.id if default_plan else ""
+
+    # Default city or pre-populated city
+    def_city_id = city_id
+    if not def_city_id:
+        def_city = next((c for c in cities if c.is_default), None)
+        def_city_id = def_city.id if def_city else None
+
+    # Pre-populated street name for display
+    street_name = ""
+    if street_id:
+        street = db.get(models.LocationStreet, street_id)
+        if street:
+            street_name = street.name
 
     return render(request, "customers/form.html", {
         "title": "Nowy abonent", 
         "customer": None, 
         "city_options": city_options,
         "plan_options": plan_options,
-        "default_city_id": def_city.id if def_city else None
+        "default_city_id": def_city_id,
+        "default_plan_id": default_plan_id,
+        "pre_last_name": last_name,
+        "pre_street_id": street_id,
+        "pre_street_name": street_name,
+        "pre_street_number": street_number,
+        "pre_apartment_number": apartment_number,
     })
 
 @router.post("/new", dependencies=[Depends(require_business_write)])
@@ -97,6 +165,9 @@ def customer_new_submit(
     location_street_id: int | None = Form(None),
     street_number: str | None = Form(None),
     apartment_number: str | None = Form(None),
+    import_mac: str | None = Form(None),
+    import_ip: str | None = Form(None),
+    import_device_id: int | None = Form(None),
 ):
     code = (customer_code or "").strip()
     
@@ -131,6 +202,14 @@ def customer_new_submit(
     db.flush()
     record_audit(db, "create", "customer", c.id, f"Abonent: {c.customer_code}", request)
     db.commit()
+
+    if import_mac and import_ip:
+        # Redirect to node creation with import data
+        return RedirectResponse(
+            f"/customer-devices/new?customer_id={c.id}&mac_address={import_mac}&ip_address={import_ip}&net_device_id={import_device_id or ''}",
+            status_code=303
+        )
+
     return RedirectResponse("/customers", status_code=303)
 
 @router.get("/add")
@@ -143,14 +222,26 @@ def customer_edit_form(customer_id: int, request: Request, db: Session = Depends
     c = db.get(models.Customer, customer_id)
     if not c: return RedirectResponse("/customers", status_code=302)
 
+    # Pobierz plany numeracji dla klientów
+    number_plans = list(db.scalars(
+        select(models.NumberPlan)
+        .where(models.NumberPlan.doc_type == models.NumberPlanDocType.customer, models.NumberPlan.active == True)
+    ).all())
+    
     cities = _get_managed_cities(db)
     city_options = [(c.id, c.name + (f" ({c.district.name})" if c.district else "")) for c in cities]
+    plan_options = [(p.id, f"{p.name} ({p.pattern_template})") for p in number_plans]
+    
+    # Find default plan
+    default_plan = next((p for p in number_plans if p.is_default), None)
+    default_plan_id = default_plan.id if default_plan else ""
 
     return render(request, "customers/form.html", {
         "title": f"Edycja abonenta: {c.customer_code}", 
         "customer": c, 
         "city_options": city_options,
-        "plan_options": []
+        "plan_options": plan_options,
+        "default_plan_id": default_plan_id
     })
 
 @router.post("/{customer_id}/edit", dependencies=[Depends(require_business_write)])
@@ -158,7 +249,8 @@ def customer_edit_submit(
     customer_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    customer_code: str = Form(...),
+    customer_code: str | None = Form(None),
+    number_plan_id: int | None = Form(None),
     first_name: str = Form(...),
     last_name: str = Form(...),
     email: str | None = Form(None),
@@ -172,7 +264,14 @@ def customer_edit_submit(
     c = db.get(models.Customer, customer_id)
     if not c: return RedirectResponse("/customers", status_code=303)
 
-    new_code = customer_code.strip()
+    new_code = (customer_code or c.customer_code).strip()
+    
+    # Jeśli wybrano plan numeracji, wygeneruj nowy kod (nadpisuje obecny)
+    if number_plan_id:
+        plan = db.get(models.NumberPlan, number_plan_id)
+        if plan and plan.doc_type == models.NumberPlanDocType.customer:
+            new_code = allocate_next_document_number(db, plan)
+
     if new_code != c.customer_code:
         existing = db.scalars(select(models.Customer).where(models.Customer.customer_code == new_code)).first()
         if existing:

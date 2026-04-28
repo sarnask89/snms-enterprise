@@ -25,7 +25,12 @@
                     <div class="text-[10px] uppercase font-bold text-muted-foreground mb-2">Dane z Routera</div>
                     <div class="font-mono text-sm font-bold">{{ item.mac }}</div>
                     <div class="text-sm text-blue-600">{{ item.ip }}</div>
-                    <div class="mt-2 p-2 bg-background rounded border border-dashed text-xs italic italic italic text-muted-foreground">
+                    {% if item.rate_limit %}
+                    <div class="mt-1 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full inline-block font-bold">
+                        <i class="fas fa-tachometer-alt mr-1"></i> {{ item.rate_limit }}
+                    </div>
+                    {% endif %}
+                    <div class="mt-2 p-2 bg-background rounded border border-dashed text-xs italic text-muted-foreground">
                         "{{ item.comment }}"
                     </div>
                 </div>
@@ -66,12 +71,13 @@
                 </div>
 
                 <!-- Akcja -->
-                <div class="p-4 md:w-48 flex items-center justify-center bg-muted/5">
-                    <form hx-post="/admin/discovery/import" hx-swap="outerHTML">
+                <div class="p-4 md:w-56 flex flex-col items-center justify-center bg-muted/5 gap-2">
+                    <form hx-post="/admin/discovery/import" hx-swap="outerHTML" class="w-full">
                         <input type="hidden" name="mac" value="{{ item.mac }}">
                         <input type="hidden" name="ip" value="{{ item.ip }}">
                         <input type="hidden" name="device_id" value="{{ device.id }}">
                         <input type="hidden" name="status" value="{{ item.status.value }}">
+                        <input type="hidden" name="rate_limit" value="{{ item.rate_limit or '' }}">
                         
                         {% if item.parsed %}
                             <input type="hidden" name="customer_id" value="{{ item.customer_id or '' }}">
@@ -83,9 +89,16 @@
 
                         <button type="submit" 
                                 class="w-full inline-flex items-center justify-center rounded-lg {% if item.can_auto_import %}bg-green-600 text-white{% else %}bg-primary text-primary-foreground{% endif %} px-4 py-2 text-xs font-bold shadow hover:opacity-90 transition-all">
-                            {% if item.customer_id %}Powiąż i Importuj{% else %}Importuj jako Nowy{% endif %}
+                            {% if item.customer_id %}Powiąż i Importuj{% else %}Szybki Import{% endif %}
                         </button>
                     </form>
+
+                    {% if not item.customer_id %}
+                    <a href="/customers/new?mac={{ item.mac }}&ip={{ item.ip }}&device_id={{ device.id }}{% if item.parsed %}&last_name={{ item.parsed.last_name }}&street_id={{ item.street_id or '' }}&street_number={{ item.parsed.street_number }}&apartment_number={{ item.parsed.apartment_number }}{% endif %}" 
+                       class="w-full inline-flex items-center justify-center rounded-lg bg-background border border-primary text-primary px-4 py-2 text-[10px] font-bold shadow-sm hover:bg-accent transition-all">
+                        Załóż Klienta Ręcznie
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

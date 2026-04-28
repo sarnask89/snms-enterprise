@@ -10,11 +10,27 @@
         <div class="grid gap-6">
             <div class="space-y-2">
                 {{ label("Wybierz abonenta", for="customer_id") }}
-                {% set cust_opts = [] %}
+                {% set cust_opts = [("", "— Wybierz klienta —")] %}
                 {% for c in customers %}
                     {% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}
                 {% endfor %}
-                {{ select("customer_id", cust_opts, id="customer_id", required=True) }}
+                {{ select("customer_id", cust_opts, selected_id=pre_customer_id, id="customer_id", required=True, **{
+                    "hx-get": "/subscriptions/customer-nodes/",
+                    "hx-target": "#node_id",
+                    "hx-trigger": "change",
+                    "@change": "if($el.value) { $el.setAttribute('hx-get', '/subscriptions/customer-nodes/' + $el.value); htmx.process($el); }"
+                }) }}
+            </div>
+
+            <div class="space-y-2">
+                {{ label("Powiąż z urządzeniem (opcjonalnie)", for="node_id") }}
+                <select name="node_id" id="node_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    <option value="">— Wszystkie urządzenia —</option>
+                    {% for n in initial_nodes %}
+                    <option value="{{ n.id }}" {% if n.id|string == pre_node_id|string %}selected{% endif %}>{{ n.hostname }} ({{ n.ip_address or 'no IP' }})</option>
+                    {% endfor %}
+                </select>
+                <p class="text-[10px] text-muted-foreground uppercase">Pozwala na przypisanie taryfy do konkretnego urządzenia klienta.</p>
             </div>
 
             <div class="space-y-2">

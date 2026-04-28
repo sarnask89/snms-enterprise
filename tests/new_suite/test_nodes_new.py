@@ -18,16 +18,16 @@ def test_node_crud(admin_client, session):
         "/customer-devices/new",
         data={
             "customer_id": c.id,
-            "hostname": "test-pc",
+            "name": "test-pc",
             "ip_address": "10.20.30.5",
-            "status": "active",
+            "active": "on",
             "ip_network_id": net.id
         },
         follow_redirects=False
     )
     assert resp.status_code == 303
     
-    node = session.query(models.Node).filter_by(hostname="test-pc").first()
+    node = session.query(models.Node).filter_by(name="test-pc").first()
     assert node is not None
 
     # 2. Edit
@@ -35,16 +35,16 @@ def test_node_crud(admin_client, session):
         f"/customer-devices/{node.id}/edit",
         data={
             "customer_id": c.id,
-            "hostname": "test-pc-upd",
+            "name": "test-pc-upd",
             "ip_address": "10.20.30.6",
-            "status": "active",
+            "active": "on",
             "ip_network_id": net.id
         },
         follow_redirects=False
     )
     assert resp.status_code == 303
     session.refresh(node)
-    assert node.hostname == "test-pc-upd"
+    assert node.name == "test-pc-upd"
 
     # 3. Delete
     resp = admin_client.post(f"/customer-devices/{node.id}/delete", follow_redirects=False)

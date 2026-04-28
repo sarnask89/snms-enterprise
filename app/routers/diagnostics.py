@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Depends, Request, Form
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
@@ -11,26 +12,77 @@ from app.security_utils import decrypt_password
 
 router = APIRouter(prefix="/diagnostics", dependencies=[Depends(verify_session)])
 
-@router.post("/ping/{node_id}", response_class=HTMLResponse)
-async def diagnostic_ping(node_id: int, request: Request, db: Session = Depends(get_db)):
+@router.post("/check/{node_id}", response_class=HTMLResponse)
+async def diagnostic_check(node_id: int, request: Request, db: Session = Depends(get_db)):
     node = db.get(models.Node, node_id)
     if not node or not node.net_device or not node.ip_address:
-        return HTMLResponse("<div class='text-danger'>Błąd: Brak danych do pingu (IP lub Router).</div>")
+        return HTMLResponse("<div class='text-danger'>Błąd: Brak danych do diagnostyki (IP lub Router).</div>")
     
     device = node.net_device
     password = decrypt_password(device.mgmt_password_encrypted)
-    
     mt = MikrotikService(device.management_ip, device.mgmt_username, password)
-    results = await mt.remote_ping(node.ip_address, count=4)
     
-    # Render mini-table z wynikami
-    html = '<div class="bg-black text-green-500 p-2 font-mono text-[10px] rounded mt-2">'
-    if not results:
-        html += "Timeout lub błąd połączenia z routerem."
+    # 1. ICMP Ping
+    icmp_task = mt.remote_ping(node.ip_address, count=3)
+    # 2. ARP Ping
+    arp_task = mt.remote_arp_ping(node.ip_address, count=3)
+    # 3. DHCP Lease Status
+    lease_task = mt.get_lease_info(node.mac_address)
+    # 4. Bridge Host Status
+    bridge_task = mt.get_bridge_host_info(node.mac_address)
+    
+    icmp_results, arp_results, lease_info, bridge_results = await asyncio.gather(
+        icmp_task, arp_task, lease_task, bridge_task
+    )
+    
+    # Render logic
+    html = '<div class="bg-black text-green-500 p-3 font-mono text-[10px] rounded mt-2 space-y-3 border border-green-900/30">'
+    
+    # Section: Lease & Bridge (Status summary)
+    html += '<div class="grid grid-cols-2 gap-2 border-b border-green-900/20 pb-2">'
+    html += '<div><span class="text-white font-bold uppercase">[ DHCP Lease ]</span><br>'
+    if lease_info:
+        status_color = "text-green-400" if lease_info.get("status") == "bound" else "text-yellow-400"
+        html += f'Status: <span class="{status_color}">{lease_info.get("status", "unknown")}</span><br>'
+        html += f'Last seen: {lease_info.get("last-seen", "N/A")}'
     else:
-        for r in results:
-            status = "UP" if r.get("received") else "TIMEOUT"
-            html += f"<div>PING {node.ip_address}: {status} time={r.get('time', 'N/A')} size={r.get('size', 'N/A')}</div>"
+        html += '<span class="text-red-400 italic">Brak aktywnej dzierżawy</span>'
+    html += '</div>'
+    
+    html += '<div><span class="text-white font-bold uppercase">[ Bridge Host ]</span><br>'
+    if bridge_results:
+        for br in bridge_results:
+            html += f'Interface: <span class="text-blue-300">{br.get("interface", "N/A")}</span><br>'
+            html += f'On-Bridge: <span class="text-blue-300">{br.get("bridge", "N/A")}</span>'
+    else:
+        html += '<span class="text-yellow-500 italic">Nie znaleziono w tablicy bridge</span>'
+    html += '</div>'
+    html += '</div>'
+
+    # Section: ICMP
+    html += '<div><span class="text-white font-bold">[ ICMP PING ]</span>'
+    if not icmp_results:
+        html += '<div class="text-red-400">Brak odpowiedzi / Błąd połączenia</div>'
+    else:
+        for r in icmp_results:
+            status = "UP" if r.get("sent") == r.get("received") or r.get("received", "0") != "0" else "TIMEOUT"
+            html += f'<div>{node.ip_address}: {status} time={r.get("time", "N/A")} size={r.get("size", "N/A")}</div>'
+    html += '</div>'
+
+    # Section: ARP
+    html += '<div><span class="text-white font-bold">[ ARP PING ]</span>'
+    if not arp_results:
+         html += '<div class="text-yellow-400">Brak odpowiedzi (Możliwy brak w tablicy ARP)</div>'
+    elif arp_results[0].get("status") == "ARP entry not found":
+         html += '<div class="text-yellow-400">Błąd: Brak wpisu w tablicy ARP (Urządzenie offline?)</div>'
+    else:
+        interface = arp_results[0].get("interface", "unknown")
+        html += f'<div class="text-blue-300 italic mb-1">Via Interface: {interface}</div>'
+        for r in arp_results:
+            status = "UP" if r.get("received", "0") != "0" else "TIMEOUT"
+            html += f'<div>{node.ip_address}: {status} time={r.get("time", "N/A")}</div>'
+    html += '</div>'
+    
     html += "</div>"
     return HTMLResponse(html)
 

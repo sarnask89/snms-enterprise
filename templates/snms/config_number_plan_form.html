@@ -1,29 +1,83 @@
 {% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
 {% block content %}
-<form method="post" action="{{ '/config/number-plans/' ~ row.id ~ '/edit' if row else '/config/number-plans/new' }}" class="stack narrow">
-  <label>Nazwa<input name="name" required maxlength="128" value="{{ row.name if row else '' }}"></label>
-  <label>Typ dokumentu
-    <select name="doc_type">
-      {% set dk = row.doc_type.value if row else 'invoice' %}
-      <option value="invoice" {% if dk == 'invoice' %}selected{% endif %}>Faktura</option>
-      <option value="proforma" {% if dk == 'proforma' %}selected{% endif %}>Pro forma</option>
-      <option value="debit_note" {% if dk == 'debit_note' %}selected{% endif %}>Nota obciążeniowa</option>
-      <option value="customer" {% if dk == 'customer' %}selected{% endif %}>Abonent / Umowa</option>
-    </select>
-  </label>
-  <label>Wzorzec numeru <span class="muted">({year}, {n} — zero do 4 cyfr)</span>
-    <input name="pattern_template" required maxlength="128" value="{{ row.pattern_template if row else 'FV/{year}/{n}' }}">
-  </label>
-  <label>Następny numer (licznik)<input name="next_number" type="number" min="1" value="{{ row.next_number if row else 1 }}"></label>
-  <label>Oddział (opcj.)
-    <select name="division_id">
-      <option value="">—</option>
-      {% for d in divisions %}
-      <option value="{{ d.id }}" {% if row and row.division_id == d.id %}selected{% endif %}>{{ d.name }}</option>
-      {% endfor %}
-    </select>
-  </label>
-  <label><input type="checkbox" name="active" value="on" {% if not row or row.active %}checked{% endif %}> Aktywny</label>
-  <p><button type="submit">Zapisz</button> <a href="/config/number-plans">Anuluj</a></p>
-</form>
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a href="/config/number-plans" class="text-xs font-bold text-primary flex items-center mb-1">
+            <i class="fas fa-arrow-left mr-1"></i> Powrót do listy
+        </a>
+        <h1 class="text-2xl font-bold tracking-tight">{{ title }}</h1>
+    </div>
+
+    <form method="post" action="{{ '/config/number-plans/' ~ row.id ~ '/edit' if row else '/config/number-plans/new' }}">
+        <div class="space-y-6">
+            {% call card(title="Konfiguracja wzorca", subtitle="Definicja automatycznej numeracji dokumentów i abonentów") %}
+            <div class="grid gap-6">
+                <div class="space-y-2">
+                    {{ label("Nazwa planu", for="name") }}
+                    {{ input("name", value=row.name if row else "", id="name", required=True, placeholder="np. Numeracja Umów 2026") }}
+                </div>
+
+                <div class="space-y-2">
+                    {{ label("Typ dokumentu", for="doc_type") }}
+                    {% set dk = row.doc_type.value if row else 'invoice' %}
+                    {{ select("doc_type", [
+                        ("invoice", "Faktura"),
+                        ("proforma", "Pro forma"),
+                        ("debit_note", "Nota obciążeniowa"),
+                        ("customer", "Abonent / Umowa")
+                    ], selected_id=dk, id="doc_type") }}
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        {{ label("Wzorzec numeru", for="pattern_template") }}
+                        <span class="text-[10px] text-muted-foreground uppercase">Tagi: {year}, {month}, {day}, {n}</span>
+                    </div>
+                    {{ input("pattern_template", value=row.pattern_template if row else "{year}/{n}", id="pattern_template", required=True, placeholder="np. KB/{year}/{n}") }}
+                    <p class="text-[10px] text-muted-foreground">Użyj <code>{n:03d}</code> dla dopełnienia zerami (np. 001).</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        {{ label("Następny numer (licznik)", for="next_number") }}
+                        {{ input("next_number", type="number", value=row.next_number if row else 1, id="next_number", min=1) }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Oddział (opcjonalnie)", for="division_id") }}
+                        {% set div_opts = [("", "—")] %}
+                        {% for d in divisions %}{% do div_opts.append((d.id, d.name)) %}{% endfor %}
+                        {{ select("division_id", div_opts, selected_id=row.division_id if row else "", id="division_id") }}
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 p-4 border rounded-lg bg-muted/10">
+                    <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary" {% if not row or row.active %}checked{% endif %}>
+                    <div class="grid gap-1.5 leading-none">
+                        {{ label("Plan aktywny", for="active", class="text-sm font-bold") }}
+                        <p class="text-[10px] text-muted-foreground uppercase">Pozwala na użycie wzorca przy wystawianiu dokumentów.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 p-4 border rounded-lg bg-primary/5 border-primary/20">
+                    <input type="checkbox" name="is_default" id="is_default" class="h-4 w-4 rounded border-gray-300 text-primary" {% if row and row.is_default %}checked{% endif %}>
+                    <div class="grid gap-1.5 leading-none">
+                        {{ label("Plan domyślny", for="is_default", class="text-sm font-bold text-primary") }}
+                        <p class="text-[10px] text-muted-foreground uppercase">Będzie automatycznie wybierany przy tworzeniu nowych obiektów tego typu.</p>
+                    </div>
+                </div>
+            </div>
+            {% endcall %}
+
+            <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+                <a href="/config/number-plans" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                    <i class="fas fa-save mr-2 text-xs"></i> Zapisz plan
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
 {% endblock %}

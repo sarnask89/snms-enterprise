@@ -9,36 +9,45 @@
 {% endfor %}
 
 <script>
-if (typeof selectSuggestion !== 'function') {
-    function selectSuggestion(el, text, id, type) {
-        const container = el.closest('.teryt-lookup-container') || document.body;
+window.selectSuggestion = function(el, text, id, type) {
+        console.log("selectSuggestion called:", {text, id, type});
+        const container = el.closest('.teryt-lookup-container') || el.closest('.space-y-2');
         const parentDiv = el.closest('.space-y-2');
         
-        const input = parentDiv.querySelector('input[type=text]');
-        if (input) {
-            input.value = text;
-            input.dispatchEvent(new Event('input'));
-            input.dispatchEvent(new Event('change'));
-        }
-        
-        const hiddenId = parentDiv.querySelector('input[type=hidden]');
-        if (hiddenId) {
-            hiddenId.value = id;
-            hiddenId.dispatchEvent(new Event('change'));
-        }
+        // 1. Update text input
+        if (container) {
+            const textInput = container.querySelector('input[type=text]');
+            if (textInput) {
+                textInput.value = text;
+                textInput.dispatchEvent(new Event('input', { bubbles: true }));
+                textInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            
+            // 2. Update hidden ID input
+            let hiddenId = container.querySelector('input[type=hidden]');
+            if (!hiddenId && parentDiv) {
+                hiddenId = parentDiv.querySelector('input[type=hidden]');
+            }
+            
+            // Fallback for Net Nodes specifically
+            if (!hiddenId && type === 'street') {
+                hiddenId = document.getElementById('location_street_id');
+            } else if (!hiddenId && type === 'city') {
+                hiddenId = document.getElementById('location_city_id');
+            }
 
-        if (container && container._x_dataStack) {
-            const data = container._x_dataStack[0];
-            if (type === 'city') {
-                data.selectedCityId = id;
-                data.selectedCityName = text;
-            } else if (type === 'street') {
-                data.selectedStreetId = id;
-                data.selectedStreetName = text;
+            if (hiddenId) {
+                console.log("Updating hidden input:", hiddenId.id, "with value:", id);
+                hiddenId.value = id;
+                hiddenId.dispatchEvent(new Event('change', { bubbles: true }));
             }
         }
+        
+        // 3. Dispatch global event (CRITICAL FOR GEOCODING)
+        window.dispatchEvent(new CustomEvent('suggestion-selected', { detail: { text, id, type } }));
 
-        el.parentElement.innerHTML = '';
+        // 4. Clear suggestions
+        const box = el.closest('.suggest-results-box');
+        if (box) box.innerHTML = '';
     }
-}
 </script>
