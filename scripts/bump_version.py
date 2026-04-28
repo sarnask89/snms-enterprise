@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 def bump_version(part="patch"):
-    version_file = Path("VERSION")
+    version_file = Path(__file__).parent / "VERSION"
     if not version_file.exists():
         current_version = "1.0.0"
     else:

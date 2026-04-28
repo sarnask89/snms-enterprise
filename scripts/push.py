@@ -16,7 +16,7 @@ def push_with_version(part="patch"):
     new_version = bump_version(part)
     
     # 2. Git operations
-    run_command("git add VERSION app/__init__.py scripts/bump_version.py scripts/push.py")
+    run_command("git add scripts/VERSION app/__init__.py scripts/bump_version.py scripts/push.py")
     run_command(f'git commit -m "chore: bump version to {new_version}"')
     run_command(f"git tag v{new_version}")
     

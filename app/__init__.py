@@ -1,7 +1,7 @@
 from pathlib import Path
 
 def get_version():
-    version_file = Path(__file__).parent.parent / "VERSION"
+    version_file = Path(__file__).parent.parent / "scripts" / "VERSION"
     if version_file.exists():
         return version_file.read_text().strip()
     return "0.1.0"
