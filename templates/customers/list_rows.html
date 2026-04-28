@@ -2,7 +2,7 @@
 {% for c in customers %}
 <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
   <td class="p-4 align-middle font-medium">{{ c.customer_code }}</td>
-  <td class="p-4 align-middle">{{ c.first_name }} {{ c.last_name }}</td>
+  <td class="p-4 align-middle">{{ c.first_name or '' }} {{ c.last_name }}</td>
   <td class="p-4 align-middle">
     {% if c.city %}
       <div class="font-medium text-xs">{{ c.city.name }}</div>
@@ -30,7 +30,7 @@
         <i class="fas fa-edit text-xs"></i>
       </a>
       {% if can_write_crm %}
-      <button @click="$dispatch('open-alert-delete-customer', { url: '/customers/{{ c.id }}/delete', name: '{{ c.last_name }} {{ c.first_name }}' })"
+      <button @click="$dispatch('open-alert-delete-customer', { url: '/customers/{{ c.id }}/delete', name: '{{ c.last_name }} {{ c.first_name or '' }}' })"
               class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive/10 hover:text-destructive h-8 w-8 text-muted-foreground" title="Usuń">
         <i class="fas fa-trash text-xs"></i>
       </button>

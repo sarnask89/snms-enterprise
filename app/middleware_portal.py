@@ -74,6 +74,12 @@ class PortalUserMiddleware(BaseHTTPMiddleware):
                         or vu.startswith("/nodes/")
                         for vu in urls
                     )
+                # Dodatkowe dostępy dla nowych modułów
+                if not allowed and path.startswith("/diagnostics"):
+                    allowed = True
+                if not allowed and path.startswith("/admin/pit"):
+                    allowed = True
+                
                 if not allowed:
                     return HTMLResponse(
                         "<!DOCTYPE html><html><body><h1>403</h1><p>Brak dostępu do tej ścieżki w menu dla Twojej roli.</p>"

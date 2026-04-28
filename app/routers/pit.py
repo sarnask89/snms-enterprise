@@ -52,11 +52,11 @@ async def sync_pit_coordinates_task():
         
         updated_count = 0
         for node in nodes:
-            if not node.street_number or not node.city or not node.city.teryt_code:
+            if not node.street_number or not node.location_city or not node.location_city.teryt_code:
                 continue
                 
-            simc = node.city.teryt_code
-            ulic = node.street.teryt_code if node.street else "00000" # fallback or specific empty
+            simc = node.location_city.teryt_code
+            ulic = node.location_street.teryt_code if node.location_street else "00000" # fallback or specific empty
             number = node.street_number
             
             coords = await service.get_coordinates_for_pit_uke(simc, ulic, number)

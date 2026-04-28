@@ -40,6 +40,7 @@ def customer_list(
         term = f"%{q.strip()}%"
         stmt = stmt.where(or_(
             models.Customer.customer_code.ilike(term),
+            models.Customer.first_name.ilike(term),
             models.Customer.last_name.ilike(term),
             models.Customer.email.ilike(term)
         ))
@@ -90,6 +91,37 @@ def preview_next_number(
         rendered = "Błąd formatu"
 
     return HTMLResponse(f'<span class="text-primary font-mono font-bold text-sm animate-in fade-in slide-in-from-left-2">{rendered}</span>')
+
+@router.get("/reports.csv")
+def customer_reports_csv(db: Session = Depends(get_db)):
+    customers = db.scalars(select(models.Customer).order_by(models.Customer.id.desc())).all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Kod", "Imię", "Nazwisko", "Email", "Telefon", "Status"])
+    
+    for c in customers:
+        writer.writerow([
+            c.id, 
+            c.customer_code, 
+            c.first_name, 
+            c.last_name, 
+            c.email or "", 
+            c.phone or "", 
+            c.status.value
+        ])
+        
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]), 
+        media_type="text/csv", 
+        headers={"Content-Disposition": "attachment; filename=klienci_raport.csv"}
+    )
+
+@router.get("/reports", response_class=HTMLResponse)
+def customer_reports(request: Request, db: Session = Depends(get_db)):
+    customers = list(db.scalars(select(models.Customer).order_by(models.Customer.id.desc())).all())
+    return render(request, "customers/reports.html", {"title": "Raporty Abonentów", "customers": customers})
 
 @router.get("/search", response_class=HTMLResponse)
 def customer_search_form(request: Request):

@@ -53,7 +53,9 @@ def toggle_managed(id: int, request: Request, db: Session = Depends(get_db)):
             city.is_default = False
         db.commit()
         record_audit(db, "update", "location_city", city.id, f"Managed: {city.is_managed}", request)
-        return RedirectResponse("/admin/addresses", status_code=303)
+        
+        referer = request.headers.get("referer")
+        return RedirectResponse(referer or "/admin/addresses", status_code=303)
     return Response(status_code=404)
 
 @router.get("/search-teryt", response_class=HTMLResponse)

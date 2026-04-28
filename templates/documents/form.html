@@ -1,19 +1,59 @@
 {% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+
 {% block content %}
-<form method="post" action="/documents/new" class="stack narrow">
-  <label>Tytuł<input name="title" required></label>
-  <label>Typ<input name="doc_type" value="contract"></label>
-  <label>Klient
-    <select name="customer_id">
-      <option value="">—</option>
-      {% for c in customers %}
-      <option value="{{ c.id }}">{{ c.customer_code }}</option>
-      {% endfor %}
-    </select>
-  </label>
-  <label>Notatki<textarea name="notes" rows="3"></textarea></label>
-  <label>Plik (PDF, obraz, TXT, DOC…) <input name="file" type="file"></label>
-  <button type="submit">Zapisz</button>
-  <a href="/documents">Anuluj</a>
-</form>
+<div class="max-w-2xl mx-auto">
+    <form method="post" action="/documents/new" enctype="multipart/form-data">
+        {% call card("Dodaj nowy dokument") %}
+        <div class="space-y-6">
+            <div class="space-y-2">
+                {{ label("title", "Tytuł dokumentu") }}
+                {{ input("title", id="title", placeholder="np. Umowa o świadczenie usług...", required=True) }}
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("doc_type", "Typ dokumentu") }}
+                    <select name="doc_type" id="doc_type" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="contract">Umowa</option>
+                        <option value="invoice">Faktura</option>
+                        <option value="identity">Tożsamość</option>
+                        <option value="other">Inne</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    {{ label("customer_id", "Przypisz do abonenta (opcjonalnie)") }}
+                    <select name="customer_id" id="customer_id" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">— Brak —</option>
+                        {% for c in customers %}
+                        <option value="{{ c.id }}">{{ c.customer_code }} - {{ c.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                {{ label("notes", "Notatki / Opis") }}
+                <textarea name="notes" id="notes" rows="3" placeholder="Dodatkowe informacje..."
+                          class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"></textarea>
+            </div>
+
+            <div class="space-y-2">
+                {{ label("file", "Plik załącznika (PDF, obrazy, TXT, DOC)") }}
+                <input type="file" name="file" id="file" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+            </div>
+        </div>
+
+        <div class="pt-6 mt-6 border-t flex justify-end gap-3 items-center">
+            <a href="/documents" class="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-4 py-2">
+                Anuluj
+            </a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary h-10 px-6 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz dokument
+            </button>
+        </div>
+        {% endcall %}
+    </form>
+</div>
 {% endblock %}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session, joinedload
 
 from app import models
@@ -28,7 +28,11 @@ def _opt_int(raw: str | None) -> int | None:
 def net_nodes_list(request: Request, search_q: str = "", db: Session = Depends(get_db)):
     stmt = select(models.NetNode).options(joinedload(models.NetNode.division))
     if search_q:
-        stmt = stmt.where(models.NetNode.name.ilike(f"%{search_q}%"))
+        term = f"%{search_q}%"
+        stmt = stmt.where(or_(
+            models.NetNode.name.ilike(term),
+            models.NetNode.location_detail.ilike(term)
+        ))
     items = list(db.scalars(stmt.order_by(models.NetNode.name)).all())
     
     # Mapowanie dywizji dla szybkiego dostępu w szablonie

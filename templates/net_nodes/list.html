@@ -17,9 +17,14 @@
         </div>
         
         {% if can_write_crm %}
-        <a href="/net-nodes/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
-            <i class="fas fa-plus mr-2 text-xs"></i> Nowy węzeł sieci
-        </a>
+        <div class="flex gap-2">
+            <a href="/admin/pit/export/nodes" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 shadow-sm transition-all">
+                <i class="fas fa-file-export mr-2 text-xs"></i> Eksport PIT GML
+            </a>
+            <a href="/net-nodes/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
+                <i class="fas fa-plus mr-2 text-xs"></i> Nowy węzeł sieci
+            </a>
+        </div>
         {% endif %}
     </div>
 
