@@ -16,6 +16,9 @@
 - **Database (Development/Default):** SQLite (File-based database for simplicity)
 - **Database (Production Option):** PostgreSQL (Robust, open-source relational database)
 
+## CI/CD
+- **Automation:** GitHub Actions (For CI/CD and workflow automation)
+
 ## External Integrations & Utilities
 - **SOAP Client:** Zeep (For integration with the GUS TERYT API)
 - **Geocoding:** GUGiK Geoportal (UUG/PUWG 1992) for authoritative Polish address-to-GPS conversion.
