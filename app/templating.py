@@ -1,15 +1,19 @@
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
+import jinja2
 
 from app.config import APP_DISPLAY_NAME, BASE_DIR
-from app.database import SessionLocal
+from app.database import db_manager
 from app.models import UserRole
 from app.nav_access import grouped_visible_nav, visible_nav_items
 
-templates = Jinja2Templates(
-    directory=str(BASE_DIR / "templates"),
+# Preconfigure Jinja2 environment to avoid DeprecationWarning
+env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(str(BASE_DIR / "templates")),
     extensions=["jinja2.ext.do"]
 )
+
+templates = Jinja2Templates(env=env)
 
 
 def render(
@@ -29,7 +33,7 @@ def render(
             ctx["nav_items"] = cached
             ctx["nav_groups"] = grouped_visible_nav(cached)
         else:
-            db = SessionLocal()
+            db = db_manager.SessionLocal()
             try:
                 items = visible_nav_items(db, u.role)
                 ctx["nav_items"] = items
