@@ -8609,3 +8609,1102 @@ sqlalchemy.exc.SQLAlchemyError: DB Fail
 2026-04-28 06:38:19,938 - INFO - root - Logging system initialized.
 2026-04-28 06:38:19,938 - INFO - app.test - Test log message
 2026-04-28 06:38:19,994 - INFO - httpx - HTTP Request: GET http://testserver/test-path "HTTP/1.1 200 OK"
+2026-04-28 06:41:44,612 - INFO - root - Logging system initialized.
+2026-04-28 06:41:45,009 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:41:45,010 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:41:45,010 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:41:45,010 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:41:45,010 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:41:45,010 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:42:13,310 - INFO - root - Logging system initialized.
+2026-04-28 06:42:13,688 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:42:13,688 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:42:13,688 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:42:13,688 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:42:13,688 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:42:13,688 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:42:35,579 - INFO - root - Logging system initialized.
+2026-04-28 06:42:36,142 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:42:36,144 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:42:36,145 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:42:36,145 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:42:36,145 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:42:36,145 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:42:52,354 - INFO - root - Logging system initialized.
+2026-04-28 06:42:52,854 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:42:52,855 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:42:52,855 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:42:52,855 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:42:52,855 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:42:52,855 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:43:47,857 - INFO - root - Logging system initialized.
+2026-04-28 06:43:48,241 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:43:48,242 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:43:48,242 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:43:48,242 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:43:48,242 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:43:48,242 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:43:50,543 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:43:50,986 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 442.44ms
+2026-04-28 06:43:50,991 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:43:51,001 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:43:51,030 - INFO - app.middleware - Completed: GET / Status: 200 Time: 29.29ms
+2026-04-28 06:43:51,032 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:44:06,904 - INFO - root - Logging system initialized.
+2026-04-28 06:44:07,281 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:44:07,282 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:44:07,283 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:44:07,283 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:44:07,284 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:44:07,284 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:44:09,501 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:44:09,945 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 443.81ms
+2026-04-28 06:44:09,948 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:44:09,956 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:44:09,986 - INFO - app.middleware - Completed: GET / Status: 200 Time: 29.64ms
+2026-04-28 06:44:09,990 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:44:10,003 - INFO - app.middleware - Incoming: POST /diagnostics/check/1 (User: admin)
+2026-04-28 06:44:10,010 - INFO - app.services.mikrotik - Mikrotik: Connecting to 127.0.0.1:8728 as admin
+2026-04-28 06:44:12,072 - ERROR - app.services.mikrotik - Mikrotik API error (arp-ping): [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api_socket.py", line 18, in get_socket
+    api_socket = socket.create_connection((hostname, port), timeout=timeout)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 101, in sync_arp_ping
+    conn, api = self._get_api()
+                ~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 26, in _get_api
+    return connection, connection.get_api()
+                       ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api.py", line 47, in get_api
+    self.socket = api_socket.get_socket(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        self.host, self.port, timeout=self.socket_timeout, use_ssl=self.use_ssl, ssl_verify=self.ssl_verify,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ssl_verify_hostname=self.ssl_verify_hostname, ssl_context=self.ssl_context)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api_socket.py", line 21, in get_socket
+    raise exceptions.RouterOsApiConnectionError(e)
+routeros_api.exceptions.RouterOsApiConnectionError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+2026-04-28 06:44:12,109 - INFO - app.middleware - Completed: POST /diagnostics/check/1 Status: 200 Time: 2106.31ms
+2026-04-28 06:44:12,111 - INFO - httpx - HTTP Request: POST http://testserver/diagnostics/check/1 "HTTP/1.1 200 OK"
+2026-04-28 06:44:21,448 - INFO - root - Logging system initialized.
+2026-04-28 06:44:21,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:44:21,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:44:21,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:44:21,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:44:21,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:44:21,927 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:44:24,561 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:44:25,015 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 453.52ms
+2026-04-28 06:44:25,019 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:44:25,030 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:44:25,070 - INFO - app.middleware - Completed: GET / Status: 200 Time: 39.41ms
+2026-04-28 06:44:25,072 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:44:25,085 - INFO - app.middleware - Incoming: POST /diagnostics/check/1 (User: admin)
+2026-04-28 06:44:25,093 - INFO - app.services.mikrotik - Mikrotik: Connecting to 127.0.0.1:8728 as admin
+2026-04-28 06:44:27,102 - ERROR - app.services.mikrotik - Mikrotik API error (arp-ping): [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api_socket.py", line 18, in get_socket
+    api_socket = socket.create_connection((hostname, port), timeout=timeout)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 101, in sync_arp_ping
+    conn, api = self._get_api()
+                ~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 26, in _get_api
+    return connection, connection.get_api()
+                       ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api.py", line 47, in get_api
+    self.socket = api_socket.get_socket(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        self.host, self.port, timeout=self.socket_timeout, use_ssl=self.use_ssl, ssl_verify=self.ssl_verify,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ssl_verify_hostname=self.ssl_verify_hostname, ssl_context=self.ssl_context)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api_socket.py", line 21, in get_socket
+    raise exceptions.RouterOsApiConnectionError(e)
+routeros_api.exceptions.RouterOsApiConnectionError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+2026-04-28 06:44:27,106 - INFO - app.middleware - Completed: POST /diagnostics/check/1 Status: 200 Time: 2020.38ms
+2026-04-28 06:44:27,108 - INFO - httpx - HTTP Request: POST http://testserver/diagnostics/check/1 "HTTP/1.1 200 OK"
+2026-04-28 06:45:03,553 - INFO - root - Logging system initialized.
+2026-04-28 06:45:04,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 06:45:04,043 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 06:45:04,044 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 06:45:04,044 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 06:45:04,044 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 06:45:04,045 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 06:45:06,933 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:07,332 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 399.55ms
+2026-04-28 06:45:07,336 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:07,349 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:07,381 - INFO - app.middleware - Completed: GET / Status: 200 Time: 32.08ms
+2026-04-28 06:45:07,383 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:07,388 - INFO - app.middleware - Incoming: GET /admin/addresses (User: admin)
+2026-04-28 06:45:07,397 - INFO - app.middleware - Completed: GET /admin/addresses Status: 200 Time: 8.46ms
+2026-04-28 06:45:07,398 - INFO - httpx - HTTP Request: GET http://testserver/admin/addresses "HTTP/1.1 200 OK"
+2026-04-28 06:45:07,917 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:08,328 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 410.88ms
+2026-04-28 06:45:08,329 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:08,334 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:08,341 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.12ms
+2026-04-28 06:45:08,344 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:08,356 - INFO - app.middleware - Incoming: POST /admin/addresses/city/1/set-default (User: admin)
+2026-04-28 06:45:08,362 - INFO - app.middleware - Completed: POST /admin/addresses/city/1/set-default Status: 303 Time: 5.87ms
+2026-04-28 06:45:08,364 - INFO - httpx - HTTP Request: POST http://testserver/admin/addresses/city/1/set-default "HTTP/1.1 303 See Other"
+2026-04-28 06:45:08,871 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:09,270 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 399.71ms
+2026-04-28 06:45:09,272 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:09,277 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:09,283 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.08ms
+2026-04-28 06:45:09,285 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:09,294 - INFO - app.middleware - Incoming: POST /admin/addresses/city/1/toggle-managed (User: admin)
+2026-04-28 06:45:09,302 - INFO - app.middleware - Completed: POST /admin/addresses/city/1/toggle-managed Status: 303 Time: 7.53ms
+2026-04-28 06:45:09,304 - INFO - httpx - HTTP Request: POST http://testserver/admin/addresses/city/1/toggle-managed "HTTP/1.1 303 See Other"
+2026-04-28 06:45:09,856 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:10,283 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 426.64ms
+2026-04-28 06:45:10,285 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:10,290 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:10,297 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.51ms
+2026-04-28 06:45:10,298 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:10,306 - INFO - app.middleware - Incoming: GET /admin/addresses/search-teryt (User: admin)
+2026-04-28 06:45:10,320 - INFO - app.middleware - Completed: GET /admin/addresses/search-teryt Status: 200 Time: 13.64ms
+2026-04-28 06:45:10,322 - INFO - httpx - HTTP Request: GET http://testserver/admin/addresses/search-teryt?q=Search "HTTP/1.1 200 OK"
+2026-04-28 06:45:10,846 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:11,280 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 434.45ms
+2026-04-28 06:45:11,285 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:11,290 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:11,296 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.24ms
+2026-04-28 06:45:11,298 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:11,303 - INFO - app.middleware - Incoming: GET /admin/info (User: admin)
+2026-04-28 06:45:11,339 - INFO - app.middleware - Completed: GET /admin/info Status: 200 Time: 36.77ms
+2026-04-28 06:45:11,341 - INFO - httpx - HTTP Request: GET http://testserver/admin/info "HTTP/1.1 200 OK"
+2026-04-28 06:45:11,871 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:12,268 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 397.05ms
+2026-04-28 06:45:12,270 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:12,275 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:12,282 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.19ms
+2026-04-28 06:45:12,283 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:12,289 - INFO - app.middleware - Incoming: GET /admin/users (User: admin)
+2026-04-28 06:45:12,300 - INFO - app.middleware - Completed: GET /admin/users Status: 200 Time: 10.88ms
+2026-04-28 06:45:12,301 - INFO - httpx - HTTP Request: GET http://testserver/admin/users "HTTP/1.1 200 OK"
+2026-04-28 06:45:12,306 - INFO - app.middleware - Incoming: POST /admin/users/new (User: admin)
+2026-04-28 06:45:12,700 - INFO - app.middleware - Completed: POST /admin/users/new Status: 303 Time: 393.35ms
+2026-04-28 06:45:12,701 - INFO - httpx - HTTP Request: POST http://testserver/admin/users/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:12,707 - INFO - app.middleware - Incoming: POST /admin/users/2/edit (User: admin)
+2026-04-28 06:45:12,713 - INFO - app.middleware - Completed: POST /admin/users/2/edit Status: 303 Time: 5.35ms
+2026-04-28 06:45:12,714 - INFO - httpx - HTTP Request: POST http://testserver/admin/users/2/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:45:12,720 - INFO - app.middleware - Incoming: POST /admin/users/2/delete (User: admin)
+2026-04-28 06:45:12,728 - INFO - app.middleware - Completed: POST /admin/users/2/delete Status: 303 Time: 8.42ms
+2026-04-28 06:45:12,731 - INFO - httpx - HTTP Request: POST http://testserver/admin/users/2/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:13,271 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:13,675 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 403.47ms
+2026-04-28 06:45:13,677 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:13,682 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:13,688 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.25ms
+2026-04-28 06:45:13,690 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:13,695 - INFO - app.middleware - Incoming: POST /admin/user-groups/new (User: admin)
+2026-04-28 06:45:13,700 - INFO - app.middleware - Completed: POST /admin/user-groups/new Status: 303 Time: 5.11ms
+2026-04-28 06:45:13,702 - INFO - httpx - HTTP Request: POST http://testserver/admin/user-groups/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:13,712 - INFO - app.middleware - Incoming: POST /admin/user-groups/1/edit (User: admin)
+2026-04-28 06:45:13,718 - INFO - app.middleware - Completed: POST /admin/user-groups/1/edit Status: 303 Time: 6.56ms
+2026-04-28 06:45:13,720 - INFO - httpx - HTTP Request: POST http://testserver/admin/user-groups/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:45:13,726 - INFO - app.middleware - Incoming: POST /admin/user-groups/1/delete (User: admin)
+2026-04-28 06:45:13,730 - INFO - app.middleware - Completed: POST /admin/user-groups/1/delete Status: 303 Time: 4.52ms
+2026-04-28 06:45:13,732 - INFO - httpx - HTTP Request: POST http://testserver/admin/user-groups/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:14,256 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:14,662 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 405.83ms
+2026-04-28 06:45:14,664 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:14,670 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:14,678 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.90ms
+2026-04-28 06:45:14,684 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:14,690 - INFO - app.middleware - Incoming: GET /admin/teryt-sync (User: admin)
+2026-04-28 06:45:14,724 - INFO - app.middleware - Completed: GET /admin/teryt-sync Status: 200 Time: 33.76ms
+2026-04-28 06:45:14,726 - INFO - httpx - HTTP Request: GET http://testserver/admin/teryt-sync "HTTP/1.1 200 OK"
+2026-04-28 06:45:15,258 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:15,670 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 412.64ms
+2026-04-28 06:45:15,672 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:15,677 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:15,683 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.45ms
+2026-04-28 06:45:15,685 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:15,690 - INFO - app.middleware - Incoming: GET /admin/audit-logs (User: admin)
+2026-04-28 06:45:15,700 - INFO - app.middleware - Completed: GET /admin/audit-logs Status: 200 Time: 9.89ms
+2026-04-28 06:45:15,702 - INFO - httpx - HTTP Request: GET http://testserver/admin/audit-logs "HTTP/1.1 200 OK"
+2026-04-28 06:45:16,235 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:16,682 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 446.98ms
+2026-04-28 06:45:16,684 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:16,688 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:16,695 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.15ms
+2026-04-28 06:45:16,696 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:16,702 - INFO - app.middleware - Incoming: GET /customers/notices (User: admin)
+2026-04-28 06:45:16,713 - INFO - app.middleware - Completed: GET /customers/notices Status: 200 Time: 11.26ms
+2026-04-28 06:45:16,715 - INFO - httpx - HTTP Request: GET http://testserver/customers/notices "HTTP/1.1 200 OK"
+2026-04-28 06:45:17,254 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:17,642 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 388.27ms
+2026-04-28 06:45:17,644 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:17,649 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:17,656 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.33ms
+2026-04-28 06:45:17,657 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:17,662 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:45:17,669 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 7.09ms
+2026-04-28 06:45:17,671 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:17,677 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:45:17,697 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 19.91ms
+2026-04-28 06:45:17,698 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 200 OK"
+2026-04-28 06:45:17,704 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:45:17,707 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 3.53ms
+2026-04-28 06:45:17,709 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 200 OK"
+2026-04-28 06:45:18,269 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-28 06:45:18,272 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 3.33ms
+2026-04-28 06:45:18,274 - INFO - httpx - HTTP Request: GET http://testserver/login "HTTP/1.1 200 OK"
+2026-04-28 06:45:18,275 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:18,666 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 390.97ms
+2026-04-28 06:45:18,668 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:18,674 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:18,680 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.26ms
+2026-04-28 06:45:18,682 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:18,686 - INFO - app.middleware - Incoming: GET /logout (User: admin)
+2026-04-28 06:45:18,689 - INFO - app.middleware - Completed: GET /logout Status: 302 Time: 2.30ms
+2026-04-28 06:45:18,690 - INFO - httpx - HTTP Request: GET http://testserver/logout "HTTP/1.1 302 Found"
+2026-04-28 06:45:19,222 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:19,226 - INFO - app.middleware - Completed: POST /login Status: 401 Time: 4.08ms
+2026-04-28 06:45:19,227 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 401 Unauthorized"
+2026-04-28 06:45:19,732 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:20,130 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 397.56ms
+2026-04-28 06:45:20,133 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:20,138 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:20,144 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.19ms
+2026-04-28 06:45:20,146 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:20,151 - INFO - app.middleware - Incoming: GET /customer-groups (User: admin)
+2026-04-28 06:45:20,161 - INFO - app.middleware - Completed: GET /customer-groups Status: 200 Time: 10.17ms
+2026-04-28 06:45:20,163 - INFO - httpx - HTTP Request: GET http://testserver/customer-groups "HTTP/1.1 200 OK"
+2026-04-28 06:45:20,679 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:21,071 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 391.47ms
+2026-04-28 06:45:21,073 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:21,078 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:21,084 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.78ms
+2026-04-28 06:45:21,086 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:21,091 - INFO - app.middleware - Incoming: POST /customer-groups/new (User: admin)
+2026-04-28 06:45:21,097 - INFO - app.middleware - Completed: POST /customer-groups/new Status: 303 Time: 5.49ms
+2026-04-28 06:45:21,099 - INFO - httpx - HTTP Request: POST http://testserver/customer-groups/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:21,109 - INFO - app.middleware - Incoming: POST /customer-groups/1/delete (User: admin)
+2026-04-28 06:45:21,115 - INFO - app.middleware - Completed: POST /customer-groups/1/delete Status: 303 Time: 6.05ms
+2026-04-28 06:45:21,117 - INFO - httpx - HTTP Request: POST http://testserver/customer-groups/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:21,643 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:22,053 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 409.81ms
+2026-04-28 06:45:22,055 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:22,060 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:22,066 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.69ms
+2026-04-28 06:45:22,068 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:22,073 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:45:22,080 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 6.45ms
+2026-04-28 06:45:22,082 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 200 OK"
+2026-04-28 06:45:22,609 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:23,016 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 406.46ms
+2026-04-28 06:45:23,019 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:23,024 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:23,031 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.46ms
+2026-04-28 06:45:23,033 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:23,038 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:45:23,044 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 5.67ms
+2026-04-28 06:45:23,046 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:23,052 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:45:23,058 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 6.23ms
+2026-04-28 06:45:23,060 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 200 OK"
+2026-04-28 06:45:23,578 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:23,977 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 398.33ms
+2026-04-28 06:45:23,978 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:23,983 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:23,990 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.10ms
+2026-04-28 06:45:23,993 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:24,002 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:45:24,008 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 5.96ms
+2026-04-28 06:45:24,009 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:24,014 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:45:24,021 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 6.49ms
+2026-04-28 06:45:24,023 - INFO - httpx - HTTP Request: GET http://testserver/customers "HTTP/1.1 200 OK"
+2026-04-28 06:45:24,027 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:45:24,031 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 3.75ms
+2026-04-28 06:45:24,034 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:24,039 - INFO - app.middleware - Incoming: GET /customers/new (User: admin)
+2026-04-28 06:45:24,085 - INFO - app.middleware - Completed: GET /customers/new Status: 200 Time: 45.41ms
+2026-04-28 06:45:24,087 - INFO - httpx - HTTP Request: GET http://testserver/customers/new?error=Numer+abonenta+DUPE-001+jest+ju%C5%BC+zaj%C4%99ty "HTTP/1.1 200 OK"
+2026-04-28 06:45:24,687 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:25,098 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 411.30ms
+2026-04-28 06:45:25,100 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:25,104 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:25,111 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.17ms
+2026-04-28 06:45:25,112 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:25,120 - INFO - app.middleware - Incoming: POST /customers/1/edit (User: admin)
+2026-04-28 06:45:25,126 - INFO - app.middleware - Completed: POST /customers/1/edit Status: 303 Time: 5.85ms
+2026-04-28 06:45:25,128 - INFO - httpx - HTTP Request: POST http://testserver/customers/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:45:25,675 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:26,097 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 422.48ms
+2026-04-28 06:45:26,099 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:26,104 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:26,111 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.93ms
+2026-04-28 06:45:26,113 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:26,125 - INFO - app.middleware - Incoming: POST /customers/1/delete (User: admin)
+2026-04-28 06:45:26,142 - INFO - app.middleware - Completed: POST /customers/1/delete Status: 303 Time: 16.87ms
+2026-04-28 06:45:26,143 - INFO - httpx - HTTP Request: POST http://testserver/customers/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:26,678 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:27,085 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 406.87ms
+2026-04-28 06:45:27,087 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:27,091 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:27,098 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.32ms
+2026-04-28 06:45:27,099 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:27,105 - INFO - app.middleware - Incoming: GET /messages/documents (User: admin)
+2026-04-28 06:45:27,106 - INFO - app.middleware - Completed: GET /messages/documents Status: 404 Time: 1.01ms
+2026-04-28 06:45:27,107 - INFO - httpx - HTTP Request: GET http://testserver/messages/documents "HTTP/1.1 404 Not Found"
+2026-04-28 06:45:27,645 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:28,165 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 519.71ms
+2026-04-28 06:45:28,168 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:28,181 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:28,192 - INFO - app.middleware - Completed: GET / Status: 200 Time: 11.28ms
+2026-04-28 06:45:28,195 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:28,205 - INFO - app.middleware - Incoming: GET /timetable (User: admin)
+2026-04-28 06:45:28,226 - INFO - app.middleware - Completed: GET /timetable Status: 200 Time: 21.00ms
+2026-04-28 06:45:28,229 - INFO - httpx - HTTP Request: GET http://testserver/timetable "HTTP/1.1 200 OK"
+2026-04-28 06:45:28,894 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:29,430 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 535.66ms
+2026-04-28 06:45:29,432 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:29,443 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:29,452 - INFO - app.middleware - Completed: GET / Status: 200 Time: 8.99ms
+2026-04-28 06:45:29,455 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:29,461 - INFO - app.middleware - Incoming: POST /timetable/new (User: admin)
+2026-04-28 06:45:29,466 - INFO - app.middleware - Completed: POST /timetable/new Status: 303 Time: 5.78ms
+2026-04-28 06:45:29,468 - INFO - httpx - HTTP Request: POST http://testserver/timetable/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:29,475 - INFO - app.middleware - Incoming: POST /timetable/1/delete (User: admin)
+2026-04-28 06:45:29,479 - INFO - app.middleware - Completed: POST /timetable/1/delete Status: 303 Time: 3.74ms
+2026-04-28 06:45:29,481 - INFO - httpx - HTTP Request: POST http://testserver/timetable/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:30,063 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:30,474 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 410.97ms
+2026-04-28 06:45:30,476 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:30,481 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:30,488 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.52ms
+2026-04-28 06:45:30,489 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:30,517 - INFO - app.middleware - Incoming: GET /finances/invoices (User: admin)
+2026-04-28 06:45:30,532 - INFO - app.middleware - Completed: GET /finances/invoices Status: 200 Time: 15.20ms
+2026-04-28 06:45:30,534 - INFO - httpx - HTTP Request: GET http://testserver/finances/invoices "HTTP/1.1 200 OK"
+2026-04-28 06:45:31,058 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:31,455 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 396.72ms
+2026-04-28 06:45:31,457 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:31,466 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:31,473 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.32ms
+2026-04-28 06:45:31,475 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:31,480 - INFO - app.middleware - Incoming: POST /finances/cash/new (User: admin)
+2026-04-28 06:45:31,485 - INFO - app.middleware - Completed: POST /finances/cash/new Status: 303 Time: 5.11ms
+2026-04-28 06:45:31,486 - INFO - httpx - HTTP Request: POST http://testserver/finances/cash/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:31,492 - INFO - app.middleware - Incoming: GET /finances/cash (User: admin)
+2026-04-28 06:45:31,511 - INFO - app.middleware - Completed: GET /finances/cash Status: 200 Time: 18.40ms
+2026-04-28 06:45:31,513 - INFO - httpx - HTTP Request: GET http://testserver/finances/cash "HTTP/1.1 200 OK"
+2026-04-28 06:45:31,520 - INFO - app.middleware - Incoming: POST /finances/cash/1/delete (User: admin)
+2026-04-28 06:45:31,525 - INFO - app.middleware - Completed: POST /finances/cash/1/delete Status: 303 Time: 4.59ms
+2026-04-28 06:45:31,529 - INFO - httpx - HTTP Request: POST http://testserver/finances/cash/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:32,067 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:32,465 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 397.70ms
+2026-04-28 06:45:32,467 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:32,473 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:32,484 - INFO - app.middleware - Completed: GET / Status: 200 Time: 10.21ms
+2026-04-28 06:45:32,485 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:32,492 - INFO - app.middleware - Incoming: GET /finances/tariffs (User: admin)
+2026-04-28 06:45:32,511 - INFO - app.middleware - Completed: GET /finances/tariffs Status: 200 Time: 18.91ms
+2026-04-28 06:45:32,513 - INFO - httpx - HTTP Request: GET http://testserver/finances/tariffs "HTTP/1.1 200 OK"
+2026-04-28 06:45:33,056 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:33,475 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 418.54ms
+2026-04-28 06:45:33,477 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:33,529 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:33,536 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.92ms
+2026-04-28 06:45:33,538 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:33,543 - INFO - app.middleware - Incoming: POST /finances/tariffs/new (User: admin)
+2026-04-28 06:45:33,549 - INFO - app.middleware - Completed: POST /finances/tariffs/new Status: 303 Time: 5.25ms
+2026-04-28 06:45:33,550 - INFO - httpx - HTTP Request: POST http://testserver/finances/tariffs/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:33,556 - INFO - app.middleware - Incoming: POST /finances/tariffs/1/delete (User: admin)
+2026-04-28 06:45:33,562 - INFO - app.middleware - Completed: POST /finances/tariffs/1/delete Status: 303 Time: 5.74ms
+2026-04-28 06:45:33,564 - INFO - httpx - HTTP Request: POST http://testserver/finances/tariffs/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:34,101 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:34,506 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 405.01ms
+2026-04-28 06:45:34,507 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:34,512 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:34,518 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.44ms
+2026-04-28 06:45:34,520 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:34,528 - INFO - app.middleware - Incoming: POST /finances/invoices/new (User: admin)
+2026-04-28 06:45:34,533 - INFO - app.middleware - Completed: POST /finances/invoices/new Status: 303 Time: 5.69ms
+2026-04-28 06:45:34,535 - INFO - httpx - HTTP Request: POST http://testserver/finances/invoices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:34,545 - INFO - app.middleware - Incoming: POST /finances/invoices/1/delete (User: admin)
+2026-04-28 06:45:34,548 - INFO - app.middleware - Completed: POST /finances/invoices/1/delete Status: 303 Time: 2.66ms
+2026-04-28 06:45:34,549 - INFO - httpx - HTTP Request: POST http://testserver/finances/invoices/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:35,100 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:35,515 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 415.80ms
+2026-04-28 06:45:35,517 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:35,522 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:35,529 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.40ms
+2026-04-28 06:45:35,530 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:35,537 - INFO - app.middleware - Incoming: GET /helpdesk (User: admin)
+2026-04-28 06:45:35,539 - INFO - app.middleware - Completed: GET /helpdesk Status: 302 Time: 2.72ms
+2026-04-28 06:45:35,541 - INFO - httpx - HTTP Request: GET http://testserver/helpdesk "HTTP/1.1 302 Found"
+2026-04-28 06:45:35,549 - INFO - app.middleware - Incoming: GET /helpdesk/tickets (User: admin)
+2026-04-28 06:45:35,568 - INFO - app.middleware - Completed: GET /helpdesk/tickets Status: 200 Time: 19.45ms
+2026-04-28 06:45:35,570 - INFO - httpx - HTTP Request: GET http://testserver/helpdesk/tickets "HTTP/1.1 200 OK"
+2026-04-28 06:45:36,178 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:36,589 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 410.97ms
+2026-04-28 06:45:36,590 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:36,595 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:36,602 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.53ms
+2026-04-28 06:45:36,604 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:36,614 - INFO - app.middleware - Incoming: POST /helpdesk/tickets/new (User: admin)
+2026-04-28 06:45:36,623 - INFO - app.middleware - Completed: POST /helpdesk/tickets/new Status: 303 Time: 9.21ms
+2026-04-28 06:45:36,625 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/tickets/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:36,632 - INFO - app.middleware - Incoming: POST /helpdesk/tickets/1/status (User: admin)
+2026-04-28 06:45:36,636 - INFO - app.middleware - Completed: POST /helpdesk/tickets/1/status Status: 303 Time: 3.96ms
+2026-04-28 06:45:36,637 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/tickets/1/status "HTTP/1.1 303 See Other"
+2026-04-28 06:45:37,155 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:37,573 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 417.73ms
+2026-04-28 06:45:37,575 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:37,583 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:37,590 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.96ms
+2026-04-28 06:45:37,592 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:37,598 - INFO - app.middleware - Incoming: POST /helpdesk/queues/new (User: admin)
+2026-04-28 06:45:37,602 - INFO - app.middleware - Completed: POST /helpdesk/queues/new Status: 303 Time: 3.78ms
+2026-04-28 06:45:37,603 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/queues/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:37,611 - INFO - app.middleware - Incoming: POST /helpdesk/queues/1/delete (User: admin)
+2026-04-28 06:45:37,616 - INFO - app.middleware - Completed: POST /helpdesk/queues/1/delete Status: 303 Time: 5.19ms
+2026-04-28 06:45:37,617 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/queues/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:38,139 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:38,550 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 410.82ms
+2026-04-28 06:45:38,552 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:38,560 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:38,566 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.24ms
+2026-04-28 06:45:38,568 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:38,575 - INFO - app.middleware - Incoming: POST /helpdesk/categories/new (User: admin)
+2026-04-28 06:45:38,579 - INFO - app.middleware - Completed: POST /helpdesk/categories/new Status: 303 Time: 4.75ms
+2026-04-28 06:45:38,581 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/categories/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:38,587 - INFO - app.middleware - Incoming: POST /helpdesk/categories/1/delete (User: admin)
+2026-04-28 06:45:38,592 - INFO - app.middleware - Completed: POST /helpdesk/categories/1/delete Status: 303 Time: 4.77ms
+2026-04-28 06:45:38,594 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/categories/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:39,124 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:39,530 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 406.65ms
+2026-04-28 06:45:39,532 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:39,537 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:39,544 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.33ms
+2026-04-28 06:45:39,545 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:39,552 - INFO - app.middleware - Incoming: GET /net-nodes (User: admin)
+2026-04-28 06:45:39,569 - INFO - app.middleware - Completed: GET /net-nodes Status: 200 Time: 16.93ms
+2026-04-28 06:45:39,571 - INFO - httpx - HTTP Request: GET http://testserver/net-nodes "HTTP/1.1 200 OK"
+2026-04-28 06:45:40,116 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:40,513 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 396.91ms
+2026-04-28 06:45:40,515 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:40,520 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:40,526 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.15ms
+2026-04-28 06:45:40,528 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:40,533 - INFO - app.middleware - Incoming: POST /net-nodes/new (User: admin)
+2026-04-28 06:45:40,536 - INFO - app.net_nodes - NET-NODE NEW SUBMIT: street_id=None, lat=52.2297, lng=21.0122
+2026-04-28 06:45:40,539 - INFO - app.middleware - Completed: POST /net-nodes/new Status: 303 Time: 6.17ms
+2026-04-28 06:45:40,541 - INFO - httpx - HTTP Request: POST http://testserver/net-nodes/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:40,548 - INFO - app.middleware - Incoming: POST /net-nodes/1/edit (User: admin)
+2026-04-28 06:45:40,552 - INFO - app.net_nodes - NET-NODE EDIT SUBMIT: id=1, street_id=None, lat=52.2300, lng=21.0130
+2026-04-28 06:45:40,558 - INFO - app.middleware - Completed: POST /net-nodes/1/edit Status: 303 Time: 10.95ms
+2026-04-28 06:45:40,560 - INFO - httpx - HTTP Request: POST http://testserver/net-nodes/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:45:40,567 - INFO - app.middleware - Incoming: POST /net-nodes/1/delete (User: admin)
+2026-04-28 06:45:40,575 - INFO - app.middleware - Completed: POST /net-nodes/1/delete Status: 303 Time: 8.63ms
+2026-04-28 06:45:40,577 - INFO - httpx - HTTP Request: POST http://testserver/net-nodes/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:41,105 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:41,519 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 414.69ms
+2026-04-28 06:45:41,521 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:41,526 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:41,533 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.53ms
+2026-04-28 06:45:41,535 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:41,540 - INFO - app.middleware - Incoming: GET /net-devices (User: admin)
+2026-04-28 06:45:41,559 - INFO - app.middleware - Completed: GET /net-devices Status: 200 Time: 19.25ms
+2026-04-28 06:45:41,561 - INFO - httpx - HTTP Request: GET http://testserver/net-devices "HTTP/1.1 200 OK"
+2026-04-28 06:45:42,088 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:42,492 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 404.93ms
+2026-04-28 06:45:42,497 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:42,502 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:42,509 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.60ms
+2026-04-28 06:45:42,512 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:42,518 - INFO - app.middleware - Incoming: POST /net-devices/new (User: admin)
+2026-04-28 06:45:42,526 - INFO - app.middleware - Completed: POST /net-devices/new Status: 303 Time: 7.83ms
+2026-04-28 06:45:42,527 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:42,534 - INFO - app.middleware - Incoming: POST /net-devices/1/delete (User: admin)
+2026-04-28 06:45:42,539 - INFO - app.middleware - Completed: POST /net-devices/1/delete Status: 303 Time: 5.33ms
+2026-04-28 06:45:42,541 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:43,085 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:43,483 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 397.59ms
+2026-04-28 06:45:43,485 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:43,491 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:43,506 - INFO - app.middleware - Completed: GET / Status: 200 Time: 14.75ms
+2026-04-28 06:45:43,508 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:43,513 - INFO - app.middleware - Incoming: GET /ip-networks (User: admin)
+2026-04-28 06:45:43,529 - INFO - app.middleware - Completed: GET /ip-networks Status: 200 Time: 15.82ms
+2026-04-28 06:45:43,531 - INFO - httpx - HTTP Request: GET http://testserver/ip-networks "HTTP/1.1 200 OK"
+2026-04-28 06:45:44,075 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:44,497 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 422.12ms
+2026-04-28 06:45:44,499 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:44,504 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:44,510 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.01ms
+2026-04-28 06:45:44,512 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:44,517 - INFO - app.middleware - Incoming: POST /ip-networks/new (User: admin)
+2026-04-28 06:45:44,522 - INFO - app.middleware - Completed: POST /ip-networks/new Status: 303 Time: 4.68ms
+2026-04-28 06:45:44,523 - INFO - httpx - HTTP Request: POST http://testserver/ip-networks/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:44,530 - INFO - app.middleware - Incoming: POST /ip-networks/1/edit (User: admin)
+2026-04-28 06:45:44,535 - INFO - app.middleware - Completed: POST /ip-networks/1/edit Status: 303 Time: 4.83ms
+2026-04-28 06:45:44,536 - INFO - httpx - HTTP Request: POST http://testserver/ip-networks/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:45:44,542 - INFO - app.middleware - Incoming: POST /ip-networks/1/delete (User: admin)
+2026-04-28 06:45:44,549 - INFO - app.middleware - Completed: POST /ip-networks/1/delete Status: 303 Time: 6.58ms
+2026-04-28 06:45:44,551 - INFO - httpx - HTTP Request: POST http://testserver/ip-networks/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:50,412 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:50,812 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 399.84ms
+2026-04-28 06:45:50,814 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:50,819 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:50,826 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.01ms
+2026-04-28 06:45:50,828 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:50,834 - INFO - app.middleware - Incoming: GET /admin/users/add (User: admin)
+2026-04-28 06:45:50,836 - INFO - app.middleware - Completed: GET /admin/users/add Status: 303 Time: 2.37ms
+2026-04-28 06:45:50,840 - INFO - httpx - HTTP Request: GET http://testserver/admin/users/add "HTTP/1.1 303 See Other"
+2026-04-28 06:45:51,364 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:51,758 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 394.34ms
+2026-04-28 06:45:51,760 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:51,765 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:51,772 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.05ms
+2026-04-28 06:45:51,774 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:51,782 - INFO - app.middleware - Incoming: POST /net-devices/new (User: admin)
+2026-04-28 06:45:51,786 - INFO - app.middleware - Completed: POST /net-devices/new Status: 303 Time: 4.28ms
+2026-04-28 06:45:51,788 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:51,792 - INFO - app.middleware - Incoming: GET /net-devices (User: admin)
+2026-04-28 06:45:51,798 - INFO - app.middleware - Completed: GET /net-devices Status: 200 Time: 5.46ms
+2026-04-28 06:45:51,800 - INFO - httpx - HTTP Request: GET http://testserver/net-devices "HTTP/1.1 200 OK"
+2026-04-28 06:45:52,324 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:52,732 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 408.20ms
+2026-04-28 06:45:52,734 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:52,740 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:52,746 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.11ms
+2026-04-28 06:45:52,748 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:52,753 - INFO - app.middleware - Incoming: POST /customer-devices/new (User: admin)
+2026-04-28 06:45:52,758 - INFO - app.middleware - Completed: POST /customer-devices/new Status: 303 Time: 4.99ms
+2026-04-28 06:45:52,759 - INFO - httpx - HTTP Request: POST http://testserver/customer-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:52,764 - INFO - app.middleware - Incoming: GET /customer-devices (User: admin)
+2026-04-28 06:45:52,782 - INFO - app.middleware - Completed: GET /customer-devices Status: 200 Time: 18.27ms
+2026-04-28 06:45:52,784 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices "HTTP/1.1 200 OK"
+2026-04-28 06:45:52,789 - INFO - app.middleware - Incoming: GET /customer-devices (User: admin)
+2026-04-28 06:45:52,792 - INFO - app.middleware - Completed: GET /customer-devices Status: 200 Time: 3.66ms
+2026-04-28 06:45:52,794 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices "HTTP/1.1 200 OK"
+2026-04-28 06:45:53,332 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:53,725 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 392.83ms
+2026-04-28 06:45:53,727 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:53,732 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:53,738 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.29ms
+2026-04-28 06:45:53,740 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:53,745 - INFO - app.middleware - Incoming: GET /customer-devices (User: admin)
+2026-04-28 06:45:53,749 - INFO - app.middleware - Completed: GET /customer-devices Status: 200 Time: 4.35ms
+2026-04-28 06:45:53,751 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices "HTTP/1.1 200 OK"
+2026-04-28 06:45:54,276 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:54,685 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 408.88ms
+2026-04-28 06:45:54,687 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:54,692 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:54,699 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.25ms
+2026-04-28 06:45:54,700 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:54,710 - INFO - app.middleware - Incoming: POST /customer-devices/new (User: admin)
+2026-04-28 06:45:54,716 - INFO - app.middleware - Completed: POST /customer-devices/new Status: 303 Time: 6.54ms
+2026-04-28 06:45:54,718 - INFO - httpx - HTTP Request: POST http://testserver/customer-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:54,725 - INFO - app.middleware - Incoming: POST /customer-devices/1/edit (User: admin)
+2026-04-28 06:45:54,730 - INFO - app.middleware - Completed: POST /customer-devices/1/edit Status: 303 Time: 5.49ms
+2026-04-28 06:45:54,732 - INFO - httpx - HTTP Request: POST http://testserver/customer-devices/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:45:54,738 - INFO - app.middleware - Incoming: POST /customer-devices/1/delete (User: admin)
+2026-04-28 06:45:54,750 - INFO - app.middleware - Completed: POST /customer-devices/1/delete Status: 303 Time: 12.25ms
+2026-04-28 06:45:54,752 - INFO - httpx - HTTP Request: POST http://testserver/customer-devices/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:55,266 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:55,670 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 404.21ms
+2026-04-28 06:45:55,672 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:55,677 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:55,684 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.29ms
+2026-04-28 06:45:55,685 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:55,691 - INFO - app.middleware - Incoming: POST /node-groups/new (User: admin)
+2026-04-28 06:45:55,697 - INFO - app.middleware - Completed: POST /node-groups/new Status: 303 Time: 6.17ms
+2026-04-28 06:45:55,699 - INFO - httpx - HTTP Request: POST http://testserver/node-groups/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:55,705 - INFO - app.middleware - Incoming: POST /node-groups/1/delete (User: admin)
+2026-04-28 06:45:55,709 - INFO - app.middleware - Completed: POST /node-groups/1/delete Status: 303 Time: 3.58ms
+2026-04-28 06:45:55,710 - INFO - httpx - HTTP Request: POST http://testserver/node-groups/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:56,229 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:56,623 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 394.61ms
+2026-04-28 06:45:56,625 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:56,630 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:56,636 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.09ms
+2026-04-28 06:45:56,638 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:56,646 - INFO - app.middleware - Incoming: POST /hosting/new (User: admin)
+2026-04-28 06:45:56,650 - INFO - app.middleware - Completed: POST /hosting/new Status: 303 Time: 4.95ms
+2026-04-28 06:45:56,652 - INFO - httpx - HTTP Request: POST http://testserver/hosting/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:56,658 - INFO - app.middleware - Incoming: POST /hosting/1/delete (User: admin)
+2026-04-28 06:45:56,662 - INFO - app.middleware - Completed: POST /hosting/1/delete Status: 303 Time: 3.50ms
+2026-04-28 06:45:56,663 - INFO - httpx - HTTP Request: POST http://testserver/hosting/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:57,186 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:57,587 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 401.27ms
+2026-04-28 06:45:57,589 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:57,595 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:57,603 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.57ms
+2026-04-28 06:45:57,605 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:57,613 - INFO - app.middleware - Incoming: POST /voip/new (User: admin)
+2026-04-28 06:45:57,618 - INFO - app.middleware - Completed: POST /voip/new Status: 303 Time: 5.03ms
+2026-04-28 06:45:57,619 - INFO - httpx - HTTP Request: POST http://testserver/voip/new "HTTP/1.1 303 See Other"
+2026-04-28 06:45:57,627 - INFO - app.middleware - Incoming: POST /voip/1/delete (User: admin)
+2026-04-28 06:45:57,631 - INFO - app.middleware - Completed: POST /voip/1/delete Status: 303 Time: 4.74ms
+2026-04-28 06:45:57,634 - INFO - httpx - HTTP Request: POST http://testserver/voip/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:45:58,141 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:58,527 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 386.03ms
+2026-04-28 06:45:58,529 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:58,534 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:58,540 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.09ms
+2026-04-28 06:45:58,542 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:58,547 - INFO - app.middleware - Incoming: GET /messages/templates (User: admin)
+2026-04-28 06:45:58,554 - INFO - app.middleware - Completed: GET /messages/templates Status: 200 Time: 7.71ms
+2026-04-28 06:45:58,560 - INFO - httpx - HTTP Request: GET http://testserver/messages/templates "HTTP/1.1 200 OK"
+2026-04-28 06:45:59,087 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:45:59,479 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 392.62ms
+2026-04-28 06:45:59,481 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:45:59,486 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:45:59,493 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.48ms
+2026-04-28 06:45:59,495 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:45:59,500 - INFO - app.middleware - Incoming: GET /config (User: admin)
+2026-04-28 06:45:59,509 - INFO - app.middleware - Completed: GET /config Status: 200 Time: 9.43ms
+2026-04-28 06:45:59,514 - INFO - httpx - HTTP Request: GET http://testserver/config "HTTP/1.1 200 OK"
+2026-04-28 06:46:00,167 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:00,561 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 394.28ms
+2026-04-28 06:46:00,563 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:00,568 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:00,574 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.19ms
+2026-04-28 06:46:00,576 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:00,582 - INFO - app.middleware - Incoming: GET /config/divisions (User: admin)
+2026-04-28 06:46:00,589 - INFO - app.middleware - Completed: GET /config/divisions Status: 200 Time: 7.92ms
+2026-04-28 06:46:00,591 - INFO - httpx - HTTP Request: GET http://testserver/config/divisions "HTTP/1.1 200 OK"
+2026-04-28 06:46:00,597 - INFO - app.middleware - Incoming: POST /config/divisions/new (User: admin)
+2026-04-28 06:46:00,605 - INFO - app.middleware - Completed: POST /config/divisions/new Status: 303 Time: 7.70ms
+2026-04-28 06:46:00,607 - INFO - httpx - HTTP Request: POST http://testserver/config/divisions/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:00,617 - INFO - app.middleware - Incoming: POST /config/divisions/1/edit (User: admin)
+2026-04-28 06:46:00,622 - INFO - app.middleware - Completed: POST /config/divisions/1/edit Status: 303 Time: 5.29ms
+2026-04-28 06:46:00,624 - INFO - httpx - HTTP Request: POST http://testserver/config/divisions/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:00,631 - INFO - app.middleware - Incoming: POST /config/divisions/1/delete (User: admin)
+2026-04-28 06:46:00,636 - INFO - app.middleware - Completed: POST /config/divisions/1/delete Status: 303 Time: 5.11ms
+2026-04-28 06:46:00,638 - INFO - httpx - HTTP Request: POST http://testserver/config/divisions/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:01,162 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:01,565 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 402.12ms
+2026-04-28 06:46:01,566 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:01,571 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:01,578 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.61ms
+2026-04-28 06:46:01,580 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:01,585 - INFO - app.middleware - Incoming: POST /config/vat-rates/new (User: admin)
+2026-04-28 06:46:01,591 - INFO - app.middleware - Completed: POST /config/vat-rates/new Status: 303 Time: 5.74ms
+2026-04-28 06:46:01,592 - INFO - httpx - HTTP Request: POST http://testserver/config/vat-rates/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:01,599 - INFO - app.middleware - Incoming: POST /config/vat-rates/1/delete (User: admin)
+2026-04-28 06:46:01,604 - INFO - app.middleware - Completed: POST /config/vat-rates/1/delete Status: 303 Time: 4.23ms
+2026-04-28 06:46:01,609 - INFO - httpx - HTTP Request: POST http://testserver/config/vat-rates/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:02,157 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:02,567 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 410.16ms
+2026-04-28 06:46:02,569 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:02,573 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:02,580 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.38ms
+2026-04-28 06:46:02,582 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:02,587 - INFO - app.middleware - Incoming: GET /messages (User: admin)
+2026-04-28 06:46:02,598 - INFO - app.middleware - Completed: GET /messages Status: 200 Time: 11.20ms
+2026-04-28 06:46:02,601 - INFO - httpx - HTTP Request: GET http://testserver/messages "HTTP/1.1 200 OK"
+2026-04-28 06:46:02,609 - INFO - app.middleware - Incoming: POST /messages/new (User: admin)
+2026-04-28 06:46:02,615 - INFO - app.middleware - Completed: POST /messages/new Status: 303 Time: 5.54ms
+2026-04-28 06:46:02,616 - INFO - httpx - HTTP Request: POST http://testserver/messages/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:03,721 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:04,123 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 401.64ms
+2026-04-28 06:46:04,125 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:04,130 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:04,136 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.17ms
+2026-04-28 06:46:04,138 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:04,145 - INFO - app.middleware - Incoming: GET /documents (User: admin)
+2026-04-28 06:46:04,153 - INFO - app.middleware - Completed: GET /documents Status: 200 Time: 8.35ms
+2026-04-28 06:46:04,155 - INFO - httpx - HTTP Request: GET http://testserver/documents "HTTP/1.1 200 OK"
+2026-04-28 06:46:04,161 - INFO - app.middleware - Incoming: POST /documents/new (User: admin)
+2026-04-28 06:46:04,173 - INFO - app.middleware - Completed: POST /documents/new Status: 303 Time: 11.82ms
+2026-04-28 06:46:04,175 - INFO - httpx - HTTP Request: POST http://testserver/documents/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:04,182 - INFO - app.middleware - Incoming: POST /documents/1/delete (User: admin)
+2026-04-28 06:46:04,186 - INFO - app.middleware - Completed: POST /documents/1/delete Status: 303 Time: 3.86ms
+2026-04-28 06:46:04,188 - INFO - httpx - HTTP Request: POST http://testserver/documents/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:04,695 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:05,136 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 441.45ms
+2026-04-28 06:46:05,138 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:05,143 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:05,150 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.54ms
+2026-04-28 06:46:05,151 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:05,157 - INFO - app.middleware - Incoming: POST /config/new (User: admin)
+2026-04-28 06:46:05,163 - INFO - app.middleware - Completed: POST /config/new Status: 303 Time: 5.70ms
+2026-04-28 06:46:05,164 - INFO - httpx - HTTP Request: POST http://testserver/config/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:05,170 - INFO - app.middleware - Incoming: POST /config/1/edit (User: admin)
+2026-04-28 06:46:05,176 - INFO - app.middleware - Completed: POST /config/1/edit Status: 303 Time: 6.21ms
+2026-04-28 06:46:05,178 - INFO - httpx - HTTP Request: POST http://testserver/config/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:05,208 - INFO - app.middleware - Incoming: POST /config/1/delete (User: admin)
+2026-04-28 06:46:05,212 - INFO - app.middleware - Completed: POST /config/1/delete Status: 303 Time: 3.90ms
+2026-04-28 06:46:05,213 - INFO - httpx - HTTP Request: POST http://testserver/config/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:05,741 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:06,139 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 398.71ms
+2026-04-28 06:46:06,141 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:06,146 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:06,152 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.09ms
+2026-04-28 06:46:06,154 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:06,159 - INFO - app.middleware - Incoming: GET /messages/subscriptions (User: admin)
+2026-04-28 06:46:06,160 - INFO - app.middleware - Completed: GET /messages/subscriptions Status: 404 Time: 1.03ms
+2026-04-28 06:46:06,162 - INFO - httpx - HTTP Request: GET http://testserver/messages/subscriptions "HTTP/1.1 404 Not Found"
+2026-04-28 06:46:06,666 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:07,072 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 406.10ms
+2026-04-28 06:46:07,074 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:07,082 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:07,088 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.17ms
+2026-04-28 06:46:07,090 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:07,101 - INFO - app.middleware - Incoming: POST /subscriptions/new (User: admin)
+2026-04-28 06:46:07,112 - INFO - app.middleware - Completed: POST /subscriptions/new Status: 303 Time: 10.71ms
+2026-04-28 06:46:07,114 - INFO - httpx - HTTP Request: POST http://testserver/subscriptions/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:07,127 - INFO - app.middleware - Incoming: POST /subscriptions/1/delete (User: admin)
+2026-04-28 06:46:07,130 - INFO - app.middleware - Completed: POST /subscriptions/1/delete Status: 303 Time: 3.58ms
+2026-04-28 06:46:07,132 - INFO - httpx - HTTP Request: POST http://testserver/subscriptions/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:07,658 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:08,075 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 416.92ms
+2026-04-28 06:46:08,079 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:08,085 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:08,092 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.44ms
+2026-04-28 06:46:08,094 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:08,100 - INFO - app.middleware - Incoming: GET /teryt/browse (User: admin)
+2026-04-28 06:46:08,107 - INFO - app.middleware - Completed: GET /teryt/browse Status: 200 Time: 6.92ms
+2026-04-28 06:46:08,109 - INFO - httpx - HTTP Request: GET http://testserver/teryt/browse "HTTP/1.1 200 OK"
+2026-04-28 06:46:08,648 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:09,049 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 401.39ms
+2026-04-28 06:46:09,051 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:09,061 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:09,068 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.30ms
+2026-04-28 06:46:09,070 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:09,080 - INFO - app.middleware - Incoming: GET /teryt/cities (User: admin)
+2026-04-28 06:46:09,091 - INFO - app.middleware - Completed: GET /teryt/cities Status: 200 Time: 10.64ms
+2026-04-28 06:46:09,093 - INFO - httpx - HTTP Request: GET http://testserver/teryt/cities "HTTP/1.1 200 OK"
+2026-04-28 06:46:09,676 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:10,085 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 408.91ms
+2026-04-28 06:46:10,087 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:10,092 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:10,099 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.86ms
+2026-04-28 06:46:10,100 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:10,105 - INFO - app.middleware - Incoming: GET /teryt/ws/check (User: admin)
+2026-04-28 06:46:10,813 - INFO - app.middleware - Completed: GET /teryt/ws/check Status: 200 Time: 707.10ms
+2026-04-28 06:46:10,815 - INFO - httpx - HTTP Request: GET http://testserver/teryt/ws/check "HTTP/1.1 200 OK"
+2026-04-28 06:46:11,350 - INFO - app.middleware - Incoming: GET /teryt/api/suggest (User: Anonymous)
+2026-04-28 06:46:11,357 - INFO - app.middleware - Completed: GET /teryt/api/suggest Status: 200 Time: 6.72ms
+2026-04-28 06:46:11,359 - INFO - httpx - HTTP Request: GET http://testserver/teryt/api/suggest?q=API-City&kind=city "HTTP/1.1 200 OK"
+2026-04-28 06:46:11,877 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:12,297 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 420.51ms
+2026-04-28 06:46:12,300 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:12,305 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:12,316 - INFO - app.middleware - Completed: GET / Status: 200 Time: 10.46ms
+2026-04-28 06:46:12,318 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:12,328 - INFO - app.middleware - Incoming: GET /customer-devices/1/edit (User: admin)
+2026-04-28 06:46:12,366 - INFO - app.middleware - Completed: GET /customer-devices/1/edit Status: 200 Time: 37.98ms
+2026-04-28 06:46:12,368 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices/1/edit "HTTP/1.1 200 OK"
+2026-04-28 06:46:12,879 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:13,308 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 428.78ms
+2026-04-28 06:46:13,310 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:13,315 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:13,321 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.27ms
+2026-04-28 06:46:13,323 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:13,333 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:46:13,339 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 5.59ms
+2026-04-28 06:46:13,340 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:13,861 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:14,275 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 414.50ms
+2026-04-28 06:46:14,277 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:14,282 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:14,289 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.25ms
+2026-04-28 06:46:14,292 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:14,305 - INFO - app.middleware - Incoming: POST /customers/1/edit (User: admin)
+2026-04-28 06:46:14,310 - INFO - app.middleware - Completed: POST /customers/1/edit Status: 303 Time: 4.37ms
+2026-04-28 06:46:14,311 - INFO - httpx - HTTP Request: POST http://testserver/customers/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:14,873 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:15,280 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 407.33ms
+2026-04-28 06:46:15,282 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:15,287 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:15,294 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.47ms
+2026-04-28 06:46:15,295 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:15,307 - INFO - app.middleware - Incoming: POST /diagnostics/check/1 (User: admin)
+2026-04-28 06:46:15,317 - INFO - app.services.mikrotik - Mikrotik: Connecting to 127.0.0.1:8728 as admin
+2026-04-28 06:46:17,360 - ERROR - app.services.mikrotik - Mikrotik API error (arp-ping): [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api_socket.py", line 18, in get_socket
+    api_socket = socket.create_connection((hostname, port), timeout=timeout)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 101, in sync_arp_ping
+    conn, api = self._get_api()
+                ~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\crm-portal\app\services\mikrotik.py", line 26, in _get_api
+    return connection, connection.get_api()
+                       ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api.py", line 47, in get_api
+    self.socket = api_socket.get_socket(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        self.host, self.port, timeout=self.socket_timeout, use_ssl=self.use_ssl, ssl_verify=self.ssl_verify,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ssl_verify_hostname=self.ssl_verify_hostname, ssl_context=self.ssl_context)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\routeros_api\api_socket.py", line 21, in get_socket
+    raise exceptions.RouterOsApiConnectionError(e)
+routeros_api.exceptions.RouterOsApiConnectionError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+2026-04-28 06:46:17,366 - INFO - app.middleware - Completed: POST /diagnostics/check/1 Status: 200 Time: 2059.35ms
+2026-04-28 06:46:17,369 - INFO - httpx - HTTP Request: POST http://testserver/diagnostics/check/1 "HTTP/1.1 200 OK"
+2026-04-28 06:46:17,378 - WARNING - app.errors - HTTP 404: Not Found
+2026-04-28 06:46:17,381 - INFO - httpx - HTTP Request: GET http://testserver/trigger-404 "HTTP/1.1 404 Not Found"
+2026-04-28 06:46:17,383 - ERROR - app.errors - Unhandled Exception: Unhandled
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 118, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 104, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 428, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\tests\test_errors.py", line 17, in trigger_500
+    raise Exception("Unhandled")
+Exception: Unhandled
+2026-04-28 06:46:17,389 - INFO - httpx - HTTP Request: GET http://testserver/trigger-500 "HTTP/1.1 500 Internal Server Error"
+2026-04-28 06:46:17,391 - ERROR - app.errors - Database Error: DB Fail
+Traceback (most recent call last):
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 104, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 428, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\xxx\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xxx\crm-portal\tests\test_errors.py", line 21, in trigger_db
+    raise SQLAlchemyError("DB Fail")
+sqlalchemy.exc.SQLAlchemyError: DB Fail
+2026-04-28 06:46:17,395 - INFO - httpx - HTTP Request: GET http://testserver/trigger-db "HTTP/1.1 500 Internal Server Error"
+2026-04-28 06:46:17,399 - WARNING - app.errors - HTTP 400: HTMX Error
+2026-04-28 06:46:17,400 - INFO - httpx - HTTP Request: GET http://testserver/trigger-htmx "HTTP/1.1 400 Bad Request"
+2026-04-28 06:46:19,732 - ERROR - app.geocoding - Geocoding failed for Opatowska 5, Sandomierz, Polska: Network timeout
+2026-04-28 06:46:20,255 - INFO - app.services.mikrotik_discovery - Rozpoczęcie procesu odkrywania dla urządzenia Test Router (192.168.1.1)
+2026-04-28 06:46:20,255 - WARNING - app.services.mikrotik_discovery - Brak hasła dla urządzenia Test Router. Autoryzacja może się nie powieść.
+2026-04-28 06:46:20,255 - INFO - app.services.mikrotik_discovery - Otrzymano 2 surowych dzierżaw DHCP z urządzenia Test Router
+2026-04-28 06:46:20,256 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:11:22:33: '1825 Krupka M/33 Mic25'
+2026-04-28 06:46:20,257 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:11:22:33: {'external_id': '1825', 'last_name': 'Krupka', 'apartment_number': '33', 'street_name': 'Adama Mickiewicza', 'street_number': '25'}
+2026-04-28 06:46:20,257 - DEBUG - app.services.mikrotik_discovery - Dopasowano ulicę: 'Adama Mickiewicza' (ID: 1) dla MAC AA:BB:CC:11:22:33
+2026-04-28 06:46:20,259 - INFO - app.services.mikrotik_discovery - Auto-import węzła dla MAC AA:BB:CC:11:22:33 do klienta ID 1
+2026-04-28 06:46:20,260 - DEBUG - app.services.mikrotik_discovery - Analizowanie komentarza dzierżawy dla MAC AA:BB:CC:44:55:66: '1826 Nowak slo12'
+2026-04-28 06:46:20,260 - DEBUG - app.services.mikrotik_discovery - Pomyślnie sparsowano komentarz dla MAC AA:BB:CC:44:55:66: {'external_id': '1826', 'last_name': 'Nowak', 'apartment_number': '', 'street_name': 'Słowackiego', 'street_number': '12'}
+2026-04-28 06:46:20,261 - DEBUG - app.services.mikrotik_discovery - Nie dopasowano ulicy 'Słowackiego' dla MAC AA:BB:CC:44:55:66
+2026-04-28 06:46:20,261 - INFO - app.services.mikrotik_discovery - Zakończono odkrywanie dla Test Router. Zwrócono 1 nowych dzierżaw do ewentualnego importu.
+2026-04-28 06:46:20,793 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:21,200 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 407.57ms
+2026-04-28 06:46:21,202 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:21,207 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:21,217 - INFO - app.middleware - Completed: GET / Status: 200 Time: 10.32ms
+2026-04-28 06:46:21,219 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:21,224 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:46:21,230 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 5.82ms
+2026-04-28 06:46:21,232 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:21,237 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:46:21,243 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 6.51ms
+2026-04-28 06:46:21,245 - INFO - httpx - HTTP Request: GET http://testserver/customers?q=E2E-INT-289ef648a7 "HTTP/1.1 200 OK"
+2026-04-28 06:46:21,250 - INFO - app.middleware - Incoming: POST /customers/1/edit (User: admin)
+2026-04-28 06:46:21,257 - INFO - app.middleware - Completed: POST /customers/1/edit Status: 303 Time: 7.24ms
+2026-04-28 06:46:21,259 - INFO - httpx - HTTP Request: POST http://testserver/customers/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:21,263 - INFO - app.middleware - Incoming: POST /customers/1/delete (User: admin)
+2026-04-28 06:46:21,280 - INFO - app.middleware - Completed: POST /customers/1/delete Status: 303 Time: 16.71ms
+2026-04-28 06:46:21,282 - INFO - httpx - HTTP Request: POST http://testserver/customers/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:21,790 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:22,178 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 388.11ms
+2026-04-28 06:46:22,180 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:22,188 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:22,195 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.54ms
+2026-04-28 06:46:22,197 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:22,202 - INFO - app.middleware - Incoming: POST /finances/cash/new (User: admin)
+2026-04-28 06:46:22,207 - INFO - app.middleware - Completed: POST /finances/cash/new Status: 303 Time: 4.70ms
+2026-04-28 06:46:22,209 - INFO - httpx - HTTP Request: POST http://testserver/finances/cash/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:22,213 - INFO - app.middleware - Incoming: GET /finances/cash (User: admin)
+2026-04-28 06:46:22,218 - INFO - app.middleware - Completed: GET /finances/cash Status: 200 Time: 5.01ms
+2026-04-28 06:46:22,220 - INFO - httpx - HTTP Request: GET http://testserver/finances/cash "HTTP/1.1 200 OK"
+2026-04-28 06:46:22,225 - INFO - app.middleware - Incoming: POST /finances/cash/1/delete (User: admin)
+2026-04-28 06:46:22,229 - INFO - app.middleware - Completed: POST /finances/cash/1/delete Status: 303 Time: 3.64ms
+2026-04-28 06:46:22,230 - INFO - httpx - HTTP Request: POST http://testserver/finances/cash/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:22,753 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:23,144 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 390.59ms
+2026-04-28 06:46:23,145 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:23,150 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:23,156 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.09ms
+2026-04-28 06:46:23,158 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:23,163 - INFO - app.middleware - Incoming: GET /helpdesk/tickets/new (User: admin)
+2026-04-28 06:46:23,171 - INFO - app.middleware - Completed: GET /helpdesk/tickets/new Status: 200 Time: 7.97ms
+2026-04-28 06:46:23,173 - INFO - httpx - HTTP Request: GET http://testserver/helpdesk/tickets/new "HTTP/1.1 200 OK"
+2026-04-28 06:46:23,178 - INFO - app.middleware - Incoming: POST /helpdesk/tickets/new (User: admin)
+2026-04-28 06:46:23,183 - INFO - app.middleware - Completed: POST /helpdesk/tickets/new Status: 303 Time: 5.00ms
+2026-04-28 06:46:23,184 - INFO - httpx - HTTP Request: POST http://testserver/helpdesk/tickets/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:23,189 - INFO - app.middleware - Incoming: GET /helpdesk/tickets (User: admin)
+2026-04-28 06:46:23,197 - INFO - app.middleware - Completed: GET /helpdesk/tickets Status: 200 Time: 7.67ms
+2026-04-28 06:46:23,201 - INFO - httpx - HTTP Request: GET http://testserver/helpdesk/tickets "HTTP/1.1 200 OK"
+2026-04-28 06:46:23,790 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:24,231 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 440.05ms
+2026-04-28 06:46:24,232 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:24,237 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:24,245 - INFO - app.middleware - Completed: GET / Status: 200 Time: 7.31ms
+2026-04-28 06:46:24,249 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:24,254 - INFO - app.middleware - Incoming: GET /config/netdev-catalog (User: admin)
+2026-04-28 06:46:24,267 - INFO - app.middleware - Completed: GET /config/netdev-catalog Status: 200 Time: 12.84ms
+2026-04-28 06:46:24,269 - INFO - httpx - HTTP Request: GET http://testserver/config/netdev-catalog "HTTP/1.1 200 OK"
+2026-04-28 06:46:24,274 - INFO - app.middleware - Incoming: POST /net-devices/new (User: admin)
+2026-04-28 06:46:24,279 - INFO - app.middleware - Completed: POST /net-devices/new Status: 303 Time: 4.60ms
+2026-04-28 06:46:24,281 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:24,286 - INFO - app.middleware - Incoming: GET /net-devices (User: admin)
+2026-04-28 06:46:24,292 - INFO - app.middleware - Completed: GET /net-devices Status: 200 Time: 6.28ms
+2026-04-28 06:46:24,297 - INFO - httpx - HTTP Request: GET http://testserver/net-devices "HTTP/1.1 200 OK"
+2026-04-28 06:46:24,302 - INFO - app.middleware - Incoming: POST /net-devices/1/edit (User: admin)
+2026-04-28 06:46:24,307 - INFO - app.middleware - Completed: POST /net-devices/1/edit Status: 303 Time: 5.33ms
+2026-04-28 06:46:24,309 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:24,314 - INFO - app.middleware - Incoming: POST /net-devices/1/delete (User: admin)
+2026-04-28 06:46:24,319 - INFO - app.middleware - Completed: POST /net-devices/1/delete Status: 303 Time: 5.73ms
+2026-04-28 06:46:24,321 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:24,865 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:25,257 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 391.57ms
+2026-04-28 06:46:25,259 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:25,264 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:25,270 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.47ms
+2026-04-28 06:46:25,272 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:25,284 - INFO - app.middleware - Incoming: POST /finances/tariffs/new (User: admin)
+2026-04-28 06:46:25,288 - INFO - app.middleware - Completed: POST /finances/tariffs/new Status: 303 Time: 4.36ms
+2026-04-28 06:46:25,290 - INFO - httpx - HTTP Request: POST http://testserver/finances/tariffs/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:25,294 - INFO - app.middleware - Incoming: GET /finances/tariffs (User: admin)
+2026-04-28 06:46:25,299 - INFO - app.middleware - Completed: GET /finances/tariffs Status: 200 Time: 4.22ms
+2026-04-28 06:46:25,300 - INFO - httpx - HTTP Request: GET http://testserver/finances/tariffs "HTTP/1.1 200 OK"
+2026-04-28 06:46:25,305 - INFO - app.middleware - Incoming: POST /finances/tariffs/1/edit (User: admin)
+2026-04-28 06:46:25,311 - INFO - app.middleware - Completed: POST /finances/tariffs/1/edit Status: 303 Time: 5.48ms
+2026-04-28 06:46:25,312 - INFO - httpx - HTTP Request: POST http://testserver/finances/tariffs/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:25,317 - INFO - app.middleware - Incoming: POST /finances/tariffs/1/delete (User: admin)
+2026-04-28 06:46:25,323 - INFO - app.middleware - Completed: POST /finances/tariffs/1/delete Status: 303 Time: 5.53ms
+2026-04-28 06:46:25,324 - INFO - httpx - HTTP Request: POST http://testserver/finances/tariffs/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:25,860 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:26,263 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 402.49ms
+2026-04-28 06:46:26,265 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:26,270 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:26,280 - INFO - app.middleware - Completed: GET / Status: 200 Time: 9.18ms
+2026-04-28 06:46:26,282 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:26,287 - INFO - app.middleware - Incoming: GET /net-nodes/new (User: admin)
+2026-04-28 06:46:26,315 - INFO - app.middleware - Completed: GET /net-nodes/new Status: 200 Time: 27.57ms
+2026-04-28 06:46:26,317 - INFO - httpx - HTTP Request: GET http://testserver/net-nodes/new "HTTP/1.1 200 OK"
+2026-04-28 06:46:26,322 - INFO - app.middleware - Incoming: POST /net-nodes/new (User: admin)
+2026-04-28 06:46:26,325 - INFO - app.net_nodes - NET-NODE NEW SUBMIT: street_id=None, lat=50.68, lng=21.74
+2026-04-28 06:46:26,327 - INFO - app.middleware - Completed: POST /net-nodes/new Status: 303 Time: 4.85ms
+2026-04-28 06:46:26,328 - INFO - httpx - HTTP Request: POST http://testserver/net-nodes/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:26,334 - INFO - app.middleware - Incoming: GET /net-nodes (User: admin)
+2026-04-28 06:46:26,343 - INFO - app.middleware - Completed: GET /net-nodes Status: 200 Time: 9.09ms
+2026-04-28 06:46:26,345 - INFO - httpx - HTTP Request: GET http://testserver/net-nodes "HTTP/1.1 200 OK"
+2026-04-28 06:46:26,350 - INFO - app.middleware - Incoming: POST /net-nodes/1/edit (User: admin)
+2026-04-28 06:46:26,352 - INFO - app.net_nodes - NET-NODE EDIT SUBMIT: id=1, street_id=None, lat=None, lng=None
+2026-04-28 06:46:26,356 - INFO - app.middleware - Completed: POST /net-nodes/1/edit Status: 303 Time: 6.60ms
+2026-04-28 06:46:26,358 - INFO - httpx - HTTP Request: POST http://testserver/net-nodes/1/edit "HTTP/1.1 303 See Other"
+2026-04-28 06:46:26,363 - INFO - app.middleware - Incoming: GET /net-nodes (User: admin)
+2026-04-28 06:46:26,366 - INFO - app.middleware - Completed: GET /net-nodes Status: 200 Time: 3.24ms
+2026-04-28 06:46:26,368 - INFO - httpx - HTTP Request: GET http://testserver/net-nodes "HTTP/1.1 200 OK"
+2026-04-28 06:46:26,372 - INFO - app.middleware - Incoming: POST /net-nodes/1/delete (User: admin)
+2026-04-28 06:46:26,379 - INFO - app.middleware - Completed: POST /net-nodes/1/delete Status: 303 Time: 6.89ms
+2026-04-28 06:46:26,381 - INFO - httpx - HTTP Request: POST http://testserver/net-nodes/1/delete "HTTP/1.1 303 See Other"
+2026-04-28 06:46:26,903 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:27,299 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 396.27ms
+2026-04-28 06:46:27,301 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:27,306 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:27,312 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.03ms
+2026-04-28 06:46:27,314 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:27,319 - INFO - app.middleware - Incoming: POST /ip-networks/new (User: admin)
+2026-04-28 06:46:27,323 - INFO - app.middleware - Completed: POST /ip-networks/new Status: 303 Time: 3.82ms
+2026-04-28 06:46:27,325 - INFO - httpx - HTTP Request: POST http://testserver/ip-networks/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:27,330 - INFO - app.middleware - Incoming: GET /ip-networks (User: admin)
+2026-04-28 06:46:27,335 - INFO - app.middleware - Completed: GET /ip-networks Status: 200 Time: 5.07ms
+2026-04-28 06:46:27,336 - INFO - httpx - HTTP Request: GET http://testserver/ip-networks?q=E2E-Net-d5df828e47 "HTTP/1.1 200 OK"
+2026-04-28 06:46:27,341 - INFO - app.middleware - Incoming: POST /net-devices/new (User: admin)
+2026-04-28 06:46:27,346 - INFO - app.middleware - Completed: POST /net-devices/new Status: 303 Time: 4.50ms
+2026-04-28 06:46:27,348 - INFO - httpx - HTTP Request: POST http://testserver/net-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:27,353 - INFO - app.middleware - Incoming: GET /net-devices (User: admin)
+2026-04-28 06:46:27,362 - INFO - app.middleware - Completed: GET /net-devices Status: 200 Time: 9.06ms
+2026-04-28 06:46:27,364 - INFO - httpx - HTTP Request: GET http://testserver/net-devices?q=E2E-Dev-d5df828e47 "HTTP/1.1 200 OK"
+2026-04-28 06:46:27,369 - INFO - app.middleware - Incoming: POST /customers/new (User: admin)
+2026-04-28 06:46:27,375 - INFO - app.middleware - Completed: POST /customers/new Status: 303 Time: 5.49ms
+2026-04-28 06:46:27,376 - INFO - httpx - HTTP Request: POST http://testserver/customers/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:27,381 - INFO - app.middleware - Incoming: GET /customers (User: admin)
+2026-04-28 06:46:27,388 - INFO - app.middleware - Completed: GET /customers Status: 200 Time: 6.52ms
+2026-04-28 06:46:27,390 - INFO - httpx - HTTP Request: GET http://testserver/customers?q=CUST-d5df828e47 "HTTP/1.1 200 OK"
+2026-04-28 06:46:27,395 - INFO - app.middleware - Incoming: POST /customer-devices/new (User: admin)
+2026-04-28 06:46:27,402 - INFO - app.middleware - Completed: POST /customer-devices/new Status: 303 Time: 7.27ms
+2026-04-28 06:46:27,404 - INFO - httpx - HTTP Request: POST http://testserver/customer-devices/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:27,409 - INFO - app.middleware - Incoming: GET /customer-devices (User: admin)
+2026-04-28 06:46:27,415 - INFO - app.middleware - Completed: GET /customer-devices Status: 200 Time: 6.04ms
+2026-04-28 06:46:27,417 - INFO - httpx - HTTP Request: GET http://testserver/customer-devices "HTTP/1.1 200 OK"
+2026-04-28 06:46:27,947 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 06:46:28,415 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 468.77ms
+2026-04-28 06:46:28,417 - INFO - httpx - HTTP Request: POST http://testserver/login "HTTP/1.1 302 Found"
+2026-04-28 06:46:28,422 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 06:46:28,428 - INFO - app.middleware - Completed: GET / Status: 200 Time: 6.23ms
+2026-04-28 06:46:28,430 - INFO - httpx - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-04-28 06:46:28,435 - INFO - app.middleware - Incoming: POST /messages/new (User: admin)
+2026-04-28 06:46:28,440 - INFO - app.middleware - Completed: POST /messages/new Status: 303 Time: 4.53ms
+2026-04-28 06:46:28,442 - INFO - httpx - HTTP Request: POST http://testserver/messages/new "HTTP/1.1 303 See Other"
+2026-04-28 06:46:28,448 - INFO - app.middleware - Incoming: GET /messages (User: admin)
+2026-04-28 06:46:28,456 - INFO - app.middleware - Completed: GET /messages Status: 200 Time: 8.46ms
+2026-04-28 06:46:28,458 - INFO - httpx - HTTP Request: GET http://testserver/messages "HTTP/1.1 200 OK"
+2026-04-28 06:46:28,462 - INFO - root - Logging system initialized.
+2026-04-28 06:46:28,463 - INFO - app.test - Test log message
+2026-04-28 06:46:28,526 - INFO - httpx - HTTP Request: GET http://testserver/test-path "HTTP/1.1 200 OK"
