@@ -4,7 +4,6 @@ This file tracks all active and completed development tracks for the ISP CRM Por
 
 ## Active Tracks
 
-- [Comprehensive UI Audit & Bugfixing](./tracks/comprehensive-ui-audit/index.md) - Systematic verification of every page, form, and button.
 - [SNMS Security and Technical Improvements (2026-04-28)](./tracks/security-tech-improvements_20260428/index.md) - Refined implementation of critical security fixes and architectural improvements.
 
 ## Completed Tracks

@@ -121,7 +121,7 @@
               </div>
               <div>
                 <div class="text-sm font-bold">{{ node.hostname or 'Urządzenie' }}</div>
-                <div class="text-[10px] font-mono text-muted-foreground">{{ node.mac_address }} • {{ node.ip_address }}</div>
+                <div class="text-[10px] font-mono text-muted-foreground">{{ node.mac_address or '—' }} • {{ node.ip_address or '—' }}</div>
               </div>
             </div>
             <div class="flex gap-2">

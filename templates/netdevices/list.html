@@ -76,7 +76,7 @@
                                     <i class="fas fa-edit text-xs"></i>
                                 </a>
                                 {% if can_write_crm %}
-                                <button @click="$dispatch('open-alert-delete-dev', { url: '/net-devices/{{ d.id }}/delete', name: '{{ d.serial_number }}' })"
+                                <button @click="$dispatch('open-alert-delete-dev', { url: '/net-devices/{{ d.id }}/delete', name: '{{ d.serial_number or d.name or 'sprzęt' }}' })"
                                         class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
                                     <i class="fas fa-trash text-xs"></i>
                                 </button>

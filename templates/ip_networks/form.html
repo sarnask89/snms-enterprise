@@ -41,7 +41,7 @@
             <div class="space-y-2">
                 {{ label("Notatki / Opis techniczny", for="description") }}
                 <textarea name="description" id="description" rows="3" 
-                          class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">{{ network.description if network else '' }}</textarea>
+                          class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">{{ (network.description or '') if network else '' }}</textarea>
             </div>
 
             <div class="flex items-center space-x-2 rounded-md border p-4 bg-emerald-500/5">
