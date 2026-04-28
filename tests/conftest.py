@@ -28,16 +28,17 @@ def session_fixture():
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(bind=engine)
     
-    # We don't run Alembic for in-memory DB in simple tests, 
-    # create_all is enough as we start from scratch.
-    
     db = TestingSessionLocal()
     try:
-        # Seed the test database
         seed_with_db(db)
         yield db
     finally:
         db.close()
+
+@pytest.fixture(name="db")
+def db_fixture(session):
+    """Alias for session fixture to match common naming."""
+    yield session
 
 @pytest.fixture(name="client")
 def client_fixture(session):
@@ -60,12 +61,10 @@ def admin_client_fixture(client):
 
 def seed_with_db(db):
     """Modified seed logic that takes a session directly for testing."""
-    # This is a helper to run our seed functions on the test session
     from app.nav_access import seed_nav_menu_and_permissions, sync_new_nav_items_and_permissions
     from app import models
     from app.security import hash_password
     from app.config import CRM_ADMIN_USER, CRM_ADMIN_PASSWORD
-    import os
 
     # Seed navigation
     seed_nav_menu_and_permissions(db)
@@ -93,6 +92,5 @@ def seed_with_db(db):
         )
         db.add(t)
         db.flush()
-        print(f"DEBUG: Seeded message template with ID={t.id}")
 
     db.commit()
