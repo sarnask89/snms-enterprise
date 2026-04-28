@@ -245,7 +245,7 @@ def customer_edit_form(customer_id: int, request: Request, db: Session = Depends
         "customer": c, 
         "city_options": city_options,
         "plan_options": plan_options,
-        "default_plan_id": default_plan_id
+        "default_plan_id": "" # Do not auto-select plan on edit
     })
 
 @router.post("/{customer_id}/edit", dependencies=[Depends(require_business_write)])

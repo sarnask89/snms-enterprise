@@ -138,7 +138,7 @@ def init_all() -> None:
     UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
     # Rely only on metadata for now to ensure startup
     Base.metadata.create_all(bind=engine)
-    run_migrations()
+    # run_migrations()
     
     from app.config_validation import report_startup_config
     report_startup_config()

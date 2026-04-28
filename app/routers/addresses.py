@@ -26,7 +26,7 @@ def manage_addresses(request: Request, db: Session = Depends(get_db)):
         "addresses/manage.html", 
         {
             "title": "Zarządzanie Miastami i Adresami", 
-            "managed_cities": managed_cities
+            "cities": managed_cities
         }
     )
 

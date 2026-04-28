@@ -1,5 +1,7 @@
 import platform
 import sys
+import logging
+from datetime import datetime, timezone
 import sqlalchemy as sa
 
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
@@ -392,25 +394,73 @@ def admin_audit_logs(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/backups", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
 def admin_backups(request: Request, db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.BackupExport).order_by(models.BackupExport.created_at.desc())).all())
-    users = {u.id: u for u in db.scalars(select(models.PortalUser)).all()}
-    return render(request, "admin/backups.html", {"title": "Kopie zapasowe", "rows": rows, "users": users})
+    from pathlib import Path
+    backup_dir = Path("backups")
+    backup_dir.mkdir(exist_ok=True)
+    
+    backups = []
+    for f in backup_dir.glob("*.sqlite"):
+        stat = f.stat()
+        backups.append({
+            "filename": f.name,
+            "created_at": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
+            "size_kb": round(stat.st_size / 1024, 2)
+        })
+    
+    # Sort by mtime desc
+    backups.sort(key=lambda x: x["created_at"], reverse=True)
+    
+    return render(request, "admin/backups.html", {
+        "title": "Kopie zapasowe", 
+        "backups": backups
+    })
 
 
-@router.post("/backups/new", dependencies=[Depends(require_admin_or_manager)])
-def admin_backups_new(request: Request, db: Session = Depends(get_db), label: str = Form(...), notes: str = Form(...)):
-    b = models.BackupExport(label=label.strip(), notes=notes.strip(), created_by_id=request.state.portal_user.id)
-    db.add(b)
-    db.commit()
+@router.post("/backups/create", dependencies=[Depends(require_admin)])
+def admin_backups_create(request: Request, db: Session = Depends(get_db)):
+    import shutil
+    from pathlib import Path
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"backup_{timestamp}.sqlite"
+    src = Path("crm.sqlite")
+    dst = Path("backups") / filename
+    
+    if src.exists():
+        shutil.copy2(src, dst)
+        record_audit(db, "backup_create", details=f"Created backup: {filename}", request=request)
+        db.commit()
+    
     return RedirectResponse("/admin/backups", status_code=303)
 
 
-@router.post("/backups/{backup_id}/delete", dependencies=[Depends(require_admin)])
-def admin_backups_delete(backup_id: int, db: Session = Depends(get_db)):
-    b = db.get(models.BackupExport, backup_id)
-    if b:
-        db.delete(b)
+@router.get("/backups/download/{filename}", dependencies=[Depends(require_admin)])
+def admin_backups_download(filename: str):
+    from fastapi.responses import FileResponse
+    from pathlib import Path
+    
+    file_path = Path("backups") / filename
+    # Security: check if file is within backups dir
+    if not file_path.resolve().parent.name == "backups" or not file_path.exists():
+        return RedirectResponse("/admin/backups?error=File+not+found", status_code=303)
+        
+    return FileResponse(
+        path=file_path, 
+        filename=filename,
+        media_type='application/x-sqlite3'
+    )
+
+
+@router.post("/backups/delete/{filename}", dependencies=[Depends(require_admin)])
+def admin_backups_delete_file(filename: str, request: Request, db: Session = Depends(get_db)):
+    from pathlib import Path
+    file_path = Path("backups") / filename
+    
+    if file_path.resolve().parent.name == "backups" and file_path.exists():
+        file_path.unlink()
+        record_audit(db, "backup_delete", details=f"Deleted backup: {filename}", request=request)
         db.commit()
+        
     return RedirectResponse("/admin/backups", status_code=303)
 
 

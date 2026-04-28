@@ -26,6 +26,11 @@ from app.routers import (
     network_discovery,
     diagnostics,
     pit,
+    helpdesk,
+    documents,
+    config_snms,
+    snms_entities,
+    addresses,
 )
 
 
@@ -64,3 +69,8 @@ app.include_router(teryt.public_api)
 app.include_router(network_discovery.router)
 app.include_router(diagnostics.router)
 app.include_router(pit.router)
+app.include_router(helpdesk.router)
+app.include_router(documents.router)
+app.include_router(config_snms.router)
+app.include_router(snms_entities.router)
+app.include_router(addresses.router)

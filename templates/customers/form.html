@@ -87,7 +87,7 @@
           street_id=customer.location_street_id if customer else (pre_street_id or ""),
           street_name=customer.street.name if customer and customer.street else (pre_street_name or ""),
           street_number=customer.street_number if customer else (pre_street_number or ""),
-          apartment_number=customer.apartment_number if customer else (pre_apartment_number or ""),
+          apartment_number=(customer.apartment_number or "") if customer else (pre_apartment_number or ""),
           city_options=city_options
       ) }}
 

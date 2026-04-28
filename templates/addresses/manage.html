@@ -9,7 +9,7 @@
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
                 <input type="search" name="q" placeholder="Szukaj miasta/wsi..."
                        class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                       hx-get="/admin/addresses/search"
+                       hx-get="/admin/addresses/search-teryt"
                        hx-trigger="keyup changed delay:300ms, search"
                        hx-target="#teryt-search-results">
             </div>
@@ -41,13 +41,13 @@
                                 {% if c.is_default %}
                                     <span class="inline-flex items-center rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-primary/20">DOMYŚLNA</span>
                                 {% else %}
-                                    <form method="post" action="/admin/addresses/{{ c.id }}/set-default" class="inline">
+                                    <form method="post" action="/admin/addresses/city/{{ c.id }}/set-default" class="inline">
                                         <button type="submit" class="text-[9px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Ustaw</button>
                                     </form>
                                 {% endif %}
                             </td>
                             <td class="p-4 align-middle text-right">
-                                <form method="post" action="/admin/addresses/{{ c.id }}/unmanage" class="inline">
+                                <form method="post" action="/admin/addresses/city/{{ c.id }}/toggle-managed" class="inline">
                                     <button type="submit" class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors" title="Usuń z zarządzanych">
                                         <i class="fas fa-times text-xs"></i>
                                     </button>

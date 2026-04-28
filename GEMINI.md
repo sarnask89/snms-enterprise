@@ -41,6 +41,7 @@ The system uses numbering plans to generate customer IDs and document numbers.
 
 ## Engineering Standards
 
+- **File Management**: ALWAYS use the `windows-file-management` skill and `windows-mcp` tools for browsing, searching, copying, deleting, and renaming files. DO NOT use standard console-based file searches or manipulation commands when these specialized tools are available.
 - **HTMX Fragments**: Always return clean HTML fragments for HTMX requests.
 - **Form Validation**: Use `_opt_int` for optional integer fields to prevent validation errors with empty strings.
 - **Security**: Sensitive fields in forms MUST use `autocomplete="new-password"` to prevent browser auto-fill corruption.
