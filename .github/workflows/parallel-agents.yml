@@ -1,0 +1,26 @@
+name: Parallel Agent Tasks
+
+on:
+  workflow_dispatch:
+    inputs:
+      tasks:
+        description: 'JSON array of tasks to run in parallel. Example: [{"name": "task1", "prompt": "prompt1"}, {"name": "task2", "prompt": "prompt2"}]'
+        required: true
+        default: '[{"name": "default-task", "prompt": "This is a default task."}]'
+
+jobs:
+  dispatch-agent-job:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: ${{ fromJson(github.event.inputs.tasks) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Gemini Agent for ${{ matrix.task.name }}
+        run: |
+          echo "Starting agent for task: ${{ matrix.task.name }}"
+          echo "Prompt: ${{ matrix.task.prompt }}"
+          gemini --no-system-prompt invoke-agent generalist --prompt "${{ matrix.task.prompt }}"
+          echo "Agent for task ${{ matrix.task.name }} finished."
