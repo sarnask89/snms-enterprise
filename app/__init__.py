@@ -1,5 +1,9 @@
-from app.logging import setup_logging
+from pathlib import Path
 
-# Initialize logging when the package is imported
-# This ensures it's configured even if main.py is managed by others
-setup_logging()
+def get_version():
+    version_file = Path(__file__).parent.parent / "VERSION"
+    if version_file.exists():
+        return version_file.read_text().strip()
+    return "0.1.0"
+
+__version__ = get_version()
