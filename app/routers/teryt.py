@@ -49,12 +49,51 @@ def teryt_suggest(
         return render(request, "teryt/partials/suggest_items.html", {"items": items})
 
     elif kind == "building" and city_name:
-        # Building search logic
         buildings = service.search_buildings(city_name, street_name or "")
         items = [{"id": b, "text": b, "type": "building"} for b in buildings]
         return render(request, "teryt/partials/suggest_items.html", {"items": items})
     
     return HTMLResponse("")
+
+@public_api.get("/geocode/puwg")
+async def teryt_api_geocode_puwg(
+    city: str = Query(...),
+    street: str = Query(...),
+    number: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """Pobiera współrzędne PUWG 1992 (EPSG:2180) dla adresu."""
+    from app.services.gugik import GugikGeocodingService
+    service = GugikGeocodingService(db) # We might need DB for TERYT resolution if only names given
+    
+    # Try to resolve SIMC and ULIC codes from names if not provided
+    # For now, we assume names are passed and we might need to lookup codes
+    # But get_coordinates_for_pit_uke needs codes.
+    
+    # Simpler: first use the 'getaddress' WGS84 logic to find the object, 
+    # then if it has an ID, use it. 
+    # Or just use the WUG address search which might return everything.
+    
+    # For this POC, we'll try to find the city in our local DB to get TERYT code
+    city_row = db.scalars(select(models.LocationCity).where(models.LocationCity.name == city)).first()
+    if not city_row or not city_row.teryt_code:
+        return JSONResponse(status_code=404, content={"error": f"City {city} not found in local TERYT database"})
+        
+    simc = city_row.teryt_code
+    ulic = "00000"
+    if street and street != "brak":
+        street_row = db.scalars(
+            select(models.LocationStreet)
+            .where(models.LocationStreet.city_id == city_row.id, models.LocationStreet.name == street)
+        ).first()
+        if street_row and street_row.teryt_code:
+            ulic = street_row.teryt_code
+            
+    gugik = GugikGeocodingService()
+    res = await gugik.get_coordinates_for_pit_uke(simc, ulic, number)
+    if res:
+        return res
+    return JSONResponse(status_code=404, content={"error": "Not found in GUGiK"})
 
 # --- Reszta routera ---
 @router.get("/browse", response_class=HTMLResponse)

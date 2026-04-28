@@ -1,65 +1,65 @@
-2026-04-28 11:05:01,896 - INFO - root - Logging system initialized.
-2026-04-28 11:05:03,019 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
-2026-04-28 11:05:03,019 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
-2026-04-28 11:05:03,020 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
-2026-04-28 11:05:03,020 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
-2026-04-28 11:05:03,020 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
-2026-04-28 11:05:03,020 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
-2026-04-28 11:05:03,609 - ERROR - app.security_utils - Failed to initialize Fernet encryption: Fernet key must be 32 url-safe base64-encoded bytes.. Check CRM_ENCRYPTION_KEY.
-INFO:     Started server process [18436]
+2026-04-28 11:59:34,822 - INFO - root - Logging system initialized.
+2026-04-28 11:59:38,994 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 11:59:38,994 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 11:59:38,995 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 11:59:38,995 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 11:59:38,995 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 11:59:38,995 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+2026-04-28 11:59:41,143 - ERROR - app.security_utils - Failed to initialize Fernet encryption: Fernet key must be 32 url-safe base64-encoded bytes.. Check CRM_ENCRYPTION_KEY.
+INFO:     Started server process [23208]
 INFO:     Waiting for application startup.
-2026-04-28 11:05:04,344 - INFO - startup_config - --- STARTUP CONFIGURATION REPORT ---
-2026-04-28 11:05:04,344 - INFO - startup_config - Environment: DEVELOPMENT
-2026-04-28 11:05:04,344 - INFO - startup_config - App Display Name: SNMS Enterprise
-2026-04-28 11:05:04,344 - INFO - startup_config - Database: SQLite
-2026-04-28 11:05:04,344 - WARNING - startup_config - Security: Using DEFAULT ENCRYPTION_KEY. Change this before moving to production.
-2026-04-28 11:05:04,345 - INFO - startup_config - TERYT: WebService user configured: jpispsandomierz
-2026-04-28 11:05:04,345 - INFO - startup_config - --- END OF CONFIGURATION REPORT ---
+2026-04-28 11:59:43,994 - INFO - startup_config - --- STARTUP CONFIGURATION REPORT ---
+2026-04-28 11:59:43,994 - INFO - startup_config - Environment: DEVELOPMENT
+2026-04-28 11:59:43,994 - INFO - startup_config - App Display Name: SNMS Enterprise
+2026-04-28 11:59:43,994 - INFO - startup_config - Database: SQLite
+2026-04-28 11:59:43,995 - WARNING - startup_config - Security: Using DEFAULT ENCRYPTION_KEY. Change this before moving to production.
+2026-04-28 11:59:43,995 - INFO - startup_config - TERYT: WebService user configured: jpispsandomierz
+2026-04-28 11:59:43,995 - INFO - startup_config - --- END OF CONFIGURATION REPORT ---
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
-2026-04-28 11:05:07,892 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
-2026-04-28 11:05:07,900 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 8.46ms
-INFO:     127.0.0.1:53931 - "GET /login HTTP/1.1" 200 OK
-2026-04-28 11:05:07,917 - INFO - app.middleware - Incoming: GET /static/styles.css (User: Anonymous)
-2026-04-28 11:05:07,985 - INFO - app.middleware - Completed: GET /static/styles.css Status: 200 Time: 67.91ms
-INFO:     127.0.0.1:53931 - "GET /static/styles.css HTTP/1.1" 200 OK
-2026-04-28 11:05:08,124 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
-2026-04-28 11:05:08,533 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 408.94ms
-INFO:     127.0.0.1:53931 - "POST /login HTTP/1.1" 302 Found
-2026-04-28 11:05:08,540 - INFO - app.middleware - Incoming: GET / (User: admin)
-2026-04-28 11:05:08,569 - INFO - app.middleware - Completed: GET / Status: 200 Time: 29.34ms
-INFO:     127.0.0.1:53931 - "GET / HTTP/1.1" 200 OK
-2026-04-28 11:05:08,581 - INFO - app.middleware - Incoming: GET /static/css/output.css (User: admin)
-2026-04-28 11:05:08,585 - INFO - app.middleware - Completed: GET /static/css/output.css Status: 200 Time: 4.64ms
-INFO:     127.0.0.1:53931 - "GET /static/css/output.css HTTP/1.1" 200 OK
-2026-04-28 11:05:09,084 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
-2026-04-28 11:05:09,085 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 1.17ms
-INFO:     127.0.0.1:47908 - "GET /login HTTP/1.1" 200 OK
-2026-04-28 11:05:09,097 - INFO - app.middleware - Incoming: GET /static/styles.css (User: Anonymous)
-2026-04-28 11:05:09,099 - INFO - app.middleware - Completed: GET /static/styles.css Status: 200 Time: 1.83ms
-INFO:     127.0.0.1:47908 - "GET /static/styles.css HTTP/1.1" 200 OK
-2026-04-28 11:05:09,257 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
-2026-04-28 11:05:09,688 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 431.42ms
-INFO:     127.0.0.1:47908 - "POST /login HTTP/1.1" 302 Found
-2026-04-28 11:05:09,693 - INFO - app.middleware - Incoming: GET / (User: admin)
-2026-04-28 11:05:09,698 - INFO - app.middleware - Completed: GET / Status: 200 Time: 5.29ms
-INFO:     127.0.0.1:47908 - "GET / HTTP/1.1" 200 OK
-2026-04-28 11:05:09,711 - INFO - app.middleware - Incoming: GET /static/css/output.css (User: admin)
-2026-04-28 11:05:09,712 - INFO - app.middleware - Completed: GET /static/css/output.css Status: 200 Time: 1.90ms
-INFO:     127.0.0.1:47908 - "GET /static/css/output.css HTTP/1.1" 200 OK
-2026-04-28 11:05:10,070 - INFO - app.middleware - Incoming: GET /net-nodes/new (User: admin)
-2026-04-28 11:05:10,129 - INFO - app.middleware - Completed: GET /net-nodes/new Status: 200 Time: 58.87ms
-INFO:     127.0.0.1:47908 - "GET /net-nodes/new HTTP/1.1" 200 OK
-2026-04-28 11:05:12,815 - INFO - app.middleware - Incoming: GET /teryt/api/suggest (User: admin)
-2026-04-28 11:05:12,820 - INFO - app.middleware - Completed: GET /teryt/api/suggest Status: 200 Time: 5.63ms
-INFO:     127.0.0.1:47908 - "GET /teryt/api/suggest?kind=street&street_name=Test-Rynek&location_city_id=1 HTTP/1.1" 200 OK
-2026-04-28 11:05:13,892 - INFO - app.middleware - Incoming: GET /teryt/api/geocode (User: admin)
-2026-04-28 11:05:13,893 - INFO - app.middleware - Completed: GET /teryt/api/geocode Status: 404 Time: 0.67ms
-INFO:     127.0.0.1:47908 - "GET /teryt/api/geocode?city=Test-City-Sando&street=Test-Rynek&number=1 HTTP/1.1" 404 Not Found
-2026-04-28 11:05:21,479 - INFO - app.middleware - Incoming: POST /net-nodes/new (User: admin)
-2026-04-28 11:05:21,483 - INFO - app.net_nodes - NET-NODE NEW SUBMIT: street_id=1, lat=52.231, lng=21.012
-2026-04-28 11:05:21,489 - INFO - app.middleware - Completed: POST /net-nodes/new Status: 303 Time: 10.75ms
-INFO:     127.0.0.1:4765 - "POST /net-nodes/new HTTP/1.1" 303 See Other
-2026-04-28 11:05:21,494 - INFO - app.middleware - Incoming: GET /net-nodes (User: admin)
-2026-04-28 11:05:21,508 - INFO - app.middleware - Completed: GET /net-nodes Status: 200 Time: 14.12ms
-INFO:     127.0.0.1:4765 - "GET /net-nodes HTTP/1.1" 200 OK
+2026-04-28 11:59:45,175 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-28 11:59:45,185 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 10.11ms
+INFO:     127.0.0.1:36898 - "GET /login HTTP/1.1" 200 OK
+2026-04-28 11:59:45,230 - INFO - app.middleware - Incoming: GET /static/styles.css (User: Anonymous)
+2026-04-28 11:59:45,329 - INFO - app.middleware - Completed: GET /static/styles.css Status: 200 Time: 99.16ms
+INFO:     127.0.0.1:36898 - "GET /static/styles.css HTTP/1.1" 200 OK
+2026-04-28 11:59:45,677 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 11:59:47,178 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 1501.72ms
+INFO:     127.0.0.1:36898 - "POST /login HTTP/1.1" 302 Found
+2026-04-28 11:59:47,193 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 11:59:47,264 - INFO - app.middleware - Completed: GET / Status: 200 Time: 70.38ms
+INFO:     127.0.0.1:36898 - "GET / HTTP/1.1" 200 OK
+2026-04-28 11:59:47,281 - INFO - app.middleware - Incoming: GET /static/css/output.css (User: admin)
+2026-04-28 11:59:47,309 - INFO - app.middleware - Completed: GET /static/css/output.css Status: 200 Time: 27.95ms
+INFO:     127.0.0.1:36898 - "GET /static/css/output.css HTTP/1.1" 200 OK
+2026-04-28 11:59:48,269 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-28 11:59:48,272 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 2.89ms
+INFO:     127.0.0.1:47880 - "GET /login HTTP/1.1" 200 OK
+2026-04-28 11:59:48,285 - INFO - app.middleware - Incoming: GET /static/styles.css (User: Anonymous)
+2026-04-28 11:59:48,287 - INFO - app.middleware - Completed: GET /static/styles.css Status: 200 Time: 1.91ms
+INFO:     127.0.0.1:47880 - "GET /static/styles.css HTTP/1.1" 200 OK
+2026-04-28 11:59:48,493 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 11:59:49,378 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 885.52ms
+INFO:     127.0.0.1:47880 - "POST /login HTTP/1.1" 302 Found
+2026-04-28 11:59:49,387 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 11:59:49,396 - INFO - app.middleware - Completed: GET / Status: 200 Time: 9.37ms
+INFO:     127.0.0.1:47880 - "GET / HTTP/1.1" 200 OK
+2026-04-28 11:59:49,413 - INFO - app.middleware - Incoming: GET /static/css/output.css (User: admin)
+2026-04-28 11:59:49,415 - INFO - app.middleware - Completed: GET /static/css/output.css Status: 200 Time: 1.97ms
+INFO:     127.0.0.1:47880 - "GET /static/css/output.css HTTP/1.1" 200 OK
+2026-04-28 11:59:49,864 - INFO - app.middleware - Incoming: GET /net-nodes/new (User: admin)
+2026-04-28 11:59:49,960 - INFO - app.middleware - Completed: GET /net-nodes/new Status: 200 Time: 95.95ms
+INFO:     127.0.0.1:47880 - "GET /net-nodes/new HTTP/1.1" 200 OK
+2026-04-28 11:59:52,833 - INFO - app.middleware - Incoming: GET /teryt/api/suggest (User: admin)
+2026-04-28 11:59:52,848 - INFO - app.middleware - Completed: GET /teryt/api/suggest Status: 200 Time: 14.57ms
+INFO:     127.0.0.1:47880 - "GET /teryt/api/suggest?kind=street&street_name=Test-Rynek&location_city_id=1 HTTP/1.1" 200 OK
+2026-04-28 11:59:53,931 - INFO - app.middleware - Incoming: GET /teryt/api/geocode (User: admin)
+2026-04-28 11:59:53,934 - INFO - app.middleware - Completed: GET /teryt/api/geocode Status: 404 Time: 3.10ms
+INFO:     127.0.0.1:47880 - "GET /teryt/api/geocode?city=Test-City-Sando&street=Test-Rynek&number=1 HTTP/1.1" 404 Not Found
+2026-04-28 12:00:01,527 - INFO - app.middleware - Incoming: POST /net-nodes/new (User: admin)
+2026-04-28 12:00:01,533 - INFO - app.net_nodes - NET-NODE NEW SUBMIT: street_id=1, lat=52.231, lng=21.012
+2026-04-28 12:00:01,541 - INFO - app.middleware - Completed: POST /net-nodes/new Status: 303 Time: 14.39ms
+INFO:     127.0.0.1:61626 - "POST /net-nodes/new HTTP/1.1" 303 See Other
+2026-04-28 12:00:01,548 - INFO - app.middleware - Incoming: GET /net-nodes (User: admin)
+2026-04-28 12:00:01,568 - INFO - app.middleware - Completed: GET /net-nodes Status: 200 Time: 20.64ms
+INFO:     127.0.0.1:61626 - "GET /net-nodes HTTP/1.1" 200 OK

@@ -91,6 +91,28 @@
                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            {{ label("X (PUWG 1992)", for="x_1992") }}
+                            <input type="number" step="0.01" name="x_1992" id="x_1992" 
+                                   value="{{ node.x_1992 if node else '' }}"
+                                   class="flex h-10 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm font-mono" readonly>
+                        </div>
+                        <div class="space-y-2">
+                            {{ label("Y (PUWG 1992)", for="y_1992") }}
+                            <input type="number" step="0.01" name="y_1992" id="y_1992" 
+                                   value="{{ node.y_1992 if node else '' }}"
+                                   class="flex h-10 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm font-mono" readonly>
+                        </div>
+                    </div>
+                    <div class="flex justify-center pt-2">
+                        <button type="button" 
+                                @click="fetchPUWG()"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 rounded-lg text-xs font-bold transition-all border border-blue-600/20">
+                            <i class="fas fa-sync-alt" :class="is_syncing_puwg ? 'fa-spin' : ''"></i>
+                            Synchronizuj z GUGiK (PUWG 1992)
+                        </button>
+                    </div>
                     <p class="text-[10px] text-muted-foreground italic text-center">Możesz przeciągnąć marker na mapie.</p>
                 </div>
                 {% endcall %}
@@ -146,6 +168,7 @@ function mapPicker() {
         lng: {{ node.longitude if node and node.longitude else 21.012 }},
         city_name: '{% if node and node.city %}{{ node.city.name }}{% elif managed_cities|selectattr("is_default")|first %}{{ (managed_cities|selectattr("is_default")|first).name }}{% else %}{% endif %}',
         is_geocoding: false,
+        is_syncing_puwg: false,
         map: null,
         marker: null,
         init() {
@@ -174,14 +197,43 @@ function mapPicker() {
             window.addEventListener('suggestion-selected', (e) => {
                 console.log("Form received suggestion-selected:", e.detail);
                 if (e.detail.type === 'street') {
-                    // Manually update the hidden input because Alpine might miss it
                     const streetIdInput = document.getElementById('location_street_id');
                     if (streetIdInput) streetIdInput.value = e.detail.id;
-                    
-                    // Trigger geocode
                     this.geocode();
                 }
             });
+        },
+        async fetchPUWG() {
+            const streetEl = document.getElementById('street_suggest');
+            const street = streetEl ? streetEl.value : "";
+            const numberEl = document.getElementById('street_number');
+            const number = numberEl ? numberEl.value : "";
+            const city = this.city_name;
+
+            if (!city || !street || !number) {
+                alert("Wypełnij najpierw miejscowość, ulicę i numer.");
+                return;
+            }
+
+            this.is_syncing_puwg = true;
+            try {
+                const url = `/teryt/api/geocode/puwg?city=${encodeURIComponent(city)}&street=${encodeURIComponent(street)}&number=${encodeURIComponent(number)}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+
+                if (data && data.X_1992 && data.Y_1992) {
+                    document.getElementById('x_1992').value = data.X_1992;
+                    document.getElementById('y_1992').value = data.Y_1992;
+                    console.log("PUWG 1992 synced:", data.X_1992, data.Y_1992);
+                } else {
+                    alert("Nie znaleziono precyzyjnych współrzędnych w GUGiK.");
+                }
+            } catch (e) {
+                console.error("PUWG fetch failed:", e);
+                alert("Błąd podczas łączenia z GUGiK.");
+            } finally {
+                this.is_syncing_puwg = false;
+            }
         },
         async geocode() {
             const streetEl = document.getElementById('street_suggest');

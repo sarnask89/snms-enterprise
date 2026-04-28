@@ -4,9 +4,8 @@ This file tracks all active and completed development tracks for the ISP CRM Por
 
 ## Active Tracks
 
-- [UKE PIT System Integration](./tracks/pit-uke-integration/index.md) - TERYT location data sync with PUWG 1992 and GML generation for UKE PIT.
 - [SNMS Security and Technical Improvements](./tracks/security-tech-improvements/index.md) - Critical security fixes and architectural improvements identified in GH docs.
 
 ## Completed Tracks
 
-*(None)*
+- [x] [UKE PIT System Integration](./tracks/pit-uke-integration/index.md) - TERYT location data sync with PUWG 1992 and GML generation for UKE PIT.

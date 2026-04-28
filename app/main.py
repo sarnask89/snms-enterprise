@@ -25,6 +25,7 @@ from app.routers import (
     teryt,
     network_discovery,
     diagnostics,
+    pit,
 )
 
 
@@ -62,3 +63,4 @@ app.include_router(teryt.router)
 app.include_router(teryt.public_api)
 app.include_router(network_discovery.router)
 app.include_router(diagnostics.router)
+app.include_router(pit.router)

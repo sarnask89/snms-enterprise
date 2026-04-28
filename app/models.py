@@ -337,6 +337,10 @@ class Customer(Base):
     street_number: Mapped[str | None] = mapped_column(String(32), nullable=True)
     apartment_number: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
+    # PUWG 1992 (EPSG:2180) - Meter-based coordinates for PIT/UKE
+    x_1992: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    y_1992: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+
     state: Mapped["LocationState | None"] = relationship()
     district: Mapped["LocationDistrict | None"] = relationship()
     city: Mapped["LocationCity | None"] = relationship()
@@ -443,6 +447,11 @@ class NetNode(Base):
     )
     latitude: Mapped[float | None] = mapped_column(Numeric(10, 6), nullable=True)
     longitude: Mapped[float | None] = mapped_column(Numeric(10, 6), nullable=True)
+
+    # PUWG 1992 (EPSG:2180) - Meter-based coordinates for PIT/UKE
+    x_1992: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    y_1992: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+
     info: Mapped[str | None] = mapped_column(Text, nullable=True)
     
     node_type: Mapped[str | None] = mapped_column(String(64), nullable=True)
