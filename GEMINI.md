@@ -46,3 +46,9 @@ The system uses numbering plans to generate customer IDs and document numbers.
 - **Form Validation**: Use `_opt_int` for optional integer fields to prevent validation errors with empty strings.
 - **Security**: Sensitive fields in forms MUST use `autocomplete="new-password"` to prevent browser auto-fill corruption.
 - **UI Consistency**: Use standard Tailwind CSS classes and the provided Jinja2 macros in `templates/components/`.
+
+## Automated Versioning
+- **Git Push**: ALWAYS use `python scripts/push.py` instead of raw `git push` to ensure every push is versioned and tagged.
+    - Default: `python scripts/push.py` (patch increment)
+    - Minor: `python scripts/push.py minor`
+    - Major: `python scripts/push.py major`

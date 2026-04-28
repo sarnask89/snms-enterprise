@@ -17,3 +17,4 @@ A specialized Customer Relationship Management (CRM) and Network Management Syst
 - **Helpdesk**: Simple ticketing system for technical support.
 - **Reporting**: Exporting GML files for UKE PIT compliance.
 - **System Maintenance**: Built-in database backup management (create, download, delete).
+- **Automated Versioning**: Every code push is automatically versioned (SemVer) and tagged in Git for full traceability.

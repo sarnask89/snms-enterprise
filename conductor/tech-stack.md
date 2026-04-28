@@ -24,3 +24,4 @@
 - **Testing**: pytest (Unit/Integration), Playwright (E2E)
 - **Mocking**: Custom Mikrotik and TERYT service mocks
 - **Documentation**: Conductor (Spec-driven development)
+- **Versioning**: Custom Python scripts (`bump_version.py`, `push.py`) for SemVer automation and Git tagging.
