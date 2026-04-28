@@ -13,6 +13,7 @@ from app.database import get_db
 from app.deps import require_business_write, verify_session
 from app.templating import render
 from app.snms_numbering import allocate_next_document_number
+from app.utils.parsing import parse_int, parse_int_optional
 
 router = APIRouter(prefix="/customers", dependencies=[Depends(verify_session)])
 
@@ -64,12 +65,13 @@ def customer_notices_list(request: Request, db: Session = Depends(get_db)):
 @router.get("/preview-number", response_class=HTMLResponse)
 def preview_next_number(
     db: Session = Depends(get_db),
-    plan_id: int | None = Query(None)
+    plan_id: str | None = Query(None)
 ):
-    if not plan_id:
+    pid = parse_int_optional(plan_id)
+    if not pid:
         return HTMLResponse("")
     
-    plan = db.get(models.NumberPlan, plan_id)
+    plan = db.get(models.NumberPlan, pid)
     if not plan:
         return HTMLResponse('<span class="text-destructive text-xs">Nie znaleziono planu</span>')
     
@@ -103,8 +105,8 @@ def customer_new_form(
     request: Request, 
     db: Session = Depends(get_db),
     last_name: str | None = Query(None),
-    city_id: int | None = Query(None),
-    street_id: int | None = Query(None),
+    city_id: str | None = Query(None),
+    street_id: str | None = Query(None),
     street_number: str | None = Query(None),
     apartment_number: str | None = Query(None),
 ):
@@ -124,15 +126,16 @@ def customer_new_form(
     default_plan_id = default_plan.id if default_plan else ""
 
     # Default city or pre-populated city
-    def_city_id = city_id
+    def_city_id = parse_int_optional(city_id)
     if not def_city_id:
         def_city = next((c for c in cities if c.is_default), None)
         def_city_id = def_city.id if def_city else None
 
     # Pre-populated street name for display
     street_name = ""
-    if street_id:
-        street = db.get(models.LocationStreet, street_id)
+    sid = parse_int_optional(street_id)
+    if sid:
+        street = db.get(models.LocationStreet, sid)
         if street:
             street_name = street.name
 
@@ -144,7 +147,7 @@ def customer_new_form(
         "default_city_id": def_city_id,
         "default_plan_id": default_plan_id,
         "pre_last_name": last_name,
-        "pre_street_id": street_id,
+        "pre_street_id": sid,
         "pre_street_name": street_name,
         "pre_street_number": street_number,
         "pre_apartment_number": apartment_number,
@@ -155,25 +158,26 @@ def customer_new_submit(
     request: Request,
     db: Session = Depends(get_db),
     customer_code: str | None = Form(None),
-    number_plan_id: int | None = Form(None),
+    number_plan_id: str | None = Form(None),
     first_name: str = Form(...),
     last_name: str = Form(...),
     email: str | None = Form(None),
     phone: str | None = Form(None),
     status: str = Form("active"),
-    location_city_id: int | None = Form(None),
-    location_street_id: int | None = Form(None),
+    location_city_id: str | None = Form(None),
+    location_street_id: str | None = Form(None),
     street_number: str | None = Form(None),
     apartment_number: str | None = Form(None),
     import_mac: str | None = Form(None),
     import_ip: str | None = Form(None),
-    import_device_id: int | None = Form(None),
+    import_device_id: str | None = Form(None),
 ):
     code = (customer_code or "").strip()
     
     # Automatyczna generacja numeru jeśli wybrano plan
-    if number_plan_id:
-        plan = db.get(models.NumberPlan, number_plan_id)
+    np_id = parse_int_optional(number_plan_id)
+    if np_id:
+        plan = db.get(models.NumberPlan, np_id)
         if plan and plan.doc_type == models.NumberPlanDocType.customer:
             code = allocate_next_document_number(db, plan)
 
@@ -193,8 +197,8 @@ def customer_new_submit(
         email=(email or None) and email.strip() or None,
         phone=(phone or None) and phone.strip() or None,
         status=models.CustomerStatus(status),
-        location_city_id=location_city_id,
-        location_street_id=location_street_id,
+        location_city_id=parse_int_optional(location_city_id),
+        location_street_id=parse_int_optional(location_street_id),
         street_number=(street_number or None) and street_number.strip() or None,
         apartment_number=(apartment_number or None) and apartment_number.strip() or None,
     )
@@ -206,7 +210,7 @@ def customer_new_submit(
     if import_mac and import_ip:
         # Redirect to node creation with import data
         return RedirectResponse(
-            f"/customer-devices/new?customer_id={c.id}&mac_address={import_mac}&ip_address={import_ip}&net_device_id={import_device_id or ''}",
+            f"/customer-devices/new?customer_id={c.id}&mac_address={import_mac}&ip_address={import_ip}&net_device_id={parse_int(import_device_id) or ''}",
             status_code=303
         )
 
@@ -250,14 +254,14 @@ def customer_edit_submit(
     request: Request,
     db: Session = Depends(get_db),
     customer_code: str | None = Form(None),
-    number_plan_id: int | None = Form(None),
+    number_plan_id: str | None = Form(None),
     first_name: str = Form(...),
     last_name: str = Form(...),
     email: str | None = Form(None),
     phone: str | None = Form(None),
     status: str = Form("active"),
-    location_city_id: int | None = Form(None),
-    location_street_id: int | None = Form(None),
+    location_city_id: str | None = Form(None),
+    location_street_id: str | None = Form(None),
     street_number: str | None = Form(None),
     apartment_number: str | None = Form(None),
 ):
@@ -267,8 +271,9 @@ def customer_edit_submit(
     new_code = (customer_code or c.customer_code).strip()
     
     # Jeśli wybrano plan numeracji, wygeneruj nowy kod (nadpisuje obecny)
-    if number_plan_id:
-        plan = db.get(models.NumberPlan, number_plan_id)
+    np_id = parse_int_optional(number_plan_id)
+    if np_id:
+        plan = db.get(models.NumberPlan, np_id)
         if plan and plan.doc_type == models.NumberPlanDocType.customer:
             new_code = allocate_next_document_number(db, plan)
 
@@ -283,8 +288,8 @@ def customer_edit_submit(
     c.email = (email or None) and email.strip() or None
     c.phone = (phone or None) and phone.strip() or None
     c.status = models.CustomerStatus(status)
-    c.location_city_id = location_city_id
-    c.location_street_id = location_street_id
+    c.location_city_id = parse_int_optional(location_city_id)
+    c.location_street_id = parse_int_optional(location_street_id)
     c.street_number = (street_number or None) and street_number.strip() or None
     c.apartment_number = (apartment_number or None) and apartment_number.strip() or None
     db.commit()

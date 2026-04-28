@@ -28,18 +28,8 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
     ("net_usage", "Wykorzystanie IP", "/ip-networks/usage", 31),
     
     # Finanse
-    ("invoices", "Faktury i dokumenty", "/finances/invoices", 40),
     ("subscriptions", "Usługi / Subskrypcje", "/subscriptions", 41),
     ("tariffs", "Plany taryfowe", "/finances/tariffs", 42),
-    ("finances_payments", "Płatności cykliczne", "/finances/payments", 43),
-    ("finances_balance", "Księga (Ledger)", "/finances/balance", 44),
-    ("finances_cash", "Kasa (KP/KW)", "/finances/cash", 45),
-    
-    # Helpdesk
-    ("helpdesk", "Zgłoszenia", "/helpdesk", 50),
-    ("helpdesk_queues", "Kolejki obsługi", "/helpdesk/queues", 51),
-    ("helpdesk_categories", "Kategorie", "/helpdesk/categories", 52),
-    ("helpdesk_reports", "Statystyki pomocy", "/helpdesk/reports", 53),
     
     # TERYT
     ("teryt", "Przeglądaj TERYT", "/teryt/browse", 60),
@@ -64,8 +54,7 @@ NAV_GROUPS: list[tuple[str, tuple[str, ...]]] = [
     ("Klienci", ("customers", "customer_add", "customer_groups")),
     ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices", "admin_discovery")),
     ("Sieci IP", ("ip_networks", "net_usage")),
-    ("Finanse", ("invoices", "subscriptions", "tariffs", "finances_payments", "finances_balance", "finances_cash")),
-    ("Helpdesk", ("helpdesk", "helpdesk_queues", "helpdesk_categories", "helpdesk_reports")),
+    ("Finanse", ("subscriptions", "tariffs")),
     ("TERYT / Adresy", ("teryt", "teryt_cities", "admin_teryt_sync")),
     ("System", ("portal_users", "admin_audit_logs", "config_number_plans", "config_vat", "admin_backups", "admin_reload")),
     ("Ustawienia", ("auth_password",)),
@@ -80,9 +69,7 @@ def _default_matrix() -> dict[models.UserRole, set[str]]:
         "customers",
         "net_nodes",
         "nodes",
-        "helpdesk",
         "teryt",
-        "invoices"
     }
     return {
         models.UserRole.admin: admin_keys,
@@ -136,10 +123,6 @@ def path_allowed_for_portal(path: str, visible_urls: list[str], visible_menu_key
     if "customers" in visible_menu_keys and _under_prefix(p, "/customers"):
         return True
     if "customer_groups" in visible_menu_keys and _under_prefix(p, "/customer-groups"):
-        return True
-    if "helpdesk" in visible_menu_keys and _under_prefix(p, "/helpdesk"):
-        return True
-    if "invoices" in visible_menu_keys and _under_prefix(p, "/finances"):
         return True
     if "nodes" in visible_menu_keys and _under_prefix(p, "/customer-devices"):
         return True

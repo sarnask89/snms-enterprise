@@ -23,7 +23,7 @@ async def test_mikrotik_discovery_import(session):
     # 2. Setup DB context (City ID 1 is seeded in conftest)
     # We need to make sure the mock returns what the function expects
     with patch("app.services.mikrotik_discovery.MikrotikService", return_value=mock_service):
-        results = await get_discoverable_leases(session, "127.0.0.1", "admin", "pass")
+        results = await get_discoverable_leases(session, "127.0.0.1")
         
         assert len(results) == 1
         res = results[0]

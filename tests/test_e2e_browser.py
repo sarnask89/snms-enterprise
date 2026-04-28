@@ -33,6 +33,7 @@ def test_add_net_node_geocoding(page: Page, server: str):
     # 4. Search Street
     street_input = page.locator("#street_suggest")
     street_input.click()
+    # Use the specific test street seeded in conftest
     street_input.press_sequentially("Test-Rynek", delay=150)
     
     # 5. Wait and Click Suggestion
@@ -43,7 +44,7 @@ def test_add_net_node_geocoding(page: Page, server: str):
     page.fill("#street_number", "1")
     page.keyboard.press("Tab")
     
-    # 7. Wait for Geocode
+    # 7. Wait for Geocode (Alpine.js updates coordinates)
     try:
         page.wait_for_function(
             "document.getElementById('latitude').value !== '52.231'",

@@ -5,7 +5,7 @@ from __future__ import annotations
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import HTMLResponse
 
-from app.database import SessionLocal
+from app.database import db_manager
 from app import models
 from app.nav_access import path_allowed_for_portal, visible_nav_items
 
@@ -32,7 +32,7 @@ class PortalUserMiddleware(BaseHTTPMiddleware):
 
         uid = request.session.get("user_id")
         if uid is not None:
-            db = SessionLocal()
+            db = db_manager.SessionLocal()
             try:
                 user = db.get(models.PortalUser, int(uid))
                 if user and user.active:
