@@ -2,13 +2,14 @@ import pytest
 from app import models
 
 def test_customer_create_with_teryt_address(admin_client, session):
-    # Setup: need a city and street
-    state = models.LocationState(name="TestState", teryt_code="99")
-    dist = models.LocationDistrict(name="TestDist", state=state)
-    city = models.LocationCity(name="TestCity", district=dist, is_managed=True)
-    street = models.LocationStreet(name="TestStreet", city=city)
+    # Setup: need a city/street
+    state = models.LocationState(name="Integration-State", teryt_code="91")
+    dist = models.LocationDistrict(name="Integration-Dist", state=state, teryt_code="9101")
+    city = models.LocationCity(name="Integration-City", district=dist, is_managed=True, is_active=True)
+    street = models.LocationStreet(name="Integration-Street", city=city, teryt_code="91011")
     session.add_all([state, dist, city, street])
     session.commit()
+
 
     resp = admin_client.post(
         "/customers/new",
@@ -37,9 +38,9 @@ def test_customer_create_with_teryt_address(admin_client, session):
 
 def test_customer_edit_with_teryt_address(admin_client, session):
     # Setup: existing customer
-    state = models.LocationState(name="E-State", teryt_code="88")
-    dist = models.LocationDistrict(name="E-Dist", state=state)
-    city = models.LocationCity(name="E-City", district=dist, is_managed=True)
+    state = models.LocationState(name="E-State-Edit", teryt_code="92")
+    dist = models.LocationDistrict(name="E-Dist-Edit", state=state, teryt_code="9201")
+    city = models.LocationCity(name="E-City-Edit", district=dist, is_managed=True, is_active=True)
     session.add_all([state, dist, city])
     session.commit()
     

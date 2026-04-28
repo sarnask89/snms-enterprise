@@ -300,6 +300,8 @@ def ensure_message_templates_seed() -> None:
 
 def run_migrations() -> None:
     """Uruchamia migracje Alembic programowo (D6)."""
+    if os.environ.get("TESTING"):
+        return
     from app.config import BASE_DIR
     cfg = Config(str(BASE_DIR / "alembic.ini"))
     cfg.set_main_option("script_location", str(BASE_DIR / "alembic"))

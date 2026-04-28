@@ -1,7 +1,6 @@
 import pytest
 from app.teryt_ws import wyszukaj_miejscowosc, wyszukaj_ulice
 
-@pytest.mark.asyncio
 def test_teryt_ws_search_cities_failing():
     # This should fail if we haven't implemented a proper wrapper or if credentials missing
     # But here I want to test the LOGIC of a new service that will be created

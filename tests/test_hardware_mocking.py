@@ -1,7 +1,7 @@
 import pytest
 from tests.mocks.mikrotik_service import MockMikrotikService
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 async def test_diagnostic_tool_with_mock():
     """Verify that the diagnostic logic works correctly with a mock service."""
     mock_service = MockMikrotikService()
@@ -21,7 +21,7 @@ async def test_diagnostic_tool_with_mock():
     assert len(bridge) == 1
     assert bridge[0]["interface"] == "ether1"
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 async def test_mock_get_leases():
     """Verify mock leases data."""
     mock_service = MockMikrotikService()

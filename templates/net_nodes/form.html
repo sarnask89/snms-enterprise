@@ -195,14 +195,13 @@ function mapPicker() {
             
             this.is_geocoding = true;
             try {
-                const query = `${street} ${number}, ${city}, Polska`;
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-                const resp = await fetch(url, { headers: { 'Accept-Language': 'pl', 'User-Agent': 'SNMS-Enterprise-CRM' } });
+                const url = `/teryt/api/geocode?city=${encodeURIComponent(city)}&street=${encodeURIComponent(street)}&number=${encodeURIComponent(number)}`;
+                const resp = await fetch(url);
                 const data = await resp.json();
                 
-                if (data && data.length > 0) {
-                    const newLat = parseFloat(data[0].lat).toFixed(6);
-                    const newLng = parseFloat(data[0].lon).toFixed(6);
+                if (data && data.lat && data.lon) {
+                    const newLat = parseFloat(data.lat).toFixed(6);
+                    const newLng = parseFloat(data.lon).toFixed(6);
                     this.lat = newLat;
                     this.lng = newLng;
                     

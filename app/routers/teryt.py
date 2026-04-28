@@ -21,8 +21,24 @@ from app.teryt_ws import (
 # Router wymagający logowania
 router = APIRouter(prefix="/teryt", dependencies=[Depends(verify_session)])
 
-# Publiczny router dla API (autosugestie)
+from app.services.gugik import GugikGeocodingService
+
+# Publiczny router dla API (autosugestie + geokodowanie)
 public_api = APIRouter(prefix="/teryt/api")
+
+@public_api.get("/geocode")
+async def teryt_api_geocode(
+    city: str = Query(...),
+    street: str = Query(...),
+    number: str = Query(...),
+):
+    """Authoritative geocoding using GUGiK (backend proxy)."""
+    service = GugikGeocodingService()
+    res = await service.geocode_address(city, street, number)
+    if res:
+        return res
+    return JSONResponse(status_code=404, content={"error": "Not found"})
+
 
 @public_api.get("/suggest", response_class=HTMLResponse)
 def teryt_suggest(

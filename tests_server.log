@@ -1,0 +1,58 @@
+2026-04-28 08:33:55,420 - INFO - root - Logging system initialized.
+2026-04-28 08:33:56,762 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.schemas
+2026-04-28 08:33:56,762 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.tables
+2026-04-28 08:33:56,762 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.types
+2026-04-28 08:33:56,762 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.constraints
+2026-04-28 08:33:56,762 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.defaults
+2026-04-28 08:33:56,763 - INFO - alembic.runtime.plugins - setup plugin alembic.autogenerate.comments
+INFO:     Started server process [4116]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+2026-04-28 08:34:01,335 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-28 08:34:01,344 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 8.80ms
+INFO:     127.0.0.1:47604 - "GET /login HTTP/1.1" 200 OK
+2026-04-28 08:34:01,355 - INFO - app.middleware - Incoming: GET /static/styles.css (User: Anonymous)
+2026-04-28 08:34:01,452 - INFO - app.middleware - Completed: GET /static/styles.css Status: 200 Time: 96.85ms
+INFO:     127.0.0.1:47604 - "GET /static/styles.css HTTP/1.1" 200 OK
+2026-04-28 08:34:01,590 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 08:34:02,044 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 453.72ms
+INFO:     127.0.0.1:47604 - "POST /login HTTP/1.1" 302 Found
+2026-04-28 08:34:02,052 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 08:34:02,082 - INFO - app.middleware - Completed: GET / Status: 200 Time: 30.36ms
+INFO:     127.0.0.1:47604 - "GET / HTTP/1.1" 200 OK
+2026-04-28 08:34:02,097 - INFO - app.middleware - Incoming: GET /static/css/output.css (User: admin)
+2026-04-28 08:34:02,099 - INFO - app.middleware - Completed: GET /static/css/output.css Status: 200 Time: 1.97ms
+INFO:     127.0.0.1:47604 - "GET /static/css/output.css HTTP/1.1" 200 OK
+2026-04-28 08:34:05,480 - INFO - app.middleware - Incoming: GET /login (User: Anonymous)
+2026-04-28 08:34:05,484 - INFO - app.middleware - Completed: GET /login Status: 200 Time: 4.09ms
+INFO:     127.0.0.1:65001 - "GET /login HTTP/1.1" 200 OK
+2026-04-28 08:34:05,494 - INFO - app.middleware - Incoming: GET /static/styles.css (User: Anonymous)
+2026-04-28 08:34:05,497 - INFO - app.middleware - Completed: GET /static/styles.css Status: 200 Time: 2.89ms
+INFO:     127.0.0.1:65001 - "GET /static/styles.css HTTP/1.1" 200 OK
+2026-04-28 08:34:05,690 - INFO - app.middleware - Incoming: POST /login (User: Anonymous)
+2026-04-28 08:34:06,123 - INFO - app.middleware - Completed: POST /login Status: 302 Time: 432.49ms
+INFO:     127.0.0.1:65001 - "POST /login HTTP/1.1" 302 Found
+2026-04-28 08:34:06,128 - INFO - app.middleware - Incoming: GET / (User: admin)
+2026-04-28 08:34:06,133 - INFO - app.middleware - Completed: GET / Status: 200 Time: 4.32ms
+INFO:     127.0.0.1:65001 - "GET / HTTP/1.1" 200 OK
+2026-04-28 08:34:06,145 - INFO - app.middleware - Incoming: GET /static/css/output.css (User: admin)
+2026-04-28 08:34:06,148 - INFO - app.middleware - Completed: GET /static/css/output.css Status: 200 Time: 2.19ms
+INFO:     127.0.0.1:65001 - "GET /static/css/output.css HTTP/1.1" 200 OK
+2026-04-28 08:34:06,523 - INFO - app.middleware - Incoming: GET /net-nodes/new (User: admin)
+2026-04-28 08:34:06,591 - INFO - app.middleware - Completed: GET /net-nodes/new Status: 200 Time: 68.35ms
+INFO:     127.0.0.1:65001 - "GET /net-nodes/new HTTP/1.1" 200 OK
+2026-04-28 08:34:09,539 - INFO - app.middleware - Incoming: GET /teryt/api/suggest (User: admin)
+2026-04-28 08:34:09,554 - INFO - app.middleware - Completed: GET /teryt/api/suggest Status: 200 Time: 14.88ms
+INFO:     127.0.0.1:65001 - "GET /teryt/api/suggest?kind=street&street_name=Test-Rynek&location_city_id=1 HTTP/1.1" 200 OK
+2026-04-28 08:34:10,190 - INFO - app.middleware - Incoming: GET /teryt/api/geocode (User: admin)
+2026-04-28 08:34:11,183 - INFO - httpx - HTTP Request: GET https://services.gugik.gov.pl/uug/?request=getaddress&address=Test-City-Sando%2C+Test-Rynek+1 "HTTP/1.1 200 OK"
+2026-04-28 08:34:11,189 - INFO - app.middleware - Completed: GET /teryt/api/geocode Status: 404 Time: 999.17ms
+INFO:     127.0.0.1:65001 - "GET /teryt/api/geocode?city=Test-City-Sando&street=Test-Rynek&number=1 HTTP/1.1" 404 Not Found
+2026-04-28 08:34:17,782 - INFO - app.middleware - Incoming: POST /net-nodes/new (User: admin)
+2026-04-28 08:34:17,787 - INFO - app.net_nodes - NET-NODE NEW SUBMIT: street_id=1, lat=52.231, lng=21.012
+2026-04-28 08:34:17,794 - INFO - app.middleware - Completed: POST /net-nodes/new Status: 303 Time: 11.93ms
+INFO:     127.0.0.1:39280 - "POST /net-nodes/new HTTP/1.1" 303 See Other
+2026-04-28 08:34:17,799 - INFO - app.middleware - Incoming: GET /net-nodes (User: admin)
+2026-04-28 08:34:17,814 - INFO - app.middleware - Completed: GET /net-nodes Status: 200 Time: 14.92ms
+INFO:     127.0.0.1:39280 - "GET /net-nodes HTTP/1.1" 200 OK
