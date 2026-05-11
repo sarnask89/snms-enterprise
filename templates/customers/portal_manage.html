@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8">
+    <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-black text-white tracking-tight">Zarządzanie dostępem do portalu</h2>
+        <a href="/customers/{{ customer.id }}/edit" class="text-xs text-slate-500 hover:text-white transition-colors">
+            <i class="fas fa-arrow-left mr-1"></i> Powrót do edycji
+        </a>
+    </div>
+
+    {% if new_password %}
+    <div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-2xl animate-in zoom-in duration-300">
+        <div class="flex items-center gap-4 mb-4 text-emerald-400">
+            <i class="fas fa-check-circle text-2xl"></i>
+            <h3 class="font-bold">Dane wygenerowane pomyślnie!</h3>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-black/20 p-4 rounded-xl border border-emerald-500/10">
+                <p class="text-[10px] uppercase font-black text-slate-500 mb-1">Login:</p>
+                <p class="text-white font-mono font-bold">{{ customer.portal_login }}</p>
+            </div>
+            <div class="bg-black/20 p-4 rounded-xl border border-emerald-500/10">
+                <p class="text-[10px] uppercase font-black text-slate-500 mb-1">Nowe hasło:</p>
+                <div class="flex items-center justify-between">
+                    <p class="text-white font-mono font-bold text-xl">{{ new_password }}</p>
+                    <button onclick="navigator.clipboard.writeText('{{ new_password }}')" class="text-xs bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg transition-all">
+                        Kopiuj
+                    </button>
+                </div>
+            </div>
+            <p class="text-xs text-emerald-400/80 italic">Przekaż te dane klientowi. Hasło zostało zapisane w bazie w formie zaszyfrowanej.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+        <div class="flex items-center gap-6 mb-8">
+            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-2xl">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase font-black tracking-widest">Abonent</p>
+                <h3 class="text-xl font-bold text-white">{{ customer.first_name }} {{ customer.last_name }} ({{ customer.customer_code }})</h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    {% if customer.portal_login %}
+                    Aktualny login: <span class="text-primary font-bold">{{ customer.portal_login }}</span>
+                    {% else %}
+                    <span class="text-rose-400">Dostęp do portalu nie został jeszcze skonfigurowany.</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <form action="/customers/{{ customer.id }}/portal/reset" method="post" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Login portalu</label>
+                    <input type="text" name="custom_login" value="{{ customer.portal_login or customer.customer_code }}" 
+                           class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary">
+                    <p class="text-[9px] text-slate-600 mt-1 italic">Domyślnie kod abonenta.</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Własne hasło (opcjonalnie)</label>
+                    <input type="password" name="custom_password" placeholder="Zostaw puste dla losowego"
+                           class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary">
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-white/5 flex gap-4">
+                <button type="submit" class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fas fa-key text-xs"></i> 
+                    {{ 'Zmień dane dostępu' if customer.portal_login else 'Aktywuj dostęp i generuj hasło' }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-6 flex gap-4">
+        <i class="fas fa-info-circle text-blue-400 mt-1"></i>
+        <div class="text-xs text-slate-400 leading-relaxed">
+            <strong>Wskazówka:</strong> Klient może logować się do portalu pod adresem <a href="/client/login" class="text-primary hover:underline">/client/login</a>. 
+            Wygenerowanie nowego hasła natychmiast unieważnia poprzednie.
+        </div>
+    </div>
+</div>
+{% endblock %}

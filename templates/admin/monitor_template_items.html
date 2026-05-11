@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="space-y-8 animate-in fade-in duration-500">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <a href="/admin/monitor-config" class="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-muted transition-colors">
+                <i class="fas fa-chevron-left text-xs"></i>
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Elementy: {{ template.name }}</h1>
+                <p class="text-muted-foreground text-sm">Definicje parametrów zbieranych przez poller.</p>
+            </div>
+        </div>
+        <button class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
+            <i class="fas fa-plus mr-2"></i> Dodaj Element
+        </button>
+    </div>
+
+    <div class="bg-card rounded-xl border shadow-sm overflow-hidden">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-muted/50 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <tr>
+                    <th class="px-6 py-4">Nazwa / Klucz</th>
+                    <th class="px-6 py-4">Typ</th>
+                    <th class="px-6 py-4">Parametr (OID/Key)</th>
+                    <th class="px-6 py-4">Interwał</th>
+                    <th class="px-6 py-4 text-right">Akcje</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% for item in items %}
+                <tr class="hover:bg-muted/30 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="font-bold">{{ item.name }}</div>
+                        <div class="text-[10px] font-mono text-muted-foreground">{{ item.key }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">
+                            {{ item.item_type }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-[10px] font-mono text-muted-foreground">
+                        {{ item.snmp_oid or '-' }}
+                    </td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ item.delay }}s</td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="text-muted-foreground hover:text-foreground p-1"><i class="fas fa-edit"></i></button>
+                        <button class="text-destructive/50 hover:text-destructive p-1"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-muted-foreground italic">
+                        Brak zdefiniowanych elementów w tym szablonie.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

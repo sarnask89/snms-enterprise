@@ -28,8 +28,8 @@ def _customers_map(db: Session) -> dict[int, models.Customer]:
     return {c.id: c for c in db.scalars(select(models.Customer)).all()}
 
 
-def _nodes_list(db: Session) -> list[models.Node]:
-    return list(db.scalars(select(models.Node).order_by(models.Node.hostname)).all())
+def _nodes_list(db: Session) -> list[models.CustomerDevice]:
+    return list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
 
 
 def _merge_message_from_template(
@@ -402,7 +402,7 @@ def stats_list(request: Request, db: Session = Depends(get_db)):
     rows = list(
         db.scalars(select(models.TrafficStat).order_by(models.TrafficStat.period_start.desc())).all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.Node)).all()}
+    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
     return render(
         request,
         "snms/stats.html",
@@ -425,7 +425,7 @@ def stats_new_submit(
     db: Session = Depends(get_db),
     period_start: str = Form(...),
     period_end: str = Form(...),
-    node_id: str | None = Form(None),
+    device_id: str | None = Form(None),
     bytes_in: str = Form("0"),
     bytes_out: str = Form("0"),
     note: str | None = Form(None),
@@ -435,14 +435,14 @@ def stats_new_submit(
         pe = date.fromisoformat(str(period_end).strip())
     except ValueError:
         return RedirectResponse("/stats/new", status_code=303)
-    nid = int(node_id) if node_id and str(node_id).strip().isdigit() else None
+    nid = int(device_id) if device_id and str(device_id).strip().isdigit() else None
     try:
         bi = int(str(bytes_in).replace(" ", "").replace(",", ""))
         bo = int(str(bytes_out).replace(" ", "").replace(",", ""))
     except ValueError:
         bi, bo = 0, 0
     st = models.TrafficStat(
-        node_id=nid,
+        device_id=nid,
         period_start=ps,
         period_end=pe,
         bytes_in=bi,
@@ -475,7 +475,7 @@ def stats_edit_submit(
     db: Session = Depends(get_db),
     period_start: str = Form(...),
     period_end: str = Form(...),
-    node_id: str | None = Form(None),
+    device_id: str | None = Form(None),
     bytes_in: str = Form("0"),
     bytes_out: str = Form("0"),
     note: str | None = Form(None),
@@ -488,7 +488,7 @@ def stats_edit_submit(
         row.period_end = date.fromisoformat(str(period_end).strip())
     except ValueError:
         return RedirectResponse(f"/stats/{row_id}/edit", status_code=303)
-    row.node_id = int(node_id) if node_id and str(node_id).strip().isdigit() else None
+    row.device_id = int(device_id) if device_id and str(device_id).strip().isdigit() else None
     try:
         row.bytes_in = int(str(bytes_in).replace(" ", "").replace(",", ""))
         row.bytes_out = int(str(bytes_out).replace(" ", "").replace(",", ""))

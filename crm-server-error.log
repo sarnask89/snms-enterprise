@@ -1,0 +1,3 @@
+INFO:     Will watch for changes in these directories: ['C:\\Users\\xxx\\crm-portal']
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+INFO:     Started reloader process [15832] using WatchFiles

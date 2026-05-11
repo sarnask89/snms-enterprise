@@ -65,15 +65,15 @@ def menu_access_form(request: Request, db: Session = Depends(get_db)):
     roles = list(models.UserRole)
     perms = list(db.scalars(select(models.RoleMenuPermission)).all())
     matrix = {(p.role, p.nav_item_id): p.allowed for p in perms}
-    return render(request, "admin/menu_access.html", {"title": "Menu i role", "menu_items": items, "roles": roles, "matrix": matrix})
+    return render(request, "admin/menu_access.html", {"title": "Menu i role", "menu_items": items, "roles": roles, "permissions": matrix})
 
 
 @router.post("/menu-access", dependencies=[Depends(require_admin_or_manager)])
 async def menu_access_submit(request: Request, db: Session = Depends(get_db)):
     form = await request.form()
-    checked = set(form.getlist("allow"))
     for p in db.scalars(select(models.RoleMenuPermission)).all():
-        p.allowed = f"{p.role.value}:{p.nav_item_id}" in checked
+        key = f"perm_{p.role.value}_{p.nav_item_id}"
+        p.allowed = key in form
     db.commit()
     return RedirectResponse("/admin/menu-access", status_code=303)
 
@@ -287,7 +287,7 @@ def teryt_sync_cities_submit(request: Request, db: Session = Depends(get_db), di
         # Jeśli brak teryt_code w bazie (stare rekordy), spróbujmy szukać po nazwie w GUS (legacy fallback)
         if not pow_code:
             from app.teryt_ws import powiaty_as_serializable
-            p_items, _ = powiaty_as_serializable(woj_code)
+            p_items = powiaty_as_serializable(woj_code)
             search_name = district.name.lower().replace("powiat ", "").strip()
             for p in p_items:
                 if search_name in str(p.get('NAZWA', '')).lower():
@@ -295,11 +295,11 @@ def teryt_sync_cities_submit(request: Request, db: Session = Depends(get_db), di
         
         if not pow_code: return RedirectResponse("/admin/teryt-sync?error=Brak+kodu+powiatu", status_code=303)
 
-        g_items, _ = gminy_as_serializable(woj_code, pow_code)
+        g_items = gminy_as_serializable(woj_code, pow_code)
         count = 0
         for g in g_items:
             gmi = g.get('GMI'); rodz = g.get('RODZ')
-            m_items, _ = miejscowości_as_serializable(woj_code, pow_code, gmi)
+            m_items = miejscowości_as_serializable(woj_code, pow_code, gmi)
             for m in m_items:
                 m_name = m.get('NAZWA') or m.get('Nazwa')
                 m_simc = m.get('SIMC') or m.get('Symbol')
@@ -337,7 +337,7 @@ def teryt_sync_streets_submit(request: Request, db: Session = Depends(get_db), c
                 if s_name in str(p.get('NAZWA', '')).lower():
                     pow_code = p.get('POW'); break
 
-        u_items, _ = ulice_as_serializable(woj_code, pow_code, gmi, rodz, city.name)
+        u_items = ulice_as_serializable(woj_code, pow_code, gmi, rodz, city.name)
         count = 0
         for u in u_items:
             u_name = u.get('NAZWA') or u.get('Nazwa')

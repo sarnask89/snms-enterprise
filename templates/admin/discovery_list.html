@@ -23,10 +23,15 @@
                     <div class="text-xs text-muted-foreground">{{ router.management_ip }} • {{ router.driver_type }}</div>
                 </div>
             </div>
-            <a href="/admin/discovery/{{ router.id }}" 
-               class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
-                Skanuj dzierżawy <i class="fas fa-search ml-2"></i>
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="/admin/monitoring/device/{{ router.id }}" class="h-9 w-9 inline-flex items-center justify-center rounded-lg border bg-background hover:bg-accent text-muted-foreground shadow-sm transition-colors" title="Monitoring">
+                    <i class="fas fa-chart-line text-xs"></i>
+                </a>
+                <a href="/admin/discovery/{{ router.id }}" 
+                   class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
+                    Skanuj dzierżawy <i class="fas fa-search ml-2"></i>
+                </a>
+            </div>
         </div>
         {% else %}
         <div class="p-8 text-center text-muted-foreground">

@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Pictures"
+		},
+		{
+			"path": "../lms-26"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "../.gemini/antigravity/brain/c8201bcf-6258-4553-b691-64142f9e75b2/browser"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true,
+		"powershell.cwd": "crm-portal"
+	}
+}

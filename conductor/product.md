@@ -1,20 +1,22 @@
-# Product Definition: ISP CRM Portal
+# Initial Concept
+CRM Portal (FastAPI, without Strapi)
 
-## Overview
-A specialized Customer Relationship Management (CRM) and Network Management System (NMS) designed for small to medium-sized Internet Service Providers (ISPs).
+## Target Audience
+Internal staff, ISP administrators, and network engineers managing customer subscriptions, network infrastructure, and billing.
 
-## Core Values
-- **Automation**: Automatic billing, invoicing, and service provisioning.
-- **Compliance**: Built-in support for Polish regulatory reporting (UKE PIT/GML).
-- **Efficiency**: Thin-server architecture using HTMX for fast, interactive UI.
-- **Hardware Integration**: Deep integration with Mikrotik and other ISP infrastructure.
+## Core Goals
+- Provide a centralized management portal for ISPs.
+- Enable customer management, subscription tracking, and financial operations.
+- Integrate network infrastructure monitoring and diagnostic tools.
+- Automate interactions with hardware like Dasan OLTs and MikroTik routers.
+- Maintain a robust audit log of all system changes.
+- **Code Optimization & Object-Oriented Design:** Continuously refactor the codebase to reduce duplication, enforce strict object-oriented principles, and improve overall maintainability and performance.
 
 ## Key Features
-- **Customer Management**: TERYT-integrated addressing and contact tracking.
-- **Infrastructure Inventory**: Management of network nodes, devices, and topology maps.
-- **IP Addressing**: IPv4 pool management and usage reporting.
-- **Financial Module**: Tariff definitions, automated subscriptions, and PDF invoicing.
-- **Helpdesk**: Simple ticketing system for technical support.
-- **Reporting**: Exporting GML files for UKE PIT compliance.
-- **System Maintenance**: Built-in database backup management (create, download, delete).
-- **Automated Versioning**: Every code push is automatically versioned (SemVer) and tagged in Git for full traceability.
+- **Dashboard:** Overview of system status and quick access to key modules.
+- **Customer Management:** Full lifecycle management of ISP customers.
+- **Infrastructure Management:** Cataloging and monitoring of network nodes, devices (OLTs, routers), and IP networks.
+- **Diagnostics:** Real-time diagnostic tools for OLTs and routers using SSH and API integrations.
+- **Finance:** Invoicing, tariffs, and payment tracking.
+- **TERYT Integration:** Synchronization with the official Polish territorial register for accurate address data.
+- **HTMX + Jinja2 UI:** Fast, reactive user interface without the overhead of an SPA.

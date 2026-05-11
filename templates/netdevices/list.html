@@ -41,7 +41,12 @@
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle">
                             <div class="font-bold text-xs">{{ d.name or '—' }}</div>
-                            <div class="text-[10px] text-muted-foreground font-mono">{{ d.management_ip or 'brak IP' }}</div>
+                            <div class="flex items-center gap-2">
+                                <div class="text-[10px] text-muted-foreground font-mono">{{ d.management_ip or 'brak IP' }}</div>
+                                {% if d.last_seen %}
+                                    <div class="w-1.5 h-1.5 rounded-full {% if d.is_online %}bg-green-500 animate-pulse{% else %}bg-red-500{% endif %}" title="{{ 'Online' if d.is_online else 'Offline' }}"></div>
+                                {% endif %}
+                            </div>
                         </td>
                         <td class="p-4 align-middle">
                             <div class="font-bold text-xs">{{ d.producer.name if d.producer else '—' }}</div>

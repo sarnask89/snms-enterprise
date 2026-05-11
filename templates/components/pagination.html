@@ -1,0 +1,79 @@
+{% macro render_pagination(url_path, current_page, total_pages, limit, total_items, target_id) %}
+<div class="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
+    <!-- Items per page selector -->
+    <div class="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>Pokaż</span>
+        <select 
+            name="limit" 
+            class="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs focus:ring-1 focus:ring-primary focus:border-primary"
+            hx-get="{{ url_path }}"
+            hx-include="[name='q']"
+            hx-target="{{ target_id }}"
+            hx-indicator=".htmx-indicator">
+            <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+            <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+            <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
+        </select>
+        <span>pozycji z {{ total_items }}</span>
+    </div>
+
+    <!-- Navigation buttons -->
+    {% if total_pages > 1 %}
+    <div class="flex items-center gap-1">
+        <!-- First Page -->
+        <button 
+            class="inline-flex items-center justify-center h-8 w-8 rounded-md border bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            {% if current_page <= 1 %}disabled{% endif %}
+            hx-get="{{ url_path }}?page=1&limit={{ limit }}"
+            hx-include="[name='q']"
+            hx-target="{{ target_id }}"
+            hx-indicator=".htmx-indicator"
+            title="Pierwsza strona">
+            <i class="fas fa-angle-double-left text-xs"></i>
+        </button>
+        
+        <!-- Previous Page -->
+        <button 
+            class="inline-flex items-center justify-center h-8 w-8 rounded-md border bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            {% if current_page <= 1 %}disabled{% endif %}
+            hx-get="{{ url_path }}?page={{ current_page - 1 }}&limit={{ limit }}"
+            hx-include="[name='q']"
+            hx-target="{{ target_id }}"
+            hx-indicator=".htmx-indicator"
+            title="Poprzednia strona">
+            <i class="fas fa-angle-left text-xs"></i>
+        </button>
+
+        <!-- Current Page / Total -->
+        <div class="px-3 text-xs font-medium text-muted-foreground">
+            Strona {{ current_page }} z {{ total_pages }}
+        </div>
+
+        <!-- Next Page -->
+        <button 
+            class="inline-flex items-center justify-center h-8 w-8 rounded-md border bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            {% if current_page >= total_pages %}disabled{% endif %}
+            hx-get="{{ url_path }}?page={{ current_page + 1 }}&limit={{ limit }}"
+            hx-include="[name='q']"
+            hx-target="{{ target_id }}"
+            hx-indicator=".htmx-indicator"
+            title="Następna strona">
+            <i class="fas fa-angle-right text-xs"></i>
+        </button>
+        
+        <!-- Last Page -->
+        <button 
+            class="inline-flex items-center justify-center h-8 w-8 rounded-md border bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            {% if current_page >= total_pages %}disabled{% endif %}
+            hx-get="{{ url_path }}?page={{ total_pages }}&limit={{ limit }}"
+            hx-include="[name='q']"
+            hx-target="{{ target_id }}"
+            hx-indicator=".htmx-indicator"
+            title="Ostatnia strona">
+            <i class="fas fa-angle-double-right text-xs"></i>
+        </button>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

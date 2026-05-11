@@ -18,8 +18,16 @@
             net: 0, 
             gross: 0,
             vat: 23, 
-            updateGross() { this.gross = (parseFloat(this.net) * (1 + this.vat/100)).toFixed(2) },
-            updateNet() { this.net = (parseFloat(this.gross) / (1 + this.vat/100)).toFixed(2) }
+            updateGross() { 
+                let n = parseFloat(this.net) || 0;
+                let v = parseFloat(this.vat) || 23;
+                this.gross = (n * (1 + v/100)).toFixed(2) 
+            },
+            updateNet() { 
+                let g = parseFloat(this.gross) || 0;
+                let v = parseFloat(this.vat) || 23;
+                this.net = (g / (1 + v/100)).toFixed(2) 
+            }
           }">
         <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <div class="space-y-2 lg:col-span-2">

@@ -1,0 +1,21 @@
+{% import "components/pagination.html" as pagination %}
+<div id="customer-table-container">
+    <div class="relative w-full overflow-auto">
+        <table class="w-full caption-bottom text-sm">
+            <thead class="bg-muted/50">
+                <tr class="border-b transition-colors">
+                    <th class="h-12 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Numer abonenta</th>
+                    <th class="h-12 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Nazwisko i imię</th>
+                    <th class="h-12 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Miejscowość</th>
+                    <th class="h-12 px-4 text-left align-middle font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Status</th>
+                    <th class="h-12 px-4 text-right align-middle font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Akcje</th>
+                </tr>
+            </thead>
+            <tbody id="customer-table-body" class="[&_tr:last-child]:border-0">
+                {% include "customers/list_rows.html" %}
+            </tbody>
+        </table>
+    </div>
+    
+    {{ pagination.render_pagination("/customers", page, total_pages, limit, total_items, "#customer-table-container") }}
+</div>

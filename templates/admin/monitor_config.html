@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="space-y-8 animate-in fade-in duration-500">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight">Konfiguracja Systemu Monitorowania (NMS)</h1>
+            <p class="text-muted-foreground text-sm">Zarządzaj szablonami, elementami i progami alarmowymi dla całej sieci.</p>
+        </div>
+        <a href="/admin/monitor-config/template/new" class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
+            <i class="fas fa-plus mr-2"></i> Nowy Szablon
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for tmpl in templates %}
+        <div class="group relative bg-card rounded-xl border shadow-sm hover:shadow-md transition-all">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-cubes text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">{{ tmpl.name }}</h3>
+                <p class="text-xs text-muted-foreground line-clamp-2 mb-4">{{ tmpl.description or 'Brak opisu.' }}</p>
+                
+                <div class="flex items-center gap-4 pt-4 border-t">
+                    <a href="/admin/monitor-config/template/{{ tmpl.id }}/items" class="text-xs font-bold text-primary hover:underline uppercase tracking-widest">
+                        Elementy <i class="fas fa-list ml-1"></i>
+                    </a>
+                    <a href="#" class="text-xs font-bold text-muted-foreground hover:text-foreground uppercase tracking-widest">
+                        Wyzwalacze <i class="fas fa-bell ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full py-12 text-center border border-dashed rounded-xl">
+            <i class="fas fa-ghost text-4xl mb-3 opacity-20"></i>
+            <p class="text-muted-foreground">Brak zdefiniowanych szablonów. Stwórz pierwszy szablon, aby zacząć.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

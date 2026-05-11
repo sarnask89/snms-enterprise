@@ -1,0 +1,58 @@
+{% extends "client/base.html" %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for device in devices %}
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-slate-700 transition-all group">
+        <div class="flex justify-between items-start mb-6">
+            <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
+                <i class="fas fa-microchip text-xl"></i>
+            </div>
+            {% set status = statuses.get(device.id) %}
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {% if status == 'Osiągalne' %}bg-emerald-500/10 text-emerald-400{% else %}bg-rose-500/10 text-rose-400{% endif %}">
+                <div class="w-1.5 h-1.5 rounded-full {% if status == 'Osiągalne' %}bg-emerald-500 animate-pulse{% else %}bg-rose-500{% endif %}"></div>
+                {{ status }}
+            </div>
+        </div>
+        
+        <h3 class="text-white font-black text-lg mb-1">{{ device.name or "Urządzenie końcowe" }}</h3>
+        <p class="text-slate-500 text-xs font-mono mb-6">{{ device.mac_address or "Brak MAC" }}</p>
+        
+        <div class="space-y-3 pt-6 border-t border-white/5">
+            <div class="flex justify-between text-xs">
+                <span class="text-slate-500">Adres IP:</span>
+                <span class="text-white font-bold">{{ device.ip_address or "-" }}</span>
+            </div>
+            <div class="flex justify-between text-xs">
+                <span class="text-slate-500">Technologia:</span>
+                <span class="text-white font-bold">{{ device.access_technology or "-" }}</span>
+            </div>
+        </div>
+        
+        <button class="w-full mt-8 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
+            Zgłoś problem z urządzeniem
+        </button>
+    </div>
+    {% else %}
+    <div class="lg:col-span-3 bg-slate-900/50 border border-dashed border-slate-800 rounded-3xl p-20 text-center">
+        <i class="fas fa-microchip text-6xl text-slate-800 mb-6"></i>
+        <p class="text-slate-500">Nie znaleźliśmy żadnych urządzeń przypisanych do Twojego konta.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Diagnostics Info -->
+<div class="mt-12 bg-blue-500/5 border border-blue-500/10 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6">
+    <div class="w-14 h-14 shrink-0 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400">
+        <i class="fas fa-info-circle text-2xl"></i>
+    </div>
+    <div>
+        <h4 class="text-white font-bold mb-1">Jak czytać status urządzenia?</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">
+            Status <strong class="text-emerald-400">Osiągalne</strong> oznacza, że nasze systemy widzą Twój router w sieci. 
+            Jeśli urządzenie jest <strong class="text-rose-400">Nieosiągalne</strong>, upewnij się, że jest podłączone do zasilania. 
+            W przypadku problemów z połączeniem mimo statusu "Osiągalne", zrestartuj swój router (wyłącz z prądu na 30 sekund).
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -11,7 +11,15 @@
                 <form method="get" action="/teryt/cities">
                     <input type="search" name="q" value="{{ search_q }}" 
                            placeholder="Nazwa miejscowości..."
-                           class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                           class="flex h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                           hx-get="/teryt/api/suggest"
+                           hx-trigger="keyup changed delay:300ms"
+                           hx-target="#city-suggest-results"
+                           hx-vals='{"kind": "city"}'
+                           @focus="showSuggest = true"
+                           @click.away="showSuggest = false"
+                           x-data="{ showSuggest: false }">
+                    <div id="city-suggest-results" x-show="showSuggest" class="absolute z-50 w-full bg-background border rounded-md shadow-lg mt-1 overflow-hidden" x-cloak></div>
                 </form>
             </div>
         </div>
@@ -53,6 +61,12 @@
                         <td class="p-4 align-middle text-xs text-muted-foreground">{{ c.district.name if c.district else '—' }}</td>
                         <td class="p-4 align-middle text-right">
                             <div class="flex justify-end gap-1">
+                                <form method="post" action="/teryt/sync-geoportal" class="inline">
+                                    <input type="hidden" name="city_id" value="{{ c.id }}">
+                                    <button type="submit" class="h-8 px-2 inline-flex items-center justify-center rounded-md border bg-background hover:bg-emerald-500/10 hover:text-emerald-600 text-[10px] font-bold transition-colors" title="Synchronizuj z Geoportalem">
+                                        <i class="fas fa-map-marked-alt mr-1"></i> Geoportal
+                                    </button>
+                                </form>
                                 <form method="post" action="/admin/addresses/city/{{ c.id }}/toggle-managed" class="inline">
                                     <button type="submit" class="h-8 px-2 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-[10px] font-bold transition-colors" title="Zarządzaj">
                                         {{ 'Usuń z zarz.' if c.is_managed else 'Dodaj do zarz.' }}

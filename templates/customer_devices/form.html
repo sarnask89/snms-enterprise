@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, select, label %}
+{% from "components/combobox.html" import combobox %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <form method="post" action="{% if device %}/customer-devices/{{ device.id }}/edit{% else %}/customer-devices/new{% endif %}" class="space-y-8">
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-8">
+                {% call card(title="Urządzenie klienta", subtitle="Konfiguracja dostępu abonenta") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            {{ label("Abonent", for="customer_id") }}
+                            {% if device and device.customer %}
+                            <a href="/customers/{{ device.customer_id }}/edit" class="text-[10px] font-bold text-primary hover:underline">
+                                <i class="fas fa-user-edit mr-1"></i> Idź do karty abonenta
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% set cust_opts = [] %}
+                        {% for c in customers %}{% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}{% endfor %}
+                        {{ combobox("customer_id", cust_opts, selected_id=device.customer_id if device else (sticky.customer_id if sticky else ""), placeholder="Szukaj abonenta...") }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Nazwa / Hostname", for="name") }}
+                        {{ input("name", value=device.name if device else (sticky.name if sticky else ""), id="name", required=True, placeholder="np. Dom-Router") }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ label("Grupa urządzeń", for="customer_device_group_id") }}
+                        {% set ng_opts = [] %}
+                        {% for g in customer_device_groups %}{% do ng_opts.append((g.id, g.name)) %}{% endfor %}
+                        {{ combobox("customer_device_group_id", ng_opts, selected_id="", placeholder="Wybierz grupę...") }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Logowanie i Autoryzacja", subtitle="Parametry PPPoE / DHCP / Statyczne") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Login (Username)", for="login") }}
+                        {{ input("login", value=device.login if device else (sticky.login if sticky else ""), id="login", placeholder="użytkownik@snms") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Hasło", for="passwd") }}
+                        {{ input("passwd", value=device.passwd if device else (sticky.passwd if sticky else ""), type="password", id="passwd", placeholder="••••••••") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Adres IP (Statyczny)", for="ip_address") }}
+                        {{ input("ip_address", value=device.ip_address if device else (sticky.ip_address if sticky else ""), id="ip_address", placeholder="10.x.x.x") }}
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+
+            <div class="space-y-8">
+                {% call card(title="Parametry Sieciowe", subtitle="VLAN i routing") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Adres MAC", for="mac_address") }}
+                        {{ input("mac_address", value=device.mac_address if device else (sticky.mac_address if sticky else ""), id="mac_address", placeholder="00:11:22:33:44:55") }}
+                    </div>
+                    <div class="space-y-2">
+                        {{ label("Sieć (VLAN / Pula)", for="ip_network_id") }}
+                        {% set net_opts = [] %}
+                        {% for n in ip_networks %}{% do net_opts.append((n.id, n.name ~ " (" ~ n.cidr ~ ")")) %}{% endfor %}
+                        {{ combobox("ip_network_id", net_opts, selected_id=device.ip_network_id if device else (sticky.ip_network_id if sticky else ""), placeholder="Wybierz sieć...") }}
+                    </div>
+                </div>
+                {% endcall %}
+
+                {% call card(title="Infrastruktura (UKE)", subtitle="Miejsce podłączenia") %}
+                <div class="grid gap-6">
+                    <div class="space-y-2">
+                        {{ label("Węzeł nadrzędny", for="net_node_id") }}
+                        {% set nn_opts = [] %}
+                        {% for nn in net_nodes %}{% do nn_opts.append((nn.id, nn.name)) %}{% endfor %}
+                        {{ combobox("net_node_id", nn_opts, selected_id=device.net_node_id if device else (sticky.net_device_id if sticky else ""), placeholder="Wybierz węzeł...") }}
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 p-4 border rounded-lg bg-muted/10">
+                        <input type="checkbox" name="active" id="active" class="h-4 w-4 rounded border-gray-300 text-primary" {% if not device or device.status == 'active' %}checked{% endif %}>
+                        <div class="grid gap-1.5 leading-none">
+                            {{ label("Urządzenie aktywne", for="active", class="text-sm font-bold") }}
+                            <p class="text-[10px] text-muted-foreground uppercase">Pozwala na autoryzację w sieci.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endcall %}
+            </div>
+        </div>
+
+        {% if device %}
+        <div class="space-y-8">
+            {% call card(title="Usługi i Taryfy", subtitle="Aktywny plan abonamentowy przypisany do urządzenia") %}
+            <div class="space-y-4">
+                {% if active_sub %}
+                <div class="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Aktywna usługa</span>
+                        <span class="text-[10px] font-mono text-muted-foreground">{{ active_sub.start_date }}</span>
+                    </div>
+                    <div class="font-bold text-lg text-primary">{{ active_sub.tariff.name }}</div>
+                    <div class="text-xs text-muted-foreground mt-1">
+                        {{ active_sub.speed_down_mbps or active_sub.tariff.speed_down_mbps }}M / 
+                        {{ active_sub.speed_up_mbps or active_sub.tariff.speed_up_mbps }}M Mbps
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-emerald-500/10 flex items-end justify-between">
+                        <div>
+                            <div class="text-[9px] text-muted-foreground uppercase">Cena Netto</div>
+                            <div class="font-mono text-sm font-bold">{{ "%.2f"|format(active_sub.tariff.monthly_price|float) }} PLN</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[9px] text-primary uppercase font-bold">Cena Brutto</div>
+                            <div class="font-mono text-lg font-black text-primary">{{ "%.2f"|format(active_sub.tariff.monthly_price_gross|float) }} PLN</div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-8 text-center border border-dashed rounded-lg">
+                    <i class="fas fa-receipt text-3xl mb-3 opacity-20"></i>
+                    <p class="text-sm text-muted-foreground italic">Brak przypisanej usługi do tego urządzenia.</p>
+                    <a href="/subscriptions/new?customer_id={{ device.customer_id }}&device_id={{ device.id }}" class="mt-4 inline-flex items-center text-xs font-bold text-primary hover:underline">
+                        <i class="fas fa-plus mr-1"></i> Przypisz taryfę teraz
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endcall %}
+
+            {% call card(title="Network & Diagnostics", subtitle="Narzędzia diagnostyczne i synchronizacja") %}
+            <div class="grid sm:grid-cols-3 gap-4 mb-4">
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
+                        hx-post="/diagnostics/check/{{ device.id }}" 
+                        hx-target="#diag-results">
+                    <i class="fas fa-network-wired mr-2 text-primary"></i> Sprawdź urządzenie
+                </button>
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
+                        hx-post="/diagnostics/olt-lookup/{{ device.id }}" 
+                        hx-target="#diag-results">
+                    <i class="fas fa-search mr-2 text-primary"></i> OLT Lookup
+                </button>
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
+                        hx-post="/diagnostics/sync-lease/{{ device.id }}" 
+                        hx-target="#diag-results">
+                    <i class="fas fa-sync mr-2 text-primary"></i> Sync Lease
+                </button>
+            </div>
+            <div id="diag-results" class="bg-black text-green-500 font-mono text-[11px] p-4 rounded-lg min-h-[100px] whitespace-pre-wrap overflow-x-auto">
+                <!-- HTMX Results -->
+                Wyniki diagnostyki pojawią się tutaj...
+            </div>
+            {% endcall %}
+
+            {% call card(title="Ruch i Wydajność", subtitle="Statystyki transmisji danych (Live Graph)") %}
+            <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span class="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Aktywna Kolejka: {{ device.ip_address }}</span>
+                    </div>
+                    <select id="timeRange" class="text-[10px] bg-muted/50 border rounded px-2 py-1 font-bold outline-none uppercase tracking-widest" onchange="updateCustChart()">
+                        <option value="1">1h</option>
+                        <option value="6">6h</option>
+                        <option value="24" selected>24h</option>
+                    </select>
+                </div>
+                <div class="h-[250px] w-full relative">
+                    <canvas id="custTrafficChart"></canvas>
+                </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+            let custChart;
+            async function updateCustChart() {
+                const hours = document.getElementById('timeRange').value;
+                const resp = await fetch(`/admin/monitoring/api/customer-device/{{ device.id }}/stats?hours=${hours}`);
+                const data = await resp.json();
+                
+                if (!custChart) {
+                    const ctx = document.getElementById('custTrafficChart').getContext('2d');
+                    custChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [
+                                {
+                                    label: 'Download (In)',
+                                    data: data.in_mbps,
+                                    borderColor: '#10b981',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    borderWidth: 2,
+                                    pointRadius: 0
+                                },
+                                {
+                                    label: 'Upload (Out)',
+                                    data: data.out_mbps,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    borderWidth: 2,
+                                    pointRadius: 0
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                } else {
+                    custChart.data.labels = data.labels;
+                    custChart.data.datasets[0].data = data.in_mbps;
+                    custChart.data.datasets[1].data = data.out_mbps;
+                    custChart.update();
+                }
+            }
+            document.addEventListener('DOMContentLoaded', updateCustChart);
+            </script>
+            {% endcall %}
+        </div>
+        {% endif %}
+
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+            <a href="/customer-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+                <i class="fas fa-save mr-2 text-xs"></i> Zapisz urządzenie
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

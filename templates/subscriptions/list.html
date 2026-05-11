@@ -34,7 +34,7 @@
                             <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else s.customer_id }}</div>
                             {% if s.node_id %}
                                 <div class="mt-1 flex items-center text-[9px] text-blue-600 font-bold uppercase">
-                                    <i class="fas fa-microchip mr-1"></i> URZĄDZENIE: {{ s.node.hostname if s.node else s.node_id }}
+                                    <i class="fas fa-microchip mr-1"></i> URZĄDZENIE: {{ s.device.hostname if s.device else s.node_id }}
                                 </div>
                             {% endif %}
                         </td>

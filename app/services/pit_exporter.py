@@ -22,20 +22,20 @@ def generate_pit_gml(nodes: List[models.NetNode]) -> str:
     root = ET.Element("{http://www.opengis.net/gml/3.2}FeatureCollection")
     root.set("{http://www.opengis.net/gml/3.2}id", "pit_export_nodes")
     
-    for node in nodes:
-        if not node.x_1992 or not node.y_1992:
+    for device in nodes:
+        if not device.x_1992 or not device.y_1992:
             continue
             
         feature_member = ET.SubElement(root, "{http://www.opengis.net/gml/3.2}featureMember")
         wezel = ET.SubElement(feature_member, "{http://pit.uke.gov.pl/schema/infrastruktura/1.0}Wezel")
-        wezel.set("{http://www.opengis.net/gml/3.2}id", f"node_{node.id}")
+        wezel.set("{http://www.opengis.net/gml/3.2}id", f"node_{device.id}")
         
         # Attributes
         id_wezla = ET.SubElement(wezel, "{http://pit.uke.gov.pl/schema/infrastruktura/1.0}ID_WEZLA")
-        id_wezla.text = str(node.id)
+        id_wezla.text = str(device.id)
         
         rodzaj = ET.SubElement(wezel, "{http://pit.uke.gov.pl/schema/infrastruktura/1.0}RODZAJ_WEZLA")
-        rodzaj.text = node.uke_node_kind or "szafa telekomunikacyjna"
+        rodzaj.text = device.uke_node_kind or "szafa telekomunikacyjna"
         
         status = ET.SubElement(wezel, "{http://pit.uke.gov.pl/schema/infrastruktura/1.0}STATUS")
         status.text = "Istniejąca"
@@ -43,12 +43,12 @@ def generate_pit_gml(nodes: List[models.NetNode]) -> str:
         # Geometry (EPSG:2180)
         geometria = ET.SubElement(wezel, "{http://pit.uke.gov.pl/schema/infrastruktura/1.0}GEOMETRIA")
         point = ET.SubElement(geometria, "{http://www.opengis.net/gml/3.2}Point")
-        point.set("{http://www.opengis.net/gml/3.2}id", f"p_{node.id}")
+        point.set("{http://www.opengis.net/gml/3.2}id", f"p_{device.id}")
         point.set("srsName", "urn:ogc:def:crs:EPSG::2180")
         
         pos = ET.SubElement(point, "{http://www.opengis.net/gml/3.2}pos")
         # GML standard for EPSG:2180 is usually X Y (North East) in meters
-        pos.text = f"{node.x_1992} {node.y_1992}"
+        pos.text = f"{device.x_1992} {device.y_1992}"
 
     # Return as string
     return ET.tostring(root, encoding="unicode", method="xml")

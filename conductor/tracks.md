@@ -1,11 +1,8 @@
-# Tracks Registry
+# Project Tracks
 
-This file tracks all active and completed development tracks for the ISP CRM Portal project.
+This file tracks all major tracks for the project. Each track has its own detailed plan in its respective folder.
 
-## Active Tracks
+---
 
-- [SNMS Security and Technical Improvements (2026-04-28)](./tracks/security-tech-improvements_20260428/index.md) - Refined implementation of critical security fixes and architectural improvements.
-
-## Completed Tracks
-
-*(None)*
+## [ ] Track: Implement Dasan OLT hardware integration for real-time monitoring.
+*Link: [./conductor/tracks/olt_integration_20260511/](./conductor/tracks/olt_integration_20260511/)*

@@ -1,0 +1,70 @@
+{% extends "client/base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {% for sub in subscriptions %}
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group">
+            <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-125 transition-transform duration-700">
+                <i class="fas fa-satellite-dish text-9xl"></i>
+            </div>
+            
+            <div class="flex justify-between items-start mb-6 relative z-10">
+                <div class="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-full">
+                    Aktywna
+                </div>
+                <span class="text-white font-black text-xl">{{ sub.tariff.monthly_price if sub.tariff else '0.00' }} PLN <span class="text-xs text-slate-500">/ mies.</span></span>
+            </div>
+
+            <h3 class="text-white font-black text-2xl mb-2 relative z-10">{{ sub.tariff.name if sub.tariff else 'Usługa internetowa' }}</h3>
+            <p class="text-slate-500 text-sm mb-8 relative z-10">{{ sub.tariff.description if sub.tariff else 'Szybki i stabilny dostęp do sieci.' }}</p>
+            
+            <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5 relative z-10">
+                <div>
+                    <p class="text-[10px] font-bold text-slate-600 uppercase mb-1">Data aktywacji</p>
+                    <p class="text-sm font-bold text-slate-300">{{ sub.start_date.strftime('%d.%m.%Y') if sub.start_date else '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-600 uppercase mb-1">Umowa do</p>
+                    <p class="text-sm font-bold text-slate-300">{{ sub.end_date.strftime('%d.%m.%Y') if sub.end_date else 'Nieokreślono' }}</p>
+                </div>
+            </div>
+
+        </div>
+        {% else %}
+        <div class="md:col-span-2 bg-slate-900/50 border border-dashed border-slate-800 rounded-3xl p-20 text-center">
+            <p class="text-slate-500">Nie posiadasz aktualnie żadnych aktywnych usług.</p>
+            <a href="/client/shop" class="mt-4 inline-block text-primary font-bold">Przejdź do oferty</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Additional Info -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+        <h3 class="text-white font-bold mb-4">Informacje o umowie</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="flex gap-4">
+                <i class="fas fa-file-contract text-primary text-xl mt-1"></i>
+                <div>
+                    <p class="text-sm font-bold text-white">Okres wypowiedzenia</p>
+                    <p class="text-xs text-slate-500">Zgodnie z umową: 1 miesiąc ze skutkiem na koniec okresu rozliczeniowego.</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <i class="fas fa-bolt text-primary text-xl mt-1"></i>
+                <div>
+                    <p class="text-sm font-bold text-white">Zmiana prędkości</p>
+                    <p class="text-xs text-slate-500">Możesz zwiększyć swoją prędkość w dowolnym momencie bez dodatkowych opłat aktywacyjnych.</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <i class="fas fa-shield-halved text-primary text-xl mt-1"></i>
+                <div>
+                    <p class="text-sm font-bold text-white">Ochrona danych</p>
+                    <p class="text-xs text-slate-500">Twoje dane są przetwarzane zgodnie z RODO. Masz prawo do ich wglądu i edycji.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

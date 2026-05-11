@@ -21,28 +21,61 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
     ("net_map", "Mapa topologii", "/net-nodes/topology", 20.5),
     ("nodes", "Urządzenia klientów", "/customer-devices", 21),
     ("netdevices", "Katalog osprzętu", "/net-devices", 22),
+    ("device_groups", "Grupy urządzeń", "/device-groups", 22.5),
     ("admin_discovery", "Odkrywanie Mikrotik", "/admin/discovery", 23),
+    ("admin_pit", "PIT UKE", "/admin/pit", 24),
+    ("admin_passport", "Paszportyzacja", "/admin/passport/map", 25),
+    ("monitoring", "Monitorowanie", "/admin/monitoring", 26),
+    ("network_tools", "Narzędzia i Skanery", "/admin/network-tools", 27),
+    ("monitoring_gpu", "Infrastruktura AI", "/admin/monitoring/gpu", 27.5),
+    ("monitor_config", "Szablony NMS", "/admin/monitor-config", 28),
+    ("diagnostics", "Diagnostyka", "/diagnostics", 29),
     
     # Sieci
     ("ip_networks", "Adresacja IPv4", "/ip-networks", 30),
     ("net_usage", "Wykorzystanie IP", "/ip-networks/usage", 31),
+    ("addresses", "Baza adresowa", "/addresses", 32),
     
     # Finanse
     ("subscriptions", "Usługi / Subskrypcje", "/subscriptions", 41),
     ("tariffs", "Plany taryfowe", "/finances/tariffs", 42),
+    ("invoices", "Faktury i Dokumenty", "/finances/invoices", 43),
+    ("payments", "Płatności cykliczne", "/finances/payments", 44),
+    ("ledger", "Księga i Bilans", "/finances/balance", 45),
+    ("cash", "Kasa i Paragony", "/finances/cash", 46),
+    ("bulk_invoicing", "Masowe fakturowanie", "/bulk/invoicing", 47),
     
+    # Helpdesk
+    ("helpdesk_tickets", "Zgłoszenia (Tickets)", "/helpdesk/tickets", 50),
+    ("helpdesk_queues", "Kolejki helpdesk", "/helpdesk/queues", 51),
+    ("helpdesk_reports", "Raporty helpdesk", "/helpdesk/reports", 52),
+
+    # Dokumenty
+    ("documents", "Repozytorium dokumentów", "/documents", 70),
+
     # TERYT
-    ("teryt", "Przeglądaj TERYT", "/teryt/browse", 60),
-    ("teryt_cities", "Słownik miejscowości", "/teryt/cities", 61),
-    ("admin_teryt_sync", "Synchronizacja GUS", "/admin/teryt-sync", 62),
+    ("teryt", "Przeglądaj TERYT", "/teryt/browse", 80),
+    ("teryt_cities", "Słownik miejscowości", "/teryt/cities", 81),
+    ("admin_teryt_sync", "Synchronizacja GUS", "/admin/teryt-sync", 82),
     
     # System / Administracja
-    ("portal_users", "Użytkownicy panelu", "/admin/users", 100),
-    ("admin_audit_logs", "Dziennik zdarzeń", "/admin/audit-logs", 101),
-    ("config_number_plans", "Plany numeracji", "/config/number-plans", 102),
-    ("config_vat", "Stawki VAT", "/config/vat-rates", 103),
-    ("admin_backups", "Kopie zapasowe", "/admin/backups", 104),
-    ("admin_reload", "Przeładowanie cache", "/admin/reload", 105),
+    ("portal_users", "Użytkownicy", "/admin/users", 100),
+    ("portal_roles", "Role i Uprawnienia", "/admin/menu-access", 100.5),
+    ("portal_user_groups", "Grupy personelu", "/admin/user-groups", 100.6),
+    ("admin_audit_logs", "Dziennik zdarzeń", "/admin/audit-logs", 120),
+    ("admin_backups", "Kopie zapasowe", "/admin/backups", 121),
+    ("admin_reload", "Przeładowanie cache", "/admin/reload", 122),
+    ("builder", "Kreator Modułów", "/builder", 123),
+    ("search", "Szukaj globalnie", "/search", 124),
+    ("reports", "Generator raportów", "/reports", 125),
+    
+    # Konfiguracja SNMS
+    ("config_divisions", "Oddziały / Firmy", "/config/divisions", 130),
+    ("config_netdev_catalog", "Katalog osprzętu", "/config/netdev-catalog", 131),
+    ("config_network_hosts", "Pule IP (Hosty)", "/config/network-hosts", 132),
+    ("config_number_plans", "Plany numeracji", "/config/number-plans", 133),
+    ("config_vat", "Stawki VAT", "/config/vat-rates", 134),
+    ("snms_entities", "Obiekty SNMS", "/snms", 135),
     
     # Profil
     ("auth_password", "Zmiana hasła", "/auth/change-password", 200),
@@ -52,11 +85,14 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
 NAV_GROUPS: list[tuple[str, tuple[str, ...]]] = [
     ("Start", ("dashboard",)),
     ("Klienci", ("customers", "customer_add", "customer_groups")),
-    ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices", "admin_discovery")),
-    ("Sieci IP", ("ip_networks", "net_usage")),
-    ("Finanse", ("subscriptions", "tariffs")),
+    ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices", "device_groups", "monitoring", "network_tools", "monitoring_gpu", "monitor_config", "diagnostics", "admin_discovery", "admin_pit", "admin_passport")),
+    ("Sieci IP", ("ip_networks", "net_usage", "addresses")),
+    ("Finanse", ("subscriptions", "tariffs", "invoices", "payments", "ledger", "cash", "bulk_invoicing")),
+    ("Helpdesk", ("helpdesk_tickets", "helpdesk_queues", "helpdesk_reports")),
+    ("Dokumenty", ("documents",)),
     ("TERYT / Adresy", ("teryt", "teryt_cities", "admin_teryt_sync")),
-    ("System", ("portal_users", "admin_audit_logs", "config_number_plans", "config_vat", "admin_backups", "admin_reload")),
+    ("Konfiguracja", ("config_divisions", "config_netdev_catalog", "config_network_hosts", "config_number_plans", "config_vat", "snms_entities")),
+    ("System", ("portal_users", "portal_roles", "portal_user_groups", "builder", "search", "reports", "admin_audit_logs", "admin_backups", "admin_reload")),
     ("Ustawienia", ("auth_password",)),
 ]
 
@@ -70,12 +106,13 @@ def _default_matrix() -> dict[models.UserRole, set[str]]:
         "net_nodes",
         "nodes",
         "teryt",
+        "helpdesk_tickets",
     }
     return {
         models.UserRole.admin: admin_keys,
         models.UserRole.manager: manager_keys,
         models.UserRole.service: service_keys,
-        models.UserRole.view: {"dashboard", "auth_password"},
+        models.UserRole.view: {"dashboard", "auth_password", "helpdesk_tickets"},
     }
 
 
@@ -131,6 +168,28 @@ def path_allowed_for_portal(path: str, visible_urls: list[str], visible_menu_key
     if "net_nodes" in visible_menu_keys and _under_prefix(p, "/net-nodes"):
         return True
     if "netdevices" in visible_menu_keys and _under_prefix(p, "/net-devices"):
+        return True
+    if "device_groups" in visible_menu_keys and _under_prefix(p, "/device-groups"):
+        return True
+    if "monitoring" in visible_menu_keys and _under_prefix(p, "/admin/monitoring"):
+        return True
+    if "network_tools" in visible_menu_keys and _under_prefix(p, "/admin/network-tools"):
+        return True
+    if "monitor_config" in visible_menu_keys and _under_prefix(p, "/admin/monitor-config"):
+        return True
+    if "diagnostics" in visible_menu_keys and _under_prefix(p, "/diagnostics"):
+        return True
+    if "dashboard" in visible_menu_keys and _under_prefix(p, "/admin/stats"):
+        return True
+    if "addresses" in visible_menu_keys and _under_prefix(p, "/addresses"):
+        return True
+    if "search" in visible_menu_keys and _under_prefix(p, "/search"):
+        return True
+    if "reports" in visible_menu_keys and _under_prefix(p, "/reports"):
+        return True
+    if "builder" in visible_menu_keys and _under_prefix(p, "/builder"):
+        return True
+    if "snms_entities" in visible_menu_keys and _under_prefix(p, "/snms"):
         return True
     return False
 

@@ -1,0 +1,92 @@
+{% extends "client/base.html" %}
+
+{% block content %}
+<div class="space-y-12">
+    <!-- Promo Header -->
+    <div class="bg-gradient-to-r from-primary/20 to-blue-500/10 border border-primary/20 rounded-3xl p-10 flex flex-col md:flex-row items-center gap-10">
+        <div class="flex-1 space-y-4">
+            <span class="bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest">Oferta specjalna</span>
+            <h2 class="text-3xl font-black text-white leading-tight">Przyspiesz do 1 Gbps i zyskaj 3 miesiące za darmo!</h2>
+            <p class="text-slate-400 text-sm">Zmień swoją aktualną usługę na światłowód 1 Gbps i ciesz się najwyższą jakością połączenia bez limitów.</p>
+            <button class="bg-white text-slate-950 px-8 py-3 rounded-xl font-bold text-sm shadow-xl hover:scale-105 transition-all">Sprawdź szczegóły</button>
+        </div>
+        <div class="hidden lg:block">
+            <i class="fas fa-rocket text-[120px] text-primary/20 rotate-12"></i>
+        </div>
+    </div>
+
+    <!-- Tariffs Grid -->
+    <div class="space-y-6">
+        <h3 class="text-white font-black text-xl tracking-tight">Dostępne plany taryfowe</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for t in tariffs %}
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col hover:border-primary/50 transition-all group">
+                <div class="mb-6">
+                    <h4 class="text-white font-bold group-hover:text-primary transition-colors">{{ t.name }}</h4>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black">{{ t.category or 'INTERNET' }}</p>
+                </div>
+                
+                <div class="mb-8">
+                    <span class="text-3xl font-black text-white">{{ t.monthly_price }}</span>
+                    <span class="text-slate-500 text-sm font-bold"> PLN / mies.</span>
+                </div>
+
+
+                <div class="flex-1 space-y-3 mb-8">
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fas fa-check text-primary text-[10px]"></i> {{ t.upload_speed or '100' }} Mbps wysyłania
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fas fa-check text-primary text-[10px]"></i> {{ t.download_speed or '300' }} Mbps pobierania
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fas fa-check text-primary text-[10px]"></i> Stabilny ping w grach
+                    </div>
+                </div>
+
+                <button class="w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all">
+                    Zamów plan
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Hardware Store Mockup -->
+    <div class="space-y-6">
+        <h3 class="text-white font-black text-xl tracking-tight">Akcesoria i sprzęt</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex gap-6 items-center">
+                <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-slate-500 text-3xl">
+                    <i class="fas fa-wifi"></i>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm">Router Wi-Fi 6</h4>
+                    <p class="text-[10px] text-slate-500 mb-3">Zasięg w całym domu</p>
+                    <span class="text-primary font-black">299 PLN</span>
+                </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex gap-6 items-center">
+                <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-slate-500 text-3xl">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm">Pakiet Security</h4>
+                    <p class="text-[10px] text-slate-500 mb-3">Ochrona Twoich danych</p>
+                    <span class="text-primary font-black">9.99 PLN / mies.</span>
+                </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex gap-6 items-center">
+                <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-slate-500 text-3xl">
+                    <i class="fas fa-tv"></i>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm">Dekoder 4K</h4>
+                    <p class="text-[10px] text-slate-500 mb-3">Telewizja nowej generacji</p>
+                    <span class="text-primary font-black">Wynajem: 5 PLN / mies.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

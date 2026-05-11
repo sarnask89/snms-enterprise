@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold flex items-center gap-3">
+                <i class="fas fa-microchip text-green-500"></i> Infrastruktura AI / GPU
+            </h1>
+            <p class="text-xs text-muted-foreground mt-1">Monitoring lokalnych jednostek NVIDIA NIM i akceleracji obliczeniowej.</p>
+        </div>
+        <button onclick="window.location.reload()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-all">
+            <i class="fas fa-sync mr-2"></i> Odśwież
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for gpu in gpus %}
+        <div class="bg-card rounded-3xl border border-slate-800 shadow-2xl overflow-hidden group hover:border-green-500/50 transition-all">
+            <div class="p-6 border-b border-slate-800 bg-slate-900/50">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-2 py-1 rounded-md bg-green-500/10 text-green-500 font-black text-[10px] uppercase tracking-widest">Active</span>
+                    <i class="fab fa-nvidia text-3xl text-slate-700 group-hover:text-green-500 transition-colors"></i>
+                </div>
+                <h3 class="text-xl font-black text-white truncate">{{ gpu.name }}</h3>
+                <p class="text-[10px] font-mono text-slate-500 mt-1 uppercase">{{ gpu.uuid }}</p>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <!-- Utilization -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <span>Obciążenie CUDA</span>
+                        <span class="text-white">{{ gpu.latest_stat.utilization_gpu if gpu.latest_stat else 0 }}%</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-green-500 transition-all duration-1000" style="width: {{ gpu.latest_stat.utilization_gpu if gpu.latest_stat else 0 }}%"></div>
+                    </div>
+                </div>
+
+                <!-- VRAM -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <span>VRAM Usage</span>
+                        <span class="text-white">{{ gpu.latest_stat.vram_used_mb if gpu.latest_stat else 0 }} / {{ gpu.vram_total_mb }} MB</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-500 transition-all duration-1000" style="width: {{ (gpu.latest_stat.vram_used_mb / gpu.vram_total_mb * 100) if gpu.latest_stat else 0 }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Thermals & Power -->
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <div class="bg-slate-900/50 p-3 rounded-2xl border border-slate-800">
+                        <p class="text-[9px] font-black text-slate-500 uppercase mb-1">Temperatura</p>
+                        <p class="text-lg font-black text-white">{{ gpu.latest_stat.temperature if gpu.latest_stat else 0 }}°C</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-2xl border border-slate-800">
+                        <p class="text-[9px] font-black text-slate-500 uppercase mb-1">Pobór Mocy</p>
+                        <p class="text-lg font-black text-white">{{ gpu.latest_stat.power_draw_w|round(1) if gpu.latest_stat else 0 }}W</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not gpus %}
+    <div class="flex flex-col items-center justify-center p-20 bg-card border border-dashed rounded-3xl text-center">
+        <i class="fas fa-search text-4xl text-muted-foreground mb-4"></i>
+        <h3 class="text-lg font-bold">Brak wykrytych jednostek GPU</h3>
+        <p class="text-sm text-muted-foreground max-w-md mx-auto mt-2">Upewnij się, że sterowniki NVIDIA są zainstalowane i daemon monitoringu jest uruchomiony.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

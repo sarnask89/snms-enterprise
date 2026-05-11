@@ -1,0 +1,69 @@
+{% macro render_navbar(breadcrumbs) %}
+<header class="flex h-14 items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-6 shrink-0 text-slate-900 dark:text-white shadow-lg z-50">
+  <div class="flex items-center gap-6">
+    <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)"
+            class="h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white transition-colors">
+      <i class="fas fa-bars text-xs"></i>
+    </button>
+
+    <nav class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+      {% for bc in breadcrumbs %}
+        {% if not loop.first %}
+          <i class="fas fa-chevron-right text-[7px] opacity-20"></i>
+        {% endif %}
+        <a href="{{ bc.url }}" class="{% if loop.last %}text-slate-900 dark:text-white{% else %}text-slate-500 hover:text-primary transition-colors{% endif %}">
+          {{ bc.label }}
+        </a>
+      {% endfor %}
+    </nav>
+    
+    <!-- Global Search Bar -->
+    <div class="relative group max-w-md w-64 lg:w-96 ml-4" x-data="{ open: false }">
+      <div class="relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] group-focus-within:text-primary transition-colors"></i>
+        <input type="text" 
+               name="q"
+               placeholder="Szukaj klienta, IP, MAC..." 
+               class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-9 pr-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-500"
+               hx-get="/api/search"
+               hx-trigger="keyup changed delay:500ms"
+               hx-target="#search-results"
+               @focus="open = true"
+               @click.away="open = false"
+        >
+      </div>
+      <div id="search-results" x-show="open" x-cloak></div>
+    </div>
+  </div>
+  
+  <div class="flex items-center gap-4">
+    <!-- Notifications -->
+    <div class="relative group" x-data="{ open: false }">
+      <button @click="open = !open" 
+              class="h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white transition-colors relative">
+        <i class="fas fa-bell text-xs"></i>
+        <div hx-get="/admin/stats/notifications-count" hx-trigger="load, every 60s" hx-swap="outerHTML"></div>
+      </button>
+      
+      <!-- Notifications Dropdown -->
+      <div x-show="open" @click.away="open = false" x-cloak
+           class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden">
+        <div class="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+            <h5 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Powiadomienia</h5>
+            <a href="/admin/notifications" class="text-[10px] font-bold text-primary hover:underline">Wszystkie</a>
+        </div>
+        <div class="max-h-96 overflow-y-auto" hx-get="/admin/stats/notifications-list" hx-trigger="intersect once">
+            <div class="p-8 text-center">
+                <i class="fas fa-spinner fa-spin text-slate-500 mb-2"></i>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ładowanie...</p>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="/logout" class="inline-flex items-center justify-center rounded-md text-xs font-bold text-rose-400 hover:bg-rose-500/10 h-9 px-4 transition-colors">
+      <i class="fas fa-power-off mr-2 text-[10px]"></i> Wyloguj
+    </a>
+  </div>
+</header>
+{% endmacro %}

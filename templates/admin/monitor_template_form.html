@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+{% from "components/input.html" import input, label %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+    <div>
+        <h1 class="text-2xl font-bold tracking-tight">Nowy Szablon Monitorowania</h1>
+        <p class="text-muted-foreground text-sm">Szablony pozwalają na masowe przypisanie parametrów monitorowania do wielu urządzeń.</p>
+    </div>
+
+    {% call card(title="Podstawowe informacje") %}
+    <form method="post" action="/admin/monitor-config/template/new" class="space-y-6">
+        <div class="space-y-2">
+            {{ label("Nazwa Szablonu", for="name") }}
+            {{ input("name", id="name", required=True, placeholder="np. Mikrotik CCR Core") }}
+        </div>
+        <div class="space-y-2">
+            {{ label("Opis", for="description") }}
+            <textarea name="description" id="description" rows="3" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="Opcjonalny opis zastosowania..."></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-4">
+            <a href="/admin/monitor-config" class="px-4 py-2 text-sm font-bold text-muted-foreground hover:text-foreground">Anuluj</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2 text-sm font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
+                Stwórz Szablon
+            </button>
+        </div>
+    </form>
+    {% endcall %}
+</div>
+{% endblock %}

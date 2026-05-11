@@ -1,18 +1,73 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" class="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Logowanie — {{ app_name }}</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <title>Logowanie — NetCoreOps</title>
+  <link rel="stylesheet" href="/static/css/output.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="login-page">
-  <form class="login-card" method="post" action="/login">
-    <h1>{{ app_name }}</h1>
-    {% if error %}<p class="error">{{ error }}</p>{% endif %}
-    <label>Użytkownik<input name="username" required autocomplete="username"></label>
-    <label>Hasło<input name="password" type="password" required autocomplete="current-password"></label>
-    <button type="submit">Zaloguj</button>
-  </form>
+<body class="min-h-screen bg-[#020617] flex items-center justify-center p-6 font-sans antialiased overflow-hidden">
+  
+  <!-- Background Decoration -->
+  <div class="absolute inset-0 z-0 overflow-hidden">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px]"></div>
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('/static/images/general/NetCoreOps_dark_bg_grid.png'); background-size: 50px 50px;"></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-[340px]">
+    <!-- Logo Container -->
+    <div class="flex flex-col items-center mb-6 animate-in fade-in slide-in-from-top-10 duration-700">
+      <img src="/static/images/NetCoreOps_logo_login.png" alt="NetCoreOps" class="w-32 h-auto drop-shadow-[0_0_12px_rgba(59,130,246,0.4)]">
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-slate-900/70 backdrop-blur-3xl border border-white/10 rounded-xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-500">
+      <div class="mb-5 text-center">
+        <h1 class="text-lg font-bold text-white tracking-tight">System SNMS Enterprise</h1>
+        <p class="text-slate-400 text-[10px] mt-1 uppercase tracking-wider">Wprowadź poświadczenia</p>
+      </div>
+
+      {% if error %}
+      <div class="mb-4 p-2.5 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3 text-destructive text-[10px] animate-in fade-in slide-in-from-left-4">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form method="post" action="/login" class="space-y-4">
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-1">Użytkownik</label>
+          <div class="relative group">
+            <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 text-[10px] group-focus-within:text-primary transition-colors"></i>
+            <input name="username" required autocomplete="username"
+                   class="w-full bg-slate-950/40 border border-white/5 rounded-lg py-2 pl-9 pr-4 text-white text-xs focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-800"
+                   placeholder="Nazwa użytkownika">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-1">Hasło</label>
+          <div class="relative group">
+            <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 text-[10px] group-focus-within:text-primary transition-colors"></i>
+            <input name="password" type="password" required autocomplete="current-password"
+                   class="w-full bg-slate-950/40 border border-white/5 rounded-lg py-2 pl-9 pr-4 text-white text-xs focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-800"
+                   placeholder="••••••••">
+          </div>
+        </div>
+
+        <button type="submit" 
+                class="w-full bg-primary hover:bg-blue-600 text-white text-[11px] font-bold py-2 rounded-lg shadow-[0_4px_12px_rgba(59,130,246,0.2)] hover:shadow-[0_4px_15px_rgba(59,130,246,0.4)] transition-all active:scale-[0.98] mt-2">
+          Zaloguj do systemu
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center text-[10px] text-slate-500 uppercase tracking-[0.2em]">
+      &copy; 2026 NetCoreOps Infrastructure • SNMS V2.0
+    </div>
+  </div>
 </body>
 </html>

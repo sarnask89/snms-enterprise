@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Strefa Klienta — {{ app_name }}</title>
+    <link rel="stylesheet" href="/static/css/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#020617] flex items-center justify-center p-6 font-sans antialiased selection:bg-primary/20 text-slate-200">
+    
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px]"></div>
+        <div class="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-blue-500/5 blur-[120px]"></div>
+    </div>
+
+    <div class="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-500">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black tracking-tighter text-white mb-2 italic">STREFA<span class="text-primary not-italic">KLIENTA</span></h1>
+            <p class="text-slate-400 text-sm font-medium">Zarządzaj swoimi usługami i płatnościami</p>
+        </div>
+
+        <div class="glass rounded-2xl p-8 shadow-2xl">
+            {% if error %}
+            <div class="bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs py-3 px-4 rounded-lg mb-6 flex items-center gap-3">
+                <i class="fas fa-circle-exclamation"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/client/login" method="post" class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">Login / ID Klienta</label>
+                    <div class="relative group">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs group-focus-within:text-primary transition-colors"></i>
+                        <input type="text" name="login" required 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-600"
+                               placeholder="Wprowadź swój login">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">Hasło</label>
+                    <div class="relative group">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs group-focus-within:text-primary transition-colors"></i>
+                        <input type="password" name="password" required 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-600"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                    Zaloguj się <i class="fas fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-8 border-t border-white/5 text-center">
+                <p class="text-xs text-slate-500 mb-1">Masz problem z logowaniem?</p>
+                <a href="#" class="text-xs text-primary hover:underline font-bold">Skontaktuj się z biurem obsługi</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

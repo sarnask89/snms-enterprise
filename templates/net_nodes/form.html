@@ -8,14 +8,14 @@
      x-data="mapPicker()" 
      @change-val.window="if($event.detail.text) { city_name = $event.detail.text; geocode(); }">
     
-    <form method="post" action="{% if node %}/net-nodes/{{ node.id }}/edit{% else %}/net-nodes/new{% endif %}" class="space-y-8">
+    <form method="post" action="{% if device %}/net-nodes/{{ device.id }}/edit{% else %}/net-nodes/new{% endif %}" class="space-y-8">
         <div class="grid lg:grid-cols-2 gap-8">
             <div class="space-y-8">
                 {% call card(title="Identyfikacja Węzła", subtitle="Podstawowe parametry infrastruktury") %}
                 <div class="grid gap-6">
                     <div class="space-y-2">
                         {{ label("Nazwa węzła (identyfikator)", for="name") }}
-                        {{ input("name", value=node.name if node else "", id="name", required=True, autofocus=True, placeholder="np. POP-01-KRK") }}
+                        {{ input("name", value=device.name if device else "", id="name", required=True, autofocus=True, placeholder="np. POP-01-KRK") }}
                     </div>
 
                     <div class="space-y-2">
@@ -24,7 +24,7 @@
                         {% for d in divisions %}
                             {% do div_options.append((d.id, d.name)) %}
                         {% endfor %}
-                        {{ combobox("division_id", div_options, selected_id=node.division_id if node else "", placeholder="Wybierz oddział...") }}
+                        {{ combobox("division_id", div_options, selected_id=device.division_id if device else "", placeholder="Wybierz oddział...") }}
                     </div>
                 </div>
                 {% endcall %}
@@ -38,14 +38,14 @@
                             {% do city_options.append((c.id, c.name)) %}
                         {% endfor %}
                         {% set def_city = (managed_cities|selectattr('is_default')|first) %}
-                        {% set initial_city_id = node.location_city_id if node else def_city.id if def_city else "" %}
+                        {% set initial_city_id = device.location_city_id if device else def_city.id if def_city else "" %}
                         {{ combobox("location_city_id", city_options, selected_id=initial_city_id, placeholder="Wybierz miejscowość...", required=True) }}
                     </div>
 
                     <div class="space-y-2 relative teryt-lookup-container" id="street-lookup-container">
                         {{ label("Ulica", for="street_suggest") }}
                         <input type="text" name="street_name" id="street_suggest"
-                               value="{{ node.street.name if node and node.street else '' }}"
+                               value="{{ device.street.name if device and device.street else '' }}"
                                placeholder="Zacznij pisać..."
                                autocomplete="off"
                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -54,13 +54,13 @@
                                hx-target="next .suggest-results-box"
                                hx-include="[name='location_city_id']">
                         <div class="suggest-results-box absolute left-0 right-0 top-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95" x-cloak></div>
-                        <input type="hidden" name="location_street_id" id="location_street_id" value="{{ node.location_street_id if (node and node.location_street_id) else '' }}">
+                        <input type="hidden" name="location_street_id" id="location_street_id" value="{{ device.location_street_id if (device and device.location_street_id) else '' }}">
                     </div>
 
                     <div class="space-y-2">
                         {{ label("Nr budynku", for="street_number") }}
                         <input type="text" name="street_number" id="street_number"
-                               value="{{ node.street_number if node and node.street_number else '' }}"
+                               value="{{ device.street_number if device and device.street_number else '' }}"
                                placeholder="np. 12A"
                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                @input.debounce.500ms="geocode()">
@@ -95,13 +95,13 @@
                         <div class="space-y-2">
                             {{ label("X (PUWG 1992)", for="x_1992") }}
                             <input type="number" step="0.01" name="x_1992" id="x_1992" 
-                                   value="{{ node.x_1992 if node else '' }}"
+                                   value="{{ device.x_1992 if device else '' }}"
                                    class="flex h-10 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm font-mono" readonly>
                         </div>
                         <div class="space-y-2">
                             {{ label("Y (PUWG 1992)", for="y_1992") }}
                             <input type="number" step="0.01" name="y_1992" id="y_1992" 
-                                   value="{{ node.y_1992 if node else '' }}"
+                                   value="{{ device.y_1992 if device else '' }}"
                                    class="flex h-10 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm font-mono" readonly>
                         </div>
                     </div>
@@ -122,20 +122,20 @@
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div class="space-y-2">
                             {{ label("Typ punktu", for="node_type") }}
-                            {{ select("node_type", [("Szafa", "Szafa zewnętrzna"), ("Kontener", "Kontener"), ("Budynek", "Budynek"), ("Inny", "Inny")], selected_id=node.node_type if node else "Szafa", id="node_type") }}
+                            {{ select("node_type", [("Szafa", "Szafa zewnętrzna"), ("Kontener", "Kontener"), ("Budynek", "Budynek"), ("Inny", "Inny")], selected_id=device.node_type if device else "Szafa", id="node_type") }}
                         </div>
                         <div class="space-y-2">
                             {{ label("Status własności", for="owner_type") }}
-                            {{ select("owner_type", [("Własny", "Własny"), ("Dzierżawa", "Dzierżawa")], selected_id=node.owner_type if node else "Własny", id="owner_type") }}
+                            {{ select("owner_type", [("Własny", "Własny"), ("Dzierżawa", "Dzierżawa")], selected_id=device.owner_type if device else "Własny", id="owner_type") }}
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg bg-muted/10">
                         <div class="flex items-center space-x-2 grow">
-                            <input type="checkbox" name="has_power" id="has_power" class="h-4 w-4 rounded border-gray-300 text-primary" {% if node and node.has_power %}checked{% endif %}>
+                            <input type="checkbox" name="has_power" id="has_power" class="h-4 w-4 rounded border-gray-300 text-primary" {% if device and device.has_power %}checked{% endif %}>
                             {{ label("Zasilanie", for="has_power", class="text-xs font-bold") }}
                         </div>
                         <div class="flex items-center space-x-2 grow">
-                            <input type="checkbox" name="has_env_control" id="has_env_control" class="h-4 w-4 rounded border-gray-300 text-primary" {% if node and node.has_env_control %}checked{% endif %}>
+                            <input type="checkbox" name="has_env_control" id="has_env_control" class="h-4 w-4 rounded border-gray-300 text-primary" {% if device and device.has_env_control %}checked{% endif %}>
                             {{ label("Klimatyzacja / Wentylacja", for="has_env_control", class="text-xs font-bold") }}
                         </div>
                     </div>
@@ -164,9 +164,9 @@
 <script>
 function mapPicker() {
     return {
-        lat: {{ node.latitude if node and node.latitude else 52.231 }},
-        lng: {{ node.longitude if node and node.longitude else 21.012 }},
-        city_name: '{% if node and node.city %}{{ node.city.name }}{% elif managed_cities|selectattr("is_default")|first %}{{ (managed_cities|selectattr("is_default")|first).name }}{% else %}{% endif %}',
+        lat: {{ device.latitude if device and device.latitude else 52.231 }},
+        lng: {{ device.longitude if device and device.longitude else 21.012 }},
+        city_name: '{% if device and device.city %}{{ device.city.name }}{% elif managed_cities|selectattr("is_default")|first %}{{ (managed_cities|selectattr("is_default")|first).name }}{% else %}{% endif %}',
         is_geocoding: false,
         is_syncing_puwg: false,
         map: null,

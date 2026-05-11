@@ -12,24 +12,24 @@ from app.security_utils import decrypt_password
 
 router = APIRouter(prefix="/diagnostics", dependencies=[Depends(verify_session)])
 
-@router.post("/check/{node_id}", response_class=HTMLResponse)
-async def diagnostic_check(node_id: int, request: Request, db: Session = Depends(get_db)):
-    node = db.get(models.Node, node_id)
-    if not node or not node.net_device or not node.ip_address:
+@router.post("/check/{device_id}", response_class=HTMLResponse)
+async def diagnostic_check(device_id: int, request: Request, db: Session = Depends(get_db)):
+    device = db.get(models.CustomerDevice, device_id)
+    if not device or not device.net_device or not device.ip_address:
         return HTMLResponse("<div class='text-danger'>Błąd: Brak danych do diagnostyki (IP lub Router).</div>")
     
-    device = node.net_device
-    password = decrypt_password(device.mgmt_password_encrypted)
-    mt = MikrotikService(device.management_ip, device.mgmt_username, password)
+    router_device = device.net_device
+    password = decrypt_password(router_device.mgmt_password_encrypted)
+    mt = MikrotikService(router_device.management_ip, router_device.mgmt_username, password)
     
     # 1. ICMP Ping
-    icmp_task = mt.remote_ping(node.ip_address, count=3)
+    icmp_task = mt.remote_ping(device.ip_address, count=3)
     # 2. ARP Ping
-    arp_task = mt.remote_arp_ping(node.ip_address, count=3)
+    arp_task = mt.remote_arp_ping(device.ip_address, count=3)
     # 3. DHCP Lease Status
-    lease_task = mt.get_lease_info(node.mac_address)
+    lease_task = mt.get_lease_info(device.mac_address)
     # 4. Bridge Host Status
-    bridge_task = mt.get_bridge_host_info(node.mac_address)
+    bridge_task = mt.get_bridge_host_info(device.mac_address)
     
     icmp_results, arp_results, lease_info, bridge_results = await asyncio.gather(
         icmp_task, arp_task, lease_task, bridge_task
@@ -66,7 +66,7 @@ async def diagnostic_check(node_id: int, request: Request, db: Session = Depends
     else:
         for r in icmp_results:
             status = "UP" if r.get("sent") == r.get("received") or r.get("received", "0") != "0" else "TIMEOUT"
-            html += f'<div>{node.ip_address}: {status} time={r.get("time", "N/A")} size={r.get("size", "N/A")}</div>'
+            html += f'<div>{device.ip_address}: {status} time={r.get("time", "N/A")} size={r.get("size", "N/A")}</div>'
     html += '</div>'
 
     # Section: ARP
@@ -80,23 +80,23 @@ async def diagnostic_check(node_id: int, request: Request, db: Session = Depends
         html += f'<div class="text-blue-300 italic mb-1">Via Interface: {interface}</div>'
         for r in arp_results:
             status = "UP" if r.get("received", "0") != "0" else "TIMEOUT"
-            html += f'<div>{node.ip_address}: {status} time={r.get("time", "N/A")}</div>'
+            html += f'<div>{device.ip_address}: {status} time={r.get("time", "N/A")}</div>'
     html += '</div>'
     
     html += "</div>"
     return HTMLResponse(html)
 
-@router.post("/olt-lookup/{node_id}", response_class=HTMLResponse)
-async def diagnostic_olt_lookup(node_id: int, request: Request, db: Session = Depends(get_db)):
-    node = db.get(models.Node, node_id)
-    if not node or not node.mac_address:
+@router.post("/olt-lookup/{device_id}", response_class=HTMLResponse)
+async def diagnostic_olt_lookup(device_id: int, request: Request, db: Session = Depends(get_db)):
+    device = db.get(models.CustomerDevice, device_id)
+    if not device or not device.mac_address:
         return HTMLResponse("<div class='text-danger'>Błąd: Brak adresu MAC.</div>")
     
     # Znajdź OLT przypisany do węzła klienta (jeśli istnieje) lub przeskanuj wszystkie
     # Dla uproszczenia: szukamy urządzenia typu dasan_nos w tym samym węźle (NetNode)
     olt = db.scalar(
         select(models.NetDevice)
-        .where(models.NetDevice.driver_type == "dasan_nos", models.NetDevice.net_node_id == node.net_device.net_node_id)
+        .where(models.NetDevice.driver_type == "dasan_nos", models.NetDevice.net_node_id == device.net_device.net_node_id if device.net_device else None)
     )
     
     if not olt:
@@ -104,7 +104,7 @@ async def diagnostic_olt_lookup(node_id: int, request: Request, db: Session = De
 
     password = decrypt_password(olt.mgmt_password_encrypted)
     ds = DasanService(olt.management_ip, olt.mgmt_username, password)
-    path = ds.get_onu_path(node.mac_address)
+    path = ds.get_onu_path(device.mac_address)
     
     if "error" in path:
         return HTMLResponse(f"<div class='text-muted text-[10px] italic'>{path['error']}</div>")
@@ -116,34 +116,34 @@ async def diagnostic_olt_lookup(node_id: int, request: Request, db: Session = De
     """
     return HTMLResponse(html)
 
-@router.post("/sync-lease/{node_id}", response_class=HTMLResponse)
-async def diagnostic_sync_lease(node_id: int, request: Request, db: Session = Depends(get_db)):
-    node = db.get(models.Node, node_id)
-    if not node or not node.net_device:
+@router.post("/sync-lease/{device_id}", response_class=HTMLResponse)
+async def diagnostic_sync_lease(device_id: int, request: Request, db: Session = Depends(get_db)):
+    device = db.get(models.CustomerDevice, device_id)
+    if not device or not device.net_device:
         return HTMLResponse("<div class='text-danger'>Błąd: Brak danych urządzenia.</div>")
     
     # Znajdź aktywną subskrypcję klienta
     sub = db.scalar(
         select(models.Subscription)
-        .where(models.Subscription.customer_id == node.customer_id, models.Subscription.active == True)
+        .where(models.Subscription.customer_id == device.customer_id, models.Subscription.active == True)
     )
     
     if not sub:
         return HTMLResponse("<div class='text-warning text-[10px]'>Brak aktywnej subskrypcji (prędkości).</div>")
 
-    device = node.net_device
-    password = decrypt_password(device.mgmt_password_encrypted)
+    router_device = device.net_device
+    password = decrypt_password(router_device.mgmt_password_encrypted)
     
-    mt = MikrotikService(device.management_ip, device.mgmt_username, password)
+    mt = MikrotikService(router_device.management_ip, router_device.mgmt_username, password)
     
     # Format rate-limit: Rx/Tx (Download/Upload na Mikrotiku to odwrotnie niż w CRM)
     # Zazwyczaj speed_up/speed_down
     limit = f"{sub.speed_up_mbps or 0}M/{sub.speed_down_mbps or 0}M"
-    comment = f"CRM:ID:{node.customer_id} | {node.customer.last_name}"
+    comment = f"CRM:ID:{device.customer_id} | {device.customer.last_name if device.customer else 'Unknown'}"
     
     success, result = await mt.upsert_static_lease(
-        mac=node.mac_address,
-        address=node.ip_address,
+        mac=device.mac_address,
+        address=device.ip_address,
         comment=comment,
         rate_limit=limit
     )

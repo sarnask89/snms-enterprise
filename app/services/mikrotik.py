@@ -41,6 +41,70 @@ class MikrotikService:
         
         return await asyncio.to_thread(fetch)
 
+    async def get_ip_addresses(self) -> List[Dict[str, Any]]:
+        """Pobiera listę adresów IP (podsieci) z interfejsów."""
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                addr_resource = api.get_resource('/ip/address')
+                data = addr_resource.get()
+                conn.disconnect()
+                logger.info(f"Mikrotik: Zwrócono {len(data)} adresów z portu {self.port}.")
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_ip_addresses): {e}", exc_info=True)
+                return []
+        
+        return await asyncio.to_thread(fetch)
+
+    async def get_interfaces(self) -> List[Dict[str, Any]]:
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                data = api.get_resource('/interface').get()
+                conn.disconnect()
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_interfaces): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(fetch)
+
+    async def get_ip_pools(self) -> List[Dict[str, Any]]:
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                data = api.get_resource('/ip/pool').get()
+                conn.disconnect()
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_ip_pools): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(fetch)
+
+    async def get_dhcp_servers(self) -> List[Dict[str, Any]]:
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                data = api.get_resource('/ip/dhcp-server').get()
+                conn.disconnect()
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_dhcp_servers): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(fetch)
+
+    async def get_dhcp_networks(self) -> List[Dict[str, Any]]:
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                data = api.get_resource('/ip/dhcp-server/network').get()
+                conn.disconnect()
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_dhcp_networks): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(fetch)
+
     async def upsert_static_lease(self, mac: str, address: str, comment: str, rate_limit: str = None):
         """Dodaje lub aktualizuje statyczną dzierżawę DHCP."""
         def sync_upsert():
@@ -153,6 +217,19 @@ class MikrotikService:
                 return data
             except Exception as e:
                 logger.error(f"Mikrotik API error (get_bridge_host): {e}", exc_info=True)
+                return []
+        return await asyncio.to_thread(fetch)
+
+    async def get_neighbors(self) -> List[Dict[str, Any]]:
+        """Pobiera listę sąsiadów wykrytych przez protokoły discovery (MNDP, LLDP, CDP)."""
+        def fetch():
+            try:
+                conn, api = self._get_api()
+                data = api.get_resource('/ip/neighbor').get()
+                conn.disconnect()
+                return data
+            except Exception as e:
+                logger.error(f"Mikrotik API error (get_neighbors): {e}", exc_info=True)
                 return []
         return await asyncio.to_thread(fetch)
 

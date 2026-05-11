@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6 animate-in fade-in duration-500">
+    <!-- Header with Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-card p-6 rounded-xl border shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-blue-500/10 text-blue-600 rounded-lg">
+                <i class="fas fa-server fa-lg"></i>
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground font-medium">Wszystkie</p>
+                <h3 class="text-2xl font-bold">{{ total_count }}</h3>
+            </div>
+        </div>
+        <div class="bg-card p-6 rounded-xl border shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-green-500/10 text-green-600 rounded-lg">
+                <i class="fas fa-check-circle fa-lg"></i>
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground font-medium">Online</p>
+                <h3 class="text-2xl font-bold">{{ online_count }}</h3>
+            </div>
+        </div>
+        <div class="bg-card p-6 rounded-xl border shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-red-500/10 text-red-600 rounded-lg">
+                <i class="fas fa-exclamation-triangle fa-lg"></i>
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground font-medium">Offline</p>
+                <h3 class="text-2xl font-bold text-red-600">{{ offline_count }}</h3>
+            </div>
+        </div>
+        <div class="bg-card p-6 rounded-xl border shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-amber-500/10 text-amber-600 rounded-lg">
+                <i class="fas fa-bell fa-lg"></i>
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground font-medium">Alerty (24h)</p>
+                <h3 class="text-2xl font-bold">{{ notifications|length }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Device Status Table -->
+        <div class="lg:col-span-2 bg-card rounded-xl border shadow-sm overflow-hidden">
+            <div class="p-4 border-b bg-muted/5 flex justify-between items-center">
+                <h3 class="font-bold flex items-center gap-2">
+                    <i class="fas fa-microchip text-primary"></i> Stan urządzeń
+                </h3>
+                <button class="text-xs text-primary font-medium hover:underline" hx-get="/admin/monitoring" hx-target="#main-area"> Odśwież</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-muted/50 text-muted-foreground text-left">
+                            <th class="px-4 py-3 font-medium">Nazwa</th>
+                            <th class="px-4 py-3 font-medium">IP</th>
+                            <th class="px-4 py-3 font-medium">Status</th>
+                            <th class="px-4 py-3 font-medium">Opóźnienie</th>
+                            <th class="px-4 py-3 font-medium">Ostatnio widziany</th>
+                            <th class="px-4 py-3 font-medium text-right">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        {% for d in devices %}
+                        <tr class="hover:bg-muted/30 transition-colors">
+                            <td class="px-4 py-3 font-semibold">{{ d.name }}</td>
+                            <td class="px-4 py-3 text-muted-foreground">{{ d.management_ip or d.hostname }}</td>
+                            <td class="px-4 py-3">
+                                {% if d.is_online %}
+                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 text-green-600 text-[10px] font-bold uppercase tracking-wider">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse"></span> Online
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 text-red-600 text-[10px] font-bold uppercase tracking-wider">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> Offline
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if d.latency_ms %}
+                                <span class="{% if d.latency_ms > 50 %}text-amber-600{% else %}text-muted-foreground{% endif %}">
+                                    {{ d.latency_ms }} ms
+                                </span>
+                                {% else %}-{% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-xs text-muted-foreground">
+                                {{ d.last_seen.strftime('%H:%M:%S') if d.last_seen else 'Nigdy' }}
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <a href="/admin/monitoring/device/{{ d.id }}" class="p-2 hover:bg-accent rounded-md transition-colors" title="Szczegóły">
+                                    <i class="fas fa-chart-line text-primary"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Alerts -->
+        <div class="bg-card rounded-xl border shadow-sm overflow-hidden flex flex-col">
+            <div class="p-4 border-b bg-muted/5">
+                <h3 class="font-bold flex items-center gap-2">
+                    <i class="fas fa-bell text-amber-500"></i> Ostatnie zdarzenia
+                </h3>
+            </div>
+            <div class="flex-1 overflow-y-auto max-h-[600px] p-4 space-y-4 no-scrollbar">
+                {% for n in notifications %}
+                <div class="p-3 rounded-lg border {% if n.level == 'critical' %}bg-red-500/5 border-red-200 dark:border-red-900/30{% else %}bg-muted/30{% endif %}">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider {% if n.level == 'critical' %}text-red-600{% else %}text-muted-foreground{% endif %}">
+                            {{ n.level }}
+                        </span>
+                        <span class="text-[10px] text-muted-foreground">{{ n.created_at.strftime('%H:%M') }}</span>
+                    </div>
+                    <h4 class="text-sm font-bold leading-tight mb-1">{{ n.title }}</h4>
+                    <p class="text-xs text-muted-foreground line-clamp-2">{{ n.message }}</p>
+                </div>
+                {% endfor %}
+                {% if not notifications %}
+                <div class="text-center py-8 text-muted-foreground italic text-sm">
+                    Brak ostatnich zdarzeń
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

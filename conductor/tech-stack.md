@@ -1,27 +1,23 @@
-# Tech Stack: ISP CRM Portal
+# Technology Stack
 
-## Backend
-- **Framework**: FastAPI (Python 3.14+)
-- **ORM**: SQLAlchemy 2.0+
-- **Database**: SQLite (Production/Dev), PostgreSQL (Optional)
-- **Migrations**: Alembic
-- **Async I/O**: httpx, motor (if needed)
+## Core Technologies
+- **Language:** Python 3.10+
+- **Backend Framework:** FastAPI
+- **Database:** SQLite (Default: `crm.sqlite`) with PostgreSQL compatibility via SQLAlchemy ORM.
+- **Migrations:** Alembic
 
 ## Frontend
-- **Templating**: Jinja2
-- **Interactivity**: HTMX (Ajax/Websockets)
-- **Styling**: Tailwind CSS (Utility-first)
-- **Icons**: FontAwesome
-- **Maps**: Leaflet (OpenStreetMap)
+- **Templating:** Jinja2
+- **Interactivity:** HTMX
+- **Styling:** Tailwind CSS (via PostCSS/Tailwind CLI)
+- **Charts:** ApexCharts
+- **Icons:** FontAwesome & Lucide
 
-## Infrastructure Integrations
-- **Network API**: RouterOS (Mikrotik API)
-- **Regulatory**: GUGiK (ULDK API), TERYT (GUS Web Services)
-- **Files**: local filesystem with path tracking in DB
-- **Backups**: Physical SQLite database cloning with timestamped versioning.
+## Integrations & Services
+- **Device Management:** Paramiko (SSH for Dasan OLTs), RouterOS-API (MikroTik)
+- **Security:** Passlib (Bcrypt), Cryptography (Fernet for encrypted credentials)
+- **Testing:** Pytest
 
-## Development & Testing
-- **Testing**: pytest (Unit/Integration), Playwright (E2E)
-- **Mocking**: Custom Mikrotik and TERYT service mocks
-- **Documentation**: Conductor (Spec-driven development)
-- **Versioning**: Custom Python scripts (`bump_version.py`, `push.py`) for SemVer automation and Git tagging.
+## Development & Automation
+- **Environment:** Virtualenv (`.venv`)
+- **Server:** Uvicorn

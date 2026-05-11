@@ -30,6 +30,9 @@ def customer_list(
     db: Session = Depends(get_db),
     q: str | None = Query(None),
     status: str | None = Query(None),
+    incomplete: bool | None = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
 ):
     stmt = select(models.Customer).options(
         joinedload(models.Customer.city),
@@ -46,12 +49,37 @@ def customer_list(
         ))
     if status and status in [s.value for s in models.CustomerStatus]:
         stmt = stmt.where(models.CustomerStatus(status) == models.Customer.status)
+    if incomplete:
+        stmt = stmt.where(models.Customer.first_name == "Nieznany")
 
+    from sqlalchemy import func
+    # Pagination calculations
+    total_items = db.scalar(select(func.count()).select_from(stmt.subquery()))
+    total_pages = (total_items + limit - 1) // limit if total_items > 0 else 1
+    
+    if page > total_pages:
+        page = total_pages
+
+    stmt = stmt.offset((page - 1) * limit).limit(limit)
     rows = list(db.scalars(stmt).all())
-    if request.headers.get("HX-Request"):
-        return render(request, "customers/list_rows.html", {"customers": rows, "can_write_crm": True})
+    
+    ctx = {
+        "title": "Klienci",
+        "customers": rows,
+        "search_q": q or "",
+        "page": page,
+        "limit": limit,
+        "total_items": total_items,
+        "total_pages": total_pages,
+        "can_write_crm": True
+    }
 
-    return render(request, "customers/list.html", {"title": "Klienci", "customers": rows, "search_q": q or ""})
+    if request.headers.get("HX-Request") and request.headers.get("HX-Target") == "customer-table-container":
+        return render(request, "customers/list_container.html", ctx)
+    elif request.headers.get("HX-Request") and request.headers.get("HX-Target") == "customer-table-body":
+        return render(request, "customers/list_rows.html", ctx)
+
+    return render(request, "customers/list.html", ctx)
 
 @router.get("/notices", response_class=HTMLResponse)
 def customer_notices_list(request: Request, db: Session = Depends(get_db)):
@@ -117,6 +145,75 @@ def customer_reports_csv(db: Session = Depends(get_db)):
         media_type="text/csv", 
         headers={"Content-Disposition": "attachment; filename=klienci_raport.csv"}
     )
+
+@router.get("/export-passwords.csv")
+def export_customer_passwords(db: Session = Depends(get_db)):
+    # Pobierz klientów wraz z ich urządzeniami
+    stmt = select(models.Customer).options(joinedload(models.Customer.devices)).order_by(models.Customer.id.desc())
+    customers = db.scalars(stmt).unique().all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID Klienta", "Kod Klienta", "Imię", "Nazwisko", "Host", "Login", "Hasło", "Adres IP"])
+    
+    for c in customers:
+        for d in c.devices:
+            writer.writerow([
+                c.id,
+                c.customer_code,
+                c.first_name,
+                c.last_name,
+                d.hostname,
+                d.login or "",
+                d.passwd or "",
+                d.ip_address or ""
+            ])
+        
+    output.seek(0)
+    # Obsługa polskich znaków w CSV dla Excela (UTF-8 with BOM)
+    content = "\ufeff" + output.getvalue()
+    return StreamingResponse(
+        iter([content]), 
+        media_type="text/csv", 
+        headers={"Content-Disposition": "attachment; filename=hasla_dostepowe.csv"}
+    )
+
+@router.post("/batch-generate-access", dependencies=[Depends(require_business_write)])
+def batch_generate_access(request: Request, db: Session = Depends(get_db)):
+    from app.utils.string_utils import generate_login, generate_password
+    
+    # Pobierz wszystkich klientów z adresami i urządzeniami
+    stmt = select(models.Customer).options(
+        joinedload(models.Customer.devices),
+        joinedload(models.Customer.street)
+    )
+    customers = db.scalars(stmt).unique().all()
+    
+    generated_count = 0
+    for c in customers:
+        for d in c.devices:
+            if not d.login or not d.passwd:
+                # Generuj login jeśli go brak
+                if not d.login:
+                    d.login = generate_login(
+                        c.last_name, 
+                        c.street.name if c.street else "", 
+                        c.street_number, 
+                        c.apartment_number
+                    )
+                # Generuj hasło jeśli go brak
+                if not d.passwd:
+                    d.passwd = generate_password()
+                generated_count += 1
+    
+    db.commit()
+    record_audit(db, "batch_generate_access", "system", 0, f"Wygenerowano dane dla {generated_count} urządzeń", request)
+    
+    return HTMLResponse(f"""
+        <div class="p-4 bg-emerald-500 text-white rounded-xl shadow-lg animate-in fade-in slide-in-from-top-4">
+            <i class="fas fa-check-circle mr-2"></i> Wygenerowano dane dostępowe dla {generated_count} urządzeń!
+        </div>
+    """)
 
 @router.get("/reports", response_class=HTMLResponse)
 def customer_reports(request: Request, db: Session = Depends(get_db)):
@@ -328,7 +425,41 @@ def customer_edit_submit(
     record_audit(db, "update", "customer", c.id, f"Abonent: {c.customer_code}", request)
     return RedirectResponse("/customers", status_code=303)
 
+@router.get("/{customer_id}/portal", response_class=HTMLResponse)
+def customer_portal_manage(customer_id: int, request: Request, db: Session = Depends(get_db)):
+    c = db.get(models.Customer, customer_id)
+    if not c: return RedirectResponse("/customers", status_code=302)
+    return render(request, "customers/portal_manage.html", {"title": f"Dostęp do portalu: {c.first_name} {c.last_name}", "customer": c})
+
+@router.post("/{customer_id}/portal/reset", dependencies=[Depends(require_business_write)])
+def customer_portal_reset(
+    customer_id: int, 
+    request: Request, 
+    db: Session = Depends(get_db),
+    custom_login: str | None = Form(None),
+    custom_password: str | None = Form(None),
+):
+    from app.security import hash_password
+    from app.utils.string_utils import generate_password
+    
+    c = db.get(models.Customer, customer_id)
+    if not c: return RedirectResponse("/customers", status_code=303)
+    
+    c.portal_login = (custom_login or c.customer_code).strip()
+    pwd = custom_password.strip() if custom_password and custom_password.strip() else generate_password()
+    c.portal_password_hash = hash_password(pwd)
+    
+    db.commit()
+    record_audit(db, "portal_reset", "customer", c.id, f"Reset hasła portalu dla {c.customer_code}", request)
+    
+    return render(request, "customers/portal_manage.html", {
+        "title": f"Dostęp do portalu: {c.first_name} {c.last_name}", 
+        "customer": c, 
+        "new_password": pwd
+    })
+
 @router.post("/{customer_id}/delete", dependencies=[Depends(require_business_write)])
+
 def customer_delete(customer_id: int, request: Request, db: Session = Depends(get_db)):
     c = db.get(models.Customer, customer_id)
     if c:

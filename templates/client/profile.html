@@ -1,0 +1,79 @@
+{% extends "client/base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8">
+    <h2 class="text-3xl font-black text-white tracking-tight">Twoje dane i profil</h2>
+
+    {% if request.query_params.get('success') %}
+    <div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-2xl flex items-center gap-4 text-emerald-400 animate-in zoom-in">
+        <i class="fas fa-check-circle text-xl"></i>
+        <p class="font-bold">Dane zostały pomyślnie zaktualizowane!</p>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Sidebar / Summary -->
+        <div class="space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center">
+                <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary text-3xl mx-auto mb-4">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 class="text-white font-bold">{{ client_user.first_name }} {{ client_user.last_name }}</h3>
+                <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">Klient #{{ client_user.customer_code }}</p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+                <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 px-2">Adres instalacji</h4>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-map-marker-alt text-slate-600 mt-1"></i>
+                        <div class="text-xs text-slate-300">
+                            <p class="font-bold text-white">{{ client_user.street.name if client_user.street else 'Brak ulicy' }} {{ client_user.street_number }}{{ '/' + client_user.apartment_number if client_user.apartment_number else '' }}</p>
+                            <p>{{ client_user.city.name if client_user.city else 'Brak miasta' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forms -->
+        <div class="md:col-span-2 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+                <h3 class="text-white font-black text-xl mb-8">Informacje kontaktowe</h3>
+                <form action="/client/profile" method="post" class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">Adres E-mail</label>
+                        <input type="email" name="email" value="{{ client_user.email or '' }}" placeholder="email@przyklad.pl"
+                               class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                        <p class="text-[9px] text-slate-600 mt-1 px-1 italic">Na ten adres będziemy przesyłać powiadomienia i faktury.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">Numer Telefonu</label>
+                        <input type="text" name="phone" value="{{ client_user.phone or '' }}" placeholder="+48 000 000 000"
+                               class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                            Zapisz zmiany
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Password Change Notice -->
+            <div class="bg-blue-500/5 border border-blue-500/10 rounded-3xl p-8 flex gap-6 items-start">
+                <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 shrink-0">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-2">Bezpieczeństwo</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-4">Ze względów bezpieczeństwa zmiana hasła do portalu jest możliwa wyłącznie po kontakcie z naszym Biurem Obsługi Klienta lub poprzez autoryzowany punkt sprzedaży.</p>
+                    <a href="/client/helpdesk" class="text-xs font-black text-primary hover:underline uppercase tracking-widest">Zgłoś prośbę o zmianę hasła</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

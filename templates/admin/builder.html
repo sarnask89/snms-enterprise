@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8" x-data="{ 
+    name: '', 
+    displayName: '', 
+    fields: [{ name: 'title', label: 'Tytuł', type: 'string' }],
+    results: null,
+    generating: false,
+    addField() { this.fields.push({ name: '', label: '', type: 'string' }) },
+    removeField(index) { this.fields.splice(index, 1) },
+    async generate() {
+        this.generating = true;
+        try {
+            const resp = await fetch('/admin/builder/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: this.name, display_name: this.displayName, fields: this.fields })
+            });
+            this.results = await resp.json();
+        } finally {
+            this.generating = false;
+        }
+    }
+}">
+    <div class="flex items-center justify-between">
+        <h2 class="text-3xl font-black text-white tracking-tight">Kreator Modułów Full-Stack</h2>
+        <div class="flex gap-4">
+            <button @click="generate()" :disabled="!name || fields.length === 0" 
+                    class="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-2xl font-black shadow-xl transition-all active:scale-95 disabled:opacity-50">
+                <i class="fas fa-magic mr-2"></i> Generuj Kod
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Configuration -->
+        <div class="space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+                <h3 class="text-white font-bold mb-6">Podstawowa konfiguracja</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nazwa techniczna (URL)</label>
+                        <input type="text" x-model="name" placeholder="np. office-supplies" 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nazwa wyświetlana (Menu)</label>
+                        <input type="text" x-model="displayName" placeholder="np. Magazyn Biurowy" 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-white font-bold">Pola bazy danych</h3>
+                    <button @click="addField()" class="text-xs bg-white/5 hover:bg-white/10 px-3 py-1 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-1"></i> Dodaj pole
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <template x-for="(field, index) in fields" :key="index">
+                        <div class="flex gap-3 items-end bg-black/20 p-4 rounded-2xl border border-white/5">
+                            <div class="flex-1">
+                                <label class="block text-[8px] font-black text-slate-600 uppercase mb-1">Nazwa (DB)</label>
+                                <input type="text" x-model="field.name" placeholder="name" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-[8px] font-black text-slate-600 uppercase mb-1">Etykieta (UI)</label>
+                                <input type="text" x-model="field.label" placeholder="Nazwa" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+                            </div>
+                            <div class="w-24">
+                                <label class="block text-[8px] font-black text-slate-600 uppercase mb-1">Typ</label>
+                                <select x-model="field.type" class="w-full bg-white/10 border border-white/10 rounded-lg px-2 py-2 text-xs text-white">
+                                    <option value="string">Tekst</option>
+                                    <option value="integer">Liczba</option>
+                                    <option value="boolean">Tak/Nie</option>
+                                    <option value="text">Długi tekst</option>
+                                </select>
+                            </div>
+                            <button @click="removeField(index)" class="text-rose-500 hover:bg-rose-500/10 w-8 h-8 rounded-lg transition-colors">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output / Instructions -->
+        <div class="space-y-6">
+            <template x-if="generating">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-20 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p class="text-slate-400 font-bold">Generowanie plików...</p>
+                </div>
+            </template>
+
+            <template x-if="results && !generating">
+                <div class="space-y-6 animate-in fade-in zoom-in duration-500">
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8">
+                        <div class="flex items-center gap-4 mb-6 text-emerald-400">
+                            <i class="fas fa-check-circle text-3xl"></i>
+                            <div>
+                                <h3 class="font-black text-xl">Sukces! Pliki zostały utworzone.</h3>
+                                <p class="text-xs opacity-70">Postępuj zgodnie z poniższymi instrukcjami, aby aktywować moduł.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-black/40 p-4 rounded-xl">
+                                <p class="text-[10px] font-black text-slate-500 uppercase mb-2">1. Dodaj do app/models.py:</p>
+                                <pre class="text-[10px] text-emerald-300 overflow-x-auto" x-text="results.instructions.model"></pre>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-xl">
+                                <p class="text-[10px] font-black text-slate-500 uppercase mb-2">2. Dodaj do app/main.py:</p>
+                                <pre class="text-[10px] text-blue-300 overflow-x-auto" x-text="results.instructions.main"></pre>
+                            </div>
+                            <button class="w-full bg-emerald-500 text-white font-black py-3 rounded-xl hover:bg-emerald-600 transition-all"
+                                    @click="fetch('/admin/builder/register-nav', { method: 'POST', body: new URLSearchParams({ label: displayName, url: results.results.nav_url }) }); $el.innerText='Dodano do menu!'">
+                                Dodaj moduł do paska bocznego (Navbar)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template x-if="!results && !generating">
+                <div class="bg-slate-900/50 border border-dashed border-slate-800 rounded-3xl p-20 flex flex-col items-center justify-center text-center">
+                    <i class="fas fa-code text-5xl text-slate-800 mb-6"></i>
+                    <p class="text-slate-600 font-bold max-w-xs">Skonfiguruj pola po lewej i kliknij 'Generuj Kod', aby rozpocząć proces Scaffoldingu.</p>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+{% endblock %}

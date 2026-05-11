@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold tracking-tight">Paszportyzacja Sieci</h1>
+    <div class="flex gap-2">
+      <button class="h-9 px-4 py-2 border rounded-md text-sm font-medium hover:bg-accent transition-colors">
+        <i class="fas fa-plus mr-2"></i> Dodaj obiekt
+      </button>
+    </div>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-3">
+    <!-- Stats Cards -->
+    <div class="rounded-xl border bg-card p-4 shadow-sm">
+      <div class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Węzły</div>
+      <div class="text-2xl font-bold">{{ nodes|length }}</div>
+    </div>
+    <div class="rounded-xl border bg-card p-4 shadow-sm">
+      <div class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Aktywne Linki</div>
+      <div class="text-2xl font-bold">{{ links|length }}</div>
+    </div>
+    <div class="rounded-xl border bg-card p-4 shadow-sm flex items-center justify-center">
+      <a href="/admin/passport/map" class="text-xs font-bold text-primary hover:underline">
+        <i class="fas fa-map mr-2"></i> Otwórz mapę interaktywną
+      </a>
+    </div>
+  </div>
+
+  <div class="rounded-xl border bg-card p-6 shadow-sm">
+    <h3 class="text-sm font-bold mb-4 uppercase tracking-widest text-muted-foreground">Podgląd topologii</h3>
+    <pre class="mermaid bg-slate-900/5 p-4 rounded-lg overflow-auto">
+graph TD
+    {% for n in nodes %}
+    {{ n.id }}[{{ n.name }}]
+    {% endfor %}
+    {% for l in links %}
+    {{ l.source_node_id }} --- {{ l.target_node_id }}
+    {% endfor %}
+    </pre>
+  </div>
+    <div class="rounded-xl border bg-card text-card-foreground shadow overflow-hidden">
+      <div class="p-0">
+        <table class="w-full text-sm">
+          <thead class="bg-muted/50 border-b">
+            <tr>
+              <th class="h-10 px-4 text-left font-medium">Nazwa obiektu</th>
+              <th class="h-10 px-4 text-left font-medium">Typ</th>
+              <th class="h-10 px-4 text-left font-medium">Lokalizacja</th>
+              <th class="h-10 px-4 text-left font-medium">Połączenia</th>
+              <th class="h-10 px-4 text-right">Akcje</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for n in nodes %}
+            <tr class="border-b last:border-0 hover:bg-muted/50 transition-colors">
+              <td class="p-4 font-medium">{{ n.name }}</td>
+              <td class="p-4">{{ n.node_type or 'Węzeł' }}</td>
+              <td class="p-4 text-muted-foreground">{{ n.location_detail or 'Brak' }}</td>
+              <td class="p-4">
+                <span class="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                  {{ n.outgoing_links|length }} linków
+                </span>
+              </td>
+              <td class="p-4 text-right">
+                <a href="/net-nodes/{{ n.id }}/edit" class="text-primary hover:underline">Szczegóły</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

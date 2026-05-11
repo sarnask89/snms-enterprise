@@ -51,18 +51,18 @@ async def sync_pit_coordinates_task():
         ).all())
         
         updated_count = 0
-        for node in nodes:
-            if not node.street_number or not node.location_city or not node.location_city.teryt_code:
+        for device in nodes:
+            if not device.street_number or not device.location_city or not device.location_city.teryt_code:
                 continue
                 
-            simc = node.location_city.teryt_code
-            ulic = node.location_street.teryt_code if node.location_street else "00000" # fallback or specific empty
-            number = node.street_number
+            simc = device.location_city.teryt_code
+            ulic = device.location_street.teryt_code if device.location_street else "00000" # fallback or specific empty
+            number = device.street_number
             
             coords = await service.get_coordinates_for_pit_uke(simc, ulic, number)
             if coords:
-                node.x_1992 = float(coords["X_1992"])
-                node.y_1992 = float(coords["Y_1992"])
+                device.x_1992 = float(coords["X_1992"])
+                device.y_1992 = float(coords["Y_1992"])
                 updated_count += 1
                 
         db.commit()

@@ -29,13 +29,23 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                {{ label("Host rozdzielczy (Uplink)", for="network_host_id") }}
-                {% set host_options = [("", "— brak —")] %}
-                {% for h in network_hosts %}
-                    {% do host_options.append((h.id, h.name)) %}
-                {% endfor %}
-                {{ select("network_host_id", host_options, selected_id=network.network_host_id if network else "", id="network_host_id") }}
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Host rozdzielczy (Uplink)", for="network_host_id") }}
+                    {% set host_options = [("", "— brak —")] %}
+                    {% for h in network_hosts %}
+                        {% do host_options.append((h.id, h.name)) %}
+                    {% endfor %}
+                    {{ select("network_host_id", host_options, selected_id=network.network_host_id if network else "", id="network_host_id") }}
+                </div>
+                <div class="space-y-2">
+                    {{ label("Zarządzanie / Router", for="net_device_id") }}
+                    {% set dev_options = [("", "— brak —")] %}
+                    {% for d in net_devices %}
+                        {% do dev_options.append((d.id, d.name ~ " (" ~ d.management_ip ~ ")")) %}
+                    {% endfor %}
+                    {{ select("net_device_id", dev_options, selected_id=network.net_device_id if network else "", id="net_device_id") }}
+                </div>
             </div>
 
             <div class="space-y-2">

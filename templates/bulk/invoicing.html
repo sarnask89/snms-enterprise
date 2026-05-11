@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold tracking-tight">Masowe fakturowanie</h1>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <div class="rounded-xl border bg-card text-card-foreground shadow">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold leading-none tracking-tight mb-4">Uruchom proces</h3>
+        <p class="text-sm text-muted-foreground mb-6">
+          System wygeneruje dokumenty sprzedaży dla wszystkich aktywnych subskrypcji, które wymagają rozliczenia w bieżącym okresie.
+        </p>
+        
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
+            <span class="text-sm font-medium">Liczba abonentów:</span>
+            <span class="text-sm font-bold">{{ customers_count }}</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
+            <span class="text-sm font-medium">Aktywne subskrypcje ({{ current_month }}):</span>
+            <span class="text-sm font-bold text-primary">{{ active_subscriptions }}</span>
+          </div>
+          
+          <form method="post">
+            <button type="submit" class="w-full h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md font-medium transition-colors">
+              <i class="fas fa-play mr-2"></i> Rozpocznij generowanie
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-xl border bg-card text-card-foreground shadow">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold leading-none tracking-tight mb-4">Informacje</h3>
+        <ul class="text-sm space-y-2 text-muted-foreground">
+          <li>• Proces może potrwać kilka minut.</li>
+          <li>• Dokumenty zostaną utworzone w stanie "Szkic" lub "Wysłane" zależnie od ustawień.</li>
+          <li>• Wszystkie operacje zostaną zapisane w dzienniku zdarzeń.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

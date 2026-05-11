@@ -1,4 +1,5 @@
 import logging
+import ipaddress
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 from app import models
@@ -10,72 +11,83 @@ logger = logging.getLogger(__name__)
 
 async def get_discoverable_leases(db: Session, device: models.NetDevice):
     """
-    Pobiera dzierżawy z Mikrotika i przygotowuje je do importu do CRM.
+    Pobiera dzierżawy z Mikrotika i przygotowuje je do wyświetlenia w UI Discovery.
+    Funkcja jest TYLKO DO ODCZYTU - nie tworzy żadnych rekordów w bazie.
     """
     logger.info(f"Rozpoczęcie procesu odkrywania dla urządzenia {device.name} ({device.management_ip})")
     
-    # 1. Inicjalizacja serwisu (hasło odszyfrowane)
     password = decrypt_password(device.mgmt_password_encrypted)
-    if not password:
-        logger.warning(f"Brak hasła dla urządzenia {device.name}. Autoryzacja może się nie powieść.")
-        
     mt = MikrotikService(device.management_ip, device.mgmt_username, password)
     
-    raw_leases = await mt.get_leases()
-    logger.info(f"Otrzymano {len(raw_leases)} surowych dzierżaw DHCP z urządzenia {device.name}")
+    # 1. Pobierz sieci przypisane do tego urządzenia w CRM
+    device_networks = db.scalars(
+        select(models.IpNetwork).where(models.IpNetwork.net_device_id == device.id, models.IpNetwork.active == True)
+    ).all()
     
+    net_objs = []
+    for dn in device_networks:
+        try:
+            net_objs.append(ipaddress.ip_network(dn.cidr, strict=False))
+        except ValueError:
+            pass
+    
+    if not net_objs:
+        logger.warning(f"Brak przypisanych sieci w CRM dla urządzenia {device.name}. Lista dzierżaw będzie pusta.")
+
+    raw_leases = await mt.get_leases()
     discovered = []
 
     for lease in raw_leases:
-        # Ignore disabled leases
-        if str(lease.get('disabled', 'false')).lower() == 'true':
-            logger.debug(f"Pominięto wyłączoną dzierżawę dla {lease.get('mac-address')}.")
-            continue
-            
         mac = lease.get('mac-address')
-        if not mac: 
-            logger.debug("Pominięto dzierżawę bez adresu MAC.")
+        ip_str = lease.get('address')
+        if not mac or not ip_str: 
             continue
 
-        # Determine node status based on blocked attribute
-        is_blocked = str(lease.get('blocked', 'false')).lower() == 'true'
-        node_status = models.NodeStatus.inactive if is_blocked else models.NodeStatus.active
+        # 2. Weryfikacja czy IP należy do sieci przypisanych do tego urządzenia
+        try:
+            ip_obj = ipaddress.ip_address(ip_str)
+            if not any(ip_obj in n for n in net_objs):
+                continue
+        except ValueError:
+            continue
 
-        # 2. Czy ten MAC już istnieje w CRM?
-        existing_node = db.scalar(select(models.Node).where(models.Node.mac_address == mac))
-        if existing_node:
-            logger.debug(f"Pominięto dzierżawę z MAC {mac} - istnieje już w CRM jako węzeł ID {existing_node.id}")
-            continue # Już go znamy
+        # 3. Czy ten MAC już istnieje w CRM?
+        existing_device_record = db.scalar(select(models.CustomerDevice).where(models.CustomerDevice.mac_address == mac))
+        if existing_device_record:
+            continue
 
-        # 3. Parsowanie komentarza
+        # 4. Parsowanie komentarza i próba dopasowania
         comment = lease.get('comment', '')
-        logger.debug(f"Analizowanie komentarza dzierżawy dla MAC {mac}: '{comment}'")
         parsed = parse_mikrotik_comment(comment)
         
+        is_disabled = str(lease.get('disabled', 'false')).lower() == 'true'
+        is_blocked = str(lease.get('blocked', 'false')).lower() == 'true'
+        node_status = models.CustomerDeviceStatus.inactive if (is_blocked or is_disabled) else models.CustomerDeviceStatus.active
+
         match_info = {
             "mac": mac,
-            "ip": lease.get('address'),
+            "ip": ip_str,
             "comment": comment,
             "rate_limit": lease.get('rate-limit'),
             "parsed": parsed,
             "customer_id": None,
             "street_id": None,
             "can_auto_import": False,
-            "status": node_status
+            "status": node_status,
+            "dhcp_server": lease.get('server', ''),
+            "dhcp_interface": lease.get('interface', ''),
         }
 
         if parsed:
-            logger.debug(f"Pomyślnie sparsowano komentarz dla MAC {mac}: {parsed}")
-            # 4. Próba dopasowania ulicy
+            # Próba dopasowania ulicy
             street = db.scalar(
                 select(models.LocationStreet)
                 .where(models.LocationStreet.name.ilike(f"%{parsed['street_name']}%"))
             )
             if street:
-                logger.debug(f"Dopasowano ulicę: '{street.name}' (ID: {street.id}) dla MAC {mac}")
                 match_info["street_id"] = street.id
                 
-                # 5. Próba dopasowania klienta (po nazwisku i lokalu)
+                # Próba dopasowania klienta
                 customer = db.scalar(
                     select(models.Customer)
                     .where(
@@ -84,86 +96,141 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
                         models.Customer.location_street_id == street.id
                     )
                 )
-                
-                # 6. AUTO-IMPORT LOGIC
-                if not customer:
-                    logger.info(f"Tworzenie nowego klienta dla {parsed['last_name']} z MAC {mac}")
-                    customer = models.Customer(
-                        customer_code=f"AUTO-{mac.replace(':', '')[-6:]}",
-                        first_name="Abonent",
-                        last_name=parsed["last_name"],
-                        location_city_id=street.city_id,
-                        location_street_id=street.id,
-                        street_number=parsed["street_number"],
-                        apartment_number=parsed["apartment_number"],
-                        status=models.CustomerStatus.active
-                    )
-                    db.add(customer)
-                    db.flush()
-                
-                logger.info(f"Auto-import węzła dla MAC {mac} do klienta ID {customer.id}")
-                node = models.Node(
-                    customer_id=customer.id,
-                    hostname=f"node-{mac.replace(':', '')[-4:]}",
-                    ip_address=lease.get('address'),
-                    mac_address=mac,
-                    net_device_id=device.id,
-                    status=node_status
-                )
-                db.add(node)
+                if customer:
+                    match_info["customer_id"] = customer.id
+                    match_info["can_auto_import"] = True
+                else:
+                    # Jeśli mamy sparsowane dane ale brak klienta, to też możemy "auto-importować" tworząc nowego klienta
+                    match_info["can_auto_import"] = True
 
-                # 7. TARIFF AUTO-IMPORT
-                rl = lease.get('rate-limit')
-                if rl and "/" in rl:
-                    try:
-                        def to_mbps(val: str) -> int:
-                            val = val.lower().strip()
-                            if 'm' in val: return int(float(val.replace('m', '')))
-                            if 'k' in val: return int(float(val.replace('k', '')) / 1024)
-                            return int(int(val) / (1024 * 1024))
-                        rx, tx = rl.split('/')
-                        up, down = to_mbps(rx), to_mbps(tx)
-                        
-                        tariff = db.scalar(
-                            select(models.Tariff).where(models.Tariff.speed_up_mbps == up, models.Tariff.speed_down_mbps == down)
-                        )
-                        if not tariff:
-                            from decimal import Decimal
-                            # Znajdź domyślny VAT
-                            def_vat = db.scalar(select(models.VatRate).where(models.VatRate.is_default == True))
-                            def_vat_id = def_vat.id if def_vat else None
-
-                            tariff = models.Tariff(
-                                name=f"Import {down}/{up} Mbps",
-                                monthly_price=Decimal("0.00"),
-                                vat_rate_id=def_vat_id,
-                                speed_up_mbps=up,
-                                speed_down_mbps=down,
-                                description=f"Auto-import z Mikrotika ({rl})"
-                            )
-                            db.add(tariff)
-                            db.flush()
-                        
-                        sub = models.Subscription(
-                            customer_id=customer.id,
-                            node_id=node.id,
-                            tariff_id=tariff.id,
-                            speed_up_mbps=up,
-                            speed_down_mbps=down,
-                            active=True
-                        )
-                        db.add(sub)
-                    except Exception as e:
-                        logger.error(f"Błąd przy auto-imporcie taryfy ({rl}): {e}")
-
-                db.commit()
-                continue  # Successfully auto-imported, skip adding to discovery UI
-            else:
-                logger.debug(f"Nie dopasowano ulicy '{parsed['street_name']}' dla MAC {mac}")
-        else:
-            logger.debug(f"Nie udało się sparsować komentarza '{comment}' dla MAC {mac}")
-            
         discovered.append(match_info)
 
-    logger.info(f"Zakończono odkrywanie dla {device.name}. Zwrócono {len(discovered)} nowych dzierżaw do ewentualnego importu.")
+    logger.info(f"Zakończono odkrywanie dla {device.name}. Zwrócono {len(discovered)} pozycji.")
     return discovered
+
+async def sync_device_config(db: Session, device: models.NetDevice):
+    """
+    Synchronizuje konfigurację interfejsów, pul adresów i serwerów DHCP z Mikrotika do CRM.
+    """
+    logger.info(f"Rozpoczęcie synchronizacji konfiguracji dla urządzenia {device.name}")
+    
+    password = decrypt_password(device.mgmt_password_encrypted)
+    mt = MikrotikService(device.management_ip, device.mgmt_username, password)
+    
+    # 1. Interfejsy
+    interfaces_data = await mt.get_interfaces()
+    for iface in interfaces_data:
+        name = iface.get("name")
+        if not name: continue
+        mac = iface.get("mac-address")
+        is_disabled = str(iface.get("disabled", "false")).lower() == "true"
+        comment = iface.get("comment")
+        
+        db_iface = db.scalar(select(models.NetDeviceInterface).where(
+            models.NetDeviceInterface.net_device_id == device.id,
+            models.NetDeviceInterface.name == name
+        ))
+        if not db_iface:
+            db_iface = models.NetDeviceInterface(net_device_id=device.id, name=name)
+            db.add(db_iface)
+        
+        db_iface.mac_address = mac
+        db_iface.is_active = not is_disabled
+        db_iface.comment = comment
+
+    db.flush()
+
+    # 2. Pule IP
+    pools_data = await mt.get_ip_pools()
+    for pool in pools_data:
+        name = pool.get("name")
+        ranges = pool.get("ranges")
+        if not name or not ranges: continue
+        
+        db_pool = db.scalar(select(models.NetDeviceIpPool).where(
+            models.NetDeviceIpPool.net_device_id == device.id,
+            models.NetDeviceIpPool.name == name
+        ))
+        if not db_pool:
+            db_pool = models.NetDeviceIpPool(net_device_id=device.id, name=name)
+            db.add(db_pool)
+            
+        db_pool.ranges = ranges
+
+    db.flush()
+
+    # 3. Serwery DHCP
+    dhcp_data = await mt.get_dhcp_servers()
+    for dhcp in dhcp_data:
+        name = dhcp.get("name")
+        iface_name = dhcp.get("interface")
+        pool_name = dhcp.get("address-pool")
+        is_disabled = str(dhcp.get("disabled", "false")).lower() == "true"
+        if not name: continue
+
+        db_dhcp = db.scalar(select(models.NetDeviceDhcpServer).where(
+            models.NetDeviceDhcpServer.net_device_id == device.id,
+            models.NetDeviceDhcpServer.name == name
+        ))
+        if not db_dhcp:
+            db_dhcp = models.NetDeviceDhcpServer(net_device_id=device.id, name=name)
+            db.add(db_dhcp)
+
+        # Znajdź interface w DB
+        if iface_name:
+            iface_db = db.scalar(select(models.NetDeviceInterface).where(
+                models.NetDeviceInterface.net_device_id == device.id,
+                models.NetDeviceInterface.name == iface_name
+            ))
+            if iface_db:
+                db_dhcp.interface_id = iface_db.id
+
+        db_dhcp.address_pool_name = pool_name
+        db_dhcp.is_active = not is_disabled
+
+    db.commit()
+    logger.info(f"Zakończono synchronizację konfiguracji dla urządzenia {device.name}")
+
+
+async def get_discoverable_networks(db: Session, device: models.NetDevice):
+    """
+    Pobiera podsieci z serwera DHCP Mikrotika i przygotowuje je do importu jako IpNetwork do CRM.
+    """
+    logger.info(f"Rozpoczęcie odkrywania podsieci DHCP dla urządzenia {device.name}")
+    
+    password = decrypt_password(device.mgmt_password_encrypted)
+    mt = MikrotikService(device.management_ip, device.mgmt_username, password)
+    
+    # Najpierw synchronizuj bazę (żeby mieć aktualne DHCP serwery w CRM)
+    await sync_device_config(db, device)
+    
+    raw_networks = await mt.get_dhcp_networks()
+    discovered_nets = []
+
+    for net in raw_networks:
+        address_cidr = net.get('address')
+        if not address_cidr or '/' not in address_cidr: 
+            continue
+
+        gateway = net.get('gateway', '')
+        comment = net.get('comment', '')
+        
+        # Opcjonalnie dns-server, ntp-server...
+
+        # Check if CIDR already exists in CRM FOR THIS DEVICE
+        existing_net = db.scalar(
+            select(models.IpNetwork)
+            .where(models.IpNetwork.cidr == address_cidr, models.IpNetwork.net_device_id == device.id)
+        )
+        if existing_net:
+            continue
+
+        net_info = {
+            "cidr": address_cidr,
+            "gateway": gateway,
+            "comment": comment,
+            "status": "active"
+        }
+        discovered_nets.append(net_info)
+
+    return discovered_nets

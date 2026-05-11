@@ -72,9 +72,9 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
     networks = list(db.scalars(select(models.IpNetwork).order_by(models.IpNetwork.id)).all())
     nodes = list(
         db.scalars(
-            select(models.Node).where(
-                models.Node.ip_address.isnot(None),
-                models.Node.ip_address != "",
+            select(models.CustomerDevice).where(
+                models.CustomerDevice.ip_address.isnot(None),
+                models.CustomerDevice.ip_address != "",
             )
         ).all()
     )
@@ -122,10 +122,11 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
 @router.get("/new", response_class=HTMLResponse)
 def ip_network_new_form(request: Request, db: Session = Depends(get_db)):
     hosts = list(db.scalars(select(models.NetworkHost).order_by(models.NetworkHost.name)).all())
+    devices = list(db.scalars(select(models.NetDevice).order_by(models.NetDevice.name)).all())
     return render(
         request,
         "ip_networks/form.html",
-        {"title": "Nowa sieć IP", "network": None, "network_hosts": hosts},
+        {"title": "Nowa sieć IP", "network": None, "network_hosts": hosts, "net_devices": devices},
     )
 
 
@@ -148,6 +149,7 @@ def ip_network_new_submit(
     description: str | None = Form(None),
     active: str | None = Form(None),
     network_host_id: str | None = Form(None),
+    net_device_id: str | None = Form(None),
 ):
     vid = None
     if vlan_id and str(vlan_id).strip().isdigit():
@@ -160,6 +162,7 @@ def ip_network_new_submit(
         description=(description or None) and description.strip() or None,
         active=active in ("on", "true", "1", "yes"),
         network_host_id=_opt_int(network_host_id),
+        net_device_id=_opt_int(net_device_id),
     )
     db.add(n)
     db.commit()
@@ -172,10 +175,11 @@ def ip_network_edit_form(net_id: int, request: Request, db: Session = Depends(ge
     if not n:
         return RedirectResponse("/ip-networks", status_code=302)
     hosts = list(db.scalars(select(models.NetworkHost).order_by(models.NetworkHost.name)).all())
+    devices = list(db.scalars(select(models.NetDevice).order_by(models.NetDevice.name)).all())
     return render(
         request,
         "ip_networks/form.html",
-        {"title": f"Edycja: {n.name}", "network": n, "network_hosts": hosts},
+        {"title": f"Edycja: {n.name}", "network": n, "network_hosts": hosts, "net_devices": devices},
     )
 
 
@@ -190,6 +194,7 @@ def ip_network_edit_submit(
     description: str | None = Form(None),
     active: str | None = Form(None),
     network_host_id: str | None = Form(None),
+    net_device_id: str | None = Form(None),
 ):
     n = db.get(models.IpNetwork, net_id)
     if not n:
@@ -205,6 +210,7 @@ def ip_network_edit_submit(
     n.description = (description or None) and description.strip() or None
     n.active = active in ("on", "true", "1", "yes")
     n.network_host_id = _opt_int(network_host_id)
+    n.net_device_id = _opt_int(net_device_id)
     db.commit()
     return RedirectResponse("/ip-networks", status_code=303)
 
@@ -213,9 +219,9 @@ def ip_network_edit_submit(
 def ip_network_delete(net_id: int, db: Session = Depends(get_db)):
     n = db.get(models.IpNetwork, net_id)
     if n:
-        for d in list(n.devices):
+        for d in list(n.net_devices):
             d.ip_network_id = None
-        for node in list(n.nodes):
+        for node in list(n.customer_devices):
             node.ip_network_id = None
         db.delete(n)
         db.commit()

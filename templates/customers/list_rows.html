@@ -26,9 +26,13 @@
   </td>
   <td class="p-4 align-middle text-right">
     <div class="flex justify-end gap-1">
+      <a href="/customers/{{ c.id }}/portal" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 text-primary" title="Portal Klienta">
+        <i class="fas fa-key text-xs"></i>
+      </a>
       <a href="/customers/{{ c.id }}/edit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8" title="Edytuj">
         <i class="fas fa-edit text-xs"></i>
       </a>
+
       {% if can_write_crm %}
       <button @click="$dispatch('open-alert-delete-customer', { url: '/customers/{{ c.id }}/delete', name: '{{ c.last_name }} {{ c.first_name or '' }}' })"
               class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive/10 hover:text-destructive h-8 w-8 text-muted-foreground" title="Usuń">

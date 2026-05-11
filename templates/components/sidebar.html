@@ -1,0 +1,76 @@
+{% macro render_sidebar(nav_groups, portal_user) %}
+<aside class="sidebar-container shrink-0 flex flex-col transition-all duration-300 border-r"
+       :class="sidebarOpen ? 'w-64' : 'w-16'">
+  
+  <div class="flex h-14 items-center border-b px-4 gap-3 overflow-hidden bg-muted/10">
+    <img src="/static/images/Light/NetCoreOps_light_logo_sidebar.png?v=1.1" alt="NetCoreOps" class="h-8 w-auto shrink-0 block dark:hidden">
+    <img src="/static/images/Dark/NetCoreOps_dark_logo_sidebar.png?v=1.1" alt="NetCoreOps" class="h-8 w-auto shrink-0 hidden dark:block">
+  </div>
+
+  <div class="flex-1 overflow-y-auto no-scrollbar p-2 py-4 space-y-6">
+    {% for section_title, items in nav_groups %}
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        {{ section_title }}
+      </h4>
+      <div class="grid gap-1">
+        {% for item in items %}
+        <a href="{{ item.url_path }}" 
+           hx-get="{{ item.url_path }}"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '{{ item.url_path }}'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '{{ item.url_path }}' || ('{{ item.url_path }}' !== '/' && currentPath.startsWith('{{ item.url_path }}'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? '{{ item.label }}' : ''">
+          {% set icon_name = 'dashboard' if item.key == 'dashboard'
+            else 'users' if 'customer' in item.key
+            else 'billing' if 'invoice' in item.key
+            else 'helpdesk' if 'helpdesk' in item.key
+            else 'cpe' if 'node' in item.key and 'net' not in item.key
+            else 'network' if 'net_nodes' in item.key
+            else 'topology' if 'net_map' in item.key
+            else 'inventory' if 'netdevices' in item.key
+            else 'internet' if 'admin_discovery' in item.key
+            else 'wifi' if 'ip_networks' in item.key
+            else 'performance' if 'net_usage' in item.key
+            else 'services' if 'subscriptions' in item.key
+            else 'tariffs' if 'tariffs' in item.key
+            else 'location' if 'teryt' in item.key
+            else 'billing' if 'bulk_invoicing' in item.key
+            else 'logs' if 'admin_audit_logs' in item.key
+            else 'database' if 'admin_backups' in item.key
+            else 'maintenance' if 'admin_reload' in item.key
+            else 'settings' if 'config' in item.key
+            else 'maintenance' %}
+          
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_{{ icon_name }}.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_{{ icon_name }}.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">{{ item.label }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="p-4 border-t bg-muted/5">
+    <div class="flex items-center gap-3">
+      <div class="flex-1 min-w-0" x-show="sidebarOpen">
+        <p class="text-[11px] font-bold truncate leading-none mb-1">{{ portal_user.username if portal_user else 'Gość' }}</p>
+        {% if portal_user and portal_user.role %}
+        <p class="text-[9px] text-muted-foreground uppercase leading-none">{{ portal_user.role.value }}</p>
+        {% endif %}
+      </div>
+      <button onclick="toggleTheme()" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-muted-foreground transition-colors shrink-0">
+        <i class="fas fa-moon dark:hidden text-xs"></i>
+        <i class="fas fa-sun hidden dark:block text-xs"></i>
+      </button>
+    </div>
+  </div>
+</aside>
+{% endmacro %}

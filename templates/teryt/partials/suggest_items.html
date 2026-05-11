@@ -1,9 +1,10 @@
 {% for item in items %}
-<div class="suggest-item p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground border-b border-border/50 last:border-0" 
-     onclick="selectSuggestion(this, '{{ item.text }}', '{{ item.id or '' }}', '{{ item.type }}')">
+<div class="suggest-item p-3 cursor-pointer hover:bg-primary/10 border-b border-slate-100 dark:border-white/5 last:border-0 transition-colors" 
+     data-text="{{ item.text }}" data-id="{{ item.id or '' }}" data-type="{{ item.type }}"
+     onclick="selectSuggestion(this, this.dataset.text, this.dataset.id, this.dataset.type)">
      <div class="flex justify-between items-center">
-        <span>{{ item.text }}</span>
-        <span class="text-[9px] uppercase tracking-widest text-muted-foreground">{{ item.type }}</span>
+        <span class="text-xs font-medium">{{ item.text }}</span>
+        <span class="text-[8px] font-bold uppercase tracking-widest text-slate-500 bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">{{ item.type }}</span>
      </div>
 </div>
 {% endfor %}

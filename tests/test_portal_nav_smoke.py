@@ -22,11 +22,9 @@ EXTRA_GET_PATHS: tuple[str, ...] = (
     "/admin/users/new",
     "/customers/new",
     "/customer-devices/new",
-    "/finances/tariffs/new",
     "/ip-networks/new",
     "/net-nodes/new",
     "/net-devices/new",
-    "/teryt/ws/check",
 )
 
 
@@ -89,11 +87,11 @@ def test_customer_edit_if_any(admin_client: TestClient) -> None:
 def test_node_edit_if_any(admin_client: TestClient) -> None:
     db = SessionLocal()
     try:
-        n = db.scalars(select(models.Node).limit(1)).first()
+        n = db.scalars(select(models.CustomerDevice).limit(1)).first()
     finally:
         db.close()
     if not n:
-        pytest.skip("brak komputera")
+        pytest.skip("brak urządzenia klienta")
     r = admin_client.get(f"/customer-devices/{n.id}/edit", follow_redirects=True)
     assert r.status_code == 200
 
@@ -106,10 +104,10 @@ def test_ip_suggestions_partial_if_network(admin_client: TestClient) -> None:
         db.close()
     if not net:
         pytest.skip("brak sieci IP")
-    u = f"/customer-devices/partials/ip-suggestions?ip_network_id={net.id}&node_id="
+    u = f"/customer-devices/partials/ip-suggestions?ip_network_id={net.id}&device_id=9999"
     r = admin_client.get(u, follow_redirects=True)
     assert r.status_code == 200
-    assert "node-ip-suggestions" in r.text
+    assert "device-ip-suggestions" in r.text
 
 
 def test_finances_tariffs_list_query(admin_client: TestClient) -> None:

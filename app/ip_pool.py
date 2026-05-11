@@ -50,11 +50,11 @@ def collect_used_ipv4_in_network(
         if g:
             used.add(g)
 
-    nodes = list(db.scalars(select(models.Node)).all())
-    for node in nodes:
-        if exclude_node_id is not None and node.id == exclude_node_id:
+    nodes = list(db.scalars(select(models.CustomerDevice)).all())
+    for device in nodes:
+        if exclude_node_id is not None and device.id == exclude_node_id:
             continue
-        ip_s = _norm_ipv4(node.ip_address)
+        ip_s = _norm_ipv4(device.ip_address)
         if not ip_s:
             continue
         try:
@@ -140,11 +140,11 @@ def validate_node_ip_assignment(
         return False, "Niepoprawny adres IPv4."
 
     # Globalny duplikat na innych komputerach (nodes)
-    others = list(db.scalars(select(models.Node)).all())
-    for node in others:
-        if exclude_node_id is not None and node.id == exclude_node_id:
+    others = list(db.scalars(select(models.CustomerDevice)).all())
+    for device in others:
+        if exclude_node_id is not None and device.id == exclude_node_id:
             continue
-        o = _norm_ipv4(node.ip_address)
+        o = _norm_ipv4(device.ip_address)
         if o and o == ip_norm:
             return False, "Ten adres IP jest już przypisany do innego komputera."
 

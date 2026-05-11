@@ -1,0 +1,56 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <h2 class="text-2xl font-black text-white">{{ title }}</h2>
+    <a href="/vehicles-cli/new" class="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-xl font-bold text-sm">
+        <i class="fas fa-plus mr-2"></i> Dodaj
+    </a>
+</div>
+
+<div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+    <div class="p-6 border-b border-slate-800">
+        <form action="/vehicles-cli" method="get" class="flex gap-4">
+            <input type="text" name="q" value="{{ q }}" placeholder="Szukaj..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary">
+            <button type="submit" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold text-sm">Szukaj</button>
+        </form>
+    </div>
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-black/20 text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-800">
+                <th class="px-6 py-4">ID</th>
+                <th class="px-6 py-4">Marka</th>
+                <th class="px-6 py-4">Model</th>
+                <th class="px-6 py-4">Numer rejestracyjny</th>
+                <th class="px-6 py-4">DostĂ„â„˘pny</th>
+                <th class="px-6 py-4 text-right">Akcje</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+            {% for item in items %}
+            <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 text-xs font-mono text-primary">#{{ item.id }}</td>
+                <td class="px-6 py-4 text-sm text-slate-300">{{ item.brand }}</td>
+                <td class="px-6 py-4 text-sm text-slate-300">{{ item.model }}</td>
+                <td class="px-6 py-4 text-sm text-slate-300">{{ item.plate }}</td>
+                <td class="px-6 py-4 text-sm text-slate-300">{{ item.is_available }}</td>
+                <td class="px-6 py-4 text-right flex justify-end gap-2">
+                    <a href="/vehicles-cli/{{ item.id }}/edit" class="text-slate-500 hover:text-white transition-colors">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="/vehicles-cli/{{ item.id }}/delete" method="post" onsubmit="return confirm('Czy na pewno usunąć?')">
+                        <button type="submit" class="text-slate-500 hover:text-rose-400 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="px-6 py-20 text-center text-slate-500 italic">Brak danych</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -28,6 +28,15 @@ def get_required_env(key: str, default: str = None) -> str:
             raise RuntimeError(msg)
     return val
 
+# Authorization switch — readable at runtime (not cached at import)
+# Set AUTH_ENABLED=false in .env to bypass login during deployment
+def is_auth_enabled() -> bool:
+    val = os.environ.get("AUTH_ENABLED", "true")
+    return val.lower() not in ("false", "0", "no", "off")
+
+# Backward compat alias
+AUTH_ENABLED = is_auth_enabled()
+
 # Product branding
 APP_DISPLAY_NAME = os.environ.get("APP_DISPLAY_NAME", "SNMS Enterprise")
 

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8 animate-in fade-in duration-500">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-bold tracking-tight">Zaawansowane Narzędzia Odkrywania</h1>
+        <p class="text-muted-foreground text-sm">Skanowanie podsieci, wykrywanie sąsiadów (LLDP/CDP/MNDP) oraz identyfikacja urządzeń via SNMP.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Subnet Scanner -->
+        <div class="bg-card rounded-xl border shadow-sm overflow-hidden flex flex-col">
+            <div class="p-4 border-b bg-muted/5 flex items-center justify-between">
+                <h3 class="font-bold flex items-center gap-2">
+                    <i class="fas fa-satellite-dish text-primary"></i> Skaner Podsieci (IP Scan)
+                </h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <form hx-post="/admin/network-tools/scan-subnet" 
+                      hx-target="#scan-results" 
+                      hx-indicator="#scan-loader"
+                      class="flex gap-2">
+                    <input type="text" name="cidr" placeholder="np. 192.168.88.0/24" 
+                           class="flex-1 h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow hover:bg-primary/90 transition-all">
+                        Skanuj
+                    </button>
+                </form>
+                
+                <div id="scan-loader" class="htmx-indicator flex items-center justify-center py-8">
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-circle-notch fa-spin text-2xl text-primary"></i>
+                        <span class="text-xs font-bold text-muted-foreground animate-pulse">Trwa skanowanie...</span>
+                    </div>
+                </div>
+
+                <div id="scan-results" class="min-h-[200px]">
+                    <div class="text-center py-12 text-muted-foreground italic text-sm">
+                        Wprowadź zakres CIDR, aby rozpocząć skanowanie.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Neighbor Discovery -->
+        <div class="bg-card rounded-xl border shadow-sm overflow-hidden flex flex-col">
+            <div class="p-4 border-b bg-muted/5 flex items-center justify-between">
+                <h3 class="font-bold flex items-center gap-2">
+                    <i class="fas fa-project-diagram text-primary"></i> Odkrywanie Sąsiadów (LLDP/MNDP)
+                </h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Wybierz urządzenie zarządzane</label>
+                    <select id="neighbor-router" class="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            onchange="loadNeighbors(this.value)">
+                        <option value="">-- Wybierz router --</option>
+                        {% for r in routers %}
+                        <option value="{{ r.id }}">{{ r.name }} ({{ r.management_ip }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="neighbor-loader" class="hidden flex items-center justify-center py-8">
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-circle-notch fa-spin text-2xl text-primary"></i>
+                        <span class="text-xs font-bold text-muted-foreground animate-pulse">Pobieranie tablicy sąsiadów...</span>
+                    </div>
+                </div>
+
+                <div id="neighbors-container" class="min-h-[200px]">
+                    <div class="text-center py-12 text-muted-foreground italic text-sm">
+                        Wybierz urządzenie, aby zobaczyć wykrytych sąsiadów.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadNeighbors(deviceId) {
+    if (!deviceId) return;
+    const container = document.getElementById('neighbors-container');
+    const loader = document.getElementById('neighbor-loader');
+    
+    container.innerHTML = '';
+    loader.classList.remove('hidden');
+    
+    fetch(`/admin/network-tools/neighbors/${deviceId}`)
+        .then(response => response.text())
+        .then(html => {
+            loader.classList.add('hidden');
+            container.innerHTML = html;
+        });
+}
+</script>
+{% endblock %}

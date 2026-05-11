@@ -1,0 +1,62 @@
+{% extends "client/base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Quick Pay Section -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+        <h3 class="text-white font-black text-xl mb-6">Szybka płatność</h3>
+        <p class="text-slate-400 text-sm mb-8">Wybierz swój bank, aby zostać przekierowanym do bezpiecznej płatności online.</p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {% for bank in banks %}
+            <a href="https://{{ bank.id }}.pl" target="_blank" class="flex flex-col items-center gap-3 p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-primary/50 transition-all group">
+                <img src="{{ bank.logo }}" alt="{{ bank.name }}" class="w-10 h-10 grayscale group-hover:grayscale-0 transition-all">
+                <span class="text-[10px] font-bold text-slate-500 group-hover:text-white text-center">{{ bank.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Invoices List -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+        <div class="p-8 border-b border-slate-800">
+            <h3 class="text-white font-black text-xl">Historia faktur i płatności</h3>
+        </div>
+        <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-400 text-xs font-black uppercase tracking-widest">
+                <tr>
+                    <th class="px-8 py-4">Numer faktury</th>
+                    <th class="px-8 py-4">Data wystawienia</th>
+                    <th class="px-8 py-4">Termin płatności</th>
+                    <th class="px-8 py-4 text-right">Kwota brutto</th>
+                    <th class="px-8 py-4 text-center">Status</th>
+                    <th class="px-8 py-4 text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+                {% for inv in invoices %}
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="px-8 py-6 font-bold text-white">{{ inv.number }}</td>
+                    <td class="px-8 py-6 text-slate-400">{{ inv.issue_date.strftime('%d.%m.%Y') }}</td>
+                    <td class="px-8 py-6 text-slate-400">{{ inv.due_date.strftime('%d.%m.%Y') if inv.due_date else '-' }}</td>
+                    <td class="px-8 py-6 font-black text-white text-right">{{ inv.amount }} PLN</td>
+
+                    <td class="px-8 py-6 text-center">
+                        {% if inv.status == 'paid' %}
+                        <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase">Opłacona</span>
+                        {% else %}
+                        <span class="bg-rose-500/10 text-rose-400 text-[10px] font-black px-3 py-1 rounded-full uppercase animate-pulse">Oczekuje</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-8 py-6 text-center">
+                        <a href="#" class="text-primary hover:text-white transition-colors">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

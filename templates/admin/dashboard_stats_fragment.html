@@ -1,0 +1,115 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Active Hosts -->
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-xl hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400">
+                <i class="fas fa-users text-xl"></i>
+            </div>
+            <span class="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg uppercase tracking-widest">Live</span>
+        </div>
+        <h4 class="text-3xl font-black text-white mb-1">{{ active_hosts }}</h4>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aktywni Abonenci</p>
+    </div>
+
+    <!-- Network Devices -->
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-xl hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400">
+                <i class="fas fa-server text-xl"></i>
+            </div>
+            <span class="text-[10px] font-black text-blue-500 bg-blue-500/10 px-2 py-1 rounded-lg uppercase tracking-widest">Core</span>
+        </div>
+        <h4 class="text-3xl font-black text-white mb-1">{{ total_devices }}</h4>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Urządzenia Sieciowe</p>
+    </div>
+
+    <!-- Unpaid Finances -->
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-xl hover:border-rose-500/50 transition-all group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-400">
+                <i class="fas fa-file-invoice-dollar text-xl"></i>
+            </div>
+            <span class="text-[10px] font-black text-rose-500 bg-rose-500/10 px-2 py-1 rounded-lg uppercase tracking-widest">Zatory</span>
+        </div>
+        <h4 class="text-3xl font-black text-white mb-1">{{ "{:,.2f}".format(unpaid_total) }} PLN</h4>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nieopłacone Faktury</p>
+    </div>
+
+    <!-- Active Links -->
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-xl hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400">
+                <i class="fas fa-project-diagram text-xl"></i>
+            </div>
+            <span class="text-[10px] font-black text-purple-500 bg-purple-500/10 px-2 py-1 rounded-lg uppercase tracking-widest">Szkielet</span>
+        </div>
+        <h4 class="text-3xl font-black text-white mb-1">{{ links_count }}</h4>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aktywne Linki</p>
+    </div>
+</div>
+
+<div class="mt-8 bg-slate-900/50 border border-slate-800 p-8 rounded-3xl shadow-2xl">
+    <div class="flex items-center justify-between mb-8">
+        <h3 class="text-xl font-black text-white tracking-tight">Obciążenie Sieci (Live SNMP)</h3>
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Odświeżanie co 30s</span>
+        </div>
+    </div>
+    <div class="h-[300px]">
+        <canvas id="trafficChart"></canvas>
+    </div>
+</div>
+
+<script>
+(function() {
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'IN (bps)',
+                    data: [],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'OUT (bps)',
+                    data: [],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    async function updateChart() {
+        const resp = await fetch('/admin/stats/live-traffic');
+        const data = await resp.json();
+        chart.data.labels = data.labels;
+        chart.data.datasets[0].data = data.in;
+        chart.data.datasets[1].data = data.out;
+        chart.update();
+    }
+
+    updateChart();
+    setInterval(updateChart, 30000);
+})();
+</script>

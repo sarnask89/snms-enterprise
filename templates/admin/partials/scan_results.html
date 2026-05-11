@@ -1,0 +1,35 @@
+<div class="space-y-4 animate-in fade-in duration-300">
+    <div class="p-3 bg-primary/5 border rounded-lg flex items-center justify-between">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Wyniki skanowania: {{ cidr }}</span>
+        <span class="text-[10px] font-bold text-muted-foreground">{{ results|length }} znalezionych urządzeń</span>
+    </div>
+
+    <div class="grid gap-2">
+        {% for r in results %}
+        <div class="p-3 rounded-lg border bg-muted/20 flex items-center justify-between group hover:border-primary/30 transition-all">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-600">
+                    <i class="fas fa-check text-[10px]"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-bold">{{ r.ip }}</div>
+                    {% if r.snmp %}
+                    <div class="text-[10px] text-muted-foreground font-medium">
+                        {{ r.snmp.sysName }} <span class="mx-1 text-muted-foreground/30">•</span> {{ r.snmp.sysDescr }}
+                    </div>
+                    {% else %}
+                    <div class="text-[10px] text-muted-foreground italic">Brak odpowiedzi SNMP</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="px-2 py-1 bg-background border rounded text-[10px] font-bold hover:bg-accent">Importuj</button>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-muted-foreground italic text-sm">
+            Nie znaleziono aktywnych urządzeń w podanym zakresie.
+        </div>
+        {% endfor %}
+    </div>
+</div>

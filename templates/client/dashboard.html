@@ -1,0 +1,133 @@
+{% extends "client/base.html" %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Balance Card -->
+    <div class="lg:col-span-2 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+            <i class="fas fa-wallet text-8xl text-primary"></i>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Saldo Twojego konta</h3>
+            <div class="flex items-baseline gap-2 mb-8">
+                <span class="text-5xl font-black text-white">0,00</span>
+                <span class="text-xl font-bold text-slate-500">PLN</span>
+            </div>
+            
+            <div class="flex flex-wrap gap-4">
+                <a href="/client/payments" class="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2">
+                    <i class="fas fa-plus-circle text-xs"></i> Doładuj konto / Zapłać
+                </a>
+                <a href="/client/payments" class="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+                    <i class="fas fa-file-invoice text-xs"></i> Historia faktur
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Services Card -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+        <h3 class="text-white font-bold mb-6 flex items-center gap-2">
+            <i class="fas fa-satellite-dish text-primary"></i> Twoje Usługi
+        </h3>
+        <div class="space-y-4">
+            {% for sub in subscriptions %}
+            <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                <div>
+                    <p class="text-xs font-bold text-white">{{ sub.tariff.name if sub.tariff else 'Usługa' }}</p>
+                    <p class="text-[10px] text-slate-500">Aktywna do: {{ sub.end_date.strftime('%d.%m.%Y') if sub.end_date else 'Nieokreślono' }}</p>
+                </div>
+
+                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50"></div>
+            </div>
+            {% else %}
+            <p class="text-xs text-slate-500 italic">Brak aktywnych subskrypcji.</p>
+            {% endfor %}
+        </div>
+        <a href="/client/shop" class="mt-6 block text-center text-xs font-bold text-primary hover:underline">Zmień plan lub dokup usługi</a>
+    </div>
+
+    <!-- Recent Activity / Invoices -->
+    <div class="lg:col-span-2 space-y-6">
+        <h3 class="text-white font-black text-xl tracking-tight">Ostatnie faktury</h3>
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-white/5 border-b border-slate-800">
+                    <tr>
+                        <th class="px-6 py-4 font-bold text-slate-400 text-xs uppercase">Numer</th>
+                        <th class="px-6 py-4 font-bold text-slate-400 text-xs uppercase">Data</th>
+                        <th class="px-6 py-4 font-bold text-slate-400 text-xs uppercase text-right">Kwota</th>
+                        <th class="px-6 py-4 font-bold text-slate-400 text-xs uppercase text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                    {% for inv in invoices %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4 font-bold text-white">{{ inv.number }}</td>
+                        <td class="px-6 py-4 text-slate-400">{{ inv.issue_date.strftime('%d.%m.%Y') }}</td>
+                        <td class="px-6 py-4 font-black text-white text-right">{{ inv.amount }} PLN</td>
+                        <td class="px-6 py-4 text-center">
+
+                            {% if inv.status == 'paid' %}
+                            <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-2 py-1 rounded-md uppercase">Zapłacona</span>
+                            {% else %}
+                            <span class="bg-rose-500/10 text-rose-400 text-[10px] font-black px-2 py-1 rounded-md uppercase">Nieopłacona</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Helpdesk Status -->
+    <div class="space-y-6">
+        <h3 class="text-white font-black text-xl tracking-tight">Twoje zgłoszenia</h3>
+        <div class="space-y-4">
+            {% for ticket in tickets %}
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all cursor-pointer">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">TICKET #{{ ticket.id }}</span>
+                    <span class="text-[10px] font-black uppercase bg-slate-800 px-2 py-0.5 rounded text-slate-300">{{ ticket.status }}</span>
+                </div>
+                <p class="text-sm font-bold text-white line-clamp-1">{{ ticket.title }}</p>
+                <p class="text-[10px] text-slate-500 mt-2">{{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+            </div>
+            {% else %}
+            <div class="bg-slate-900/50 border border-dashed border-slate-800 rounded-2xl p-10 text-center">
+                <i class="fas fa-check-circle text-slate-800 text-4xl mb-4"></i>
+                <p class="text-xs text-slate-500">Wszystkie zgłoszenia rozwiązane.</p>
+            </div>
+            {% endfor %}
+            <a href="/client/helpdesk" class="block w-full py-3 border border-white/10 rounded-xl text-center text-xs font-bold hover:bg-white/5 transition-all">Nowe zgłoszenie</a>
+        </div>
+    </div>
+
+    <!-- Usage Stats -->
+    <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-3xl p-8">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-white font-black text-xl tracking-tight">Twoje zużycie danych</h3>
+            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <div class="w-2 h-2 rounded-full bg-primary"></div> Pobieranie
+                <div class="w-2 h-2 rounded-full bg-blue-400 ml-4"></div> Wysyłanie
+            </div>
+        </div>
+        
+        <div class="h-48 flex items-end justify-between gap-2 px-2">
+            {% for i in range(24) %}
+            {% set h = [20, 35, 45, 60, 80, 70, 90, 85, 40, 30, 25, 45, 60, 75, 95, 80, 65, 50, 45, 60, 85, 90, 70, 40] %}
+            <div class="flex-1 flex flex-col gap-1 items-center">
+                <div class="w-full bg-primary/20 rounded-t-lg relative group transition-all hover:bg-primary/40" style="height: {{ h[i] }}%">
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-[8px] font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        {{ h[i] * 1.2 | round(1) }} GB
+                    </div>
+                </div>
+                <span class="text-[8px] text-slate-600 font-bold">{{ i }}:00</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

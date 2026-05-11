@@ -3,6 +3,16 @@
 {% from "components/table.html" import badge %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Real-time Health Dashboard -->
+<div hx-get="/admin/stats/network-health" hx-trigger="load" hx-swap="outerHTML" class="mb-8">
+    <div class="flex flex-col items-center justify-center p-20 bg-slate-900/50 border border-dashed border-slate-800 rounded-3xl animate-pulse">
+        <i class="fas fa-circle-notch fa-spin text-primary text-3xl mb-4"></i>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inicjalizacja modułu monitoringu...</p>
+    </div>
+</div>
+
 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
     
     <!-- Statystyki Szybkie -->
@@ -27,13 +37,75 @@
     </div>
     {% endcall %}
 
-    {% call card(title=counts.nodes, subtitle="Urządzeń w sieci") %}
+    {% call card(title=counts.nodes, subtitle="Urządzeń klientów") %}
     <div class="flex items-center justify-between">
         <i class="fas fa-server text-3xl text-primary opacity-20"></i>
-        <a href="/net-nodes" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Infrastruktura</a>
+        <a href="/customer-devices" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Urządzenia</a>
     </div>
     {% endcall %}
 </div>
+
+<!-- Active Alarms (NMS) -->
+{% if active_alarms %}
+<div class="mt-8 bg-card border border-destructive/20 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+    <div class="p-6 border-b flex items-center justify-between bg-destructive/5">
+        <h3 class="text-lg font-black flex items-center gap-2 text-destructive">
+            <i class="fas fa-exclamation-triangle animate-pulse"></i> AKTYWNE ALARMY (NMS)
+        </h3>
+        <span class="text-[10px] font-black bg-destructive/20 text-destructive px-3 py-1 rounded-full uppercase tracking-widest">{{ active_alarms|length }} PROBLEMÓW</span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-muted/30 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-b">
+                <tr>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Nazwa Alarmu</th>
+                    <th class="px-6 py-4">Wartość</th>
+                    <th class="px-6 py-4">Czas Zdarzenia</th>
+                    <th class="px-6 py-4">Poziom</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50 text-sm">
+                {% for alarm in active_alarms %}
+                <tr class="hover:bg-destructive/[0.02] transition-colors group">
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-destructive text-destructive-foreground font-black text-[9px] shadow-sm">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
+                            PROBLEM
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-foreground">{{ alarm.name }}</div>
+                        <div class="text-[10px] text-muted-foreground font-mono">ID: {{ alarm.id }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-xs bg-muted/50 px-2 py-1 rounded border">{{ alarm.last_value }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-muted-foreground text-xs">
+                        {{ alarm.last_change.strftime('%Y-%m-%d %H:%M:%S') if alarm.last_change else '-' }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if alarm.severity == 'disaster' %}
+                        <span class="inline-flex items-center gap-1 text-rose-600 font-black uppercase text-[10px] px-2 py-1 rounded-md bg-rose-500/10">
+                            <i class="fas fa-skull"></i> Disaster
+                        </span>
+                        {% elif alarm.severity == 'high' %}
+                        <span class="inline-flex items-center gap-1 text-orange-600 font-black uppercase text-[10px] px-2 py-1 rounded-md bg-orange-500/10">
+                            <i class="fas fa-fire"></i> High
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-amber-600 font-black uppercase text-[10px] px-2 py-1 rounded-md bg-amber-500/10">
+                            <i class="fas fa-info-circle"></i> {{ alarm.severity|upper }}
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
 
 <div class="grid gap-6 md:grid-cols-2 mt-8">
     {% call card(title="Integracja TERYT", subtitle="Status bazy adresowej") %}

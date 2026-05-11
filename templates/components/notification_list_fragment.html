@@ -1,0 +1,26 @@
+{% if notifications %}
+    {% for n in notifications %}
+    <div class="p-4 border-b border-black/5 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+        <div class="flex gap-3">
+            <div class="mt-1">
+                {% if n.level == 'critical' %}
+                    <i class="fas fa-exclamation-circle text-rose-500"></i>
+                {% elif n.level == 'warning' %}
+                    <i class="fas fa-exclamation-triangle text-amber-500"></i>
+                {% else %}
+                    <i class="fas fa-info-circle text-blue-500"></i>
+                {% endif %}
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-white leading-tight">{{ n.title }}</p>
+                <p class="text-[10px] text-slate-500 line-clamp-2 mt-1">{{ n.message }}</p>
+                <p class="text-[8px] font-black uppercase text-slate-400 mt-2 tracking-widest">{{ n.created_at.strftime("%H:%M, %d.%m") }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="p-8 text-center">
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Brak nowych powiadomień</p>
+    </div>
+{% endif %}

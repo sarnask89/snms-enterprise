@@ -6,6 +6,7 @@ from app.config import APP_DISPLAY_NAME, BASE_DIR
 from app.database import db_manager
 from app.models import UserRole
 from app.nav_access import grouped_visible_nav, visible_nav_items
+from app.services.ui_service import ui_service
 
 # Preconfigure Jinja2 environment to avoid DeprecationWarning
 env = jinja2.Environment(
@@ -27,6 +28,9 @@ def render(
     ctx = dict(context or {})
     u = getattr(request.state, "portal_user", None)
     ctx["portal_user"] = u
+    c = getattr(request.state, "client_user", None)
+    ctx["client_user"] = c
+
     cached = getattr(request.state, "nav_items_for_template", None)
     if u:
         if cached is not None:
@@ -56,6 +60,11 @@ def render(
         ctx["visible_menu_keys"] = set()
     ctx.setdefault("title", "")
     ctx.setdefault("app_name", APP_DISPLAY_NAME)
+    
+    # UI Plugin Integration
+    ctx["ui"] = ui_service.get_theme_assets(request)
+    ctx["breadcrumbs"] = ui_service.get_breadcrumb(request, ctx["title"])
+    
     resp = templates.TemplateResponse(request, name, ctx)
     if status_code is not None:
         resp.status_code = status_code
