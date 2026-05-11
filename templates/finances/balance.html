@@ -5,6 +5,32 @@
 
 {% block content %}
 <div class="flex flex-col gap-8">
+    <!-- Financial Overview Chart -->
+    <div class="bg-card border rounded-3xl p-6 shadow-xl" x-data="{
+        async init() {
+            const resp = await fetch('/admin/stats/financial-summary');
+            const data = await resp.json();
+            const options = {
+                series: data.series,
+                chart: { type: 'bar', height: 250, toolbar: { show: false }, background: 'transparent' },
+                colors: ['#10b981', '#f43f5e'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
+                dataLabels: { enabled: false },
+                xaxis: { categories: data.labels, axisBorder: { show: false }, labels: { style: { fontSize: '10px' } } },
+                grid: { borderColor: 'hsl(var(--border)/0.5)', strokeDashArray: 4 },
+                theme: { mode: 'dark' },
+                legend: { position: 'top', horizontalAlign: 'right', fontSize: '10px' }
+            };
+            new ApexCharts(this.$refs.finChart, options).render();
+        }
+    }">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-500"></i> Podsumowanie Finansowe (Roczne)
+            </h3>
+        </div>
+        <div x-ref="finChart" class="min-h-[250px]"></div>
+    </div>
     {% if can_write_crm %}
     {% call card(title="Nowa operacja księgowa", subtitle="Ręczne wpisy do księgi głównej (LMS Ledger)") %}
     <form method="post" action="/finances/balance/new">

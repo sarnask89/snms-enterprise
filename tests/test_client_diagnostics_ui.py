@@ -1,5 +1,5 @@
 import pytest
-from app import models
+from app.models import NetNode as Node
 
 def test_node_edit_form_has_diagnostics(admin_client, session):
     # Setup: create a test customer, device, and node
@@ -15,7 +15,7 @@ def test_node_edit_form_has_diagnostics(admin_client, session):
     session.add(net)
     session.flush()
 
-    n = models.Node(
+    n = Node(
         customer_id=c.id, 
         name="TestNode", 
         hostname="TestNode", 
@@ -23,10 +23,11 @@ def test_node_edit_form_has_diagnostics(admin_client, session):
         mac_address="AA:BB:CC:DD:EE:FF",
         net_device_id=dev.id,
         ip_network_id=net.id,
-        status=models.NodeStatus.active
+        status=models.NetNodeStatus.active
     )
     session.add(n)
     session.commit()
+
 
     # Get the edit form
     resp = admin_client.get(f"/customer-devices/{n.id}/edit")

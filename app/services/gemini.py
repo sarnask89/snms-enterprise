@@ -1,8 +1,13 @@
 import os
 import logging
 import json
-from google import genai
-from google.genai import types
+try:
+    from google import genai
+    from google.genai import types
+except ImportError:
+    genai = None
+    types = None
+
 from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -11,11 +16,18 @@ class GeminiService:
     def __init__(self):
         # Inicjalizacja klienta z ustawień systemowych (GOOGLE_CLOUD_PROJECT, GOOGLE_CLOUD_LOCATION)
         # Używamy trybu Vertex AI dla zgodności z korporacyjnymi standardami Agent Platform
-        self.client = genai.Client(
-            vertexai=True, 
-            project=os.getenv("GOOGLE_CLOUD_PROJECT"),
-            location=os.getenv("GOOGLE_CLOUD_LOCATION", "global")
-        )
+        if genai:
+            try:
+                self.client = genai.Client(
+                    vertexai=True, 
+                    project=os.getenv("GOOGLE_CLOUD_PROJECT"),
+                    location=os.getenv("GOOGLE_CLOUD_LOCATION", "global")
+                )
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini client: {e}")
+                self.client = None
+        else:
+            self.client = None
         self.model_id = "gemini-3.1-flash-preview"
 
     async def smart_parse_comment(self, comment: str) -> Optional[Dict[str, Any]]:

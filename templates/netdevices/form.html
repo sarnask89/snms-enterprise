@@ -32,14 +32,14 @@
                 </div>
             </div>
 
-            <div class="grid sm:grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    {{ label("Hostname", for="hostname") }}
-                    {{ input("hostname", value=device.hostname if device else "", id="hostname", placeholder="np. router.local") }}
+            <div class="grid sm:grid-cols-3 gap-4">
+                <div class="space-y-2 sm:col-span-2">
+                    {{ label("IP Zarządzania", for="management_ip") }}
+                    {{ input("management_ip", value=device.management_ip.split(':')[0] if (device and device.management_ip) else "", id="management_ip", placeholder="np. 10.0.0.1") }}
                 </div>
                 <div class="space-y-2">
-                    {{ label("IP Zarządzania", for="management_ip") }}
-                    {{ input("management_ip", value=device.management_ip if device else "", id="management_ip", placeholder="np. 10.0.0.1") }}
+                    {{ label("Port", for="management_port") }}
+                    {{ input("management_port", value=device.management_ip.split(':')[1] if (device and device.management_ip and ':' in device.management_ip) else "22502", id="management_port", placeholder="22") }}
                 </div>
             </div>
 
@@ -65,18 +65,36 @@
 
             <div class="grid sm:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    {{ label("Sieć IP", for="ip_network_id") }}
-                    {% set net_opts = [("", "— wybierz sieć —")] %}
-                    {% for n in networks %}
-                        {% do net_opts.append((n.id, n.name)) %}
-                    {% endfor %}
-                    {{ select("ip_network_id", net_opts, selected_id=device.ip_network_id if device else "", id="ip_network_id") }}
+                    {{ label("Typ urządzenia", for="device_type") }}
+                    {{ input("device_type", value=device.device_type if device else "other", id="device_type", placeholder="np. router, olt, onu, switch") }}
                 </div>
                 <div class="space-y-2">
                     {{ label("Status urządzenia", for="status") }}
                     {{ select("status", [("active", "Aktywne"), ("inactive", "Magazyn"), ("maintenance", "Serwis")], selected_id=device.status.value if device else "active", id="status") }}
                 </div>
             </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    {{ label("Urządzenie nadrzędne (Uplink)", for="parent_device_id") }}
+                    <select name="parent_device_id" id="parent_device_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">— brak (szkielet) —</option>
+                        {% for d in all_devices %}
+                        <option value="{{ d.id }}" {% if device and device.parent_device_id == d.id %}selected{% endif %}>{{ d.name }} ({{ d.device_type }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    {{ label("Właściciel (Klient)", for="customer_id") }}
+                    <select name="customer_id" id="customer_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">— infrastruktura operatora —</option>
+                        {% for c in customers %}
+                        <option value="{{ c.id }}" {% if device and device.customer_id == c.id %}selected{% endif %}>{{ c.last_name }} {{ c.first_name }} (ID: {{ c.id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
         </div>
         {% endcall %}
 
@@ -120,5 +138,55 @@
             </button>
         </div>
     </form>
+    
+    {% if device and device.driver_type == 'dasan_nos' %}
+    <div class="mt-8">
+        {% call card(title="Zarządzanie OLT", subtitle="Aktywne porty PON i końcówki ONU") %}
+        <div class="space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-sm text-muted-foreground">Podgląd na żywo podłączonych ONU z bazy oraz OLT (Sygnał, MAC, itp.)</p>
+                <form method="post" action="/net-devices/{{ device.id }}/sync-onus">
+                    <button type="submit" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded shadow transition-colors">
+                        <i class="fas fa-sync mr-1"></i> Wymuś Odkrywanie ONU
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Pobranie unikalnych portów OLT -->
+            {% set pon_ports = [] %}
+            {% for onu in device.child_devices if onu.device_type == 'onu' and onu.olt_port not in pon_ports %}
+                {% do pon_ports.append(onu.olt_port) %}
+            {% endfor %}
+
+            <div class="bg-slate-50 p-4 border rounded-lg">
+                <div class="flex items-center gap-4">
+                    <label for="pon_port_select" class="text-sm font-semibold text-slate-700">Wybierz Port PON:</label>
+                    <select id="pon_port_select" 
+                            class="border border-slate-300 rounded px-3 py-1.5 text-sm w-48 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            hx-get="/net-devices/{{ device.id }}/pon-port/"
+                            hx-target="#onu_table_container"
+                            hx-indicator="#onu_loading"
+                            onchange="this.setAttribute('hx-get', '/net-devices/{{ device.id }}/pon-port/' + this.value); htmx.process(this); htmx.trigger(this, 'change')">
+                        <option value="">-- wybierz port --</option>
+                        {% for port in pon_ports|sort %}
+                        <option value="{{ port }}">Port PON {{ port }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <div id="onu_loading" class="htmx-indicator flex items-center text-blue-600 text-sm font-semibold">
+                        <i class="fas fa-circle-notch fa-spin mr-2"></i> Pobieranie danych z OLT na żywo...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kontener na tabele na żywo -->
+            <div id="onu_table_container" class="border rounded-lg overflow-hidden min-h-[100px] flex items-center justify-center bg-slate-50/50">
+                <span class="text-slate-400 italic text-sm p-8">Wybierz port powyżej, aby załadować listę urządzeń.</span>
+            </div>
+            
+        </div>
+        {% endcall %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

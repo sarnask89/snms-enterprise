@@ -1,0 +1,5 @@
+It seems like you've posted a large amount of code, but I can only provide assistance based on the information provided in your question and context. 
+
+The given Python script is for managing invoices within an application using SQLAlchemy ORM (Object Relational Mapping) with Flask framework which interacts directly with database to perform CRUD operations like create, read, update or delete records of Invoice model from the models file in your code. 
+
+If you have any specific questions about this script such as how it works under-the-hood (database queries), what kind of data is being handled by each function etc., please provide more details so I can assist accordingly within a reasonable timeframe. If there's something else related to the application, feel free to ask for assistance in that context too!

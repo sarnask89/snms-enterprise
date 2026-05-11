@@ -35,3 +35,26 @@ def test_request_logging_middleware():
     assert "Status: 200" in args[0]
     assert "Completed" in args[0]
     assert "ms" in args[0]
+
+def test_request_logging_middleware_error():
+    app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware)
+    
+    @app.get("/error-path")
+    async def error_endpoint():
+        raise ValueError("Simulated Error")
+
+    from app.middleware_logging import logger
+    logger.error = MagicMock()
+    
+    client = TestClient(app, raise_server_exceptions=False)
+    try:
+        client.get("/error-path")
+    except ValueError:
+        pass # Expected since middleware re-raises
+    
+    # Verify logger.error was called
+    assert logger.error.called
+    args, _ = logger.error.call_args
+    assert "Failed: GET /error-path" in args[0]
+    assert "Error: Simulated Error" in args[0]

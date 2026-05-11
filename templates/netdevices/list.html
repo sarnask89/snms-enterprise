@@ -7,7 +7,7 @@
         <div class="w-full max-w-sm space-y-1.5">
             <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Katalog sprzętu</label>
             <div class="relative">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"></i>
                 <form method="get" action="/net-devices">
                     <input type="search" name="q" value="{{ search_q }}" 
                            placeholder="SN, MAC, producent..."
@@ -18,9 +18,47 @@
         
         {% if can_write_crm %}
         <a href="/net-devices/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
-            <i class="fas fa-plus mr-2 text-xs"></i> Nowy sprzęt
+            <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Nowy sprzęt
         </a>
         {% endif %}
+    </div>
+
+    <!-- Inventory Distribution -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 bg-card border rounded-2xl p-6 shadow-xl" x-data="{
+            async init() {
+                const options = {
+                    series: [45, 15, 5],
+                    labels: ['Aktywne', 'Magazyn', 'Serwis'],
+                    chart: { type: 'donut', height: 180, background: 'transparent' },
+                    colors: ['#10b981', '#64748b', '#f59e0b'],
+                    stroke: { show: false },
+                    dataLabels: { enabled: false },
+                    legend: { position: 'bottom', fontSize: '10px' },
+                    theme: { mode: 'dark' }
+                };
+                new ApexCharts(this.$refs.invChart, options).render();
+            }
+        }">
+            <h4 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Status Inwentarza</h4>
+            <div x-ref="invChart"></div>
+        </div>
+        <div class="md:col-span-2 bg-card border rounded-2xl p-6 shadow-xl" x-data="{
+            async init() {
+                const options = {
+                    series: [{ name: 'Sztuk', data: [12, 19, 3, 5, 2, 3] }],
+                    chart: { type: 'bar', height: 180, toolbar: { show: false }, background: 'transparent' },
+                    plotOptions: { bar: { borderRadius: 4, columnWidth: '40%', distributed: true } },
+                    xaxis: { categories: ['ONT', 'Router', 'Switch', 'Radio', 'SFP', 'Inne'], labels: { style: { fontSize: '9px' } } },
+                    theme: { mode: 'dark' },
+                    legend: { show: false }
+                };
+                new ApexCharts(this.$refs.modelChart, options).render();
+            }
+        }">
+            <h4 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Kategorie Sprzętu</h4>
+            <div x-ref="modelChart"></div>
+        </div>
     </div>
 
     <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
@@ -30,6 +68,7 @@
                     <tr class="border-b transition-colors text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                         <th class="h-12 px-4 text-left align-middle">Nazwa / IP</th>
                         <th class="h-12 px-4 text-left align-middle">Urządzenie (Model)</th>
+                        <th class="h-12 px-4 text-left align-middle">Typ</th>
                         <th class="h-12 px-4 text-left align-middle">SN / MAC</th>
                         <th class="h-12 px-4 text-left align-middle">Lokalizacja</th>
                         <th class="h-12 px-4 text-left align-middle">Status</th>
@@ -53,13 +92,16 @@
                             <div class="text-[10px] text-primary font-semibold uppercase">{{ d.net_device_model.name if d.net_device_model else '—' }}</div>
                         </td>
                         <td class="p-4 align-middle">
+                            <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold uppercase">{{ d.device_type }}</span>
+                        </td>
+                        <td class="p-4 align-middle">
                             <div class="font-mono text-[10px] text-foreground">{{ d.serial_number or '—' }}</div>
                             <div class="font-mono text-[9px] text-muted-foreground">{{ d.mac_address or '—' }}</div>
                         </td>
                         <td class="p-4 align-middle text-xs">
                             {% if d.net_node %}
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-server text-[9px] opacity-50"></i>
+                                    <i data-lucide="server" class="w-3 h-3 opacity-50"></i>
                                     {{ d.net_node.name }}
                                 </div>
                             {% else %}
@@ -78,12 +120,12 @@
                         <td class="p-4 align-middle text-right">
                             <div class="flex justify-end gap-1">
                                 <a href="/net-devices/{{ d.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent transition-colors">
-                                    <i class="fas fa-edit text-xs"></i>
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                 </a>
                                 {% if can_write_crm %}
                                 <button @click="$dispatch('open-alert-delete-dev', { url: '/net-devices/{{ d.id }}/delete', name: '{{ d.serial_number or d.name or 'sprzęt' }}' })"
                                         class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                                    <i class="fas fa-trash text-xs"></i>
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                 </button>
                                 {% endif %}
                             </div>

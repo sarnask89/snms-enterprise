@@ -1,0 +1,43 @@
+import { spawn } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const target = body.target || 'app'; 
+  
+  const rootDir = path.resolve(process.cwd(), '../../');
+  const pidFile = path.join(rootDir, '.agent.pid');
+  const logFile = path.join(rootDir, 'agent.log');
+
+  if (fs.existsSync(pidFile)) {
+    try {
+      const pid = parseInt(fs.readFileSync(pidFile, 'utf-8'));
+      process.kill(pid, 0); 
+      return { status: 'already_running', message: `Agent is already running.` };
+    } catch (e) {
+      fs.unlinkSync(pidFile);
+    }
+  }
+
+  const scriptPath = path.join(rootDir, 'translate_to_ts.py');
+  const pythonPath = path.join(rootDir, '.venv', 'Scripts', 'python.exe');
+
+  const out = fs.openSync(logFile, 'w');
+  const err = fs.openSync(logFile, 'a');
+
+  try {
+    const child = spawn(pythonPath, [scriptPath, '--src', target, '--dest', 'crm-portal-ts/src'], {
+        cwd: rootDir,
+        detached: true,
+        stdio: ['ignore', out, err]
+    });
+    
+    child.unref();
+    fs.writeFileSync(pidFile, child.pid.toString());
+
+    return { status: 'started', message: `Agent started on target: ${target}` };
+  } catch(e) {
+    return { status: 'error', message: e.message };
+  }
+});

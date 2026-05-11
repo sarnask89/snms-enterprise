@@ -23,6 +23,7 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
     ("netdevices", "Katalog osprzętu", "/net-devices", 22),
     ("device_groups", "Grupy urządzeń", "/device-groups", 22.5),
     ("admin_discovery", "Odkrywanie Mikrotik", "/admin/discovery", 23),
+    ("admin_olt_discovery", "Odkrywanie OLT", "/admin/olt-discovery", 23.5),
     ("admin_pit", "PIT UKE", "/admin/pit", 24),
     ("admin_passport", "Paszportyzacja", "/admin/passport/map", 25),
     ("monitoring", "Monitorowanie", "/admin/monitoring", 26),
@@ -85,7 +86,7 @@ NAV_DEFINITION: list[tuple[str, str, str, float]] = [
 NAV_GROUPS: list[tuple[str, tuple[str, ...]]] = [
     ("Start", ("dashboard",)),
     ("Klienci", ("customers", "customer_add", "customer_groups")),
-    ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices", "device_groups", "monitoring", "network_tools", "monitoring_gpu", "monitor_config", "diagnostics", "admin_discovery", "admin_pit", "admin_passport")),
+    ("Infrastruktura", ("net_nodes", "net_map", "nodes", "netdevices", "device_groups", "monitoring", "network_tools", "monitoring_gpu", "monitor_config", "diagnostics", "admin_discovery", "admin_olt_discovery", "admin_pit", "admin_passport")),
     ("Sieci IP", ("ip_networks", "net_usage", "addresses")),
     ("Finanse", ("subscriptions", "tariffs", "invoices", "payments", "ledger", "cash", "bulk_invoicing")),
     ("Helpdesk", ("helpdesk_tickets", "helpdesk_queues", "helpdesk_reports")),

@@ -4,11 +4,12 @@
 {% from "components/combobox.html" import combobox %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-8">
+<div class="max-w-7xl mx-auto space-y-8">
     <form method="post" action="{% if device %}/customer-devices/{{ device.id }}/edit{% else %}/customer-devices/new{% endif %}" class="space-y-8">
         
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="space-y-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Left Side: Main Form Fields -->
+            <div class="lg:col-span-2 space-y-8">
                 {% call card(title="Urządzenie klienta", subtitle="Konfiguracja dostępu abonenta") %}
                 <div class="grid gap-6">
                     <div class="space-y-2">
@@ -55,9 +56,7 @@
                     </div>
                 </div>
                 {% endcall %}
-            </div>
 
-            <div class="space-y-8">
                 {% call card(title="Parametry Sieciowe", subtitle="VLAN i routing") %}
                 <div class="grid gap-6">
                     <div class="space-y-2">
@@ -92,151 +91,195 @@
                 </div>
                 {% endcall %}
             </div>
-        </div>
 
-        {% if device %}
-        <div class="space-y-8">
-            {% call card(title="Usługi i Taryfy", subtitle="Aktywny plan abonamentowy przypisany do urządzenia") %}
-            <div class="space-y-4">
-                {% if active_sub %}
-                <div class="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Aktywna usługa</span>
-                        <span class="text-[10px] font-mono text-muted-foreground">{{ active_sub.start_date }}</span>
-                    </div>
-                    <div class="font-bold text-lg text-primary">{{ active_sub.tariff.name }}</div>
-                    <div class="text-xs text-muted-foreground mt-1">
-                        {{ active_sub.speed_down_mbps or active_sub.tariff.speed_down_mbps }}M / 
-                        {{ active_sub.speed_up_mbps or active_sub.tariff.speed_up_mbps }}M Mbps
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-emerald-500/10 flex items-end justify-between">
-                        <div>
-                            <div class="text-[9px] text-muted-foreground uppercase">Cena Netto</div>
-                            <div class="font-mono text-sm font-bold">{{ "%.2f"|format(active_sub.tariff.monthly_price|float) }} PLN</div>
+            <!-- Right Side -->
+            <div class="space-y-8">
+                {% if device %}
+                {% call card(title="Usługi i Taryfy", subtitle="Aktywny plan abonamentowy przypisany do urządzenia") %}
+                <div class="space-y-4">
+                    {% if active_sub %}
+                    <div class="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Aktywna usługa</span>
+                            <span class="text-[10px] font-mono text-muted-foreground">{{ active_sub.start_date }}</span>
                         </div>
-                        <div class="text-right">
-                            <div class="text-[9px] text-primary uppercase font-bold">Cena Brutto</div>
-                            <div class="font-mono text-lg font-black text-primary">{{ "%.2f"|format(active_sub.tariff.monthly_price_gross|float) }} PLN</div>
+                        <div class="font-bold text-lg text-primary">{{ active_sub.tariff.name }}</div>
+                        <div class="text-xs text-muted-foreground mt-1">
+                            {{ active_sub.speed_down_mbps or active_sub.tariff.speed_down_mbps }}M / 
+                            {{ active_sub.speed_up_mbps or active_sub.tariff.speed_up_mbps }}M Mbps
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-emerald-500/10 flex items-end justify-between">
+                            <div>
+                                <div class="text-[9px] text-muted-foreground uppercase">Cena Netto</div>
+                                <div class="font-mono text-sm font-bold">{{ "%.2f"|format(active_sub.tariff.monthly_price|float) }} PLN</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[9px] text-primary uppercase font-bold">Cena Brutto</div>
+                                <div class="font-mono text-lg font-black text-primary">{{ "%.2f"|format(active_sub.tariff.monthly_price_gross|float) }} PLN</div>
+                            </div>
                         </div>
                     </div>
+                    {% else %}
+                    <div class="p-8 text-center border border-dashed rounded-lg">
+                        <i class="fas fa-receipt text-3xl mb-3 opacity-20"></i>
+                        <p class="text-sm text-muted-foreground italic">Brak przypisanej usługi do tego urządzenia.</p>
+                        <a href="/subscriptions/new?customer_id={{ device.customer_id }}&device_id={{ device.id }}" class="mt-4 inline-flex items-center text-xs font-bold text-primary hover:underline">
+                            <i class="fas fa-plus mr-1"></i> Przypisz taryfę teraz
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="p-8 text-center border border-dashed rounded-lg">
-                    <i class="fas fa-receipt text-3xl mb-3 opacity-20"></i>
-                    <p class="text-sm text-muted-foreground italic">Brak przypisanej usługi do tego urządzenia.</p>
-                    <a href="/subscriptions/new?customer_id={{ device.customer_id }}&device_id={{ device.id }}" class="mt-4 inline-flex items-center text-xs font-bold text-primary hover:underline">
-                        <i class="fas fa-plus mr-1"></i> Przypisz taryfę teraz
-                    </a>
+                {% endcall %}
+
+                {% call card(title="Network & Diagnostics", subtitle="Narzędzia diagnostyczne i synchronizacja") %}
+                <div class="grid gap-2 mb-4">
+                    <button type="button" 
+                            class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors w-full"
+                            hx-post="/diagnostics/check/{{ device.id }}" 
+                            hx-target="#diag-results">
+                        <i class="fas fa-network-wired mr-2 text-primary"></i> Sprawdź urządzenie
+                    </button>
+                    <button type="button" 
+                            class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors w-full"
+                            hx-post="/diagnostics/olt-lookup/{{ device.id }}" 
+                            hx-target="#diag-results">
+                        <i class="fas fa-search mr-2 text-primary"></i> OLT Lookup
+                    </button>
+                    <button type="button" 
+                            class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors w-full"
+                            hx-post="/diagnostics/sync-lease/{{ device.id }}" 
+                            hx-target="#diag-results">
+                        <i class="fas fa-sync mr-2 text-primary"></i> Sync Lease
+                    </button>
                 </div>
+                <div id="diag-results" class="bg-black text-green-500 font-mono text-[11px] p-4 rounded-lg min-h-[100px] whitespace-pre-wrap overflow-x-auto">
+                    <!-- HTMX Results -->
+                    Wyniki diagnostyki pojawią się tutaj...
+                </div>
+                {% endcall %}
                 {% endif %}
             </div>
-            {% endcall %}
+        </div>
 
-            {% call card(title="Network & Diagnostics", subtitle="Narzędzia diagnostyczne i synchronizacja") %}
-            <div class="grid sm:grid-cols-3 gap-4 mb-4">
-                <button type="button" 
-                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
-                        hx-post="/diagnostics/check/{{ device.id }}" 
-                        hx-target="#diag-results">
-                    <i class="fas fa-network-wired mr-2 text-primary"></i> Sprawdź urządzenie
-                </button>
-                <button type="button" 
-                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
-                        hx-post="/diagnostics/olt-lookup/{{ device.id }}" 
-                        hx-target="#diag-results">
-                    <i class="fas fa-search mr-2 text-primary"></i> OLT Lookup
-                </button>
-                <button type="button" 
-                        class="inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent h-10 px-4 py-2 text-sm font-bold transition-colors"
-                        hx-post="/diagnostics/sync-lease/{{ device.id }}" 
-                        hx-target="#diag-results">
-                    <i class="fas fa-sync mr-2 text-primary"></i> Sync Lease
-                </button>
-            </div>
-            <div id="diag-results" class="bg-black text-green-500 font-mono text-[11px] p-4 rounded-lg min-h-[100px] whitespace-pre-wrap overflow-x-auto">
-                <!-- HTMX Results -->
-                Wyniki diagnostyki pojawią się tutaj...
-            </div>
-            {% endcall %}
-
-            {% call card(title="Ruch i Wydajność", subtitle="Statystyki transmisji danych (Live Graph)") %}
+        <!-- Full Width Section: Live Graph -->
+        {% if device %}
+        <div class="w-full mt-12">
+            {% call card(title="Ruch i Wydajność Sieci", subtitle="Statystyki transmisji danych z NetFlow (Live Graph)") %}
             <div class="space-y-6">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-2">
                         <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span class="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Aktywna Kolejka: {{ device.ip_address }}</span>
+                        <span class="text-xs font-black text-muted-foreground uppercase tracking-widest">Aktywny Ruch dla: {{ device.ip_address }}</span>
                     </div>
-                    <select id="timeRange" class="text-[10px] bg-muted/50 border rounded px-2 py-1 font-bold outline-none uppercase tracking-widest" onchange="updateCustChart()">
+                    <select id="timeRange" class="text-xs bg-muted/50 border rounded px-3 py-1.5 font-bold outline-none uppercase tracking-widest" onchange="updateCustChart()">
                         <option value="1">1h</option>
                         <option value="6">6h</option>
                         <option value="24" selected>24h</option>
                     </select>
                 </div>
-                <div class="h-[250px] w-full relative">
+                <div class="h-[400px] w-full relative">
                     <canvas id="custTrafficChart"></canvas>
                 </div>
             </div>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
             let custChart;
+            let refreshInterval;
+
             async function updateCustChart() {
                 const hours = document.getElementById('timeRange').value;
-                const resp = await fetch(`/admin/monitoring/api/customer-device/{{ device.id }}/stats?hours=${hours}`);
-                const data = await resp.json();
-                
-                if (!custChart) {
-                    const ctx = document.getElementById('custTrafficChart').getContext('2d');
-                    custChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.labels,
-                            datasets: [
-                                {
-                                    label: 'Download (In)',
-                                    data: data.in_mbps,
-                                    borderColor: '#10b981',
-                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 2,
-                                    pointRadius: 0
+                try {
+                    const resp = await fetch(`/admin/monitoring/api/customer-device/{{ device.id }}/stats?hours=${hours}`);
+                    const data = await resp.json();
+                    
+                    if (!custChart) {
+                        const ctx = document.getElementById('custTrafficChart').getContext('2d');
+                        
+                        let gradIn = ctx.createLinearGradient(0, 0, 0, 400);
+                        gradIn.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+                        gradIn.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+                        let gradOut = ctx.createLinearGradient(0, 0, 0, 400);
+                        gradOut.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+                        gradOut.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+                        custChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: data.labels,
+                                datasets: [
+                                    {
+                                        label: 'Download (In) Mbps',
+                                        data: data.in_mbps,
+                                        borderColor: '#10b981',
+                                        backgroundColor: gradIn,
+                                        fill: true,
+                                        tension: 0.4,
+                                        borderWidth: 2,
+                                        pointRadius: 0,
+                                        pointHoverRadius: 6,
+                                        pointHoverBackgroundColor: '#10b981',
+                                        pointHoverBorderColor: '#ffffff',
+                                        pointHoverBorderWidth: 2
+                                    },
+                                    {
+                                        label: 'Upload (Out) Mbps',
+                                        data: data.out_mbps,
+                                        borderColor: '#3b82f6',
+                                        backgroundColor: gradOut,
+                                        fill: true,
+                                        tension: 0.4,
+                                        borderWidth: 2,
+                                        pointRadius: 0,
+                                        pointHoverRadius: 6,
+                                        pointHoverBackgroundColor: '#3b82f6',
+                                        pointHoverBorderColor: '#ffffff',
+                                        pointHoverBorderWidth: 2
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: { mode: 'index', intersect: false },
+                                plugins: { 
+                                    legend: { display: true, position: 'top', labels: { color: 'hsl(var(--muted-foreground))', font: { family: 'monospace', weight: 'bold' } } },
+                                    tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', titleFont: { family: 'monospace', size: 13 }, bodyFont: { family: 'monospace', size: 12 }, padding: 12, cornerRadius: 8 }
                                 },
-                                {
-                                    label: 'Upload (Out)',
-                                    data: data.out_mbps,
-                                    borderColor: '#3b82f6',
-                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 2,
-                                    pointRadius: 0
+                                scales: {
+                                    y: { beginAtZero: true, grid: { color: 'hsl(var(--border) / 0.5)', drawBorder: false }, ticks: { color: 'hsl(var(--muted-foreground))', font: { family: 'monospace' } } },
+                                    x: { grid: { display: false, drawBorder: false }, ticks: { color: 'hsl(var(--muted-foreground))', maxTicksLimit: 12, font: { family: 'monospace' } } }
                                 }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                                x: { grid: { display: false } }
                             }
-                        }
-                    });
-                } else {
-                    custChart.data.labels = data.labels;
-                    custChart.data.datasets[0].data = data.in_mbps;
-                    custChart.data.datasets[1].data = data.out_mbps;
-                    custChart.update();
+                        });
+                    } else {
+                        custChart.data.labels = data.labels;
+                        custChart.data.datasets[0].data = data.in_mbps;
+                        custChart.data.datasets[1].data = data.out_mbps;
+                        custChart.update('none'); 
+                    }
+                } catch (error) {
+                    console.error("Chart data error:", error);
                 }
             }
-            document.addEventListener('DOMContentLoaded', updateCustChart);
+
+            function startLiveUpdate() {
+                if (refreshInterval) clearInterval(refreshInterval);
+                updateCustChart();
+                const hours = document.getElementById('timeRange').value;
+                const intervalMs = hours <= 6 ? 30000 : 300000; 
+                refreshInterval = setInterval(updateCustChart, intervalMs);
+            }
+
+            document.getElementById('timeRange').addEventListener('change', startLiveUpdate);
+            document.addEventListener('DOMContentLoaded', startLiveUpdate);
             </script>
             {% endcall %}
         </div>
         {% endif %}
 
-        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+        <!-- Footer Actions -->
+        <div class="flex items-center justify-end gap-4 p-4 bg-muted/30 rounded-xl border border-dashed mt-8">
             <a href="/customer-devices" class="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Anuluj</a>
             <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
                 <i class="fas fa-save mr-2 text-xs"></i> Zapisz urządzenie
@@ -245,4 +288,3 @@
     </form>
 </div>
 {% endblock %}
-

@@ -1,5 +1,8 @@
 import logging
-import routeros_api
+try:
+    import routeros_api
+except ImportError:
+    routeros_api = None
 import asyncio
 from typing import List, Dict, Any
 

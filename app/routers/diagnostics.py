@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from fastapi import APIRouter, Depends, Request, Form
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
@@ -9,6 +10,8 @@ from app.deps import verify_session
 from app.services.mikrotik import MikrotikService
 from app.services.dasan import DasanService
 from app.security_utils import decrypt_password
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/diagnostics", dependencies=[Depends(verify_session)])
 
@@ -90,31 +93,114 @@ async def diagnostic_check(device_id: int, request: Request, db: Session = Depen
 async def diagnostic_olt_lookup(device_id: int, request: Request, db: Session = Depends(get_db)):
     device = db.get(models.CustomerDevice, device_id)
     if not device or not device.mac_address:
-        return HTMLResponse("<div class='text-danger'>Błąd: Brak adresu MAC.</div>")
-    
-    # Znajdź OLT przypisany do węzła klienta (jeśli istnieje) lub przeskanuj wszystkie
-    # Dla uproszczenia: szukamy urządzenia typu dasan_nos w tym samym węźle (NetNode)
-    olt = db.scalar(
-        select(models.NetDevice)
-        .where(models.NetDevice.driver_type == "dasan_nos", models.NetDevice.net_node_id == device.net_device.net_node_id if device.net_device else None)
-    )
-    
-    if not olt:
-        return HTMLResponse("<div class='text-warning text-xs italic'>Nie znaleziono OLT DASAN w tym węźle.</div>")
+        return HTMLResponse("<div class='text-danger text-xs p-2 bg-red-50 rounded'>Błąd: Brak adresu MAC dla tego urządzenia.</div>")
 
-    password = decrypt_password(olt.mgmt_password_encrypted)
-    ds = DasanService(olt.management_ip, olt.mgmt_username, password)
-    path = ds.get_onu_path(device.mac_address)
+    # W nowej architekturze CustomerDevice -> NetDevice(ONU) -> NetDevice(OLT)
+    if not device.net_device_id:
+        return HTMLResponse(f"""
+            <div class='mt-2 p-3 bg-slate-900 text-slate-300 border border-slate-700 rounded font-mono text-[10px]'>
+                <div class='text-yellow-400 mb-1'>[ OLT Lookup ]</div>
+                <div>Urządzenie nie zostało powiązane z żadnym ONU/OLT. 
+                Uruchom skrypt synchronizacji OLT.</div>
+            </div>
+        """)
+
+    onu = db.get(models.NetDevice, device.net_device_id)
     
-    if "error" in path:
-        return HTMLResponse(f"<div class='text-muted text-[10px] italic'>{path['error']}</div>")
+    if not onu or onu.device_type != "onu":
+        return HTMLResponse("<div class='text-danger text-xs p-2 bg-red-50 rounded'>Błąd: Urządzenie nadrzędne nie jest typu ONU.</div>")
+        
+    olt = onu.parent_device
     
-    html = f"""
-    <div class="mt-2 p-2 bg-blue-50 border border-blue-100 rounded text-xs">
-        <strong>Lokalizacja GPON:</strong> Port {path['port']}, ONU ID: {path['onu_id']}, Status: {path['status']}
-    </div>
-    """
-    return HTMLResponse(html)
+    if not olt or olt.driver_type != "dasan_nos":
+        return HTMLResponse("<div class='text-danger text-xs p-2 bg-red-50 rounded'>Błąd: Urządzenie nadrzędne (OLT) nie jest obsługiwanym OLT-em Dasan.</div>")
+
+    from app.security_utils import decrypt_password
+    from app.services.dasan import DasanService
+
+    try:
+        password = decrypt_password(olt.mgmt_password_encrypted)
+        host = olt.management_ip
+
+        port_kwarg = {}
+        if host and ":" in host:
+            host_part, port_str = host.split(":")
+            host = host_part
+            port_kwarg['port'] = int(port_str)
+        else:
+            port_kwarg['port'] = 22502
+
+        ds = DasanService(host, olt.mgmt_username, password, **port_kwarg)
+
+        # Pobierz zaawansowane detale ONU (Serial, Sygnał, Status itp) z użyciem zapisanych olt_port i onu_id
+        details = ds.get_onu_details(onu.olt_port, onu.onu_id)
+        
+        # Pobierz MAC adresy z OLT (i poszukaj VLAN 400 managementu)
+        macs = ds.get_onu_macs(onu.olt_port, onu.onu_id)
+
+        # Wykryj IP z VLAN 400 (jesli dostepne w MAC table)
+        mgmt_mac = "Brak (nie wykryto na VLAN 400)"
+        for m in macs:
+            if str(m.get('vid')) == "400":
+                mgmt_mac = m.get('mac')
+
+        html = f"""
+        <div class="mt-2 p-3 bg-blue-950 text-blue-200 border border-blue-800 rounded font-mono text-[10px] space-y-3">
+            <div class="border-b border-blue-800 pb-2 flex justify-between items-center">
+                <span class="font-bold text-white uppercase text-xs">[ OLT: {olt.name} ]</span>
+                <span class="bg-blue-900 px-2 py-1 rounded text-blue-300">Port OLT: <span class="text-white font-bold">{onu.olt_port}</span> | ONU ID: <span class="text-white font-bold">{onu.onu_id}</span></span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <div class="text-blue-400 text-[9px] uppercase tracking-wide">Status Operacyjny</div>
+                    <div class="text-white font-bold">{details['status']}</div>
+                </div>
+                <div>
+                    <div class="text-blue-400 text-[9px] uppercase tracking-wide">Uptime</div>
+                    <div class="text-white font-bold">{details['uptime']}</div>
+                </div>
+                <div>
+                    <div class="text-blue-400 text-[9px] uppercase tracking-wide">Numer Seryjny</div>
+                    <div class="text-white font-bold">{details['serial']}</div>
+                </div>
+                <div>
+                    <div class="text-blue-400 text-[9px] uppercase tracking-wide">Sygnał (Rx Power)</div>
+                    <div class="text-emerald-400 font-bold">{details['signal_rx']}</div>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-blue-900/50">
+                <div class="text-blue-400 text-[9px] uppercase tracking-wide mb-1">Zarządzanie (VLAN 400)</div>
+                <div class="text-white">MAC: {mgmt_mac}</div>
+            </div>
+
+            <div class="pt-2 border-t border-blue-900/50">
+                <div class="text-blue-400 text-[9px] uppercase tracking-wide mb-1">Aktywne Adresy MAC klienta:</div>
+                <div class="space-y-1">
+        """
+
+        client_macs_found = False
+        if macs:
+            for m in macs:
+                if str(m.get('vid')) != "400": 
+                    client_macs_found = True
+                    is_target = " <span class='bg-emerald-900 text-emerald-300 px-1 rounded ml-2 font-bold'>TEN KLIENT</span>" if m['mac'].lower() == device.mac_address.lower() else ""
+                    html += f"<div class='bg-blue-900/30 p-1 rounded'>• {m['mac']} <span class='text-blue-400 ml-2'>VLAN: {m['vid']}</span>{is_target}</div>"
+        
+        if not client_macs_found:
+            html += "<div class='italic text-blue-500'>Brak aktywnych urządzeń klienckich na portach użytkowych (LAN).</div>"
+
+        html += """
+                </div>
+            </div>
+        </div>
+        """
+        return HTMLResponse(html)
+
+    except Exception as e:
+        logger.error(f"Live OLT Lookup Failed: {e}")
+        return HTMLResponse(f"<div class='text-red-500 text-[10px] p-2'>Błąd komunikacji podczas pobierania statusu na żywo: {str(e)}</div>")
 
 @router.post("/sync-lease/{device_id}", response_class=HTMLResponse)
 async def diagnostic_sync_lease(device_id: int, request: Request, db: Session = Depends(get_db)):

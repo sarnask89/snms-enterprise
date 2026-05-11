@@ -159,6 +159,7 @@ class NetDevice(Base):
     net_node_id: Mapped[int | None] = mapped_column(ForeignKey("net_nodes.id", ondelete="SET NULL"), nullable=True)
     customer_id: Mapped[int | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), nullable=True)
     net_device_model_id: Mapped[int | None] = mapped_column(ForeignKey("net_device_models.id", ondelete="SET NULL"), nullable=True)
+    parent_device_id: Mapped[int | None] = mapped_column(ForeignKey("net_devices.id", ondelete="SET NULL"), nullable=True)
     status: Mapped[NetDeviceStatus] = mapped_column(
         Enum(NetDeviceStatus, values_callable=lambda x: [e.value for e in x]),
         default=NetDeviceStatus.active,
@@ -168,6 +169,8 @@ class NetDevice(Base):
     driver_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
     mgmt_username: Mapped[str | None] = mapped_column(String(64), nullable=True)
     mgmt_password_encrypted: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    olt_port: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    onu_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
     
     # Monitoring fields
     last_seen: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
@@ -182,6 +185,8 @@ class NetDevice(Base):
     ip_pools: Mapped[list["NetDeviceIpPool"]] = relationship(back_populates="net_device", cascade="all, delete-orphan")
     dhcp_servers: Mapped[list["NetDeviceDhcpServer"]] = relationship(back_populates="net_device", cascade="all, delete-orphan")
     managed_ip_networks: Mapped[list["IpNetwork"]] = relationship(back_populates="managing_net_device", foreign_keys="IpNetwork.net_device_id")
+    parent_device: Mapped["NetDevice | None"] = relationship(back_populates="child_devices", remote_side=[id], foreign_keys=[parent_device_id])
+    child_devices: Mapped[list["NetDevice"]] = relationship(back_populates="parent_device", foreign_keys=[parent_device_id])
 
 class CustomerDevice(Base):
     __tablename__ = "customer_devices"
@@ -199,6 +204,8 @@ class CustomerDevice(Base):
     ip_network_id: Mapped[int | None] = mapped_column(ForeignKey("ip_networks.id", ondelete="SET NULL"), nullable=True)
     dhcp_server: Mapped[str | None] = mapped_column(String(128), nullable=True)
     dhcp_interface: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    olt_port: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    onu_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
     customer: Mapped["Customer"] = relationship(back_populates="devices")
     net_device: Mapped["NetDevice | None"] = relationship(back_populates="customer_devices", foreign_keys="CustomerDevice.net_device_id")
     ip_network: Mapped["IpNetwork | None"] = relationship(back_populates="customer_devices")

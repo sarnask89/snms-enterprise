@@ -1,0 +1,21 @@
+2026-05-11 18:57:16,282 - INFO - The user provided project/location will take precedence over the Vertex AI API key from the environment variable.
+2026-05-11 18:57:18,644 - INFO - setup plugin alembic.autogenerate.schemas
+2026-05-11 18:57:18,645 - INFO - setup plugin alembic.autogenerate.tables
+2026-05-11 18:57:18,645 - INFO - setup plugin alembic.autogenerate.types
+2026-05-11 18:57:18,645 - INFO - setup plugin alembic.autogenerate.constraints
+2026-05-11 18:57:18,645 - INFO - setup plugin alembic.autogenerate.defaults
+2026-05-11 18:57:18,645 - INFO - setup plugin alembic.autogenerate.comments
+2026-05-11 18:59:21,188 - INFO - The user provided project/location will take precedence over the Vertex AI API key from the environment variable.
+2026-05-11 18:59:22,539 - INFO - setup plugin alembic.autogenerate.schemas
+2026-05-11 18:59:22,539 - INFO - setup plugin alembic.autogenerate.tables
+2026-05-11 18:59:22,539 - INFO - setup plugin alembic.autogenerate.types
+2026-05-11 18:59:22,539 - INFO - setup plugin alembic.autogenerate.constraints
+2026-05-11 18:59:22,539 - INFO - setup plugin alembic.autogenerate.defaults
+2026-05-11 18:59:22,539 - INFO - setup plugin alembic.autogenerate.comments
+2026-05-11 19:01:49,914 - INFO - The user provided project/location will take precedence over the Vertex AI API key from the environment variable.
+2026-05-11 19:01:51,215 - INFO - setup plugin alembic.autogenerate.schemas
+2026-05-11 19:01:51,215 - INFO - setup plugin alembic.autogenerate.tables
+2026-05-11 19:01:51,215 - INFO - setup plugin alembic.autogenerate.types
+2026-05-11 19:01:51,215 - INFO - setup plugin alembic.autogenerate.constraints
+2026-05-11 19:01:51,215 - INFO - setup plugin alembic.autogenerate.defaults
+2026-05-11 19:01:51,215 - INFO - setup plugin alembic.autogenerate.comments

@@ -109,7 +109,7 @@
                         <button type="button" 
                                 @click="fetchPUWG()"
                                 class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 rounded-lg text-xs font-bold transition-all border border-blue-600/20">
-                            <i class="fas fa-sync-alt" :class="is_syncing_puwg ? 'fa-spin' : ''"></i>
+                            <i data-lucide="refresh-cw" :class="is_syncing_puwg ? 'animate-spin' : ''" class="w-3.5 h-3.5"></i>
                             Synchronizuj z GUGiK (PUWG 1992)
                         </button>
                     </div>
@@ -155,7 +155,7 @@
                         lng: document.getElementById('longitude').value
                     })"
                     class="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all active:scale-95">
-                <i class="fas fa-save mr-2 text-xs"></i> Zapisz węzeł
+                <i data-lucide="save" class="w-4 h-4 mr-2"></i> Zapisz węzeł
             </button>
         </div>
     </form>

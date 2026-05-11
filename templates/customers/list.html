@@ -8,7 +8,7 @@
         <div class="w-full max-w-sm">
             <label class="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Wyszukiwanie na żywo</label>
             <div class="relative">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"></i>
                 <input type="search" name="q" value="{{ search_q }}" 
                        placeholder="Szukaj po nazwisku, kodzie..."
                        class="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -22,24 +22,59 @@
         <div class="flex items-center gap-2">
             {% if can_write_crm %}
             <a href="/customers/new" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 shadow-sm">
-                <i class="fas fa-plus mr-2 text-xs"></i> Nowy abonent
+                <i data-lucide="plus" class="mr-2 w-4 h-4"></i> Nowy abonent
             </a>
             {% endif %}
             <button hx-get="/customers?incomplete=true" hx-target="#customer-table-container" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 h-10 px-4 py-2 shadow-sm">
-                <i class="fas fa-user-slash mr-2 text-xs"></i> Niekompletne
+                <i data-lucide="user-minus" class="mr-2 w-4 h-4"></i> Niekompletne
             </button>
             <a href="/customers/reports" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 shadow-sm">
-                <i class="fas fa-file-alt mr-2 text-xs"></i> Raporty
+                <i data-lucide="file-text" class="mr-2 w-4 h-4"></i> Raporty
             </a>
             <a href="/customers/export-passwords.csv" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 h-10 px-4 py-2 shadow-sm">
-                <i class="fas fa-key mr-2 text-xs"></i> Eksport haseł
+                <i data-lucide="key" class="mr-2 w-4 h-4"></i> Eksport haseł
             </a>
             <button hx-post="/customers/batch-generate-access" 
                     hx-confirm="Czy na pewno chcesz wygenerować brakujące loginy i hasła dla wszystkich klientów?"
                     hx-target="#main-area" hx-swap="afterbegin"
                     class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 h-10 px-4 py-2 shadow-sm">
-                <i class="fas fa-magic mr-2 text-xs"></i> Generuj dane
+                <i data-lucide="wand-2" class="mr-2 w-4 h-4"></i> Generuj dane
             </button>
+        </div>
+    </div>
+
+    <!-- Growth & Stats Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="lg:col-span-3 bg-card border rounded-2xl p-6 shadow-xl" x-data="{
+            async init() {
+                const resp = await fetch('/admin/stats/customer-growth');
+                const data = await resp.json();
+                new ApexCharts(this.$refs.growthChart, {
+                    series: [{ name: 'Suma abonentów', data: data.values }],
+                    chart: { type: 'area', height: 180, toolbar: { show: false }, background: 'transparent' },
+                    stroke: { curve: 'smooth', width: 2 },
+                    fill: { type: 'gradient', gradient: { opacityFrom: 0.3, opacityTo: 0.05 } },
+                    xaxis: { categories: data.labels, labels: { style: { fontSize: '9px' } } },
+                    theme: { mode: 'dark' }
+                }).render();
+            }
+        }">
+            <h4 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Dynamika wzrostu bazy</h4>
+            <div x-ref="growthChart"></div>
+        </div>
+        <div class="bg-card border rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center space-y-2">
+            <div class="text-4xl font-black text-primary">128</div>
+            <p class="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Abonentów w Bazie</p>
+            <div class="pt-4 w-full border-t border-dashed flex justify-around">
+                <div class="text-center">
+                    <p class="text-sm font-bold text-emerald-500">+12%</p>
+                    <p class="text-[8px] font-bold uppercase text-muted-foreground">M/M</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-bold text-blue-500">98%</p>
+                    <p class="text-[8px] font-bold uppercase text-muted-foreground">Active</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -52,7 +87,7 @@
 {{ alert_dialog("delete-customer", "Czy na pewno?", "Zostanie usunięty abonent", action_label="Usuń na zawsze") }}
 
 <div class="htmx-indicator fixed bottom-6 right-6 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-2xl text-sm font-bold flex items-center gap-2 z-50 animate-in slide-in-from-bottom-4 duration-300">
-    <i class="fas fa-spinner fa-spin"></i> Filtrowanie...
+    <i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Filtrowanie...
 </div>
 
 <style>

@@ -1,112 +1,146 @@
 import asyncio
-import socket
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Any
 import json
-
-from netflow.v5 import V5Header, V5Record
-from netflow.v9 import V9Header, V9Record
-from netflow.collector import Collector
+import struct
+import socket
+from datetime import datetime, timezone
+from typing import Dict, List, Any, Optional
 
 from app.database import SessionLocal
 from app import models
 
-logger = logging.getLogger("netflow_service")
+logger = logging.getLogger("app.netflow_service")
+
+class NetFlowV5Parser:
+    """Parser for NetFlow Version 5 packets."""
+    HEADER_STRUCT = struct.Struct(">HHIIIIBBH") # 24 bytes
+    RECORD_STRUCT = struct.Struct(">IIIHHIIIIHHBBBBHHBBH") # 48 bytes
+
+    @staticmethod
+    def parse(data: bytes) -> List[Dict[str, Any]]:
+        if len(data) < 24: return []
+        
+        header = NetFlowV5Parser.HEADER_STRUCT.unpack(data[:24])
+        version, count, sys_uptime, unix_secs, unix_nsecs, flow_seq, engine_type, engine_id, sampling = header
+        
+        if version != 5: return []
+        
+        flows = []
+        offset = 24
+        for _ in range(count):
+            if offset + 48 > len(data): break
+            rec = NetFlowV5Parser.RECORD_STRUCT.unpack(data[offset:offset+48])
+            
+            # Extract basic fields: src_ip, dst_ip, src_port, dst_port, protocol, bytes, packets
+            flows.append({
+                "src_ip": socket.inet_ntoa(struct.pack(">I", rec[0])),
+                "dst_ip": socket.inet_ntoa(struct.pack(">I", rec[1])),
+                "src_port": rec[4],
+                "dst_port": rec[5],
+                "protocol": rec[12],
+                "bytes": rec[7],
+                "packets": rec[6]
+            })
+            offset += 48
+            
+        return flows
+
+class NetFlowProtocol(asyncio.DatagramProtocol):
+    def __init__(self, service: 'NetFlowService'):
+        self.service = service
+
+    def datagram_received(self, data: bytes, addr: tuple[str, int]):
+        self.service.handle_packet(data, addr[0])
 
 class NetFlowService:
     def __init__(self, host: str = "0.0.0.0", port: int = 2055):
         self.host = host
         self.port = port
-        self.buffer: List[Dict[str, Any]] = []
+        self.aggregates: Dict[tuple, Dict[str, Any]] = {}
         self.is_running = False
         self._lock = asyncio.Lock()
 
     async def start_collector(self):
-        """
-        Starts the UDP NetFlow collector.
-        """
-        if self.is_running:
-            return
-        
+        if self.is_running: return
         self.is_running = True
-        logger.info(f"Starting NetFlow Collector on {self.host}:{self.port}...")
         
-        # Create UDP socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.setblocking(False)
+        loop = asyncio.get_running_loop()
+        logger.info(f"Starting Robust NetFlow Collector on {self.host}:{self.port}...")
+        
         try:
-            sock.bind((self.host, self.port))
+            self.transport, self.protocol = await loop.create_datagram_endpoint(
+                lambda: NetFlowProtocol(self),
+                local_addr=(self.host, self.port)
+            )
         except Exception as e:
-            logger.error(f"Failed to bind NetFlow port {self.port}: {e}")
+            logger.error(f"NetFlow bind error: {e}")
             self.is_running = False
             return
 
-        loop = asyncio.get_running_loop()
-        
-        # Start the flushing task
         asyncio.create_task(self._periodic_flush())
 
-        while self.is_running:
-            try:
-                data, addr = await loop.sock_recvfrom(sock, 4096)
-                await self._process_packet(data, addr[0])
-            except Exception as e:
-                if self.is_running:
-                    logger.error(f"Error receiving NetFlow packet: {e}")
-                await asyncio.sleep(0.1)
-
-    async def _process_packet(self, data: bytes, source_ip: str):
-        """
-        Parses NetFlow packet and adds to buffer.
-        """
-        try:
-            # We use a simple strategy: try to identify version from header
-            # NetFlow v5 is 24 bytes header + records
-            # NetFlow v9 is more complex (templates)
+    def handle_packet(self, data: bytes, source_ip: str):
+        if len(data) < 2: return
+        version = int.from_bytes(data[0:2], byteorder='big')
+        
+        flows = []
+        if version == 5:
+            flows = NetFlowV5Parser.parse(data)
+        elif version == 9:
+            # Phase 2: Implement V9 parser with template support
+            pass
             
-            # For Phase 1, we log basic stats and add to buffer
-            async with self._lock:
-                self.buffer.append({
-                    "source_device": source_ip,
-                    "raw_len": len(data),
-                    "received_at": datetime.now(timezone.utc).isoformat()
-                })
-                
-                # If buffer is too large, drop oldest
-                if len(self.buffer) > 1000:
-                    self.buffer.pop(0)
-                    
-        except Exception as e:
-            logger.error(f"Failed to process NetFlow packet from {source_ip}: {e}")
+        if flows:
+            asyncio.create_task(self._aggregate_flows(flows, source_ip))
+
+    async def _aggregate_flows(self, flows: List[Dict[str, Any]], source_device_ip: str):
+        async with self._lock:
+            for f in flows:
+                # Key: (src_ip, dst_ip, src_port, dst_port, protocol)
+                key = (f["src_ip"], f["dst_ip"], f["src_port"], f["dst_port"], f["protocol"])
+                if key not in self.aggregates:
+                    self.aggregates[key] = {
+                        "src_ip": f["src_ip"],
+                        "dst_ip": f["dst_ip"],
+                        "src_port": f["src_port"],
+                        "dst_port": f["dst_port"],
+                        "protocol": f["protocol"],
+                        "bytes": 0,
+                        "packets": 0,
+                        "src_device": source_device_ip
+                    }
+                self.aggregates[key]["bytes"] += f["bytes"]
+                self.aggregates[key]["packets"] += f["packets"]
 
     async def _periodic_flush(self):
-        """
-        Periodically flushes the memory buffer to the database.
-        """
         while self.is_running:
-            await asyncio.sleep(60) # Flush every minute
+            await asyncio.sleep(30) # Flush every 30 seconds
+            if not self.aggregates: continue
             
-            if not self.buffer:
-                continue
-                
             async with self._lock:
-                to_save = self.buffer.copy()
-                self.buffer.clear()
-                
-            logger.info(f"Flushing {len(to_save)} flows to database...")
+                to_save = list(self.aggregates.values())
+                self.aggregates.clear()
             
             db = SessionLocal()
             try:
+                # Find device ID if possible based on source_ip
+                # (Simple lookup for now)
+                
                 for flow in to_save:
-                    # In Phase 1, we store raw metadata in NetFlowRaw
-                    raw_entry = models.NetFlowRaw(
-                        raw_data=json.dumps(flow)
+                    agg = models.NetFlowAggregate(
+                        src_ip=flow["src_ip"],
+                        dst_ip=flow["dst_ip"],
+                        src_port=flow["src_port"],
+                        dst_port=flow["dst_port"],
+                        protocol=flow["protocol"],
+                        bytes=flow["bytes"],
+                        packets=flow["packets"]
                     )
-                    db.add(raw_entry)
+                    db.add(agg)
                 db.commit()
+                logger.info(f"NetFlow: Flushed {len(to_save)} aggregated flows to database.")
             except Exception as e:
-                logger.error(f"Failed to save flows to DB: {e}")
+                logger.error(f"NetFlow DB flush error: {e}")
                 db.rollback()
             finally:
                 db.close()

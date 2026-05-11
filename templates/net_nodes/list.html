@@ -7,7 +7,7 @@
         <div class="w-full max-w-sm space-y-1.5">
             <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Szukaj w węzłach</label>
             <div class="relative">
-                <i class="fas fa-server absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"></i>
+                <i data-lucide="server" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"></i>
                 <form method="get" action="/net-nodes">
                     <input type="search" name="q" value="{{ search_q }}" 
                            placeholder="Nazwa, notatki..."
@@ -19,13 +19,41 @@
         {% if can_write_crm %}
         <div class="flex gap-2">
             <a href="/admin/pit/export/nodes" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 shadow-sm transition-all">
-                <i class="fas fa-file-export mr-2 text-xs"></i> Eksport PIT GML
+                <i data-lucide="file-output" class="w-4 h-4 mr-2"></i> Eksport PIT GML
             </a>
             <a href="/net-nodes/new" class="inline-flex items-center justify-center rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 shadow-sm transition-all">
-                <i class="fas fa-plus mr-2 text-xs"></i> Nowy węzeł sieci
+                <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Nowy węzeł
             </a>
         </div>
         {% endif %}
+    </div>
+
+    <!-- Distribution Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-card border rounded-2xl p-6 shadow-xl" x-data="{
+            async init() {
+                const options = {
+                    series: [15, 30, 10, 5],
+                    labels: ['Węzeł Główny', 'Szafa Zewnętrzna', 'Serwerownia', 'Inne'],
+                    chart: { type: 'donut', height: 200, background: 'transparent' },
+                    colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                    stroke: { show: false },
+                    dataLabels: { enabled: false },
+                    legend: { position: 'right', fontSize: '10px' },
+                    theme: { mode: 'dark' }
+                };
+                new ApexCharts(this.$refs.nodeChart, options).render();
+            }
+        }">
+            <h4 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Podział Węzłów wg Typu</h4>
+            <div x-ref="nodeChart"></div>
+        </div>
+        <div class="bg-card border rounded-2xl p-6 shadow-xl flex items-center justify-center">
+             <div class="text-center">
+                 <p class="text-3xl font-black text-primary">60</p>
+                 <p class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Wszystkich Węzłów</p>
+             </div>
+        </div>
     </div>
 
     <div class="rounded-xl border bg-card shadow-sm overflow-hidden">
@@ -52,12 +80,12 @@
                         <td class="p-4 align-middle text-right">
                             <div class="flex justify-end gap-1">
                                 <a href="/net-nodes/{{ x.id }}/edit" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
-                                    <i class="fas fa-edit text-xs"></i>
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                 </a>
                                 {% if can_write_crm %}
                                 <button @click="$dispatch('open-alert-delete-device', { url: '/net-nodes/{{ x.id }}/delete', name: '{{ x.name }}' })"
                                         class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                                    <i class="fas fa-trash text-xs"></i>
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                 </button>
                                 {% endif %}
                             </div>

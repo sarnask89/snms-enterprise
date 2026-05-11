@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "components/card.html" import card %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+        <div>
+            <h2 class="text-xl font-bold tracking-tight">Odkrywanie OLT / ONU</h2>
+            <p class="text-sm text-muted-foreground">Zarządzanie infrastrukturą końcówek GPON i przypisywaniem do klientów.</p>
+        </div>
+    </div>
+
+    {% if request.query_params.get('status') == 'started' %}
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg flex items-center gap-3 animate-pulse">
+        <i class="fas fa-info-circle"></i>
+        <div class="text-sm font-medium">Proces odkrywania został uruchomiony w tle. Wyniki będą widoczne po odświeżeniu strony za chwilę.</div>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for olt in olts %}
+        {% call card(title=olt.name, subtitle=olt.management_ip) %}
+        <div class="space-y-6">
+            <div class="flex flex-col gap-2 p-3 bg-slate-50 rounded-lg border">
+                <div class="flex justify-between text-xs uppercase font-bold text-slate-500">
+                    <span>Liczba ONUs w bazie:</span>
+                    <span class="text-blue-600">{{ olt.child_devices|selectattr('device_type', 'equalto', 'onu')|list|length }}</span>
+                </div>
+                <div class="text-[10px] text-slate-400 italic">Ostatnia synchronizacja: {{ olt.last_seen or 'nigdy' }}</div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <form method="post" action="/admin/olt-discovery/run">
+                    <input type="hidden" name="olt_id" value="{{ olt.id }}">
+                    <input type="hidden" name="action" value="sync_onus">
+                    <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow transition-all hover:bg-primary/90 active:scale-95">
+                        <i class="fas fa-search-plus mr-2"></i> Odkryj końcówki ONU
+                    </button>
+                    <p class="text-[10px] text-muted-foreground mt-1 text-center italic">Pobiera listę seriali i statusów z OLT.</p>
+                </form>
+
+                <form method="post" action="/admin/olt-discovery/run">
+                    <input type="hidden" name="olt_id" value="{{ olt.id }}">
+                    <input type="hidden" name="action" value="map_customers">
+                    <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg border border-primary text-primary px-4 py-2 text-sm font-bold shadow-sm transition-all hover:bg-primary/5 active:scale-95">
+                        <i class="fas fa-link mr-2"></i> Powiąż urządzenia klientów
+                    </button>
+                    <p class="text-[10px] text-muted-foreground mt-1 text-center italic">Mapuje MAC klientów do konkretnych portów/ONU.</p>
+                </form>
+            </div>
+
+            <div class="pt-4 border-t text-center">
+                <a href="/net-devices/{{ olt.id }}/edit" class="text-xs text-blue-600 hover:underline font-semibold">Przejdź do edycji OLT &raquo;</a>
+            </div>
+        </div>
+        {% endcall %}
+        {% else %}
+        <div class="col-span-full py-20 text-center bg-card border rounded-2xl border-dashed">
+            <div class="text-slate-400 mb-2 text-4xl"><i class="fas fa-network-wired"></i></div>
+            <p class="text-muted-foreground">Brak skonfigurowanych OLT (Dasan) w systemie.</p>
+            <p class="text-xs text-slate-400">Upewnij się, że urządzenia mają ustawiony Driver na "DASAN NOS (SSH)".</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

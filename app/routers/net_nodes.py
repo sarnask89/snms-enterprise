@@ -60,7 +60,7 @@ def net_node_new_form(request: Request, db: Session = Depends(get_db)):
     divisions = list(db.scalars(select(models.Division).where(models.Division.active.is_(True))).all())
     return render(request, "net_nodes/form.html", {
         "title": "Nowy węzeł", 
-        "node": None, 
+        "device": None, 
         "divisions": divisions,
         "managed_cities": _get_managed_cities(db)
     })
@@ -134,7 +134,7 @@ def net_node_edit_form(node_id: int, request: Request, db: Session = Depends(get
 
     return render(request, "net_nodes/form.html", {
         "title": f"Edycja węzła: {n.name}", 
-        "node": n, 
+        "device": n, 
         "divisions": divisions,
         "all_nodes": all_nodes,
         "links": links,

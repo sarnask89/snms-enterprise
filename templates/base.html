@@ -2,67 +2,10 @@
 {% import "components/navbar.html" as navbar %}
 
 {% if not (request.headers.get("HX-Request") and request.headers.get("HX-Target") == "main-area") %}
+  {% if not request.query_params.get("embed") %}
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ title or "Panel" }}{% endblock %} — {{ app_name }}</title>
-  <link rel="stylesheet" href="/static/css/output.css?v=1.1">
-  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script>mermaid.initialize({ startOnLoad: true, theme: 'dark' });</script>
-  <script>
-    (function() {
-      const theme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const isDark = theme === 'dark' || (!theme && prefersDark);
-      
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        document.documentElement.style.backgroundColor = '#020617';
-        document.documentElement.style.color = '#f8fafc';
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.style.backgroundColor = '#f8fafc';
-        document.documentElement.style.color = '#020617';
-      }
-    })();
-  </script>
-  <style>
-    /* Global Loading Bar */
-    .htmx-indicator {
-        opacity: 0;
-        transition: opacity 200ms ease-in;
-    }
-    .htmx-request .htmx-indicator {
-        opacity: 1;
-    }
-    .htmx-request.htmx-indicator {
-        opacity: 1;
-    }
-    #global-loader {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background-color: #3b82f6; /* primary */
-        z-index: 9999;
-        transform-origin: 0% 50%;
-        animation: progress-bar 2s infinite linear;
-    }
-    @keyframes progress-bar {
-        0% { transform: scaleX(0); }
-        50% { transform: scaleX(0.5); }
-        100% { transform: scaleX(1); opacity: 0; }
-    }
-  </style>
-</head>
+...
 <body class="min-h-screen bg-background font-sans antialiased text-foreground selection:bg-primary/10"
       x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false', currentPath: window.location.pathname }"
       @popstate.window="currentPath = window.location.pathname"
@@ -74,52 +17,45 @@
   <div class="flex h-screen overflow-hidden">
     <!-- SHADCN SIDEBAR -->
     {{ sidebar.render_sidebar(nav_groups, portal_user) }}
+  {% else %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ title or "Panel" }}{% endblock %} — {{ app_name }}</title>
+  <link rel="stylesheet" href="/static/css/output.css?v=1.1">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <style>
+    body { background-color: transparent !important; }
+    .bg-background { background-color: transparent !important; }
+  </style>
+</head>
+<body class="bg-transparent font-sans antialiased text-foreground">
+  {% endif %}
 {% endif %}
 
     <!-- MAIN AREA -->
     <div id="main-area" class="flex flex-col flex-1 min-w-0 overflow-hidden bg-background">
+      {% if not request.query_params.get("embed") %}
       {{ navbar.render_navbar(breadcrumbs) }}
+      {% endif %}
 
       <main class="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar scroll-smooth">
-        <div class="mx-auto max-w-6xl">
-          <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {% block content %}{% endblock %}
-          </div>
-        </div>
-      </main>
+...
     </div>
 
 {% if not (request.headers.get("HX-Request") and request.headers.get("HX-Target") == "main-area") %}
+  {% if not request.query_params.get("embed") %}
   </div>
-
-  <script>
-    function toggleTheme() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
-    
-    // Global HTMX Error Handler
-    document.body.addEventListener('htmx:responseError', function(evt) {
-        console.error("HTMX Error:", evt.detail);
-        const status = evt.detail.xhr.status;
-        if (status === 401 || status === 403) {
-            // Unikaj pętli przekierowań
-            if (window.location.pathname !== '/login') {
-                window.location.href = '/login';
-            }
-        } else {
-            // Ignore 204 or other non-error statuses that might be caught
-            if (status > 0) {
-                alert("Wystąpił błąd podczas ładowania strony (Kod: " + status + "). Zobacz konsolę po więcej informacji.");
-            }
-        }
-    });
-
-    // Handle Network Errors (e.g. server down)
-    document.body.addEventListener('htmx:sendError', function(evt) {
-        alert("Błąd połączenia z serwerem. Sprawdź swoje połączenie internetowe.");
-    });
-  </script>
+...
 </body>
 </html>
+  {% else %}
+</body>
+</html>
+  {% endif %}
 {% endif %}
