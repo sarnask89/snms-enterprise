@@ -19,11 +19,10 @@ except ImportError:
 # Helper for mandatory environment variables
 def get_required_env(key: str, default: str = None) -> str:
     val = os.environ.get(key, default)
-    if IS_PROD and (not val or val == default):
-        # In production, we do not allow insecure defaults for critical keys
-        critical_keys = ["CRM_SECRET_KEY", "CRM_ENCRYPTION_KEY", "CRM_ADMIN_PASSWORD"]
-        if key in critical_keys:
-            msg = f"CRITICAL CONFIG ERROR: Missing mandatory environment variable '{key}' for production environment."
+    critical_keys = ["CRM_SECRET_KEY", "CRM_ENCRYPTION_KEY", "CRM_ADMIN_PASSWORD"]
+    if key in critical_keys:
+        if not val or val == default:
+            msg = f"CRITICAL CONFIG ERROR: Missing mandatory environment variable '{key}'."
             logger.critical(msg)
             raise RuntimeError(msg)
     return val
@@ -48,12 +47,12 @@ DATABASE_URL = os.environ.get(
 
 # Admin Credentials
 CRM_ADMIN_USER = os.environ.get("CRM_ADMIN_USER", "admin")
-CRM_ADMIN_PASSWORD = get_required_env("CRM_ADMIN_PASSWORD", "test-change-me")
+CRM_ADMIN_PASSWORD = get_required_env("CRM_ADMIN_PASSWORD")
 
 # Security Keys
-SECRET_KEY = get_required_env("CRM_SECRET_KEY", "dev-secret-key-replace-in-prod")
+SECRET_KEY = get_required_env("CRM_SECRET_KEY")
 # Key for encrypting device management passwords (must be 32 url-safe base64-encoded bytes)
-CRM_ENCRYPTION_KEY = get_required_env("CRM_ENCRYPTION_KEY", "dev-encryption-key-must-be-32-base64-bytes==")
+CRM_ENCRYPTION_KEY = get_required_env("CRM_ENCRYPTION_KEY")
 
 # Storage
 UPLOAD_ROOT = Path(os.environ.get("CRM_UPLOAD_ROOT", str(BASE_DIR / "uploads")))
