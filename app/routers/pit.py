@@ -8,7 +8,7 @@ from app.database import get_db
 from app.deps import verify_session, require_admin_or_manager
 from app.services.pit_exporter import generate_pit_gml
 from app.services.gugik import GugikGeocodingService
-from app.logger_utils import get_logger
+from app.logging import get_logger
 
 router = APIRouter(prefix="/admin/pit", dependencies=[Depends(verify_session), Depends(require_admin_or_manager)])
 log = get_logger("pit_router")

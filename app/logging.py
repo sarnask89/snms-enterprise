@@ -25,7 +25,7 @@ def setup_logging():
 
     # Root logger configuration
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
+    root_logger.setLevel(logging.WARNING)
     
     # Remove existing handlers to avoid duplicates
     if root_logger.hasHandlers():
