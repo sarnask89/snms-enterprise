@@ -1,3 +1,0 @@
-It seems like you've posted a Python script for managing navigation items in an application. This includes creating and populating database tables, as well as functions to check if certain paths are visible or not based on the current user role permissions. 
-
-This is done using SQLAlchemy ORM (Object Relational Mapping) which allows you interact with your data stored within a relational database management system such as MySQL and PostgreSQL in Python. The script also includes functions to seed this navigation menu into an existing or new empty table, along with methods for updating the permissions of users based on their roles when they log in (`seed_nav_menu_and_permissions()`).

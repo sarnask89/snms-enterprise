@@ -1,2 +1,0 @@
-It seems like you've shared a lot of code related to database models in an application using SQLAlchemy ORM and Postgresql as the backend DBMS (Database). 
-However, I don't see any specific question or request from your end. Could you please provide more details so that we can assist better? Are there certain parts of this shared code related to a particular functionality in an application like user management system?, data analysis queries etc?. Please clarify the requirements for further assistance on these topics.
