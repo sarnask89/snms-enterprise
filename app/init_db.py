@@ -2,12 +2,9 @@ from __future__ import annotations
 
 import logging
 import os
-from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from app import models
 from app.config import (
