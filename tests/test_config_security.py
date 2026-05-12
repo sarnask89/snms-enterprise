@@ -3,13 +3,14 @@ import os
 import importlib
 from unittest.mock import patch
 
-def test_config_fail_fast_in_production():
-    """Verify that the application fails to load if critical keys are missing in production."""
+def test_config_fail_fast_missing_keys():
+    """Verify that the application fails to load if critical keys are missing."""
     
-    # Mock environment to simulate production without critical keys
+    # Mock environment to simulate missing critical keys
+    # In app/config.py, CRM_ADMIN_PASSWORD is the first one loaded using get_required_env
     env_mock = {
-        "CRM_ENV": "production",
-        "CRM_SECRET_KEY": "dev-secret-key-replace-in-prod" # Use the insecure default
+        "CRM_ENV": "development",
+        # CRM_ADMIN_PASSWORD is missing
     }
     
     with patch.dict(os.environ, env_mock, clear=True):
@@ -19,17 +20,21 @@ def test_config_fail_fast_in_production():
             importlib.reload(app.config)
         
         assert "CRITICAL CONFIG ERROR" in str(excinfo.value)
-        assert "CRM_SECRET_KEY" in str(excinfo.value)
+        assert "CRM_ADMIN_PASSWORD" in str(excinfo.value)
 
-def test_config_valid_in_development():
-    """Verify that development mode allows insecure defaults."""
+def test_config_valid_with_keys():
+    """Verify that the application loads when all mandatory keys are provided."""
     env_mock = {
         "CRM_ENV": "development",
-        "CRM_SECRET_KEY": "dev-secret-key-replace-in-prod"
+        "CRM_SECRET_KEY": "some-secret-key",
+        "CRM_ENCRYPTION_KEY": "some-encryption-key",
+        "CRM_ADMIN_PASSWORD": "some-password"
     }
     
     with patch.dict(os.environ, env_mock, clear=True):
         import app.config
         importlib.reload(app.config)
         # Should not raise any error
-        assert app.config.SECRET_KEY == "dev-secret-key-replace-in-prod"
+        assert app.config.SECRET_KEY == "some-secret-key"
+        assert app.config.CRM_ENCRYPTION_KEY == "some-encryption-key"
+        assert app.config.CRM_ADMIN_PASSWORD == "some-password"
