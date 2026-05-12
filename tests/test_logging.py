@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from app.logging import setup_logging, get_logger
+from app.logger_utils import setup_logging, get_logger
 
 def test_logging_setup():
     """Verify that logging is set up correctly and files are created."""

@@ -15,5 +15,5 @@ def test_setup_logging_initializes_handlers():
     assert logging.FileHandler in handler_types
     
     # Check log levels
-    assert root_logger.level == logging.WARNING
+    assert root_logger.level == logging.INFO
     assert logging.getLogger("app").level == logging.DEBUG
