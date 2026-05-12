@@ -2,20 +2,16 @@ import { Router } from "express";
 import { AppDataSource } from "../database.js";
 import { Customer } from "../models/customer.js";
 import { Like } from "typeorm";
-
 const router = Router();
-
 router.get("/", async (req, res) => {
     try {
         const { q, skip, limit } = req.query;
         const customerRepo = AppDataSource.getRepository(Customer);
-
-        const queryOptions: any = {
+        const queryOptions = {
             order: { id: "DESC" },
-            skip: skip ? parseInt(skip as string) : 0,
-            take: limit ? parseInt(limit as string) : 20,
+            skip: skip ? parseInt(skip) : 0,
+            take: limit ? parseInt(limit) : 20,
         };
-
         if (q) {
             const searchTerm = `%${q}%`;
             queryOptions.where = [
@@ -25,15 +21,14 @@ router.get("/", async (req, res) => {
                 { email: Like(searchTerm) },
             ];
         }
-
         const [customers, total] = await customerRepo.findAndCount(queryOptions);
-
         res.set("X-Total-Count", total.toString());
         res.json(customers);
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 export { router };
+//# sourceMappingURL=customers.js.map
