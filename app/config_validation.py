@@ -26,16 +26,8 @@ def report_startup_config():
     log.info("--- END OF CONFIGURATION REPORT ---")
 
 def _validate_security(log):
-    # Check for insecure defaults in non-prod
-    if not config.IS_PROD:
-        if config.SECRET_KEY == "dev-secret-key-replace-in-prod":
-            log.warning("Security: Using DEFAULT SECRET_KEY. Change this before moving to production.")
-        if config.CRM_ENCRYPTION_KEY == "dev-encryption-key-must-be-32-base64-bytes==":
-            log.warning("Security: Using DEFAULT ENCRYPTION_KEY. Change this before moving to production.")
-        if config.CRM_ADMIN_PASSWORD == "test-change-me":
-            log.warning("Security: Using DEFAULT ADMIN PASSWORD. Change this before moving to production.")
-    else:
-        log.info("Security: Production mode confirmed. Mandatory keys validated by config loader.")
+    # Security keys are now strictly required and have no defaults in app.config
+    log.info("Security: Critical environment variables (SECRET_KEY, ENCRYPTION_KEY, ADMIN_PASSWORD) validated by config loader.")
 
 def _validate_teryt_config(log):
     if not config.TERYT_WS_USER:
