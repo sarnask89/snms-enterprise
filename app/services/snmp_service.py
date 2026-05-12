@@ -1,5 +1,6 @@
 import asyncio
 import random
+from typing import Any
 from datetime import datetime
 from app.models.network import NetDevice
 from app.models.monitoring import NetworkStat
