@@ -48,10 +48,10 @@ DATABASE_URL = os.environ.get(
 
 # Admin Credentials
 CRM_ADMIN_USER = os.environ.get("CRM_ADMIN_USER", "admin")
-CRM_ADMIN_PASSWORD = get_required_env("CRM_ADMIN_PASSWORD", "test-change-me")
 
 # Security Keys
 SECRET_KEY = get_required_env("CRM_SECRET_KEY", "dev-secret-key-replace-in-prod")
+CRM_ADMIN_PASSWORD = get_required_env("CRM_ADMIN_PASSWORD", "test-change-me")
 # Key for encrypting device management passwords (must be 32 url-safe base64-encoded bytes)
 CRM_ENCRYPTION_KEY = get_required_env("CRM_ENCRYPTION_KEY", "dev-encryption-key-must-be-32-base64-bytes==")
 
