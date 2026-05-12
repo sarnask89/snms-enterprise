@@ -17,7 +17,7 @@ from app.middleware_portal import PortalUserMiddleware
 from app.middleware_logging import RequestLoggingMiddleware
 from app.errors import setup_error_handlers
 from app.deps import require_admin
-from app.logger_utils import setup_logging
+from app.logging import setup_logging
 
 from app.services.sync_service import sync_service
 from app.services.netflow_service import netflow_service

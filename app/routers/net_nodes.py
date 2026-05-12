@@ -8,7 +8,7 @@ from app.database import get_db
 from app.deps import require_business_write, verify_session
 from app.templating import render
 from app.audit import record_audit
-from app.logger_utils import get_logger
+from app.logging import get_logger
 
 router = APIRouter(prefix="/net-nodes", dependencies=[Depends(verify_session)])
 logger = get_logger("net_nodes")
