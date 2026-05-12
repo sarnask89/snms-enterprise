@@ -10,9 +10,11 @@ from app.routers import (
 )
 # from app.generated import office_equipment, vehicles_cli, vehicles_visual, ext_services_cli, ext_services_visual
 from app.routers import stats
+from app.api.v2.aggregator import get_api_v2_router
 
 def get_core_router():
     router = APIRouter()
+    router.include_router(get_api_v2_router())
     router.include_router(api_v1.router)
     router.include_router(auth.router)
     router.include_router(bulk.router)
