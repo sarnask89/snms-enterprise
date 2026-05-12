@@ -1,4 +1,9 @@
+import ast
+import operator
+import logging
 from typing import Optional, Any
+
+logger = logging.getLogger("app.utils.parsing")
 
 def parse_int(value: Any, default: int = 0) -> int:
     """
@@ -35,3 +40,49 @@ def parse_int_optional(value: Any) -> Optional[int]:
         return int(s)
     except (ValueError, TypeError):
         return None
+
+def safe_eval(expr: str) -> Any:
+    """
+    Safely evaluates a simple mathematical or comparison expression.
+    Supported: numbers, basic arithmetic, comparisons.
+    """
+    operators = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.USub: operator.neg,
+        ast.UAdd: operator.pos,
+        ast.Gt: operator.gt,
+        ast.Lt: operator.lt,
+        ast.GtE: operator.ge,
+        ast.LtE: operator.le,
+        ast.Eq: operator.eq,
+        ast.NotEq: operator.ne,
+    }
+
+    def _eval(node):
+        if isinstance(node, ast.Constant):
+            return node.value
+        elif isinstance(node, ast.BinOp):
+            return operators[type(node.op)](_eval(node.left), _eval(node.right))
+        elif isinstance(node, ast.UnaryOp):
+            return operators[type(node.op)](_eval(node.operand))
+        elif isinstance(node, ast.Compare):
+            left = _eval(node.left)
+            for op, right in zip(node.ops, node.comparators):
+                if not operators[type(op)](left, _eval(right)):
+                    return False
+                left = _eval(right)
+            return True
+        elif isinstance(node, ast.Expression):
+            return _eval(node.body)
+        else:
+            raise TypeError(f"Unsupported expression node: {type(node)}")
+
+    try:
+        tree = ast.parse(expr.strip(), mode='eval')
+        return _eval(tree)
+    except Exception as e:
+        logger.error(f"Safe eval failed for expression '{expr}': {e}")
+        raise ValueError(f"Invalid or unsafe expression: {expr}") from e
