@@ -5,7 +5,7 @@
   {% if not request.query_params.get("embed") %}
 <!DOCTYPE html>
 <html lang="pl">
-...
+{% block content %}{% endblock %}
 <body class="min-h-screen bg-background font-sans antialiased text-foreground selection:bg-primary/10"
       x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false', currentPath: window.location.pathname }"
       @popstate.window="currentPath = window.location.pathname"
@@ -45,13 +45,13 @@
       {% endif %}
 
       <main class="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar scroll-smooth">
-...
+{% block content %}{% endblock %}
     </div>
 
 {% if not (request.headers.get("HX-Request") and request.headers.get("HX-Target") == "main-area") %}
   {% if not request.query_params.get("embed") %}
   </div>
-...
+{% block content %}{% endblock %}
 </body>
 </html>
   {% else %}
