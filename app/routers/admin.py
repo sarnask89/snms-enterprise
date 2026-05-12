@@ -439,9 +439,11 @@ def admin_backups_download(filename: str):
     from fastapi.responses import FileResponse
     from pathlib import Path
     
-    file_path = Path("backups") / filename
+    base_dir = Path("backups").resolve()
+    file_path = (base_dir / filename).resolve()
+
     # Security: check if file is within backups dir
-    if not file_path.resolve().parent.name == "backups" or not file_path.exists():
+    if not file_path.is_relative_to(base_dir) or not file_path.is_file():
         return RedirectResponse("/admin/backups?error=File+not+found", status_code=303)
         
     return FileResponse(
@@ -454,9 +456,10 @@ def admin_backups_download(filename: str):
 @router.post("/backups/delete/{filename}", dependencies=[Depends(require_admin)])
 def admin_backups_delete_file(filename: str, request: Request, db: Session = Depends(get_db)):
     from pathlib import Path
-    file_path = Path("backups") / filename
+    base_dir = Path("backups").resolve()
+    file_path = (base_dir / filename).resolve()
     
-    if file_path.resolve().parent.name == "backups" and file_path.exists():
+    if file_path.is_relative_to(base_dir) and file_path.is_file():
         file_path.unlink()
         record_audit(db, "backup_delete", details=f"Deleted backup: {filename}", request=request)
         db.commit()
