@@ -1,3 +1,4 @@
+from typing import Any, List, Dict
 import asyncio
 import random
 from datetime import datetime
@@ -102,7 +103,7 @@ class SNMPService:
         except Exception:
             return None
 
-    async def discover_interfaces(self, ip: str, community: str = "public") -> list[dict]:
+    async def discover_interfaces(self, ip: str, community: str = "public") -> List[Dict]:
         """
         Simulates an SNMP walk of IF-MIB to discover network interfaces.
         Returns a list of dictionaries with interface details.
