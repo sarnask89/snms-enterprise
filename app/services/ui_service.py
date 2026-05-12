@@ -1,5 +1,4 @@
 from fastapi import Request
-from app.config import APP_DISPLAY_NAME
 
 class UIService:
     """Serwis zarządzający interfejsem użytkownika (UI Plugin)."""
