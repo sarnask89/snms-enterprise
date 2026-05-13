@@ -2,6 +2,7 @@ import asyncio
 import random
 from typing import Any
 from datetime import datetime
+from typing import Any
 from app.models.network import NetDevice
 from app.models.monitoring import NetworkStat
 from app.database import SessionLocal

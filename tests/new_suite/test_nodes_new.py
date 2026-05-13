@@ -4,7 +4,7 @@ from app import models
 def test_nodes_list(admin_client):
     resp = admin_client.get("/customer-devices")
     assert resp.status_code == 200
-    assert "Urządzenia klientów" in resp.text
+    assert "Komputery / urządzenia klientów" in resp.text
 
 def test_node_crud(admin_client, session):
     # Setup: need a customer and network
@@ -27,7 +27,7 @@ def test_node_crud(admin_client, session):
     )
     assert resp.status_code == 303
     
-    node = session.query(models.Node).filter_by(name="test-pc").first()
+    node = session.query(models.CustomerDevice).filter_by(name="test-pc").first()
     assert node is not None
 
     # 2. Edit
@@ -49,12 +49,12 @@ def test_node_crud(admin_client, session):
     # 3. Delete
     resp = admin_client.post(f"/customer-devices/{node.id}/delete", follow_redirects=False)
     assert resp.status_code == 303
-    assert session.get(models.Node, node.id) is None
+    assert session.get(models.CustomerDevice, node.id) is None
 
 def test_node_groups_crud(admin_client, session):
     # 1. Create
     resp = admin_client.post(
-        "/node-groups/new",
+        "/device-groups/new",
         data={
             "name": "Laptops",
             "description": "Mobile devices"
@@ -63,9 +63,9 @@ def test_node_groups_crud(admin_client, session):
     )
     assert resp.status_code == 303
     
-    g = session.query(models.NodeGroup).filter_by(name="Laptops").first()
+    g = session.query(models.CustomerDeviceGroup).filter_by(name="Laptops").first()
     assert g is not None
 
     # 2. Delete
-    resp = admin_client.post(f"/node-groups/{g.id}/delete", follow_redirects=False)
+    resp = admin_client.post(f"/device-groups/{g.id}/delete", follow_redirects=False)
     assert resp.status_code == 303

@@ -17,7 +17,7 @@ def record_audit(
     resource_type: str | None = None,
     resource_id: int | None = None,
     details: str | None = None,
-    actor: PortalUser | None = None,
+    actor: "PortalUser | None" = None,
     request: Request | None = None,
 ) -> None:
     """Rejestruje zdarzenie w tabeli audit_logs (D6)."""
