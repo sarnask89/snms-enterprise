@@ -7,6 +7,7 @@ from app.models.monitoring import NetworkStat
 from app.database import SessionLocal
 import sqlalchemy as sa
 import logging
+from typing import Any
 
 logger = logging.getLogger("app.snmp")
 
