@@ -211,29 +211,22 @@ const sendMessage = async () => {
     }
   }
 
-  // 2. Send to Ollama for Generation/Chat
+  // 3. Send to backend assistant endpoint. The backend will use Ollama when available
+  // and will fall back to deterministic SNMS diagnostics if the local model is offline.
   isLoading.value = true
-  const config = useRuntimeConfig()
-  const ollamaUrl = config.public.ollamaUrl || 'http://localhost:11434'
-  const ollamaModel = config.public.ollamaModel || 'deepseek-coder:1.3b'
 
   try {
-    const response = await fetch(`${ollamaUrl}/api/chat`, {
+    const data = await $fetch('/api/v2/assistant/chat', {
       method: 'POST',
-      body: JSON.stringify({
-        model: ollamaModel,
-        messages: [
-          { role: 'system', content: `You are the CRM Portal Architect. ${systemContext.value ? 'Use this API documentation as reference: ' + systemContext.value : ''}` },
-          ...messages.value.slice(-5) // Send last 5 messages for context
-        ],
-        stream: false
-      })
+      body: {
+        prompt: userText,
+        context: systemContext.value || undefined
+      }
     })
 
-    const data = await response.json()
-    messages.value.push({ role: 'assistant', content: data.message.content })
+    messages.value.push({ role: 'assistant', content: data.reply || 'No assistant response received.' })
   } catch (error) {
-    messages.value.push({ role: 'assistant', content: '❌ Error connecting to Ollama. Make sure the server is running on port 11434.' })
+    messages.value.push({ role: 'assistant', content: '❌ Backend assistant is unavailable. Check FastAPI /api/v2/assistant/chat.' })
   } finally {
     isLoading.value = false
   }
