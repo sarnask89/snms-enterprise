@@ -87,6 +87,19 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
     for nid, cnt in db.execute(q_dev).all():
         if nid is not None:
             n_dev[int(nid)] = int(cnt)
+    # Bolt Optimization: Pre-parse node IP addresses once to avoid redundant string parsing
+    # and object instantiation in the nested O(N*M) loop below.
+    parsed_nodes: list[tuple[int | None, Any | None]] = []
+    for node in nodes:
+        raw = (node.ip_address or "").strip().split("/")[0].strip()
+        ip_obj = None
+        if raw:
+            try:
+                ip_obj = ipaddress.ip_address(raw)
+            except ValueError:
+                pass
+        parsed_nodes.append((node.ip_network_id, ip_obj))
+
     usage_rows: list[dict[str, Any]] = []
     for net in networks:
         row: dict[str, Any] = {"network": net, "cidr_error": None, "nodes_in_net": 0, "devices": n_dev.get(net.id, 0)}
@@ -96,20 +109,15 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
             row["cidr_error"] = "niepoprawny CIDR"
             usage_rows.append(row)
             continue
+
         hits = 0
-        for node in nodes:
-            if node.ip_network_id == net.id:
+        for node_net_id, node_ip in parsed_nodes:
+            # Count if explicitly linked or if IP address falls within CIDR range
+            if node_net_id == net.id:
                 hits += 1
-                continue
-            raw = (node.ip_address or "").strip().split("/")[0].strip()
-            if not raw:
-                continue
-            try:
-                ip = ipaddress.ip_address(raw)
-                if ip in ip_net:
-                    hits += 1
-            except ValueError:
-                continue
+            elif node_ip and node_ip in ip_net:
+                hits += 1
+
         row["nodes_in_net"] = hits
         usage_rows.append(row)
     return render(
