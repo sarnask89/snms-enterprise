@@ -1,21 +1,9 @@
 """
-Device import and export endpoints for API v2.
+Device import, export and backup endpoints for API v2.
 
 This module provides endpoints to import a batch of network device definitions
-from a JSON file and to export a single device's configuration as JSON. The
-import endpoint expects a file upload containing a JSON array of device
-objects. Each object should include at least a ``name`` field and may also
-specify ``hostname``, ``management_ip`` and ``device_type``. Unknown fields
-are ignored. The export endpoint returns a minimal representation of a
-``NetDevice`` record identified by its numeric ID.
-
-These endpoints intentionally provide only basic functionality. In a real
-deployment you would likely extend validation, error handling and mapping
-logic to cover additional device attributes (such as interfaces, SNMP
-credentials, models, etc.) and integrate with vendor-specific backup
-mechanisms. For now the goal is to demonstrate how such endpoints can be
-added to the existing FastAPI application without interfering with
-surrounding code.
+from JSON, export a device inventory snapshot, and generate a RouterOS-style
+backup/export from either database inventory or a live RouterOS SSH session.
 """
 
 import json
@@ -25,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app import models
+from app.services.device_backup_service import device_backup_service
 
 
 router = APIRouter(prefix="/devices", tags=["devices"])
@@ -39,8 +28,6 @@ async def import_devices(file: UploadFile = File(...), db: Session = Depends(get
     supported: ``name`` (required), ``hostname``, ``management_ip`` and
     ``device_type``. All other keys are ignored. Devices with missing
     ``name`` fields are skipped.
-
-    Returns a dictionary with the number of successfully imported devices.
     """
     content = await file.read()
     try:
@@ -57,7 +44,6 @@ async def import_devices(file: UploadFile = File(...), db: Session = Depends(get
             continue
         name = item.get("name")
         if not name:
-            # Skip entries without a name
             continue
         hostname = item.get("hostname")
         management_ip = item.get("management_ip")
@@ -78,13 +64,7 @@ async def import_devices(file: UploadFile = File(...), db: Session = Depends(get
 
 @router.get("/{device_id}/export")
 def export_device(device_id: int, db: Session = Depends(get_db)):
-    """Export a network device's configuration as a JSON-serialisable dict.
-
-    Returns a minimal representation of the ``NetDevice`` identified by
-    ``device_id``. If no such device exists a simple error structure is
-    returned. This endpoint does not currently include related objects such
-    as interfaces or IP pools – these could be added in future iterations.
-    """
+    """Export a network device's database configuration as JSON."""
     dev = db.get(models.NetDevice, device_id)
     if not dev:
         return {"error": "Device not found"}
@@ -95,4 +75,41 @@ def export_device(device_id: int, db: Session = Depends(get_db)):
         "management_ip": dev.management_ip,
         "device_type": dev.device_type,
         "serial_number": dev.serial_number,
+        "mac_address": dev.mac_address,
+        "status": getattr(dev.status, "value", dev.status),
     }
+
+
+@router.post("/{device_id}/backup")
+def backup_device(device_id: int, payload: dict | None = None, db: Session = Depends(get_db)):
+    """Generate a device configuration backup/export.
+
+    Request body options:
+    - method: ``inventory`` (default) or ``routeros_ssh``
+    - username/password: optional live RouterOS SSH credentials
+    - port/timeout: optional RouterOS SSH connection settings
+
+    ``inventory`` never connects to the network and returns a RouterOS-style
+    export from database objects. ``routeros_ssh`` attempts a live ``/export
+    terse hide-sensitive`` command when paramiko and credentials are available.
+    """
+    dev = db.get(models.NetDevice, device_id)
+    if not dev:
+        return {"error": "Device not found"}
+
+    payload = payload or {}
+    method = payload.get("method", "inventory")
+
+    if method == "inventory":
+        return device_backup_service.inventory_export(dev).as_dict()
+
+    if method == "routeros_ssh":
+        return device_backup_service.routeros_ssh_export(
+            dev,
+            username=payload.get("username"),
+            password=payload.get("password"),
+            port=int(payload.get("port", 22)),
+            timeout=int(payload.get("timeout", 12)),
+        ).as_dict()
+
+    return {"error": f"Unsupported backup method: {method}"}
