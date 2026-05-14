@@ -69,8 +69,14 @@ const links = [
     icon: 'i-heroicons-globe-alt',
     children: [
       { label: 'Węzły', to: '/network/nodes' },
-      { label: 'Urządzenia', to: '/network/devices' }
+      { label: 'Urządzenia', to: '/network/devices' },
+      { label: 'Import / Export', to: '/devices-import-export' }
     ]
+  },
+  {
+    label: 'Helpdesk',
+    icon: 'i-heroicons-ticket',
+    to: '/helpdesk'
   },
   {
     label: 'Finanse',
