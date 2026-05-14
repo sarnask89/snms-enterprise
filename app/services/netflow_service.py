@@ -101,10 +101,54 @@ class NetFlowService:
         if version == 5:
             flows = NetFlowV5Parser.parse(data)
         elif version == 9:
-            pass
+            flows = self._parse_v9(data, source_ip)
             
         if flows:
             asyncio.create_task(self._aggregate_flows(flows, source_ip))
+
+    def _parse_v9(self, data: bytes, source_ip: str) -> List[Dict[str, Any]]:
+        if parse_netflow_packet is None:
+            logger.warning("netflow parser dependency is missing; skipping NetFlow v9 packet")
+            return []
+
+        try:
+            export = parse_netflow_packet(data, self._v9_templates)
+        except Exception as exc:
+            logger.warning("Unable to parse NetFlow v9 packet from %s: %s", source_ip, exc)
+            return []
+
+        raw_flows = getattr(export, "flows", export if isinstance(export, list) else [])
+        flows = []
+
+        for flow in raw_flows:
+            flow_data = getattr(flow, "data", flow)
+            if not isinstance(flow_data, dict):
+                continue
+
+            src_ip = self._field(flow_data, "IPV4_SRC_ADDR", "srcaddr", "src_ip")
+            dst_ip = self._field(flow_data, "IPV4_DST_ADDR", "dstaddr", "dst_ip")
+
+            if not src_ip or not dst_ip:
+                continue
+
+            flows.append({
+                "src_ip": str(src_ip),
+                "dst_ip": str(dst_ip),
+                "src_port": int(self._field(flow_data, "L4_SRC_PORT", "srcport", "src_port", default=0) or 0),
+                "dst_port": int(self._field(flow_data, "L4_DST_PORT", "dstport", "dst_port", default=0) or 0),
+                "protocol": int(self._field(flow_data, "PROTOCOL", "protocol", default=0) or 0),
+                "bytes": int(self._field(flow_data, "IN_BYTES", "OUT_BYTES", "bytes", default=0) or 0),
+                "packets": int(self._field(flow_data, "IN_PKTS", "OUT_PKTS", "packets", default=0) or 0),
+            })
+
+        return flows
+
+    @staticmethod
+    def _field(data: Dict[str, Any], *names: str, default: Any = None) -> Any:
+        for name in names:
+            if name in data:
+                return data[name]
+        return default
 
     async def _aggregate_flows(self, flows: List[Dict[str, Any]], source_device_ip: str):
         async with self._lock:
