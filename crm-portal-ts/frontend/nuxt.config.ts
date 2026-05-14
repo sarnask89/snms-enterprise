@@ -10,13 +10,14 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/api': {
-        target: 'http://localhost:8080/api',
+        target: 'http://localhost:8080',
         changeOrigin: true
       }
     }
   },
   runtimeConfig: {
     public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
       ollamaModel: process.env.OLLAMA_MODEL || 'deepseek-coder:1.3b'
     }
