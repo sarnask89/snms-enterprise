@@ -30,8 +30,10 @@ def create_ticket(payload: dict, db: Session = Depends(get_db), current_user: mo
     to a specific helpdesk queue and category. The authenticated user is set as the
     ticket's customer.
 
-    Returns the created ticket with its assigned ID.
+    Returns the created ticket with its assigned ID or an error dict.
     """
+    if not isinstance(payload, dict):
+        return {"error": "Invalid payload"}
     title = payload.get("title")
     body = payload.get("body")
     if not title or not body:
@@ -55,7 +57,7 @@ def create_ticket(payload: dict, db: Session = Depends(get_db), current_user: mo
 def get_ticket(ticket_id: int, db: Session = Depends(get_db), current_user: models.PortalUser = Depends(get_current_user)):
     """Retrieve a support ticket by its ID.
 
-    Returns the ticket object or a simple error if not found.
+    Returns the ticket object or an error dict if not found.
     """
     ticket = db.get(models.SupportTicket, ticket_id)
     if not ticket:
