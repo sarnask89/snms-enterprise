@@ -11,6 +11,11 @@ from app import models
 
 logger = logging.getLogger("app.netflow_service")
 
+try:
+    from netflow import parse_packet as parse_netflow_packet
+except Exception:
+    parse_netflow_packet = None
+
 class NetFlowV5Parser:
     """Parser for NetFlow Version 5 packets."""
     HEADER_STRUCT = struct.Struct(">HHIIIIBBH") # 24 bytes
@@ -31,7 +36,6 @@ class NetFlowV5Parser:
             if offset + 48 > len(data): break
             rec = NetFlowV5Parser.RECORD_STRUCT.unpack(data[offset:offset+48])
             
-            # Extract basic fields: src_ip, dst_ip, src_port, dst_port, protocol, bytes, packets
             flows.append({
                 "src_ip": socket.inet_ntoa(struct.pack(">I", rec[0])),
                 "dst_ip": socket.inet_ntoa(struct.pack(">I", rec[1])),
@@ -59,6 +63,16 @@ class NetFlowService:
         self.aggregates: Dict[tuple, Dict[str, Any]] = {}
         self.is_running = False
         self._lock = asyncio.Lock()
+        self._v9_templates: Dict[str, Any] = {}
+
+    async def start(self):
+        await self.start_collector()
+
+    async def stop(self):
+        self.is_running = False
+
+        if hasattr(self, "transport"):
+            self.transport.close()
 
     async def start_collector(self):
         if self.is_running: return
@@ -87,7 +101,6 @@ class NetFlowService:
         if version == 5:
             flows = NetFlowV5Parser.parse(data)
         elif version == 9:
-            # Phase 2: Implement V9 parser with template support
             pass
             
         if flows:
@@ -96,7 +109,6 @@ class NetFlowService:
     async def _aggregate_flows(self, flows: List[Dict[str, Any]], source_device_ip: str):
         async with self._lock:
             for f in flows:
-                # Key: (src_ip, dst_ip, src_port, dst_port, protocol)
                 key = (f["src_ip"], f["dst_ip"], f["src_port"], f["dst_port"], f["protocol"])
                 if key not in self.aggregates:
                     self.aggregates[key] = {
@@ -114,7 +126,7 @@ class NetFlowService:
 
     async def _periodic_flush(self):
         while self.is_running:
-            await asyncio.sleep(30) # Flush every 30 seconds
+            await asyncio.sleep(30)
             if not self.aggregates: continue
             
             async with self._lock:
@@ -123,9 +135,6 @@ class NetFlowService:
             
             db = SessionLocal()
             try:
-                # Find device ID if possible based on source_ip
-                # (Simple lookup for now)
-                
                 for flow in to_save:
                     agg = models.NetFlowAggregate(
                         src_ip=flow["src_ip"],
