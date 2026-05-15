@@ -1,20 +1,100 @@
-Here is the TypeScript version of your Python code. I've assumed that you are using NestJS for Node.js and SQLite as a database, but it can be adapted to other databases if needed (like PostgreSQL or MySQL). 
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
 
-```typescript
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-// Assuming the LocationState is defined in another file here. You may need imports for that as well based on your project structure and setup of TypeORM entities/models etc... 
-@Entity('location_states') // This assumes you have a location state entity, adjust accordingly if not using SQLite or similar database system like PostgreSQL / MySQL with NestJS ORM.  
+@Entity("location_states")
 export class LocationState {
-    @PrimaryGeneratedColumn() id: number;
-    
-    @Column({ length: 128 }) name: string; // Assuming the column names are correct, adjust as needed if not using SQLite or similar database system like PostgreSQL / MySQL with NestJS ORM.  
-     
-    @Column({ nullable: true , unique :true}) teryt_code: string | null ; 
-    
-    @Column() isActive: boolean; // Assuming the column names are correct, adjust as needed if not using SQLite or similar database system like PostgreSQL / MySQL with NestJS ORM.  
-     
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "varchar", length: 128 })
+    name!: string;
+
+    @Column({ type: "varchar", name: "teryt_code", length: 16, nullable: true, unique: true })
+    terytCode?: string;
+
+    @Column({ type: "boolean", name: "is_active", default: false })
+    isActive!: boolean;
+
+    @OneToMany(() => LocationDistrict, (district) => district.state)
+    districts!: LocationDistrict[];
 }
-// Similarly define LocationDistrict and other entities... assuming they have same structure 
-```
-Please note that TypeORM is a tool for working with TypeScript/JavaScript in Nodejs, which means you can use it to interact directly with your database using the classes defined above (LocationState etc). You would need setup of NestJS ORM and also make sure all necessary imports are done. 
-Also note that this code assumes a basic structure for each entity as per provided Python script's data types, you may have different requirements or additional columns in your models so adjust accordingly if needed (like foreign keys etc). Also please replace the 'LocationState', and other entities with actual location state classes from where they are defined.
+
+@Entity("location_districts")
+export class LocationDistrict {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "state_id" })
+    stateId!: number;
+
+    @Column({ type: "varchar", length: 128 })
+    name!: string;
+
+    @Column({ type: "varchar", name: "teryt_code", length: 16, nullable: true })
+    terytCode?: string;
+
+    @Column({ type: "boolean", name: "is_active", default: false })
+    isActive!: boolean;
+
+    @ManyToOne(() => LocationState, (state) => state.districts, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "state_id" })
+    state!: LocationState;
+
+    @OneToMany(() => LocationCity, (city) => city.district)
+    cities!: LocationCity[];
+}
+
+@Entity("location_cities")
+export class LocationCity {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "district_id" })
+    districtId!: number;
+
+    @Column({ type: "varchar", length: 128 })
+    name!: string;
+
+    @Column({ type: "varchar", name: "teryt_code", length: 16, nullable: true })
+    terytCode?: string;
+
+    @Column({ type: "varchar", name: "commune_code", length: 8, nullable: true })
+    communeCode?: string;
+
+    @Column({ type: "varchar", name: "commune_type", length: 4, nullable: true })
+    communeType?: string;
+
+    @Column({ type: "boolean", name: "is_managed", default: false })
+    isManaged!: boolean;
+
+    @Column({ type: "boolean", name: "is_default", default: false })
+    isDefault!: boolean;
+
+    @Column({ type: "boolean", name: "is_active", default: false })
+    isActive!: boolean;
+
+    @ManyToOne(() => LocationDistrict, (district) => district.cities, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "district_id" })
+    district!: LocationDistrict;
+
+    @OneToMany(() => LocationStreet, (street) => street.city)
+    streets!: LocationStreet[];
+}
+
+@Entity("location_streets")
+export class LocationStreet {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "city_id" })
+    cityId!: number;
+
+    @Column({ type: "varchar", length: 128 })
+    name!: string;
+
+    @Column({ type: "varchar", name: "teryt_code", length: 16, nullable: true })
+    terytCode?: string;
+
+    @ManyToOne(() => LocationCity, (city) => city.streets, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "city_id" })
+    city!: LocationCity;
+}

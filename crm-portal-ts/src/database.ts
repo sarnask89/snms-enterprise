@@ -1,25 +1,67 @@
-Here is the TypeScript version of your Python code using NodeJS and Express for routing with typeORM-like patterns in models as well, following all rules you've mentioned above (except output). 
-```typescript
-import { createConnection } from "typeorm"; // Import Connection object to connect database.
-// import other necessary objects like Entity here...
-require('dotenv').config();   // Load environment variables in NodeJS using dotenv package, if needed for production use this line too! 
-const express = require("express");    // Express is a minimal and fast node.js web framework that makes it easy to build both web applications with Node JS features like routing or middleware handling etc...  
-// import other necessary modules here.. (like multer, cloudinary for file uploads) 
-const cors = require("cors");    // CORS is a node.js package which provides Cross-Origin Resource Sharing capabilities so that your Node server can accept requests from client browsers on different origins...  
-// import other necessary modules here.. (like bcrypt, jsonwebtoken for user authentication) 
-const app = express();     // Initialize Express App object to handle HTTP request and response.   
-app.use(express.json());      // Middleware that parses incoming requests with JSON payloads & is based on body-parser...  
-// Use CORS middle ware here.. (for security reasons) 
-cors({ origin: '*' }));     // Enable all origins for cross platform access from browser or mobile app.   
-app.use(express.static('public'));      // Express Middleware to serve static files such as images, CSS etc...  
-// Use Routes here.. (Define your routes in separate file and import them) 
-const userRouter = require("./routes/user");     // Import User router object for handling HTTP requests related with users.   
-app.use("/api", [userRouter]);      // Middleware to handle API request on /api route...  
-// Use Error Handling middle ware here.. (For catching errors and sending appropriate response) 
-const errorHandler = require("./middlewares/error-handler");     // Import custom made function for handling HTTP requests related with users.   
-app.use(errorHandler);      // Middleware to handle all types of exceptions...  
-// Connect Database here.. (Use TypeORM's createConnection method) 
-createConnection()       .then((connection: Connection) => {     // Create a connection object using the database url from environment variables or config file.    })        ... and so on for other parts as well!      });});   } catch(error){ console.log('Error', error); };})(); 
-```
-Please note that this is just an example, you should replace all imports with actual modules/files in your project structure if they are not already present or updated according to the requirements of each module's functionality (like multer for file upload handling). Also make sure environment variables have been set up correctly. 
-Also note that this code is written assuming a NodeJS and TypeScript setup with Express, SQLAlchemy/TypeORM as ORM tool used in database operations along side other necessary packages like dotenv(for managing env vars), cors (to handle CORS requests) etc... Please adjust the imports according to your project's structure.
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+import path from "path";
+import { fileURLToPath } from "url";
+import { Customer, CustomerGroup, CustomerNotice, Document } from "./models/customer.js";
+import { CashReceipt, Invoice, LedgerEntry, RecurringPayment, Subscription, Tariff } from "./models/finance.js";
+import { HelpdeskCategory, HelpdeskQueue, SupportTicket } from "./models/helpdesk.js";
+import { LocationCity, LocationDistrict, LocationState, LocationStreet } from "./models/location.js";
+import { CustomerDevice, IpNetwork, NetDevice, NetNode } from "./models/network.js";
+import { AppSetting, AuditLog, BackupExport, ConfigReloadLog, PortalUser } from "./models/system.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+export const databasePath = process.env.CRM_PORTAL_TS_DB_PATH
+    ? path.resolve(process.env.CRM_PORTAL_TS_DB_PATH)
+    : path.resolve(__dirname, "../../sqlite_mcp_server.db");
+
+export const AppDataSource = new DataSource({
+    type: "sqlite",
+    database: databasePath,
+    synchronize: false, // Set to true if you want to auto-create tables, but we have existing data
+    logging: false,
+    // Keep the runtime on an explicit, compilable entity set until the
+    // remaining translated modules are repaired and reintroduced.
+    entities: [
+        Customer,
+        CustomerGroup,
+        CustomerNotice,
+        Document,
+        LocationState,
+        LocationDistrict,
+        LocationCity,
+        LocationStreet,
+        AppSetting,
+        PortalUser,
+        AuditLog,
+        BackupExport,
+        ConfigReloadLog,
+        CustomerDevice,
+        IpNetwork,
+        NetDevice,
+        NetNode,
+        Tariff,
+        Subscription,
+        Invoice,
+        RecurringPayment,
+        LedgerEntry,
+        CashReceipt,
+        HelpdeskQueue,
+        HelpdeskCategory,
+        SupportTicket,
+    ],
+    migrations: [],
+    subscribers: [],
+});
+
+export const initDatabase = async () => {
+    if (AppDataSource.isInitialized) return AppDataSource;
+    try {
+        await AppDataSource.initialize();
+        console.log("Data Source has been initialized!");
+        return AppDataSource;
+    } catch (err) {
+        console.error("Error during Data Source initialization", err);
+        throw err;
+    }
+};

@@ -2,7 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui'],
-  compatibilityDate: '2026-05-11',
+  compatibilityDate: '2024-07-04',
+  srcDir: 'app/',
   ui: {
     global: true,
     icons: ['heroicons', 'simple-icons']
@@ -18,7 +19,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
-      ollamaModel: process.env.OLLAMA_MODEL || 'deepseek-coder:1.3b'
+      ollamaModel: process.env.OLLAMA_MODEL || 'qwen-940mx'
     }
   }
 })

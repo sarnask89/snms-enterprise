@@ -1,16 +1,47 @@
-Here is the TypeScript equivalent of your Python code. I've used `@` for dependency injection and replaced all instances where you would use a database session with an ORM library like Prisma or typeORM in this translation process (as they are not available as dependencies). Also, note that FastAPI does not support returning HTMLResponse directly from routes due to the way it handles responses. I've used `render_template` instead:
-```typescript
-import { APIRouter } from "fastapi";  // Importing fast api router for dependency injection and request handling in express framework, similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from sqlalchemy import func, select   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from sqlalchemy.orm import Session   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-import logging    from app import models, get_db   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from fastapi import Request, Depends    from app.deps import verify_session   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from app.templating import render_template   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-import models from app    import Customer, Invoice   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-import logging from app import models, get_db   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from fastapi import Request, Depends    from app.deps import verify_session   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from app.templating import render_template   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-import models from app    import Customer, Invoice   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-import logging from app import models, get_db   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from fastapi import Request, Depends    from app.deps import verify_session   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.24)
-from app.templating import render_template   // Assuming you are using SQLAlchemy ORM with type annotations  or equivalent libraries for database operations and querying in Python environment similar as FastAPI itself does not support this out of box yet (as far back to version v1.
+import { Router } from "express";
+import { AppDataSource } from "../database.js";
+import { Customer } from "../models/customer.js";
+import { SupportTicket } from "../models/helpdesk.js";
+import { CustomerDevice, NetDevice, NetNode } from "../models/network.js";
+
+export const router = Router();
+
+async function countOrZero<T>(entity: { new (): T }) {
+    try {
+        return await AppDataSource.getRepository(entity).count();
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.includes("no such table")) {
+            return 0;
+        }
+
+        throw error;
+    }
+}
+
+router.get("/stats", async (_req, res) => {
+    try {
+        const [customers, customerDevices, netDevices, nodes, tickets] = await Promise.all([
+            countOrZero(Customer),
+            countOrZero(CustomerDevice),
+            countOrZero(NetDevice),
+            countOrZero(NetNode),
+            countOrZero(SupportTicket),
+        ]);
+
+        res.json({
+            customers,
+            nodes,
+            devices: customerDevices + netDevices,
+            tickets,
+        });
+    } catch (error) {
+        console.error("Error generating dashboard stats:", error);
+        res.json({
+            customers: 0,
+            nodes: 0,
+            devices: 0,
+            tickets: 0,
+        });
+    }
+});

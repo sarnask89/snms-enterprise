@@ -1,37 +1,182 @@
-Here is the TypeScript version of your Python code using NestJS framework and SQLAlchemy ORM for database operations, assuming you have a similar setup in place with FastAPI. 
-Please note that this translation assumes some things about how each part works (like dependencies or session handling), which may not be exactly equivalent to the original python script but should give an idea of what is going on:
-```typescript
-import { Controller, Get, Redirect, Req } from '@nestjs/common';
-import { Request as NestRequest}  from "express"; // Assuming you have Express.NodeJS in your project for the request object type and session handling (depends)
-// Import necessary dependencies here based on FastAPI's import statements if any, like:  
-// `from fastapi import APIRouter` ,  `Depends()`` etc 
-import { Session } from '../database/session.interface'; // Assuming you have a session interface and service for handling sessions (dependencies)
-import * as models from "app/models";    // Import your model definitions here if any, like: `from fastapi import FastAPI` ,  `ModelBase` etc 
-// Also assuming there is an equivalent of Depends in NestJS which handles session or request specific dependencies.  
-@Controller('customer-groups')     // Assuming you have a similar decorator for nestjs controllers (like @nestjs/common)   
-export class CustomerGroupController {     
-  constructor(private readonly db: Session){}       // Injecting the database session service into controller, assuming it has methods like add and commit to handle transactions.  
-    
-@Get()       
-async groupList(@Req() request : NestRequest): Promise<void>{   
-// Assuming you have a similar decorator for nestjs routes (like @nestjs/core) 
-const rows = await this.db.create(models.CustomerGroup).select().execute();   // Using SQLAlchemy ORM to select all customer groups and return them as an array of objects   
-// Assuming you have a similar method in your models for rendering HTML response (like `render`) 
-}    
-@Get('/add')     
-redirectAdd(): Redirect {       // Similar decorator like @nestjs/core, redirecting to '/customer-groups' with status code of '302'.  
-    return {url: "/customer-group", statusCode: 302};     }       
-@Get('/new')     
-async groupNewForm(@Req() request : NestRequest): Promise<void>{       // Similar decorator like @nestjs/core, rendering 'form.html' and passing it a title  
-    const rows = await this.db.create(models.CustomerGroup).select().execute();     }       
-@Get('/:group_id')     
-async groupEditForm(@Req() request : NestRequest): Promise<void>{       // Similar decorator like @nestjs/core, rendering 'form.html' and passing it a title  
-    const rows = await this.db.create(models.CustomerGroup).select().execute();     }       
-@Get('/:group_id')     
-async groupDelete(@Req() request : NestRequest): Promise<void>{       // Similar decorator like @nestjs/core, redirecting to '/customer-groups' with status code of '302'.  
-    return {url: "/customer-groups", statusCode: 302};     }       
-}     
-```          This is a very basic translation and may need adjustments based on your project setup. Also, please note that the above script assumes you have similar decorators in NestJS (like @nestjs/core) for handling routes or session specific dependencies like `@Get` ,  `Redirect` etc 
-Also assuming there is an equivalent of Depends in NestJS which handles session or request specific dependencies.   and also importing necessary modules based on FastAPI's module statements if any, such as:   ```typescript Import { Controller } from '@nestjs/common'; ``` ,  `{ Session}` etc 
-Also assuming you have a similar decorator for nestjs controllers (like @nestjs/core) and also importing necessary modules based on FastAPI's module statements if any, such as:   ```typescript Import { Controller } from '@nestjs/common'; ``` ,  `{ Session}` etc 
-Also assuming you have a similar method in your models for rendering HTML response (like render) and also importing necessary modules based on FastAPI's module statements if any, such as:   ```typescript Import { Controller } from
+import { Router } from "express";
+import { In } from "typeorm";
+import { AppDataSource } from "../database.js";
+import { Customer, CustomerGroup } from "../models/customer.js";
+
+export const router = Router();
+
+const groupRepo = AppDataSource.getRepository(CustomerGroup);
+const customerRepo = AppDataSource.getRepository(Customer);
+
+function normalizeMemberIds(input: unknown): number[] {
+    if (!Array.isArray(input)) {
+        return [];
+    }
+
+    return [...new Set(
+        input
+            .map((value) => Number.parseInt(String(value), 10))
+            .filter((value) => Number.isInteger(value) && value > 0),
+    )];
+}
+
+function serializeGroup(group: CustomerGroup, includeMembers = false) {
+    const customers = group.customers ?? [];
+
+    return {
+        id: group.id,
+        name: group.name,
+        description: group.description ?? null,
+        customerCount: customers.length,
+        memberIds: customers.map((customer) => customer.id),
+        customers: includeMembers
+            ? customers.map((customer) => ({
+                id: customer.id,
+                customerCode: customer.customerCode,
+                firstName: customer.firstName,
+                lastName: customer.lastName,
+                email: customer.email ?? null,
+                status: customer.status,
+            }))
+            : undefined,
+    };
+}
+
+async function assignMembers(group: CustomerGroup, memberIds: number[]) {
+    if (memberIds.length === 0) {
+        group.customers = [];
+        return;
+    }
+
+    group.customers = await customerRepo.find({
+        where: { id: In(memberIds) },
+        order: { lastName: "ASC", firstName: "ASC" },
+    });
+}
+
+router.get("/", async (_req, res) => {
+    try {
+        const groups = await groupRepo.find({
+            relations: { customers: true },
+            order: { name: "ASC" },
+        });
+
+        res.json(groups.map((group) => serializeGroup(group, true)));
+    } catch (error) {
+        console.error("Error fetching customer groups:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.get("/:id", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const group = await groupRepo.findOne({
+            where: { id },
+            relations: { customers: true },
+        });
+
+        if (!group) {
+            return res.status(404).json({ message: "Customer group not found" });
+        }
+
+        res.json(serializeGroup(group, true));
+    } catch (error) {
+        console.error("Error fetching customer group:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/", async (req, res) => {
+    try {
+        const name = String(req.body?.name ?? "").trim();
+        const description = String(req.body?.description ?? "").trim() || undefined;
+        const memberIds = normalizeMemberIds(req.body?.memberIds);
+
+        if (!name) {
+            return res.status(400).json({ message: "Name is required" });
+        }
+
+        const group = groupRepo.create({
+            name,
+            description,
+        });
+        await assignMembers(group, memberIds);
+        await groupRepo.save(group);
+
+        const savedGroup = await groupRepo.findOne({
+            where: { id: group.id },
+            relations: { customers: true },
+        });
+
+        res.status(201).json(serializeGroup(savedGroup ?? group, true));
+    } catch (error) {
+        console.error("Error creating customer group:", error);
+        res.status(400).json({ message: "Failed to create customer group" });
+    }
+});
+
+router.put("/:id", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const group = await groupRepo.findOne({
+            where: { id },
+            relations: { customers: true },
+        });
+
+        if (!group) {
+            return res.status(404).json({ message: "Customer group not found" });
+        }
+
+        const name = String(req.body?.name ?? group.name).trim();
+        const descriptionValue = req.body?.description;
+        const memberIds = req.body?.memberIds === undefined
+            ? group.customers.map((customer) => customer.id)
+            : normalizeMemberIds(req.body?.memberIds);
+
+        if (!name) {
+            return res.status(400).json({ message: "Name is required" });
+        }
+
+        group.name = name;
+        group.description = descriptionValue === undefined
+            ? group.description
+            : (String(descriptionValue).trim() || undefined);
+
+        await assignMembers(group, memberIds);
+        await groupRepo.save(group);
+
+        const savedGroup = await groupRepo.findOne({
+            where: { id: group.id },
+            relations: { customers: true },
+        });
+
+        res.json(serializeGroup(savedGroup ?? group, true));
+    } catch (error) {
+        console.error("Error updating customer group:", error);
+        res.status(400).json({ message: "Failed to update customer group" });
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const group = await groupRepo.findOne({
+            where: { id },
+            relations: { customers: true },
+        });
+
+        if (!group) {
+            return res.status(404).json({ message: "Customer group not found" });
+        }
+
+        group.customers = [];
+        await groupRepo.save(group);
+        await groupRepo.remove(group);
+
+        res.status(204).send();
+    } catch (error) {
+        console.error("Error deleting customer group:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});

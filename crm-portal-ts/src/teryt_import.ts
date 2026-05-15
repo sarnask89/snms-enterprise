@@ -1,180 +1,171 @@
-import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
-import * as xml2js from 'xml2js';
+import { AppDataSource } from "./database.js";
+import { LocationCity, LocationDistrict, LocationState, LocationStreet } from "./models/location.js";
 
-@Injectable()
-export class XmlImporterService {
-  async importTercXml(db: any, xmlFile: Buffer): Promise<[number, number]> {
-    const parser = new xml2js.Parser();
-    const result = await parser.parseStringPromise(xmlFile);
-    let sCount = 0;
-    let dCount = 0;
+const stateRepo = AppDataSource.getRepository(LocationState);
+const districtRepo = AppDataSource.getRepository(LocationDistrict);
+const cityRepo = AppDataSource.getRepository(LocationCity);
+const streetRepo = AppDataSource.getRepository(LocationStreet);
 
-    const statesData: { [key: string]: string } = {};
-    const districtsData: [string, string, string][] = [];
+function clean(value: string | null | undefined) {
+    const trimmed = value?.trim() ?? "";
+    return trimmed.length > 0 ? trimmed : null;
+}
 
-    for (const row of result.row) {
-      const woj = this.clean(row.WOJ);
-      const powiat = this.clean(row.POW);
-      const gmina = this.clean(row.GMI);
-      const nazwa = this.clean(row.NAZWA);
+function extractRows(xmlContent: string) {
+    return [...xmlContent.matchAll(/<row>([\s\S]*?)<\/row>/gi)].map((match) => match[1] ?? "");
+}
 
-      if (!powiat && !gmina) {
-        statesData[woj] = nazwa.capitalize();
-      } else if (woj && powiat && !gmina) {
-        districtsData.push([woj, powiat, nazwa]);
-      }
+function findTag(rowContent: string, tag: string) {
+    const regex = new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`, "i");
+    const match = rowContent.match(regex);
+    return clean(match?.[1]);
+}
 
-      row.clear();
-    }
+export async function importTercXml(xmlContent: string) {
+    const rows = extractRows(xmlContent);
+    const statesData = new Map<string, string>();
+    const districtsData: Array<{ woj: string; powiat: string; name: string }> = [];
 
-    const stateMap: { [key: string]: number } = {};
-    for (const [tCode, name] of Object.entries(statesData)) {
-      const state = await db.query(models.LocationState).findOne({ where: { teryt_code: tCode } });
-      if (!state) {
-        state = new models.LocationState(name, tCode);
-        db.save(state);
-        sCount++;
-      }
-      stateMap[tCode] = state.id;
-    }
+    for (const row of rows) {
+        const woj = findTag(row, "WOJ");
+        const powiat = findTag(row, "POW");
+        const gmina = findTag(row, "GMI");
+        const name = findTag(row, "NAZWA");
 
-    for (const [wojCode, powCode, name] of districtsData) {
-      const stateId = stateMap[wojCode];
-      if (!stateId) {
-        // Może województwo już było w bazie wcześniej?
-        const state = await db.query(models.LocationState).findOne({ where: { teryt_code: wojCode } });
-        if (state) {
-          stateId = state.id;
-          stateMap[wojCode] = stateId;
-        } else {
-          continue;
+        if (woj && !powiat && !gmina && name) {
+            statesData.set(woj, name);
+        } else if (woj && powiat && !gmina && name) {
+            districtsData.push({ woj, powiat, name });
         }
-      }
-
-      const exist = await db.query(models.LocationDistrict).findOne({
-        where: [
-          { state_id: stateId },
-          { teryt_code: powCode }
-        ]
-      });
-
-      if (!exist) {
-        db.save(new models.LocationDistrict(state_id, name, powCode));
-        dCount++;
-      }
-
-      if (dCount % 500 === 0) {
-        await db.flush();
-      }
     }
 
-    await db.commit();
-    return [sCount, dCount];
-  }
+    let importedStates = 0;
+    let importedDistricts = 0;
+    const stateIds = new Map<string, number>();
 
-  async importSimcXml(db: any, xmlFile: Buffer): Promise<number> {
-    const parser = new xml2js.Parser();
-    const result = await parser.parseStringPromise(xmlFile);
-    let count = 0;
-
-    const distCache: { [key: string]: number } = {};
-    const allDistricts = db.query(models.LocationDistrict).join(models.LocationState).all();
-    for (const district of allDistricts) {
-      distCache[[district.state.teryt_code, district.teryt_code]] = district.id;
-    }
-
-    for (const row of result.row) {
-      const woj = this.clean(row.WOJ);
-      const powiat = this.clean(row.POW);
-      const gmi = this.clean(row.GMI);
-      const rodz = this.clean(row.RODZ_GMI) || this.clean(row.RODZ);
-      const nazwa = this.clean(row.NAZWA);
-      const sym = this.clean(row.SYM);
-
-      if (all([woj, powiat, nazwa, sym])) {
-        const distId = distCache[[woj, powiat]];
-        if (distId) {
-          const city = await db.query(models.LocationCity).findOne({ where: { teryt_code: sym } });
-          if (!city) {
-            db.save(new models.LocationCity(
-              district_id: distId,
-              name: nazwa,
-              teryt_code: sym,
-              commune_code: gmi,
-              commune_type: rodz
-            ));
-            count++;
-            if (count % 500 === 0) {
-              await db.flush();
-            }
-          }
+    for (const [terytCode, name] of statesData.entries()) {
+        let state = await stateRepo.findOneBy({ terytCode });
+        if (!state) {
+            state = stateRepo.create({ name, terytCode });
+            await stateRepo.save(state);
+            importedStates += 1;
         }
-      }
-
-      row.clear();
+        stateIds.set(terytCode, state.id);
     }
 
-    await db.commit();
-    return count;
-  }
-
-  async importUlicXml(db: any, xmlFile: Buffer): Promise<number> {
-    const parser = new xml2js.Parser();
-    const result = await parser.parseStringPromise(xmlFile);
-    let count = 0;
-
-    // Cache miast (SIMC)
-    const cityCache: { [key: string]: number } = {};
-    const allCities = db.query(models.LocationCity.id, models.LocationCity.teryt_code).all();
-    for (const city of allCities) {
-      cityCache[city.sym] = city.id;
-    }
-
-    for (const row of result.row) {
-      const sym = this.clean(row.SYM); // SIMC miasta
-      const cecha = this.clean(row.CECHA); // np. ul., al., pl.
-      const nazwa1 = this.clean(row.NAZWA_1);
-      const nazwa2 = this.clean(row.NAZWA_2) || "";
-      const ulic = this.clean(row.SYM_UL); // Kod ulicy
-
-      if (all([sym, nazwa1, ulic])) {
-        const cityId = cityCache[sym];
-        if (cityId) {
-          const full_name = `${cecha} ${nazwa2} ${nazwa1}`.trim().replace("  ", " ");
-
-          // Sprawdzamy po ULIC w obrębie miasta
-          const exist = await db.query(models.LocationStreet).findOne({
-            where: [
-              { city_id: cityId },
-              { teryt_code: ulic }
-            ]
-          });
-
-          if (!exist) {
-            db.save(new models.LocationStreet(
-              city_id: cityId,
-              name: full_name,
-              teryt_code: ulic
-            ));
-            count++;
-            if (count % 1000 === 0) {
-              await db.flush();
-            }
-          }
+    for (const districtData of districtsData) {
+        const stateId = stateIds.get(districtData.woj);
+        if (!stateId) {
+            continue;
         }
-      }
 
-      row.clear();
+        const existingDistrict = await districtRepo.findOneBy({
+            stateId,
+            terytCode: districtData.powiat,
+        });
+
+        if (!existingDistrict) {
+            const district = districtRepo.create({
+                stateId,
+                name: districtData.name,
+                terytCode: districtData.powiat,
+            });
+            await districtRepo.save(district);
+            importedDistricts += 1;
+        }
     }
 
-    await db.commit();
-    return count;
-  }
+    return { importedStates, importedDistricts };
+}
 
-  private clean(value: string | null): string | null {
-    if (!value) return null;
-    const v = value.trim();
-    return v ? v : null;
-  }
+export async function importSimcXml(xmlContent: string) {
+    const rows = extractRows(xmlContent);
+    let importedCities = 0;
+
+    const districts = await districtRepo.find({ relations: { state: true } });
+    const districtMap = new Map<string, number>();
+    for (const district of districts) {
+        const stateCode = district.state?.terytCode;
+        const districtCode = district.terytCode;
+        if (stateCode && districtCode) {
+            districtMap.set(`${stateCode}:${districtCode}`, district.id);
+        }
+    }
+
+    for (const row of rows) {
+        const woj = findTag(row, "WOJ");
+        const powiat = findTag(row, "POW");
+        const gmi = findTag(row, "GMI");
+        const rodz = findTag(row, "RODZ_GMI") ?? findTag(row, "RODZ");
+        const name = findTag(row, "NAZWA");
+        const sym = findTag(row, "SYM");
+
+        if (!woj || !powiat || !name || !sym) {
+            continue;
+        }
+
+        const districtId = districtMap.get(`${woj}:${powiat}`);
+        if (!districtId) {
+            continue;
+        }
+
+        const existingCity = await cityRepo.findOneBy({ terytCode: sym });
+        if (!existingCity) {
+            const city = cityRepo.create({
+                districtId,
+                name,
+                terytCode: sym,
+                communeCode: gmi ?? undefined,
+                communeType: rodz ?? undefined,
+            });
+            await cityRepo.save(city);
+            importedCities += 1;
+        }
+    }
+
+    return { importedCities };
+}
+
+export async function importUlicXml(xmlContent: string) {
+    const rows = extractRows(xmlContent);
+    let importedStreets = 0;
+
+    const cities = await cityRepo.find();
+    const cityMap = new Map<string, number>();
+    for (const city of cities) {
+        if (city.terytCode) {
+            cityMap.set(city.terytCode, city.id);
+        }
+    }
+
+    for (const row of rows) {
+        const sym = findTag(row, "SYM");
+        const cecha = findTag(row, "CECHA");
+        const nazwa1 = findTag(row, "NAZWA_1");
+        const nazwa2 = findTag(row, "NAZWA_2") ?? "";
+        const ulic = findTag(row, "SYM_UL");
+
+        if (!sym || !nazwa1 || !ulic) {
+            continue;
+        }
+
+        const cityId = cityMap.get(sym);
+        if (!cityId) {
+            continue;
+        }
+
+        const name = `${cecha ?? ""} ${nazwa2} ${nazwa1}`.replace(/\s+/g, " ").trim();
+        const existingStreet = await streetRepo.findOneBy({ cityId, terytCode: ulic });
+        if (!existingStreet) {
+            const street = streetRepo.create({
+                cityId,
+                name,
+                terytCode: ulic,
+            });
+            await streetRepo.save(street);
+            importedStreets += 1;
+        }
+    }
+
+    return { importedStreets };
 }

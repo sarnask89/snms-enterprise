@@ -1,41 +1,84 @@
-import { UploadFile } from 'fastify';
-import { v4 as uuidv4 } from 'uuid';
-import * as path from 'path';
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
 
-const MAX_UPLOAD_BYTES = 1024 * 1024; // 1 MB
-const UPLOAD_ROOT = process.env.UPLOAD_ROOT || '/uploads'; // Assuming UPLOAD_ROOT is set in environment variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DEFAULT_UPLOAD_ROOT = path.resolve(__dirname, "../../uploads");
+const MAX_UPLOAD_BYTES = Number.parseInt(process.env.CRM_PORTAL_TS_MAX_UPLOAD_BYTES ?? `${20 * 1024 * 1024}`, 10);
+const ALLOWED_DOC_SUFFIXES = new Set([".pdf", ".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".txt", ".doc", ".docx"]);
 
-const ALLOWED_DOC_SUFFIXES = new Set([
-    '.pdf', '.png', '.jpg', '.jpeg', '.webp', '.tif', '.tiff', '.txt', '.doc', '.docx'
-]);
-
-function _safeSuffix(filename: string | null): string {
-    if (!filename) return '';
-    const suf = path.extname(filename).toLowerCase();
-    if (suf.length > 12) suf = suf.slice(0, 12);
-    return ALLOWED_DOC_SUFFIXES.has(suf) ? suf : '';
+export function getUploadRoot() {
+    return path.resolve(process.env.CRM_PORTAL_TS_UPLOAD_ROOT ?? DEFAULT_UPLOAD_ROOT);
 }
 
-async function saveDocumentUpload(upload: UploadFile): Promise<[string, string, number, string | null]> {
-    const suffix = _safeSuffix(upload.filename);
-    if (!suffix) throw new Error('Niedozwolony lub brak rozszerzenia pliku.');
-    const rel = `documents/${uuidv4().slice(0, 12)}${suffix}`;
-    const dest = path.join(UPLOAD_ROOT, rel);
-    await fs.promises.mkdir(path.dirname(dest), { recursive: true });
-    const raw = await upload.file.arrayBuffer();
-    if (raw.byteLength > MAX_UPLOAD_BYTES) throw new Error('Plik za duzy.');
-    await fs.promises.writeFile(dest, Buffer.from(raw));
-    const orig = upload.filename || dest.name;
-    orig = orig.replace(/[^\w.\- +]/g, '_').slice(0, 200);
-    return [rel, orig, raw.byteLength, upload.mimetype];
+function safeSuffix(filename: string | null | undefined) {
+    const suffix = path.extname(filename ?? "").toLowerCase();
+    if (suffix.length > 12) {
+        return "";
+    }
+
+    return ALLOWED_DOC_SUFFIXES.has(suffix) ? suffix : "";
 }
 
-async function deleteStoredFile(relativePath: string | null): Promise<void> {
-    if (!relativePath) return;
-    const p = path.join(UPLOAD_ROOT, relativePath);
+function sanitizeFilename(filename: string) {
+    return filename.replace(/[^\w.\- +]/g, "_").slice(0, 200);
+}
+
+export async function saveDocumentBase64(contentBase64: string, originalFilename: string, mimeType?: string | null) {
+    const suffix = safeSuffix(originalFilename);
+    if (!suffix) {
+        throw new Error("Unsupported or missing file extension");
+    }
+
+    const buffer = Buffer.from(contentBase64, "base64");
+    if (buffer.length === 0) {
+        throw new Error("File content is empty");
+    }
+
+    if (buffer.length > MAX_UPLOAD_BYTES) {
+        throw new Error("File too large");
+    }
+
+    const relativePath = path.posix.join("documents", `${randomUUID()}${suffix}`);
+    const destination = path.join(getUploadRoot(), ...relativePath.split("/"));
+    await mkdir(path.dirname(destination), { recursive: true });
+    await writeFile(destination, buffer);
+
+    return {
+        storedPath: relativePath,
+        originalFilename: sanitizeFilename(originalFilename || path.basename(destination)),
+        fileSize: buffer.length,
+        mimeType: mimeType ?? null,
+    };
+}
+
+export async function readStoredDocument(relativePath: string) {
+    const absolutePath = resolveStoredDocumentPath(relativePath);
+    const content = await readFile(absolutePath);
+    return { absolutePath, content };
+}
+
+export function resolveStoredDocumentPath(relativePath: string) {
+    const absolutePath = path.resolve(getUploadRoot(), relativePath);
+    const root = getUploadRoot();
+
+    if (!absolutePath.startsWith(root)) {
+        throw new Error("Resolved path is outside upload root");
+    }
+
+    return absolutePath;
+}
+
+export async function deleteStoredDocument(relativePath: string | null | undefined) {
+    if (!relativePath) {
+        return;
+    }
+
     try {
-        await fs.promises.unlink(p);
-    } catch (err) {
-        console.error('Error deleting file:', err);
+        await unlink(resolveStoredDocumentPath(relativePath));
+    } catch {
+        // Missing files are non-fatal for delete flow.
     }
 }

@@ -59,6 +59,7 @@
                 icon="i-heroicons-cpu-chip" 
                 label="Wdróż Moduł" 
                 color="green" 
+                :loading="isImplementing"
                 @click="implementModule" 
               />
             </div>
@@ -89,9 +90,22 @@
 const config = useRuntimeConfig()
 const input = ref('')
 const isLoading = ref(false)
+const isImplementing = ref(false)
 const lastSpec = ref('')
+
+// Samouczek wbudowany w powitanie!
 const messages = ref([
-  { role: 'assistant', content: 'Witaj! Jestem Architektem Modułów. Jaką funkcjonalność lub moduł zaprojektujemy dzisiaj? (np. "Dodaj system śledzenia pojazdów" albo "Stwórz menedżera inwentarza")' }
+  { role: 'assistant', content: `👋 **Witaj w module AI Architekta!** Jestem Twoim lokalnym asystentem działającym na Ollamie.
+
+**Co potrafię?**
+Generuję kompletne moduły dla Twojego systemu CRM. Mogę tworzyć modele bazy danych, routery backendowe oraz widoki Vue. Co najważniejsze: **mogę fizycznie utworzyć te pliki na Twoim dysku**, oszczędzając Ci kopiowania!
+
+**Jak zacząć?**
+Po prostu opisz, czego potrzebujesz. Na przykład:
+- *"Stwórz prosty moduł do zarządzania flotą samochodową w firmie (marka, rejestracja, status)."*
+- *"Zbuduj router i stronę Vue do zarządzania zadaniami dla pracowników."*
+
+Kiedy wygeneruję specyfikację z kodem, kliknij zielony przycisk **"Wdróż Moduł"**, a ja zapiszę go prosto w Twoim projekcie! Jak zaczynamy? 🚀` }
 ])
 
 const clearChat = () => {
@@ -115,15 +129,20 @@ const sendMessage = async () => {
         messages: [
           { 
             role: 'system', 
-            content: `You are the CRM Portal Architect. Your job is to design database models and API structures for new modules. 
-            When the user asks for a module, provide a concise Markdown specification including:
-            1. Database Model (SQLAlchemy style)
-            2. API Endpoints
-            3. UI Components needed
-            
-            Keep it focused and professional.` 
+            content: `You are an elite TypeScript/Vue Architect. Your goal is to write full, working code files based on user requests.
+            CRITICAL RULES:
+            1. You MUST precede EVERY code block with exactly this format: "### FILE: relative/path/to/file.ext"
+            2. Example: 
+            ### FILE: crm-portal-ts/src/models/car.ts
+            \`\`\`typescript
+            export class Car { ... }
+            \`\`\`
+            3. Provide NO explanations. ONLY the file definitions and code.
+            4. Backend files should go to: crm-portal-ts/src/models/... or crm-portal-ts/src/routers/...
+            5. Frontend files should go to: crm-portal-ts/frontend/app/pages/...
+            Follow this format strictly so the automated system can write the files to disk.` 
           },
-          ...messages.value.slice(-5)
+          ...messages.value.map(m => ({ role: m.role, content: m.content }))
         ],
         stream: false
       })
@@ -132,23 +151,28 @@ const sendMessage = async () => {
     const data = await response.json()
     const content = data.message.content
     messages.value.push({ role: 'assistant', content })
+    lastSpec.value = content
     
-    // Extract code block if present for the "Specification" window
-    const codeMatch = content.match(/```(?:python|sql|json|typescript)?\s*([\s\S]*?)```/)
-    if (codeMatch) {
-      lastSpec.value = codeMatch[1]
-    } else {
-      lastSpec.value = content
-    }
   } catch (error) {
-    messages.value.push({ role: 'assistant', content: '❌ Error connecting to Ollama Architect.' })
+    messages.value.push({ role: 'assistant', content: '❌ Błąd połączenia z serwerem Ollama. Upewnij się, że działa.' })
   } finally {
     isLoading.value = false
   }
 }
 
 const implementModule = async () => {
-  // This would call the backend to actually create files
-  alert('Implementation logic would be triggered here. Sending spec to backend...')
+  isImplementing.value = true;
+  try {
+    const res = await $fetch('/api/v1/architect/implement', {
+      method: 'POST',
+      body: { spec: lastSpec.value }
+    })
+    
+    alert(`Wdrożono pomyślnie! Utworzono pliki:\n` + res.files.join('\n'))
+  } catch (error) {
+    alert(`Błąd wdrażania: ${error.data?.message || error.message}`)
+  } finally {
+    isImplementing.value = false;
+  }
 }
 </script>
