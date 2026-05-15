@@ -21,8 +21,24 @@
         </template>
         <template #actions-data="{ row }">
           <div class="flex items-center gap-2">
-            <UButton icon="i-heroicons-pencil-square" variant="ghost" color="gray" size="xs" />
-            <UButton icon="i-heroicons-trash" variant="ghost" color="red" size="xs" />
+            <UTooltip text="Edytuj">
+              <UButton
+                icon="i-heroicons-pencil-square"
+                variant="ghost"
+                color="gray"
+                size="xs"
+                aria-label="Edytuj abonenta"
+              />
+            </UTooltip>
+            <UTooltip text="Usuń">
+              <UButton
+                icon="i-heroicons-trash"
+                variant="ghost"
+                color="red"
+                size="xs"
+                aria-label="Usuń abonenta"
+              />
+            </UTooltip>
           </div>
         </template>
       </DataTable>
