@@ -32,11 +32,15 @@ def get_customer(customer_id: int, db: Session = Depends(get_db)):
 
 @router.get("/dashboard/stats")
 def get_dashboard_stats(db: Session = Depends(get_db)):
-    customer_count = db.scalar(select(func.count(models.Customer.id))) or 0
-    node_count = db.scalar(select(func.count(models.NetNode.id))) or 0
-    device_count = db.scalar(select(func.count(models.NetDevice.id))) or 0
-    ticket_count = db.scalar(select(func.count(models.SupportTicket.id))) or 0
-    
+    # Optimization: Fetch all counts in a single database round-trip
+    stmt = select(
+        select(func.count(models.Customer.id)).scalar_subquery(),
+        select(func.count(models.NetNode.id)).scalar_subquery(),
+        select(func.count(models.NetDevice.id)).scalar_subquery(),
+        select(func.count(models.SupportTicket.id)).scalar_subquery(),
+    )
+    customer_count, node_count, device_count, ticket_count = db.execute(stmt).one()
+
     return {
         "customers": customer_count,
         "nodes": node_count,

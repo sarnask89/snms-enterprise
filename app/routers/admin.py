@@ -1,6 +1,5 @@
 import platform
 import sys
-import logging
 from datetime import datetime, timezone
 import sqlalchemy as sa
 
@@ -14,7 +13,6 @@ from app.audit import record_audit
 from app.config import DATABASE_URL
 from app.database import get_db
 from app.deps import require_admin, require_admin_or_manager, verify_session
-from app import teryt_ws
 from app.security import hash_password
 from app.templating import render
 
@@ -232,9 +230,14 @@ def admin_user_groups_delete(group_id: int, request: Request, db: Session = Depe
 
 @router.get("/teryt-sync", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
 def teryt_sync_page(request: Request, db: Session = Depends(get_db)):
-    sc = db.scalar(select(sa.func.count()).select_from(models.LocationState))
-    dc = db.scalar(select(sa.func.count()).select_from(models.LocationDistrict))
-    cc = db.scalar(select(sa.func.count()).select_from(models.LocationCity))
+    # Optimization: Fetch all counts in a single database round-trip
+    counts_stmt = select(
+        select(sa.func.count()).select_from(models.LocationState).scalar_subquery(),
+        select(sa.func.count()).select_from(models.LocationDistrict).scalar_subquery(),
+        select(sa.func.count()).select_from(models.LocationCity).scalar_subquery(),
+    )
+    sc, dc, cc = db.execute(counts_stmt).one()
+
     districts = list(db.scalars(select(models.LocationDistrict).order_by(models.LocationDistrict.name)).all())
     cities = list(db.scalars(select(models.LocationCity).order_by(models.LocationCity.name)).all())
     return render(request, "admin/teryt_sync.html", {"title": "Synchronizacja TERYT", "state_count": sc, "district_count": dc, "city_count": cc, "districts": districts, "cities": cities})
