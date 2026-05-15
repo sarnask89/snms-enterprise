@@ -1,19 +1,233 @@
-Here is the TypeScript version of your Python code using NodeJS and Express for routing, SQLAlchemy-like patterns with ORM (Object Relational Mapping), FastAPI's request/response handling etc.: 
-```typescript
-import { APIRouter } from 'fastapi';
-import type { Request, Response } from 'express';
-import { Session } from "sqlalchemy"; // Assuming you have SQLAlchemy configured in your app. This is the ORM pattern used here for database operations 
-from fastapi import Depends; FastAPI # Dependency Injection (DI) and Request/Response handling, similar to Python's request-response model from ExpressJS library  
-import { get_db } from './app/database'; // Assuming you have a 'get_db() function for database operations in your app. This is the equivalent of SQLAlchemy SessionLocal instance 
-from . import models; # Models defined as part of FastAPI application, similar to Python's App module  
-import { czy_zalogowany } from './app/teryt_ws'; // Assuming you have a 'czy_logowny() function in your app. This is the equivalent for session verification 
-from . import render;// Render method, similar to Python's FastAPI templating engine  
-import { TerytSearchService } from './app/teryt'; // Assuming you have a 'Tertiary Search Service Class', this could be your ORM pattern equivalent for database operations 
-from . import public_api;// Public API router, similar to Python's FastAPI application instance  
-import { requireAdminOrManager } from './app/deps'; // Assuming you have a 'require admin or manager() function in app. This is the DI dependency used here for authorization 
-from . import audit_record;// Audit record method, similar to Python's FastAPI application instance  
-import { verifySession } from "./app/deps"; // Assuming you have a 'verify session middleware() function in app. This is the equivalent of fastapi request dependency for authentication 
-from . import router;// Router used by your API, similar to Python's FastAPI application instance  
-import { RedirectResponse } from "fastapi"; // Similar response handling as ExpressJS library   
-```    
-This code has been adapted according the rules you provided. It uses TypeScript and NodeJs for its development which is a superset of JavaScript, meaning it includes all features that Javascript does but also some additional ones like classes or modules (ES6 syntax).  Also note this doesn't include any error handling as fastapi has built-in exception handlers.
+import { Router } from "express";
+import { Brackets } from "typeorm";
+import { AppDataSource } from "../database.js";
+import { LocationCity, LocationDistrict, LocationState, LocationStreet } from "../models/location.js";
+import { importSimcXml, importTercXml, importUlicXml } from "../teryt_import.js";
+
+export const router = Router();
+
+const stateRepo = AppDataSource.getRepository(LocationState);
+const cityRepo = AppDataSource.getRepository(LocationCity);
+const streetRepo = AppDataSource.getRepository(LocationStreet);
+
+type CityWithRelations = LocationCity & {
+    district?: LocationDistrict;
+    streets?: LocationStreet[];
+};
+
+function serializeState(state: LocationState) {
+    return {
+        id: state.id,
+        name: state.name,
+        terytCode: state.terytCode ?? null,
+        isActive: state.isActive,
+    };
+}
+
+function serializeCity(city: CityWithRelations) {
+    const district = city.district;
+    return {
+        id: city.id,
+        name: city.name,
+        terytCode: city.terytCode ?? null,
+        communeCode: city.communeCode ?? null,
+        communeType: city.communeType ?? null,
+        isManaged: city.isManaged,
+        isDefault: city.isDefault,
+        isActive: city.isActive,
+        streetCount: city.streets?.length ?? 0,
+        district: district
+            ? {
+                id: district.id,
+                name: district.name,
+                terytCode: district.terytCode ?? null,
+                stateId: district.stateId,
+            }
+            : null,
+    };
+}
+
+function serializeStreet(street: LocationStreet) {
+    return {
+        id: street.id,
+        cityId: street.cityId,
+        name: street.name,
+        terytCode: street.terytCode ?? null,
+    };
+}
+
+router.get("/states", async (_req, res) => {
+    try {
+        const states = await stateRepo.find({ order: { name: "ASC" } });
+        res.json(states.map((state) => serializeState(state)));
+    } catch (error) {
+        console.error("Error fetching states:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.get("/cities", async (req, res) => {
+    try {
+        const search = String(req.query.q ?? "").trim();
+
+        const qb = cityRepo
+            .createQueryBuilder("city")
+            .leftJoinAndSelect("city.district", "district")
+            .leftJoinAndSelect("city.streets", "street")
+            .orderBy("city.name", "ASC");
+
+        if (search) {
+            qb.where(new Brackets((subQuery) => {
+                subQuery
+                    .where("city.name LIKE :search", { search: `%${search}%` })
+                    .orWhere("city.terytCode LIKE :search", { search: `%${search}%` });
+            }));
+        }
+
+        const cities = await qb.getMany();
+        res.json(cities.map((city) => serializeCity(city)));
+    } catch (error) {
+        console.error("Error fetching cities:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.get("/streets", async (req, res) => {
+    try {
+        const cityId = Number.parseInt(String(req.query.cityId ?? ""), 10);
+        const search = String(req.query.q ?? "").trim();
+
+        const qb = streetRepo
+            .createQueryBuilder("street")
+            .orderBy("street.name", "ASC");
+
+        if (Number.isFinite(cityId)) {
+            qb.where("street.cityId = :cityId", { cityId });
+        }
+
+        if (search) {
+            qb.andWhere("street.name LIKE :search", { search: `%${search}%` });
+        }
+
+        const streets = await qb.getMany();
+        res.json(streets.map((street) => serializeStreet(street)));
+    } catch (error) {
+        console.error("Error fetching streets:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.get("/suggest", async (req, res) => {
+    try {
+        const kind = String(req.query.kind ?? "city").trim();
+        const search = String(req.query.q ?? req.query.street_name ?? "").trim();
+
+        if (search.length < 2) {
+            return res.json([]);
+        }
+
+        if (kind === "street") {
+            const cityId = Number.parseInt(String(req.query.cityId ?? req.query.location_city_id ?? ""), 10);
+            if (!Number.isFinite(cityId)) {
+                return res.json([]);
+            }
+
+            const streets = await streetRepo
+                .createQueryBuilder("street")
+                .where("street.cityId = :cityId", { cityId })
+                .andWhere("street.name LIKE :search", { search: `%${search}%` })
+                .orderBy("street.name", "ASC")
+                .limit(20)
+                .getMany();
+
+            return res.json(streets.map((street) => ({
+                id: street.id,
+                text: street.name,
+                type: "street",
+            })));
+        }
+
+        const cities = await cityRepo
+            .createQueryBuilder("city")
+            .where("city.name LIKE :search", { search: `%${search}%` })
+            .orderBy("city.name", "ASC")
+            .limit(20)
+            .getMany();
+
+        res.json(cities.map((city) => ({
+            id: city.id,
+            text: city.name,
+            type: "city",
+        })));
+    } catch (error) {
+        console.error("Error fetching TERYT suggestions:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/import/terc", async (req, res) => {
+    try {
+        const xmlContent = String(req.body?.xmlContent ?? "");
+        if (!xmlContent.trim()) {
+            return res.status(400).json({ message: "xmlContent is required" });
+        }
+
+        res.json(await importTercXml(xmlContent));
+    } catch (error) {
+        console.error("Error importing TERC:", error);
+        res.status(400).json({ message: "Failed to import TERC XML" });
+    }
+});
+
+router.post("/import/simc", async (req, res) => {
+    try {
+        const xmlContent = String(req.body?.xmlContent ?? "");
+        if (!xmlContent.trim()) {
+            return res.status(400).json({ message: "xmlContent is required" });
+        }
+
+        res.json(await importSimcXml(xmlContent));
+    } catch (error) {
+        console.error("Error importing SIMC:", error);
+        res.status(400).json({ message: "Failed to import SIMC XML" });
+    }
+});
+
+router.post("/import/ulic", async (req, res) => {
+    try {
+        const xmlContent = String(req.body?.xmlContent ?? "");
+        if (!xmlContent.trim()) {
+            return res.status(400).json({ message: "xmlContent is required" });
+        }
+
+        res.json(await importUlicXml(xmlContent));
+    } catch (error) {
+        console.error("Error importing ULIC:", error);
+        res.status(400).json({ message: "Failed to import ULIC XML" });
+    }
+});
+
+router.post("/sync-geoportal", async (req, res) => {
+    try {
+        const cityId = Number.parseInt(String(req.body?.cityId ?? ""), 10);
+        const city = Number.isFinite(cityId)
+            ? await cityRepo.findOneBy({ id: cityId })
+            : null;
+
+        if (!city) {
+            return res.status(404).json({ message: "City not found" });
+        }
+
+        const streets = await streetRepo.countBy({ cityId: city.id });
+        res.json({
+            cityId: city.id,
+            cityName: city.name,
+            scheduled: true,
+            streets,
+            syncedBuildings: 0,
+        });
+    } catch (error) {
+        console.error("Error scheduling geoportal sync:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});

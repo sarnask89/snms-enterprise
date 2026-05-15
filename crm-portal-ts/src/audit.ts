@@ -1,17 +1,41 @@
-Here is the TypeScript version of your Python code. I have followed all rules you mentioned and adapted them to match with Typescript idioms (async/await for Promises): 
-```typescript
-import { Request } from 'express'; // Importing express's request type, which includes headers object in it that can be used like a dictionary or map. It is equivalent of Python FastAPI’s `Request` class but with more features and better typing support (like body parsing). 
-// Also import the Session model if you have one defined elsewhere within your application for database operations using TypeORM's ORM pattern in NodeJS environment, similar to SQLAlchemy.
-import { PortalUser } from 'app/models'; // Assuming there is a models module and it has an exported `PortalUser` model class that you are importing here as well (similar functionality of Python FastAPI's state). 
-// Import the Session type if your application uses TypeORM or similar ORM in NodeJS environment. It should be equivalent to SQLAlchemy/SQLModel’s session object, but with more features and better typing support for database operations like `Session` here (like it can handle transactions as part of business logic).
-import { Session } from 'typeorm'; // Assuming there is a typeORM module that has an exported class called "session" which you are importing.  It should be equivalent to SQLAlchemy/SQLModel’s session object, but with more features and better typing support for database operations like `Session` here (like it can handle transactions as part of business logic).
-import { getRepository } from 'typeorm'; // Assuming there is a typeORM module that has an exported function called "getRepository" which you are importing.  It should be equivalent to SQLAlchemy/SQLModel’s repository object, but with more features and better typing support for database operations like `repository` here (like it can handle transactions as part of business logic).
-import { Repository } from 'typeorm'; // Assuming there is a typeORM module that has an exported class called "Repository" which you are importing.  It should be equivalent to SQLAlchemy/SQLModel’s repository object, but with more features and better typing support for database operations like `repository` here (like it can handle transactions as part of business logic).
-import { Logger } from 'winston'; // Assuming there is a winston module that has an exported class called "Logger" which you are importing.  It should be equivalent to Python’s logging library, but with more features and better typing support for logs management in your application (like it can handle different log levels).
-import { models } from 'app'; // Assuming there is a app module that has an exported `models` object which you are importing.  It should be equivalent to Python FastAPI’s state, but with more features and better typing support for the application's data model (like it can handle different states as part of business logic).
-import { Any } from 'type-fest'; // Import `any` type if needed in your code.  It is used when you don't know what kind or variable to use at runtime, but TypeScript needs this information for static checking and autocompletion purposes (like it can handle any data types).
-import { promises } from 'fs';// Assuming there are fs module that has an exported object called "promises" which you're importing.  It should be equivalent to Python’s built-in `async/await` support, but with more features and better typing for file system operations (like it can handle promises).
-import { Request } from 'express'; // Import express request type as in the python code above which includes headers object that you're using here.  It is equivalent to Python FastAPI’s `Request` class or ExpressJS requests, but with more features and better typing support (like it can handle different types of data).
-import { Logger } from 'winston'; // Assuming there are winston module that has an exported object called "Logger" which you're importing.  It should be equivalent to Python’s logging library, but with more features and better typing support for logs management in your application (like it can handle different log levels).
-import { models } from 'app'; // Assuming there is a app module that has an exported object called "models" which you're importing.  It should be equivalent to Python FastAPI’s state, but with more features and better typing support for the application data model (like it can handle different states as part of business logic).
-import { Any } from 'type-fest'; // Import `any` type if needed in your code which is used when you don'
+import type { Request } from "express";
+import { AppDataSource } from "./database.js";
+import { AuditLog } from "./models/system.js";
+
+const auditRepo = AppDataSource.getRepository(AuditLog);
+
+type AuditInput = {
+    action: string;
+    resourceType?: string | null;
+    resourceId?: number | null;
+    details?: string | null;
+    actorId?: number | null;
+    request?: Request | null;
+};
+
+function extractIpAddress(request?: Request | null) {
+    if (!request) {
+        return null;
+    }
+
+    const forwarded = request.headers["x-forwarded-for"];
+    if (typeof forwarded === "string" && forwarded.trim()) {
+        return forwarded.split(",")[0]?.trim() ?? null;
+    }
+
+    return request.ip || request.socket.remoteAddress || null;
+}
+
+export async function recordAudit(input: AuditInput) {
+    const entry = auditRepo.create({
+        actorId: input.actorId ?? undefined,
+        action: input.action,
+        resourceType: input.resourceType ?? undefined,
+        resourceId: input.resourceId ?? undefined,
+        details: input.details ?? undefined,
+        ipAddress: extractIpAddress(input.request) ?? undefined,
+    });
+
+    await auditRepo.save(entry);
+    return entry;
+}

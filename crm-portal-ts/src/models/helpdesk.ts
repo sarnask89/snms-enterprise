@@ -1,28 +1,95 @@
-Here is the TypeScript version of your Python code. I've assumed that you have already set up a connection to an SQL database using `TypeORM` and also imported necessary models for this example (you may need additional setup based on actual project structure). 
-```typescript
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { TicketStatus } from './common'; // assuming you have a common module with enums and classes. You might want to adjust this import statement according your setup.
-// Assuming the models are in separate files for better organization of code 
-@Entity('helpdesk_queues')  
-export class HelpdeskQueue {   
- @PrimaryGeneratedColumn()     id: number;     
- @Column({ length:64, unique: true }) name: string ;      
- @Column("text",{nullable:true}) description :string | null;  // Assuming the common module has a definition for this.  
- @Column('int', {default:0}) sort_order: number   
- categories: HelpdeskCategory[];     tickets: SupportTicket[]     
-}      
-@Entity('helpdesk_categories')       
-export class HelpdeskCategory{  // Assuming the common module has a definition for this.  
- @PrimaryGeneratedColumn() id :number;   
- @ManyToOne(type => HelpdeskQueue, queue=>queue.id)     queue:HelpdeskQueue ;     
- @Column('varchar', {length:64}) name  :string;      
- @Column("text",{nullable:true}) description : string | null    // Assuming the common module has a definition for this  
- tickets: SupportTicket[];     queue_id: number ;      }       
-@Entity('support_tickets')        
-export class SupportTicket {  @PrimaryGeneratedColumn() id:number;      
- @ManyToOne(type => HelpdeskQueue,queue=>queue.id)    queue_ref :HelpdeskQueue   // Assuming the common module has a definition for this    
- @ManyToOne(type =>  Customer , customer=>  customer .id )  customer_:Customer ;     
- @Column('varchar', {length:255}) title :string;      
- @Column("text") body : string    status:@Column({enum:TicketStatus, default:'open' })   // Assuming the common module has a definition for this.     created_at and updated at are handled by TypeORM automatically  .      }       
-```        
-Please note that you need to adjust import statements according your project setup (like `common` model in case of using an external library). Also, I've assumed some types based on common knowledge about the models. You may want to adapt this code as per actual requirements and structure of entities/models used by yours application.
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { TicketStatus } from "./common.js";
+import { Customer } from "./customer.js";
+
+@Entity("helpdesk_queues")
+export class HelpdeskQueue {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "varchar", length: 64, unique: true })
+    name!: string;
+
+    @Column({ type: "text", nullable: true })
+    description?: string;
+
+    @Column({ type: "integer", name: "sort_order", default: 0 })
+    sortOrder!: number;
+
+    @OneToMany(() => HelpdeskCategory, (category) => category.queue)
+    categories!: HelpdeskCategory[];
+
+    @OneToMany(() => SupportTicket, (ticket) => ticket.queue)
+    tickets!: SupportTicket[];
+}
+
+@Entity("helpdesk_categories")
+export class HelpdeskCategory {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "queue_id" })
+    queueId!: number;
+
+    @Column({ type: "varchar", length: 64 })
+    name!: string;
+
+    @Column({ type: "text", nullable: true })
+    description?: string;
+
+    @ManyToOne(() => HelpdeskQueue, (queue) => queue.categories, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "queue_id" })
+    queue!: HelpdeskQueue;
+
+    @OneToMany(() => SupportTicket, (ticket) => ticket.category)
+    tickets!: SupportTicket[];
+}
+
+@Entity("support_tickets")
+export class SupportTicket {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "customer_id", nullable: true })
+    customerId?: number;
+
+    @Column({ type: "integer", name: "queue_id", nullable: true })
+    queueId?: number;
+
+    @Column({ type: "integer", name: "category_id", nullable: true })
+    categoryId?: number;
+
+    @Column({ type: "integer", name: "assignee_id", nullable: true })
+    assigneeId?: number;
+
+    @Column({ type: "varchar", length: 255 })
+    title!: string;
+
+    @Column({ type: "text" })
+    body!: string;
+
+    @Column({
+        type: "simple-enum",
+        enum: TicketStatus,
+        default: TicketStatus.open,
+    })
+    status!: TicketStatus;
+
+    @Column({ type: "datetime", name: "created_at", default: () => "CURRENT_TIMESTAMP" })
+    createdAt!: string;
+
+    @Column({ type: "datetime", name: "updated_at", default: () => "CURRENT_TIMESTAMP" })
+    updatedAt!: string;
+
+    @ManyToOne(() => Customer, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "customer_id" })
+    customer?: Customer | null;
+
+    @ManyToOne(() => HelpdeskQueue, (queue) => queue.tickets, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "queue_id" })
+    queue?: HelpdeskQueue | null;
+
+    @ManyToOne(() => HelpdeskCategory, (category) => category.tickets, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "category_id" })
+    category?: HelpdeskCategory | null;
+}

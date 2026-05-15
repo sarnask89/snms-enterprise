@@ -1,31 +1,75 @@
-Here is the TypeScript version of your Python code with all rules followed, using ESM syntax and proper error handling in async/await functions as well (Python's try-except for flow control): 
-```typescript
-import { APIRouter } from "express"; // Importing Express Router instead of FastAPI router. Depends on your setup to import the correct one, but this is a general rule here and can be adjusted based upon project requirements or environment configuration (NodeJS/Express).
-// Also note that we are using RedirectResponse in place of Response for redirects as per standard HTTP practices – it'll return an HTML response with status code set to '302', which is a redirection. This matches the behavior you described, but if needed can be adjusted based on your specific use case or requirements
-import { BackgroundTasks } from "express"; // Importing type for background tasks as per FastAPI's requirement – it should match with what Express uses internally to handle async operations in routes (FastAPI does not have a built-in way of doing this).
-// Also note that we are using RedirectResponse instead of Response when redirect URL is provided. This matches the behavior you described, but if needed can be adjusted based on your specific use case or requirements – it's generally recommended to return only status code in Express routes (unless there’s a need for full HTML response).
-import { Session } from "typeorm"; // Importing type ORM session as per TypeORM requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { get_db } from "./database"; // Importing function to fetch db session as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { verify_session } from "./deps"; // Importing function to check session as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { require_admin_or_manager } from "./deps"; // Importing function to check admin rights as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { generate_pit_gml } from "./services"; // Importing function to convert data into GML format as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { get_logger } from "./logger"; // Importing function to create logger as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { GugikGeocodingService } from "./services"; // Importing type for service as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { NetNode } from "./models"; // Importing type for model as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { select } from "typeorm"; // Importing type ORM selection as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { db_manager } from "./database"; // Importing function to fetch session as per TypeORM's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { Logger } from "winston"; // Importing type for logger as per Winston's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { get_logger } from "./utils"; // Importing function to create logger as per Winston's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { GugikGeocodingService } from "./services"; // Importing type for service as per Winston's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { NetDevice } from "./models"; // Importing type for model as per Winston's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { select } from "typeorm"; // Importing type ORM selection as per Winston's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { db_manager } from "./database"; // Importing function to fetch session as per Winston's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { Logger } from "pino"; // Importing type for logger as per Pino's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { get_logger } from "./utils"; // Importing function to create logger as per Pino's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { GugikGeocodingService } from "./services"; // Importing type for service as per Pino's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { NetDevice } from "./models"; // Importing type for model as per Pino's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { select } from "typeorm"; // Importing type ORM selection as per Pino's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { db_manager } from "./database"; // Importing function to fetch session as per Pino's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { Logger } from "bunyan"; // Importing type for logger as per Bunyan's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { get_logger } from "./utils"; // Importing function to create logger as per Bunyan's requirement. It should match with what FastAPI uses internally when you use the Depends on your database connection setup accordingly, but this is not always possible or necessary based upon project requirements and environment configuration (NodeJS/Express).
-import { GugikGeocodingService } from "./services"; // Importing type for service as per Bunyan's requirement. It should
+import { Router } from "express";
+import { AppDataSource } from "../database.js";
+import { NetNode } from "../models/network.js";
+
+export const router = Router();
+
+const netNodeRepo = AppDataSource.getRepository(NetNode);
+
+function hasPuwgCoordinates(node: NetNode) {
+    return Number.isFinite(node.x1992) && Number.isFinite(node.y1992);
+}
+
+function escapeXml(value: unknown) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&apos;");
+}
+
+function buildNodeGml(nodes: NetNode[]) {
+    const members = nodes.map((node) => `  <gml:featureMember>
+    <snms:NetNode gml:id="net-node-${node.id}">
+      <snms:id>${node.id}</snms:id>
+      <snms:name>${escapeXml(node.name)}</snms:name>
+      <snms:nodeType>${escapeXml(node.nodeType ?? "")}</snms:nodeType>
+      <snms:locationDetail>${escapeXml(node.locationDetail ?? "")}</snms:locationDetail>
+      <snms:geometry>
+        <gml:Point srsName="EPSG:2180">
+          <gml:pos>${node.x1992} ${node.y1992}</gml:pos>
+        </gml:Point>
+      </snms:geometry>
+    </snms:NetNode>
+  </gml:featureMember>`).join("\n");
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:snms="https://snms.local/pit" srsName="EPSG:2180">
+${members}
+</gml:FeatureCollection>
+`;
+}
+
+router.get("/export/nodes", async (_req, res) => {
+    try {
+        const nodes = await netNodeRepo.find({ order: { name: "ASC" } });
+        const exportableNodes = nodes.filter((node) => hasPuwgCoordinates(node));
+        const gml = buildNodeGml(exportableNodes);
+
+        res.setHeader("Content-Type", "application/gml+xml; charset=utf-8");
+        res.setHeader("Content-Disposition", "attachment; filename=\"pit-net-nodes.gml\"");
+        res.send(gml);
+    } catch (error) {
+        console.error("Error exporting PIT nodes:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/sync", async (_req, res) => {
+    try {
+        const nodes = await netNodeRepo.find();
+        const exportableNodes = nodes.filter((node) => hasPuwgCoordinates(node));
+
+        res.json({
+            synced: false,
+            reason: "external_pit_service_not_configured",
+            totalNodes: nodes.length,
+            exportableNodes: exportableNodes.length,
+            missingCoordinates: nodes.length - exportableNodes.length,
+        });
+    } catch (error) {
+        console.error("Error preparing PIT sync:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});

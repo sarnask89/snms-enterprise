@@ -1,32 +1,159 @@
-Here is the TypeScript version of your Python code with some assumptions made based on common practices and best-practices in software development, such as using interfaces for type safety. I've also assumed that you are working within a NodeJS/Express or NestJS environment where we use classes to represent our models:
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne, JoinColumn, CreateDateColumn } from "typeorm";  
+import { CustomerStatus } from "./common.js";
 
-```typescript
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";  // assuming TypeORM is being used for database operations. If not please replace with your ORM of choice (e.g., typeorm/postgresql)
-// Assuming you have LocationState and similar classes defined elsewhere in the codebase as well... if they are different, adjust accordingly:
-import {LocationState} from './location-state'; // Adjust this to match where location state is stored 
-@Entity()   // This decorator indicates that an instance of a class can be saved into database. Default table name will be the pluralized version of entity's name (e.g., CustomerDevice -> customer_device). You may want to adjust it according your needs or setup in TypeORM configuration file
-export class Document {  // Assuming all fields are present and match with Python model, you can remove '| None', if not used: e.g.: x => y | null where `y` is the default value for field type (e.g., created_at will be a function that returns current date/time by default)
-    @PrimaryGeneratedColumn()  // This decorator indicates primary key and auto increments it if not specified: e.g.: id, customerId etc... You may want to adjust according your needs or setup in TypeORM configuration file  
-     public id?: number;
-     
-    @ManyToOne(type => Customer)  // Assuming there is a 'Customer' class that this document belongs too (e.g., Document has-many Customers, but not every customer can have many documents). You may want to adjust it according your needs or setup in TypeORM configuration file  
-     public customer?: Customer;   
-     
-    @Column()  // This decorator indicates column property and sets the default value if none is provided: e.g.: title, body etc... If not used you can remove '| null' where `y` was a non-nullable field in Python model  
-     public filePath?: string;
-     
-    @Column({nullable: true})  // Assuming all fields are present and match with Python model. You may want to adjust it according your needs or setup in TypeORM configuration file if not used, e.g.: x => y | null where `y` is the default value for field type  
-     public fileSize?: number;   
-     
-    @Column({nullable: true})  // Assuming all fields are present and match with Python model or you may want to adjust it according your needs, e.g.: x => y | null where `y` is the default value for field type  
-     public fileType?: string;      
-     
-    @Column({default: ()=> new Date()})  // Assuming all fields are present and match with Python model or you may want to adjust it according your needs, e.g.: x => y | null where `y` is the default value for field type  
-     public createdAt?: Date;    } )();// This line assumes that we're using a function (e.g., ()=> {...}) as an argument in TypeScript and it returns another instance of Document class, if not please adjust accordingly: e.g.: x => y where `y` is the default value for field type
-```  // Assuming all fields are present according to Python model  
-// You may want to add more properties or methods as per your needs in TypeScript version and setup them with corresponding decorators (e.g., @Column(),@PrimaryGeneratedColumn() etc...) if not used, e.g.: x => y where `y` is the default value for field type  // Assuming all fields are present according to Python model
-```typescript  
-// Importing LocationState and similar classes as per your setup: import {LocationState} from './location-state'; (adjust this line if not used)... same goes with other models. If they're different, adjust accordingly in TypeScript version where `y` is the default value for field type  
-// Assuming all fields are present and match Python model or you may want to add more properties/methods as per your needs: e.g.: x => y | null (where 'x', if not used)  // You can adjust it according my setup in TypeORM configuration file, where `y` is the default value for field type
-```typescript  
-//
+@Entity("customer_groups")
+export class CustomerGroup {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "varchar", length: 128, unique: true })
+    name!: string;
+
+    @Column({ type: "text", nullable: true })
+    description?: string;
+
+    @ManyToMany(() => Customer, (customer) => customer.groups)
+    customers!: Customer[];
+}
+
+@Entity("customers")
+export class Customer {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "varchar", name: "customer_code", length: 64, unique: true })
+    customerCode!: string;
+
+    @Column({ type: "varchar", name: "first_name", length: 128 })
+    firstName!: string;
+
+    @Column({ type: "varchar", name: "last_name", length: 128 })
+    lastName!: string;
+
+    @Column({ type: "varchar", length: 255, nullable: true })
+    email?: string;
+
+    @Column({ type: "varchar", length: 64, nullable: true })
+    phone?: string;
+
+    @Column({
+        type: "simple-enum",
+        enum: CustomerStatus,
+        default: CustomerStatus.active
+    })
+    status!: CustomerStatus;
+
+    @Column({ name: "creation_date", type: "date", default: () => "CURRENT_DATE" })
+    creationDate!: string;
+
+    @Column({ type: "text", nullable: true })
+    notes?: string;
+
+    @Column({ type: "varchar", name: "portal_login", length: 64, unique: true, nullable: true })
+    portalLogin?: string;
+
+    @Column({ type: "varchar", name: "portal_password_hash", length: 255, nullable: true })
+    portalPasswordHash?: string;
+
+    @Column({ name: "last_portal_login", type: "datetime", nullable: true })
+    lastPortalLogin?: Date;
+
+    @Column({ type: "integer", name: "location_city_id", nullable: true })
+    locationCityId?: number;
+
+    @Column({ type: "integer", name: "location_street_id", nullable: true })
+    locationStreetId?: number;
+
+    @Column({ type: "varchar", name: "street_number", length: 32, nullable: true })
+    streetNumber?: string;
+
+    @Column({ type: "varchar", name: "apartment_number", length: 32, nullable: true })
+    apartmentNumber?: string;
+
+    @ManyToMany(() => CustomerGroup, (group) => group.customers)
+    @JoinTable({
+        name: "customer_group_members",
+        joinColumn: { name: "customer_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "group_id", referencedColumnName: "id" }
+    })
+    groups!: CustomerGroup[];
+
+    @OneToMany(() => CustomerDevice, (device) => device.customer)
+    devices!: CustomerDevice[];
+
+    @OneToMany(() => CustomerNotice, (notice) => notice.customer)
+    notices!: CustomerNotice[];
+
+    @OneToMany(() => Document, (document) => document.customer)
+    documents!: Document[];
+}
+
+@Entity("customer_notices")
+export class CustomerNotice {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "customer_id" })
+    customerId!: number;
+
+    @Column({ type: "varchar", length: 255 })
+    title!: string;
+
+    @Column({ type: "text", nullable: true })
+    body?: string;
+
+    @Column({ type: "varchar", length: 64, default: "info" })
+    category!: string;
+
+    @Column({ name: "valid_until", type: "date", nullable: true })
+    validUntil?: string;
+
+    @Column({ type: "boolean", name: "is_active", default: true })
+    isActive!: boolean;
+
+    @CreateDateColumn({ name: "created_at" })
+    createdAt!: Date;
+
+    @ManyToOne(() => Customer, (customer) => customer.notices)
+    @JoinColumn({ name: "customer_id" })
+    customer!: Customer;
+}
+
+@Entity("documents")
+export class Document {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "customer_id", nullable: true })
+    customerId?: number;
+
+    @Column({ type: "varchar", length: 255 })
+    title!: string;
+
+    @Column({ type: "varchar", name: "doc_type", length: 64, default: "other" })
+    docType!: string;
+
+    @Column({ type: "text", nullable: true })
+    notes?: string;
+
+    @Column({ type: "varchar", name: "stored_path", length: 512, nullable: true })
+    storedPath?: string;
+
+    @Column({ type: "varchar", name: "original_filename", length: 255, nullable: true })
+    originalFilename?: string;
+
+    @Column({ type: "integer", name: "file_size", nullable: true })
+    fileSize?: number;
+
+    @Column({ type: "varchar", name: "mime_type", length: 128, nullable: true })
+    mimeType?: string;
+
+    @CreateDateColumn({ name: "created_at" })
+    createdAt!: Date;
+
+    @ManyToOne(() => Customer, (customer) => customer.documents, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "customer_id" })
+    customer?: Customer | null;
+}
+
+import { CustomerDevice } from "./network.js";

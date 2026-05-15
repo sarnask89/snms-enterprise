@@ -1,78 +1,55 @@
-import { APIRouter } from 'express';
-import * as admin from './routers/admin';
-import * as auth from './routers/auth';
-import * as bulk from './routers/bulk';
-import * as customer_groups from './routers/customer-groups';
-import * as customers from './routers/customers';
-import * as dashboard from './routers/dashboard';
-import * as finances from './routers/finances';
-import * as ip_networks from './routers/ip-networks';
-import * as netdevices from './routers/netdevices';
-import * as net_nodes from './routers/net-nodes';
-import * as customer_device_groups from './routers/customer-device-groups';
-import * as customer_devices from './routers/customer-devices';
-import * as subscriptions from './routers/subscriptions';
-import * as teryt from './routers/teryt';
-import * as network_discovery from './routers/network-discovery';
-import * as diagnostics from './routers/diagnostics';
-import * as pit from './routers/pit';
-import * as helpdesk from './routers/helpdesk';
-import * as documents from './routers/documents';
-import * as config_snms from './routers/config-snms';
-import * as snms_entities from './routers/snms-entities';
-import * as addresses from './routers/addresses';
-import * as search from './routers/search';
-import * as reports from './routers/reports';
-import * as client_auth from './routers/client-auth';
-import * as client_portal from './routers/client-portal';
-import * as builder from './routers/builder';
-import * as monitoring from './routers/monitoring';
-import * as network_tools from './routers/network-tools';
-import * as monitor_config from './routers/monitor-config';
-import * as olt_discovery from './routers/olt-discovery';
+import { Router } from 'express';
+import { router as customersRouter } from './routers/customers.js';
+import { router as customerGroupsRouter } from './routers/customer_groups.js';
+import { router as customerDevicesRouter } from './routers/customer_devices.js';
+import { router as addressesRouter } from './routers/addresses.js';
+import { router as adminRouter } from './routers/admin.js';
+import { router as documentsRouter } from './routers/documents.js';
+import { router as diagnosticsRouter } from './routers/diagnostics.js';
+import { router as financesRouter } from './routers/finances.js';
+import { router as helpdeskRouter } from './routers/helpdesk.js';
+import { router as netNodesRouter } from './routers/net_nodes.js';
+import { router as ipNetworksRouter } from './routers/ip_networks.js';
+import { router as netDevicesRouter } from './routers/netdevices.js';
+import { router as networkDiscoveryRouter } from './routers/network_discovery.js';
+import { router as pitRouter } from './routers/pit.js';
+import { router as subscriptionsRouter } from './routers/subscriptions.js';
+import { router as architectRouter } from './routers/architect.js';
+import { router as dashboardRouter } from './routers/dashboard.js';
+import { router as terytRouter } from './routers/teryt.js';
+import { ACTIVE_RUNTIME_MODULES, MODULE_MIGRATION_STATUS } from './module_status.js';
 
-function getCoreRouter(): APIRouter {
-    const router = new APIRouter();
-    router.use(auth.router);
-    router.use(bulk.router);
-    router.use(dashboard.router);
-    router.use(admin.router);
-    router.use(customers.router);
-    router.use(customer_groups.router);
-    router.use(net_nodes.router);
-    router.use(customer_devices.router);
-    router.use(customer_device_groups.router);
-    router.use(subscriptions.router);
-    router.use(finances.router);
-    router.use(ip_networks.router);
-    router.use(netdevices.router);
-    router.use(teryt.router);
-    router.use(teryt.public_api);
-    router.use(reports.router);
-    router.use(legacy_node_paths.router);
+export function getCoreRouter(): Router {
+    const router = Router();
 
-    // Client Portal
-    router.use(client_auth.router);
-    router.use(client_portal.router);
+    // v1 API routes
+    const v1Router = Router();
+    v1Router.get('/module-status', (_req, res) => {
+        res.json({
+            activeModules: ACTIVE_RUNTIME_MODULES,
+            migrationStatus: MODULE_MIGRATION_STATUS
+        });
+    });
+    v1Router.use('/admin', adminRouter);
+    v1Router.use('/dashboard', dashboardRouter);
+    v1Router.use('/addresses', addressesRouter);
+    v1Router.use('/customers', customersRouter);
+    v1Router.use('/customer-groups', customerGroupsRouter);
+    v1Router.use('/customer-devices', customerDevicesRouter);
+    v1Router.use('/documents', documentsRouter);
+    v1Router.use('/diagnostics', diagnosticsRouter);
+    v1Router.use('/finances', financesRouter);
+    v1Router.use('/helpdesk', helpdeskRouter);
+    v1Router.use('/net-nodes', netNodesRouter);
+    v1Router.use('/ip-networks', ipNetworksRouter);
+    v1Router.use('/net-devices', netDevicesRouter);
+    v1Router.use('/network-discovery', networkDiscoveryRouter);
+    v1Router.use('/pit', pitRouter);
+    v1Router.use('/subscriptions', subscriptionsRouter);
+    v1Router.use('/teryt', terytRouter);
+    v1Router.use('/architect', architectRouter);
 
-    // Advanced / Tools
-    router.use(network_discovery.router);
-    router.use(diagnostics.router);
-    router.use(pit.router);
-    router.use(helpdesk.router);
-    router.use(documents.router);
-    router.use(config_snms.router);
-    router.use(snms_entities.router);
-    router.use(addresses.router);
-    router.use(search.router);
-    router.use(builder.router);
-
-    // Monitoring & Stats
-    router.use(stats.router);
-    router.use(monitoring.router);
-    router.use(network_tools.router);
-    router.use(monitor_config.router);
-    router.use(olt_discovery.router);
+    router.use('/v1', v1Router);
 
     return router;
 }

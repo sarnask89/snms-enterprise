@@ -1,9 +1,147 @@
-It seems like you have posted a large piece of code, possibly related to web development using FastAPI and SQLAlchemy. However, I can only provide the context here as it would be helpful if someone could clarify what exactly this is for or how they might use these pieces of codes in their project structure? 
+import { Router } from "express";
+import { AppDataSource } from "../database.js";
+import { CustomerDevice } from "../models/network.js";
 
-The provided snippets are part of a larger system that uses technologies like Django (for backend), ReactJS and SQLAlchemy/PostgreSQL(backend database) to build an API. The code appears related because it's using the same technology for both parts, but in different ways or with slightly不同的 goals:
-- FastAPI is used as a web framework due its simplicity & speed (especially when compared against Django). 
-- SQLAlchemy/PostgreSQL handles database operations and ORM(Object Relational Mapping) helps to interact directly with the data stored. It's an abstraction layer that simplifies working with databases in Python, providing a high level of API for common tasks such as querying or modifying your dataset (like CRUD).
-- The provided code is part of two different applications: one uses FastAPI and SQLAlchemy/PostgreSQL to interact directly with the database. It's used by an admin user who can manage customer devices, their subscriptions etc., while another application utilizes this API for diagnostic purposes (like checking device statuses).
-- The provided code is also part of a larger system that uses technologies like Django and ReactJS in combination to build web applications with both frontend & backend. 
-  
-If you could provide more context or clarify what exactly these pieces are supposed to do, I'd be happy to help further as this would make the task easier for others reading your code: FastAPI is a powerful framework that can handle many tasks efficiently and it also has great community support which means if something doesn’t work out you could find solutions online.
+export const router = Router();
+
+const customerDeviceRepo = AppDataSource.getRepository(CustomerDevice);
+
+export type DiagnosticCheck = {
+    key: string;
+    label: string;
+    ok: boolean;
+    severity: "blocking" | "warning";
+    details: string | null;
+};
+
+export type DiagnosticsSummary = {
+    customerDeviceId: number;
+    ready: boolean;
+    blockingChecks: number;
+    checks: DiagnosticCheck[];
+};
+
+function hasText(value: unknown) {
+    return typeof value === "string" && value.trim().length > 0;
+}
+
+export function buildDiagnosticsSummary(device: CustomerDevice): DiagnosticsSummary {
+    const checks: DiagnosticCheck[] = [
+        {
+            key: "customer_link",
+            label: "Customer is linked",
+            ok: Number.isInteger(device.customerId) && device.customerId > 0,
+            severity: "blocking",
+            details: device.customerId ? `customer_id=${device.customerId}` : null,
+        },
+        {
+            key: "device_ip",
+            label: "Customer device has IP address",
+            ok: hasText(device.ipAddress),
+            severity: "blocking",
+            details: device.ipAddress ?? null,
+        },
+        {
+            key: "device_mac",
+            label: "Customer device has MAC address",
+            ok: hasText(device.macAddress),
+            severity: "warning",
+            details: device.macAddress ?? null,
+        },
+        {
+            key: "net_device_link",
+            label: "Access/network device is linked",
+            ok: !!device.netDeviceId,
+            severity: "blocking",
+            details: device.netDeviceId ? `net_device_id=${device.netDeviceId}` : null,
+        },
+        {
+            key: "net_device_management_ip",
+            label: "Access/network device has management IP",
+            ok: hasText(device.netDevice?.managementIp),
+            severity: "blocking",
+            details: device.netDevice?.managementIp ?? null,
+        },
+        {
+            key: "ip_network_link",
+            label: "IP network is linked",
+            ok: !!device.ipNetworkId,
+            severity: "blocking",
+            details: device.ipNetworkId ? `ip_network_id=${device.ipNetworkId}` : null,
+        },
+    ];
+
+    const blockingChecks = checks.filter((check) => check.severity === "blocking" && !check.ok).length;
+
+    return {
+        customerDeviceId: device.id,
+        ready: blockingChecks === 0,
+        blockingChecks,
+        checks,
+    };
+}
+
+async function loadCustomerDevice(id: number) {
+    return customerDeviceRepo.findOne({
+        where: { id },
+        relations: {
+            customer: true,
+            netDevice: true,
+            ipNetwork: true,
+        },
+    });
+}
+
+router.get("/devices/:id/readiness", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const device = await loadCustomerDevice(id);
+
+        if (!device) {
+            return res.status(404).json({ message: "Customer device not found" });
+        }
+
+        res.json(buildDiagnosticsSummary(device));
+    } catch (error) {
+        console.error("Error checking diagnostic readiness:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/check/:id", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const device = await loadCustomerDevice(id);
+
+        if (!device) {
+            return res.status(404).json({ message: "Customer device not found" });
+        }
+
+        res.json(buildDiagnosticsSummary(device));
+    } catch (error) {
+        console.error("Error running diagnostic check:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/sync-lease/:id", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const device = await loadCustomerDevice(id);
+
+        if (!device) {
+            return res.status(404).json({ message: "Customer device not found" });
+        }
+
+        const diagnostics = buildDiagnosticsSummary(device);
+        res.json({
+            customerDeviceId: device.id,
+            synced: false,
+            reason: "external_router_not_configured",
+            diagnostics,
+        });
+    } catch (error) {
+        console.error("Error preparing lease sync:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});

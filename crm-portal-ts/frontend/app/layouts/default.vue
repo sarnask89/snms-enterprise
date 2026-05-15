@@ -75,7 +75,35 @@ const links = [
   {
     label: 'Finanse',
     icon: 'i-heroicons-banknotes',
-    to: '/finances'
+    children: [
+      { label: 'Finanse', to: '/finances' },
+      { label: 'Subskrypcje', to: '/subscriptions' }
+    ]
+  },
+  {
+    label: 'Helpdesk',
+    icon: 'i-heroicons-lifebuoy',
+    to: '/helpdesk'
+  },
+  {
+    label: 'Dokumenty',
+    icon: 'i-heroicons-folder',
+    to: '/documents'
+  },
+  {
+    label: 'TERYT',
+    icon: 'i-heroicons-map',
+    to: '/teryt'
+  },
+  {
+    label: 'Operacje',
+    icon: 'i-heroicons-wrench-screwdriver',
+    to: '/operations'
+  },
+  {
+    label: 'Administracja',
+    icon: 'i-heroicons-shield-check',
+    to: '/admin'
   },
   {
     label: 'Ustawienia',
