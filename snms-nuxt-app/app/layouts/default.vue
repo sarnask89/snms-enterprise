@@ -40,7 +40,13 @@
       <!-- Navbar -->
       <header class="h-16 flex items-center justify-between px-6 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
         <div class="flex items-center gap-4">
-          <UButton icon="i-heroicons-bars-3" variant="ghost" color="gray" class="md:hidden" />
+          <UButton
+            icon="i-heroicons-bars-3"
+            variant="ghost"
+            color="gray"
+            class="md:hidden"
+            aria-label="Otwórz menu"
+          />
           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ currentTitle }}</h2>
         </div>
         <div class="flex items-center gap-4">
