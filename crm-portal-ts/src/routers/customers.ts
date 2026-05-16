@@ -8,6 +8,11 @@ import {
     type Document,
 } from "../models/customer.js";
 import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
+import {
+    resolveTerytAddress,
+    serializeTerytEntry,
+    type ResolvedTerytAddress,
+} from "../teryt_address_links.js";
 import { type CustomerDevice } from "../models/network.js";
 
 export const router = Router();
@@ -73,8 +78,33 @@ function parseDateString(value: unknown) {
     return parseOptionalString(value);
 }
 
-function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
+async function buildCorrespondenceAddress(customer: Customer) {
+    const hasTerytIds = [
+        customer.correspondenceStateId,
+        customer.correspondenceDistrictId,
+        customer.correspondenceCommuneId,
+        customer.correspondenceCityId,
+        customer.correspondenceStreetId,
+        customer.locationCityId,
+        customer.locationStreetId,
+    ].some((value) => value !== null && value !== undefined);
+
+    if (!hasTerytIds) {
+        return null;
+    }
+
+    return await resolveTerytAddress({
+        stateId: customer.correspondenceStateId,
+        districtId: customer.correspondenceDistrictId,
+        communeId: customer.correspondenceCommuneId,
+        cityId: customer.correspondenceCityId ?? customer.locationCityId,
+        streetId: customer.correspondenceStreetId ?? customer.locationStreetId,
+    });
+}
+
+async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
     const groups = customer.groups ?? [];
+    const correspondenceAddress = await buildCorrespondenceAddress(customer);
 
     return {
         id: customer.id,
@@ -106,18 +136,28 @@ function serializeCustomer(customer: CustomerWithRelations, includeDetails = fal
         creationDate: customer.creationDate,
         notes: customer.notes ?? null,
         portalLogin: customer.portalLogin ?? null,
-        locationCityId: customer.locationCityId ?? null,
-        locationStreetId: customer.locationStreetId ?? null,
+        locationCityId: correspondenceAddress?.city?.id ?? customer.locationCityId ?? null,
+        locationStreetId: correspondenceAddress?.street?.id ?? customer.locationStreetId ?? null,
+        correspondenceStateId: correspondenceAddress?.state?.id ?? customer.correspondenceStateId ?? null,
+        correspondenceDistrictId: correspondenceAddress?.district?.id ?? customer.correspondenceDistrictId ?? null,
+        correspondenceCommuneId: correspondenceAddress?.commune?.id ?? customer.correspondenceCommuneId ?? null,
+        correspondenceCityId: correspondenceAddress?.city?.id ?? customer.correspondenceCityId ?? customer.locationCityId ?? null,
+        correspondenceStreetId: correspondenceAddress?.street?.id ?? customer.correspondenceStreetId ?? customer.locationStreetId ?? null,
         streetNumber: customer.streetNumber ?? null,
         apartmentNumber: customer.apartmentNumber ?? null,
-        correspondenceState: customer.correspondenceState ?? null,
-        correspondenceCounty: customer.correspondenceCounty ?? null,
-        correspondenceCity: customer.correspondenceCity ?? null,
-        correspondenceStreet: customer.correspondenceStreet ?? null,
+        correspondenceState: correspondenceAddress?.state?.name ?? customer.correspondenceState ?? null,
+        correspondenceCounty: correspondenceAddress?.district?.name ?? customer.correspondenceCounty ?? null,
+        correspondenceCity: correspondenceAddress?.city?.name ?? customer.correspondenceCity ?? null,
+        correspondenceStreet: correspondenceAddress?.street?.name ?? customer.correspondenceStreet ?? null,
         correspondenceStreetNumber: customer.correspondenceStreetNumber ?? null,
         correspondenceApartmentNumber: customer.correspondenceApartmentNumber ?? null,
         correspondencePostalCode: customer.correspondencePostalCode ?? null,
         correspondenceCountry: customer.correspondenceCountry ?? null,
+        correspondenceStateEntry: serializeTerytEntry(correspondenceAddress?.state ?? null),
+        correspondenceDistrictEntry: serializeTerytEntry(correspondenceAddress?.district ?? null),
+        correspondenceCommuneEntry: serializeTerytEntry(correspondenceAddress?.commune ?? null),
+        correspondenceCityEntry: serializeTerytEntry(correspondenceAddress?.city ?? null),
+        correspondenceStreetEntry: serializeTerytEntry(correspondenceAddress?.street ?? null),
         contractNumber: customer.contractNumber ?? null,
         contractSignedAt: customer.contractSignedAt ?? null,
         serviceStartDate: customer.serviceStartDate ?? null,
@@ -152,7 +192,58 @@ function serializeCustomer(customer: CustomerWithRelations, includeDetails = fal
     };
 }
 
-function applyCustomerPayload(customer: Customer, payload: Record<string, unknown>, isCreate = false) {
+function hasAnyTerytAddressInput(payload: Record<string, unknown>) {
+    return [
+        "locationCityId",
+        "locationStreetId",
+        "correspondenceStateId",
+        "correspondenceDistrictId",
+        "correspondenceCommuneId",
+        "correspondenceCityId",
+        "correspondenceStreetId",
+    ].some((key) => Object.prototype.hasOwnProperty.call(payload, key));
+}
+
+async function syncCorrespondenceAddress(customer: Customer, payload: Record<string, unknown>) {
+    if (!hasAnyTerytAddressInput(payload)) {
+        return;
+    }
+
+    const resolved = await resolveTerytAddress({
+        stateId: customer.correspondenceStateId,
+        districtId: customer.correspondenceDistrictId,
+        communeId: customer.correspondenceCommuneId,
+        cityId: customer.correspondenceCityId ?? customer.locationCityId,
+        streetId: customer.correspondenceStreetId ?? customer.locationStreetId,
+    });
+
+    applyResolvedCorrespondenceAddress(customer, resolved);
+}
+
+function applyResolvedCorrespondenceAddress(customer: Customer, resolved: ResolvedTerytAddress) {
+    customer.correspondenceStateId = resolved.state?.id;
+    customer.correspondenceDistrictId = resolved.district?.id;
+    customer.correspondenceCommuneId = resolved.commune?.id;
+    customer.correspondenceCityId = resolved.city?.id;
+    customer.correspondenceStreetId = resolved.street?.id;
+    customer.locationCityId = resolved.city?.id;
+    customer.locationStreetId = resolved.street?.id;
+
+    if (resolved.state) {
+        customer.correspondenceState = resolved.state.name;
+    }
+    if (resolved.district) {
+        customer.correspondenceCounty = resolved.district.name;
+    }
+    if (resolved.city) {
+        customer.correspondenceCity = resolved.city.name;
+    }
+    if (resolved.street) {
+        customer.correspondenceStreet = resolved.street.name;
+    }
+}
+
+async function applyCustomerPayload(customer: Customer, payload: Record<string, unknown>, isCreate = false) {
     if (payload.customerCode !== undefined || isCreate) {
         const customerCode = parseOptionalString(payload.customerCode);
         if (!customerCode) {
@@ -248,14 +339,29 @@ function applyCustomerPayload(customer: Customer, payload: Record<string, unknow
     if (payload.correspondenceState !== undefined) {
         customer.correspondenceState = parseOptionalString(payload.correspondenceState);
     }
+    if (payload.correspondenceStateId !== undefined) {
+        customer.correspondenceStateId = parseOptionalInteger(payload.correspondenceStateId);
+    }
     if (payload.correspondenceCounty !== undefined) {
         customer.correspondenceCounty = parseOptionalString(payload.correspondenceCounty);
+    }
+    if (payload.correspondenceDistrictId !== undefined) {
+        customer.correspondenceDistrictId = parseOptionalInteger(payload.correspondenceDistrictId);
+    }
+    if (payload.correspondenceCommuneId !== undefined) {
+        customer.correspondenceCommuneId = parseOptionalInteger(payload.correspondenceCommuneId);
     }
     if (payload.correspondenceCity !== undefined) {
         customer.correspondenceCity = parseOptionalString(payload.correspondenceCity);
     }
+    if (payload.correspondenceCityId !== undefined) {
+        customer.correspondenceCityId = parseOptionalInteger(payload.correspondenceCityId);
+    }
     if (payload.correspondenceStreet !== undefined) {
         customer.correspondenceStreet = parseOptionalString(payload.correspondenceStreet);
+    }
+    if (payload.correspondenceStreetId !== undefined) {
+        customer.correspondenceStreetId = parseOptionalInteger(payload.correspondenceStreetId);
     }
     if (payload.correspondenceStreetNumber !== undefined) {
         customer.correspondenceStreetNumber = parseOptionalString(payload.correspondenceStreetNumber);
@@ -311,6 +417,8 @@ function applyCustomerPayload(customer: Customer, payload: Record<string, unknow
     if (payload.autoImportSource !== undefined) {
         customer.autoImportSource = parseOptionalString(payload.autoImportSource);
     }
+
+    await syncCorrespondenceAddress(customer, payload);
 
     if (customer.customerType === CustomerType.individual) {
         if (!customer.firstName.trim() || !customer.lastName.trim()) {
@@ -374,7 +482,7 @@ router.get("/", async (req, res) => {
         const [items, total] = await qb.getManyAndCount();
 
         res.set("X-Total-Count", total.toString());
-        res.json(items.map((customer) => serializeCustomer(customer)));
+        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer))));
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -397,7 +505,7 @@ router.get("/:id", async (req, res) => {
             return res.status(404).json({ message: "Customer not found" });
         }
 
-        res.json(serializeCustomer(customer, true));
+        res.json(await serializeCustomer(customer, true));
     } catch (error) {
         console.error("Error fetching customer:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -407,7 +515,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const customer = customerRepo.create();
-        applyCustomerPayload(customer, req.body ?? {}, true);
+        await applyCustomerPayload(customer, req.body ?? {}, true);
         await customerRepo.save(customer);
 
         const savedCustomer = await customerRepo.findOne({
@@ -415,7 +523,7 @@ router.post("/", async (req, res) => {
             relations: { groups: true },
         });
 
-        res.status(201).json(serializeCustomer(savedCustomer ?? customer));
+        res.status(201).json(await serializeCustomer(savedCustomer ?? customer));
     } catch (error) {
         console.error("Error creating customer:", error);
         res.status(400).json({ message: error instanceof Error ? error.message : "Failed to create customer" });
@@ -434,7 +542,7 @@ router.put("/:id", async (req, res) => {
             return res.status(404).json({ message: "Customer not found" });
         }
 
-        applyCustomerPayload(customer, req.body ?? {});
+        await applyCustomerPayload(customer, req.body ?? {});
         await customerRepo.save(customer);
 
         const savedCustomer = await customerRepo.findOne({
@@ -442,7 +550,7 @@ router.put("/:id", async (req, res) => {
             relations: { groups: true, devices: true },
         });
 
-        res.json(serializeCustomer(savedCustomer ?? customer, true));
+        res.json(await serializeCustomer(savedCustomer ?? customer, true));
     } catch (error) {
         console.error("Error updating customer:", error);
         res.status(400).json({ message: error instanceof Error ? error.message : "Failed to update customer" });

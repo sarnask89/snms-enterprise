@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">TERYT i adresy</h1>
-        <p class="text-sm text-gray-500">Lokalny import TERC/SIMC/ULIC oraz zarządzanie miastami oznaczonymi jako managed/default</p>
+        <p class="text-sm text-gray-500">Import pojedynczych plików XML TERC/SIMC/ULIC, domyślne obszary i lokalne słowniki autosugestii</p>
       </div>
       <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
     </div>
@@ -18,14 +18,111 @@
         </template>
 
         <form class="space-y-4" @submit.prevent="submitImport(importJob.key)">
-          <UFormGroup label="XML content" required>
+          <UFormGroup label="Plik XML" required>
+            <input
+              type="file"
+              accept=".xml,text/xml,application/xml"
+              class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
+              @change="onFileSelected(importJob.key, $event)"
+            >
+          </UFormGroup>
+
+          <UFormGroup label="Podgląd treści">
             <UTextarea v-model="importForms[importJob.key]" :rows="8" />
           </UFormGroup>
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-500">{{ importResults[importJob.key] }}</div>
-            <UButton type="submit" color="primary" :loading="loadingImports[importJob.key]" label="Importuj" />
+
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm text-gray-500 min-h-[20px]">{{ importResults[importJob.key] }}</div>
+            <UButton type="submit" color="primary" :loading="loadingImports[importJob.key]" label="Importuj XML" />
           </div>
         </form>
+      </UCard>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <UCard class="lg:col-span-1">
+        <template #header>
+          <div>
+            <h2 class="font-semibold text-lg">Domyślny obszar</h2>
+            <p class="text-sm text-gray-500">Dane używane do prefillu formularzy klienta i urządzeń</p>
+          </div>
+        </template>
+
+        <div class="space-y-3 text-sm">
+          <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.state?.name || 'Brak województwa domyślnego' }}</div>
+            <div class="text-gray-500">Województwo</div>
+          </div>
+          <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.district?.name || 'Brak powiatu domyślnego' }}</div>
+            <div class="text-gray-500">Powiat</div>
+          </div>
+          <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.commune?.name || 'Brak gminy domyślnej' }}</div>
+            <div class="text-gray-500">Gmina</div>
+          </div>
+          <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.city?.name || 'Brak miasta domyślnego' }}</div>
+            <div class="text-gray-500">Miasto</div>
+          </div>
+        </div>
+      </UCard>
+
+      <UCard class="lg:col-span-2">
+        <template #header>
+          <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+            <div>
+              <h2 class="font-semibold text-lg">Gminy</h2>
+              <p class="text-sm text-gray-500">Managed/default na poziomie gminy steruje domyślnym obszarem systemu</p>
+            </div>
+            <UInput
+              v-model="communeSearch"
+              icon="i-heroicons-magnifying-glass-20-solid"
+              placeholder="Szukaj gminy..."
+              class="w-full lg:w-80"
+            />
+          </div>
+        </template>
+
+        <UTable :rows="filteredCommunes" :columns="communeColumns" :loading="pendingCommunes">
+          <template #district-data="{ row }">
+            <div class="text-sm text-gray-600 dark:text-gray-300">
+              {{ row.district?.name || 'Brak powiatu' }}
+              <span v-if="row.district?.state?.name">· {{ row.district.state.name }}</span>
+            </div>
+          </template>
+
+          <template #flags-data="{ row }">
+            <div class="flex gap-2">
+              <UBadge :color="row.isManaged ? 'emerald' : 'gray'" variant="soft">
+                {{ row.isManaged ? 'managed' : 'unmanaged' }}
+              </UBadge>
+              <UBadge :color="row.isDefault ? 'primary' : 'gray'" variant="soft">
+                {{ row.isDefault ? 'default' : 'standard' }}
+              </UBadge>
+            </div>
+          </template>
+
+          <template #actions-data="{ row }">
+            <div class="flex items-center gap-2">
+              <UButton
+                size="xs"
+                color="gray"
+                variant="ghost"
+                :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
+                @click="toggleManagedCommune(row)"
+              />
+              <UButton
+                size="xs"
+                color="primary"
+                variant="ghost"
+                icon="i-heroicons-star"
+                :disabled="row.isDefault"
+                @click="setDefaultCommune(row)"
+              />
+            </div>
+          </template>
+        </UTable>
       </UCard>
     </div>
 
@@ -34,7 +131,7 @@
         <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
           <div>
             <h2 class="font-semibold text-lg">Miasta i ulice</h2>
-            <p class="text-sm text-gray-500">Wyszukiwanie lokalnego słownika i zarządzanie flagami adresowymi</p>
+            <p class="text-sm text-gray-500">Wyszukiwanie lokalnego słownika i zarządzanie flagami na poziomie miasta</p>
           </div>
           <div class="flex flex-col md:flex-row gap-3">
             <UInput
@@ -53,9 +150,13 @@
         </div>
       </template>
 
-      <UTable :rows="filteredCities" :columns="columns" :loading="pendingCities">
+      <UTable :rows="filteredCities" :columns="cityColumns" :loading="pendingCities">
         <template #district-data="{ row }">
           <div class="text-sm text-gray-600 dark:text-gray-300">{{ row.district?.name || 'Brak powiatu' }}</div>
+        </template>
+
+        <template #commune-data="{ row }">
+          <div class="text-sm text-gray-600 dark:text-gray-300">{{ row.commune?.name || 'Brak gminy' }}</div>
         </template>
 
         <template #flags-data="{ row }">
@@ -76,7 +177,7 @@
               color="gray"
               variant="ghost"
               :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
-              @click="toggleManaged(row)"
+              @click="toggleManagedCity(row)"
             />
             <UButton
               size="xs"
@@ -84,7 +185,7 @@
               variant="ghost"
               icon="i-heroicons-star"
               :disabled="row.isDefault"
-              @click="setDefault(row)"
+              @click="setDefaultCity(row)"
             />
             <UButton
               size="xs"
@@ -138,7 +239,9 @@
         <div v-if="selectedCity" class="space-y-4">
           <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
             <div class="font-medium text-gray-900 dark:text-white">{{ selectedCity.name }}</div>
-            <div class="text-sm text-gray-500">{{ selectedCity.district?.name || 'Brak powiatu' }}</div>
+            <div class="text-sm text-gray-500">
+              {{ selectedCity.commune?.name || 'Brak gminy' }} · {{ selectedCity.district?.name || 'Brak powiatu' }}
+            </div>
           </div>
           <div class="space-y-2">
             <div
@@ -159,15 +262,23 @@
 
 <script setup>
 const importJobs = [
-  { key: 'terc', title: 'Import TERC', description: 'Województwa i powiaty' },
-  { key: 'simc', title: 'Import SIMC', description: 'Miejscowości' },
-  { key: 'ulic', title: 'Import ULIC', description: 'Ulice' }
+  { key: 'terc', title: 'Import TERC', description: 'Województwa, powiaty i gminy' },
+  { key: 'simc', title: 'Import SIMC', description: 'Miejscowości i powiązania z gminami' },
+  { key: 'ulic', title: 'Import ULIC', description: 'Ulice powiązane z miastami i gminami' }
 ]
 
-const columns = [
+const cityColumns = [
   { key: 'name', label: 'Miasto' },
+  { key: 'commune', label: 'Gmina' },
   { key: 'district', label: 'Powiat' },
   { key: 'streetCount', label: 'Ulice' },
+  { key: 'flags', label: 'Flagi' },
+  { key: 'actions', label: 'Akcje' }
+]
+
+const communeColumns = [
+  { key: 'name', label: 'Gmina' },
+  { key: 'district', label: 'Powiat / województwo' },
   { key: 'flags', label: 'Flagi' },
   { key: 'actions', label: 'Akcje' }
 ]
@@ -179,6 +290,7 @@ const managedOptions = [
 ]
 
 const search = ref('')
+const communeSearch = ref('')
 const managedFilter = ref('all')
 const selectedCityId = ref(null)
 
@@ -201,6 +313,8 @@ const loadingImports = reactive({
 })
 
 const { data: cities, pending: pendingCities, refresh: refreshCities } = await useFetch('/api/v1/teryt/cities')
+const { data: communes, pending: pendingCommunes, refresh: refreshCommunes } = await useFetch('/api/v1/teryt/communes')
+const { data: defaultArea, refresh: refreshDefaultArea } = await useFetch('/api/v1/addresses/default-area')
 const { data: addressSearchData, refresh: refreshAddressSearch } = await useFetch('/api/v1/addresses/search-teryt', {
   query: { q: search }
 })
@@ -232,11 +346,26 @@ const filteredCities = computed(() => {
       return true
     }
 
-    return [row.name, row.terytCode || '', row.district?.name || '']
+    return [row.name, row.terytCode || '', row.district?.name || '', row.commune?.name || '']
       .join(' ')
       .toLowerCase()
       .includes(query)
   })
+})
+
+const filteredCommunes = computed(() => {
+  const rows = communes.value || []
+  const query = communeSearch.value.trim().toLowerCase()
+  if (!query) {
+    return rows
+  }
+
+  return rows.filter((row) =>
+    [row.name, row.terytCode || '', row.district?.name || '', row.district?.state?.name || '']
+      .join(' ')
+      .toLowerCase()
+      .includes(query)
+  )
 })
 
 const addressSearchResults = computed(() => addressSearchData.value || [])
@@ -264,7 +393,23 @@ watch(selectedCityId, async () => {
 })
 
 const refreshAll = async () => {
-  await Promise.all([refreshCities(), refreshAddressSearch(), refreshStreets()])
+  await Promise.all([
+    refreshCities(),
+    refreshCommunes(),
+    refreshDefaultArea(),
+    refreshAddressSearch(),
+    refreshStreets()
+  ])
+}
+
+const onFileSelected = async (kind, event) => {
+  const file = event?.target?.files?.[0]
+  if (!file) {
+    return
+  }
+
+  importForms[kind] = await file.text()
+  importResults[kind] = `Załadowano plik: ${file.name}`
 }
 
 const submitImport = async (kind) => {
@@ -277,22 +422,36 @@ const submitImport = async (kind) => {
     importResults[kind] = Object.entries(result)
       .map(([key, value]) => `${key}: ${value}`)
       .join(', ')
-    await refreshCities()
-    await refreshAddressSearch()
+
+    await Promise.all([
+      refreshCities(),
+      refreshCommunes(),
+      refreshDefaultArea(),
+      refreshAddressSearch()
+    ])
   } finally {
     loadingImports[kind] = false
   }
 }
 
-const toggleManaged = async (row) => {
+const toggleManagedCity = async (row) => {
   await $fetch(`/api/v1/addresses/cities/${row.id}/toggle-managed`, { method: 'POST' })
-  await refreshCities()
-  await refreshAddressSearch()
+  await Promise.all([refreshCities(), refreshDefaultArea()])
 }
 
-const setDefault = async (row) => {
+const setDefaultCity = async (row) => {
   await $fetch(`/api/v1/addresses/cities/${row.id}/set-default`, { method: 'POST' })
-  await refreshCities()
+  await Promise.all([refreshCities(), refreshCommunes(), refreshDefaultArea()])
+}
+
+const toggleManagedCommune = async (row) => {
+  await $fetch(`/api/v1/addresses/communes/${row.id}/toggle-managed`, { method: 'POST' })
+  await Promise.all([refreshCommunes(), refreshDefaultArea()])
+}
+
+const setDefaultCommune = async (row) => {
+  await $fetch(`/api/v1/addresses/communes/${row.id}/set-default`, { method: 'POST' })
+  await Promise.all([refreshCities(), refreshCommunes(), refreshDefaultArea()])
 }
 
 const scheduleSync = async (row) => {

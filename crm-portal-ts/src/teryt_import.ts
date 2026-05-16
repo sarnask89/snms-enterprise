@@ -1,14 +1,35 @@
 import { AppDataSource } from "./database.js";
-import { LocationCity, LocationDistrict, LocationState, LocationStreet } from "./models/location.js";
+import {
+    LocationCity,
+    LocationCommune,
+    LocationDistrict,
+    LocationState,
+    LocationStreet,
+} from "./models/location.js";
 
 const stateRepo = AppDataSource.getRepository(LocationState);
 const districtRepo = AppDataSource.getRepository(LocationDistrict);
+const communeRepo = AppDataSource.getRepository(LocationCommune);
 const cityRepo = AppDataSource.getRepository(LocationCity);
 const streetRepo = AppDataSource.getRepository(LocationStreet);
 
 function clean(value: string | null | undefined) {
     const trimmed = value?.trim() ?? "";
     return trimmed.length > 0 ? trimmed : null;
+}
+
+function titleCase(name: string | null) {
+    if (!name) {
+        return null;
+    }
+
+    return name
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
 }
 
 function extractRows(xmlContent: string) {
@@ -21,27 +42,41 @@ function findTag(rowContent: string, tag: string) {
     return clean(match?.[1]);
 }
 
+function makeCommuneKey(woj: string, powiat: string, gmina: string, rodz: string | null) {
+    return `${woj}:${powiat}:${gmina}:${rodz ?? ""}`;
+}
+
+function makeCommuneTerytCode(woj: string, powiat: string, gmina: string, rodz: string | null) {
+    return `${woj}${powiat}${gmina}${rodz ?? ""}`;
+}
+
 export async function importTercXml(xmlContent: string) {
     const rows = extractRows(xmlContent);
     const statesData = new Map<string, string>();
     const districtsData: Array<{ woj: string; powiat: string; name: string }> = [];
+    const communesData: Array<{ woj: string; powiat: string; gmina: string; rodz: string | null; name: string }> = [];
 
     for (const row of rows) {
         const woj = findTag(row, "WOJ");
         const powiat = findTag(row, "POW");
         const gmina = findTag(row, "GMI");
-        const name = findTag(row, "NAZWA");
+        const rodz = findTag(row, "RODZ");
+        const name = titleCase(findTag(row, "NAZWA"));
 
         if (woj && !powiat && !gmina && name) {
             statesData.set(woj, name);
         } else if (woj && powiat && !gmina && name) {
             districtsData.push({ woj, powiat, name });
+        } else if (woj && powiat && gmina && name) {
+            communesData.push({ woj, powiat, gmina, rodz, name });
         }
     }
 
     let importedStates = 0;
     let importedDistricts = 0;
+    let importedCommunes = 0;
     const stateIds = new Map<string, number>();
+    const districtIds = new Map<string, number>();
 
     for (const [terytCode, name] of statesData.entries()) {
         let state = await stateRepo.findOneBy({ terytCode });
@@ -49,6 +84,9 @@ export async function importTercXml(xmlContent: string) {
             state = stateRepo.create({ name, terytCode });
             await stateRepo.save(state);
             importedStates += 1;
+        } else if (state.name !== name) {
+            state.name = name;
+            await stateRepo.save(state);
         }
         stateIds.set(terytCode, state.id);
     }
@@ -59,23 +97,62 @@ export async function importTercXml(xmlContent: string) {
             continue;
         }
 
-        const existingDistrict = await districtRepo.findOneBy({
+        const districtKey = `${districtData.woj}:${districtData.powiat}`;
+        let district = await districtRepo.findOneBy({
             stateId,
             terytCode: districtData.powiat,
         });
 
-        if (!existingDistrict) {
-            const district = districtRepo.create({
+        if (!district) {
+            district = districtRepo.create({
                 stateId,
                 name: districtData.name,
                 terytCode: districtData.powiat,
             });
             await districtRepo.save(district);
             importedDistricts += 1;
+        } else if (district.name !== districtData.name) {
+            district.name = districtData.name;
+            await districtRepo.save(district);
+        }
+
+        districtIds.set(districtKey, district.id);
+    }
+
+    for (const communeData of communesData) {
+        const districtId = districtIds.get(`${communeData.woj}:${communeData.powiat}`);
+        if (!districtId) {
+            continue;
+        }
+
+        const terytCode = makeCommuneTerytCode(
+            communeData.woj,
+            communeData.powiat,
+            communeData.gmina,
+            communeData.rodz,
+        );
+
+        let commune = await communeRepo.findOneBy({ terytCode });
+        if (!commune) {
+            commune = communeRepo.create({
+                districtId,
+                name: communeData.name,
+                terytCode,
+                communeCode: communeData.gmina,
+                communeType: communeData.rodz ?? undefined,
+            });
+            await communeRepo.save(commune);
+            importedCommunes += 1;
+        } else {
+            commune.districtId = districtId;
+            commune.name = communeData.name;
+            commune.communeCode = communeData.gmina;
+            commune.communeType = communeData.rodz ?? undefined;
+            await communeRepo.save(commune);
         }
     }
 
-    return { importedStates, importedDistricts };
+    return { importedStates, importedDistricts, importedCommunes };
 }
 
 export async function importSimcXml(xmlContent: string) {
@@ -92,12 +169,25 @@ export async function importSimcXml(xmlContent: string) {
         }
     }
 
+    const communes = await communeRepo.find({ relations: { district: { state: true } } });
+    const communeMap = new Map<string, number>();
+    for (const commune of communes) {
+        const stateCode = commune.district?.state?.terytCode;
+        const districtCode = commune.district?.terytCode;
+        if (stateCode && districtCode && commune.communeCode) {
+            communeMap.set(
+                makeCommuneKey(stateCode, districtCode, commune.communeCode, commune.communeType ?? null),
+                commune.id,
+            );
+        }
+    }
+
     for (const row of rows) {
         const woj = findTag(row, "WOJ");
         const powiat = findTag(row, "POW");
         const gmi = findTag(row, "GMI");
         const rodz = findTag(row, "RODZ_GMI") ?? findTag(row, "RODZ");
-        const name = findTag(row, "NAZWA");
+        const name = titleCase(findTag(row, "NAZWA"));
         const sym = findTag(row, "SYM");
 
         if (!woj || !powiat || !name || !sym) {
@@ -109,10 +199,15 @@ export async function importSimcXml(xmlContent: string) {
             continue;
         }
 
+        const communeId = gmi
+            ? communeMap.get(makeCommuneKey(woj, powiat, gmi, rodz))
+            : undefined;
+
         const existingCity = await cityRepo.findOneBy({ terytCode: sym });
         if (!existingCity) {
             const city = cityRepo.create({
                 districtId,
+                communeId,
                 name,
                 terytCode: sym,
                 communeCode: gmi ?? undefined,
@@ -120,6 +215,13 @@ export async function importSimcXml(xmlContent: string) {
             });
             await cityRepo.save(city);
             importedCities += 1;
+        } else {
+            existingCity.districtId = districtId;
+            existingCity.communeId = communeId;
+            existingCity.name = name;
+            existingCity.communeCode = gmi ?? undefined;
+            existingCity.communeType = rodz ?? undefined;
+            await cityRepo.save(existingCity);
         }
     }
 
@@ -131,10 +233,10 @@ export async function importUlicXml(xmlContent: string) {
     let importedStreets = 0;
 
     const cities = await cityRepo.find();
-    const cityMap = new Map<string, number>();
+    const cityMap = new Map<string, LocationCity>();
     for (const city of cities) {
         if (city.terytCode) {
-            cityMap.set(city.terytCode, city.id);
+            cityMap.set(city.terytCode, city);
         }
     }
 
@@ -149,21 +251,26 @@ export async function importUlicXml(xmlContent: string) {
             continue;
         }
 
-        const cityId = cityMap.get(sym);
-        if (!cityId) {
+        const city = cityMap.get(sym);
+        if (!city) {
             continue;
         }
 
         const name = `${cecha ?? ""} ${nazwa2} ${nazwa1}`.replace(/\s+/g, " ").trim();
-        const existingStreet = await streetRepo.findOneBy({ cityId, terytCode: ulic });
+        const existingStreet = await streetRepo.findOneBy({ cityId: city.id, terytCode: ulic });
         if (!existingStreet) {
             const street = streetRepo.create({
-                cityId,
+                cityId: city.id,
+                communeId: city.communeId,
                 name,
                 terytCode: ulic,
             });
             await streetRepo.save(street);
             importedStreets += 1;
+        } else {
+            existingStreet.name = name;
+            existingStreet.communeId = city.communeId;
+            await streetRepo.save(existingStreet);
         }
     }
 

@@ -41,7 +41,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
 
     const server = await startServer(0);
     const schemaMigrationStatus = await getSchemaMigrationStatus(AppDataSource);
-    assert.equal(schemaMigrationStatus.applied.length, 3);
+    assert.equal(schemaMigrationStatus.applied.length, 4);
     assert.equal(schemaMigrationStatus.pending.length, 0);
     const portalUserRepo = AppDataSource.getRepository(PortalUser);
     const adminUser = await portalUserRepo.findOneBy({ username: "admin" });
@@ -1492,6 +1492,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
     assert.deepEqual(await importedTerc.json(), {
         importedStates: 1,
         importedDistricts: 1,
+        importedCommunes: 0,
     });
 
     const importedSimc = await fetchWithAuth(`${baseUrl}/api/v1/teryt/import/simc`, {
@@ -1526,7 +1527,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
     }>;
     assert.equal(terytCitiesPayload.length, 1);
     assert.equal(terytCitiesPayload[0]?.name, "Ożarów Mazowiecki");
-    assert.equal(terytCitiesPayload[0]?.district?.name, "warszawski zachodni");
+    assert.equal(terytCitiesPayload[0]?.district?.name, "Warszawski Zachodni");
     assert.equal(terytCitiesPayload[0]?.streetCount, 1);
     assert.equal(terytCitiesPayload[0]?.isManaged, false);
     assert.equal(terytCitiesPayload[0]?.isDefault, false);

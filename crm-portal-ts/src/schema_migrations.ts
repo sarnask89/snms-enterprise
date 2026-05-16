@@ -14,6 +14,10 @@ const CUSTOMER_DOMAIN_EXPANSION_MIGRATION = {
     id: "20260516_0003_customer_domain_expansion",
     name: "customer_domain_expansion",
 };
+const TERYT_RELATIONAL_ADDRESSING_MIGRATION = {
+    id: "20260516_0004_teryt_relational_addressing",
+    name: "teryt_relational_addressing",
+};
 
 type MigrationRow = {
     id: string;
@@ -229,6 +233,46 @@ async function applyCustomerDomainExpansionMigration(dataSource: DataSource) {
     await addColumnIfMissing(dataSource, "customer_devices", "location_description", "location_description TEXT");
 }
 
+async function applyTerytRelationalAddressingMigration(dataSource: DataSource) {
+    await dataSource.query(`
+        CREATE TABLE IF NOT EXISTS location_communes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            district_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            teryt_code TEXT,
+            commune_code TEXT,
+            commune_type TEXT,
+            is_managed INTEGER NOT NULL DEFAULT 0,
+            is_default INTEGER NOT NULL DEFAULT 0,
+            is_active INTEGER NOT NULL DEFAULT 0,
+            FOREIGN KEY(district_id) REFERENCES location_districts(id) ON DELETE CASCADE
+        )
+    `);
+
+    await addColumnIfMissing(dataSource, "location_cities", "commune_id", "commune_id INTEGER");
+    await addColumnIfMissing(dataSource, "location_streets", "commune_id", "commune_id INTEGER");
+
+    await addColumnIfMissing(dataSource, "customers", "correspondence_state_id", "correspondence_state_id INTEGER");
+    await addColumnIfMissing(dataSource, "customers", "correspondence_district_id", "correspondence_district_id INTEGER");
+    await addColumnIfMissing(dataSource, "customers", "correspondence_commune_id", "correspondence_commune_id INTEGER");
+    await addColumnIfMissing(dataSource, "customers", "correspondence_city_id", "correspondence_city_id INTEGER");
+    await addColumnIfMissing(dataSource, "customers", "correspondence_street_id", "correspondence_street_id INTEGER");
+
+    await addColumnIfMissing(dataSource, "customer_devices", "installation_state_id", "installation_state_id INTEGER");
+    await addColumnIfMissing(dataSource, "customer_devices", "installation_district_id", "installation_district_id INTEGER");
+    await addColumnIfMissing(dataSource, "customer_devices", "installation_commune_id", "installation_commune_id INTEGER");
+    await addColumnIfMissing(dataSource, "customer_devices", "installation_city_id", "installation_city_id INTEGER");
+    await addColumnIfMissing(dataSource, "customer_devices", "installation_street_id", "installation_street_id INTEGER");
+
+    await dataSource.query(`
+        UPDATE customers
+        SET correspondence_city_id = COALESCE(correspondence_city_id, location_city_id),
+            correspondence_street_id = COALESCE(correspondence_street_id, location_street_id)
+        WHERE location_city_id IS NOT NULL
+           OR location_street_id IS NOT NULL
+    `);
+}
+
 const MANAGED_MIGRATIONS: ManagedMigration[] = [
     BASELINE_MIGRATION,
     {
@@ -238,6 +282,10 @@ const MANAGED_MIGRATIONS: ManagedMigration[] = [
     {
         ...CUSTOMER_DOMAIN_EXPANSION_MIGRATION,
         apply: applyCustomerDomainExpansionMigration,
+    },
+    {
+        ...TERYT_RELATIONAL_ADDRESSING_MIGRATION,
+        apply: applyTerytRelationalAddressingMigration,
     },
 ];
 

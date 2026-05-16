@@ -2,11 +2,21 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import path from "path";
 import { fileURLToPath } from "url";
+import { CalendarEvent, MessageTemplate, OutboundMessage, TrafficStat } from "./models/communication.js";
+import { Division, NumberPlan, VatRate } from "./models/config.js";
 import { Customer, CustomerGroup, CustomerNotice, Document } from "./models/customer.js";
 import { CashReceipt, Invoice, LedgerEntry, RecurringPayment, Subscription, Tariff } from "./models/finance.js";
 import { HelpdeskCategory, HelpdeskQueue, SupportTicket } from "./models/helpdesk.js";
-import { LocationCity, LocationDistrict, LocationState, LocationStreet } from "./models/location.js";
-import { CustomerDevice, IpNetwork, NetDevice, NetNode } from "./models/network.js";
+import { LocationCity, LocationCommune, LocationDistrict, LocationState, LocationStreet } from "./models/location.js";
+import {
+    CustomerDevice,
+    IpNetwork,
+    NetDevice,
+    NetNode,
+    NetworkDeviceAccessProfile,
+    NetworkDiscoveryRecord,
+    NetworkDiscoverySession,
+} from "./models/network.js";
 import { AppSetting, AuditLog, BackupExport, ConfigReloadLog, PortalUser } from "./models/system.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,8 +37,16 @@ export const AppDataSource = new DataSource({
         CustomerGroup,
         CustomerNotice,
         Document,
+        MessageTemplate,
+        OutboundMessage,
+        CalendarEvent,
+        TrafficStat,
+        Division,
+        VatRate,
+        NumberPlan,
         LocationState,
         LocationDistrict,
+        LocationCommune,
         LocationCity,
         LocationStreet,
         AppSetting,
@@ -40,6 +58,9 @@ export const AppDataSource = new DataSource({
         IpNetwork,
         NetDevice,
         NetNode,
+        NetworkDeviceAccessProfile,
+        NetworkDiscoverySession,
+        NetworkDiscoveryRecord,
         Tariff,
         Subscription,
         Invoice,

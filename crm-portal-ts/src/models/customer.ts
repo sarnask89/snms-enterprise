@@ -117,6 +117,21 @@ export class Customer {
     @Column({ type: "integer", name: "location_street_id", nullable: true })
     locationStreetId?: number;
 
+    @Column({ type: "integer", name: "correspondence_state_id", nullable: true })
+    correspondenceStateId?: number;
+
+    @Column({ type: "integer", name: "correspondence_district_id", nullable: true })
+    correspondenceDistrictId?: number;
+
+    @Column({ type: "integer", name: "correspondence_commune_id", nullable: true })
+    correspondenceCommuneId?: number;
+
+    @Column({ type: "integer", name: "correspondence_city_id", nullable: true })
+    correspondenceCityId?: number;
+
+    @Column({ type: "integer", name: "correspondence_street_id", nullable: true })
+    correspondenceStreetId?: number;
+
     @Column({ type: "varchar", name: "street_number", length: 32, nullable: true })
     streetNumber?: string;
 

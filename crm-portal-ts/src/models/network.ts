@@ -214,6 +214,21 @@ export class CustomerDevice {
     @Column({ type: "real", name: "remote_rx_power_dbm", nullable: true })
     remoteRxPowerDbm?: number;
 
+    @Column({ type: "integer", name: "installation_state_id", nullable: true })
+    installationStateId?: number;
+
+    @Column({ type: "integer", name: "installation_district_id", nullable: true })
+    installationDistrictId?: number;
+
+    @Column({ type: "integer", name: "installation_commune_id", nullable: true })
+    installationCommuneId?: number;
+
+    @Column({ type: "integer", name: "installation_city_id", nullable: true })
+    installationCityId?: number;
+
+    @Column({ type: "integer", name: "installation_street_id", nullable: true })
+    installationStreetId?: number;
+
     @Column({ type: "varchar", name: "installation_state", length: 128, nullable: true })
     installationState?: string;
 

@@ -19,17 +19,17 @@ test("baseline schema migrations bootstrap empty runtime database and stay idemp
 
         const before = await getSchemaMigrationStatus(AppDataSource);
         assert.equal(before.applied.length, 0);
-        assert.equal(before.pending.length, 3);
+        assert.equal(before.pending.length, 4);
 
         const firstRun = await runSchemaMigrations(AppDataSource);
-        assert.equal(firstRun.applied.length, 3);
+        assert.equal(firstRun.applied.length, 4);
         assert.equal(firstRun.pending.length, 0);
-        assert.equal(firstRun.current?.id, "20260516_0003_customer_domain_expansion");
+        assert.equal(firstRun.current?.id, "20260516_0004_teryt_relational_addressing");
 
         const secondRun = await runSchemaMigrations(AppDataSource);
-        assert.equal(secondRun.applied.length, 3);
+        assert.equal(secondRun.applied.length, 4);
         assert.equal(secondRun.pending.length, 0);
-        assert.equal(secondRun.current?.id, "20260516_0003_customer_domain_expansion");
+        assert.equal(secondRun.current?.id, "20260516_0004_teryt_relational_addressing");
 
         const tables = await AppDataSource.query(`
             SELECT name

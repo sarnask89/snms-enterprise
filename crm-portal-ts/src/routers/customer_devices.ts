@@ -3,6 +3,11 @@ import { ILike } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
+import {
+    resolveTerytAddress,
+    serializeTerytEntry,
+    type ResolvedTerytAddress,
+} from "../teryt_address_links.js";
 
 export const router = Router();
 const deviceRepo = AppDataSource.getRepository(CustomerDevice);
@@ -26,7 +31,31 @@ function parseStatus(value: unknown, fallback = CustomerDeviceStatus.active) {
     return Object.values(CustomerDeviceStatus).includes(candidate) ? candidate : fallback;
 }
 
-function serializeDevice(device: CustomerDevice) {
+async function buildInstallationAddress(device: CustomerDevice) {
+    const hasTerytIds = [
+        device.installationStateId,
+        device.installationDistrictId,
+        device.installationCommuneId,
+        device.installationCityId,
+        device.installationStreetId,
+    ].some((value) => value !== null && value !== undefined);
+
+    if (!hasTerytIds) {
+        return null;
+    }
+
+    return await resolveTerytAddress({
+        stateId: device.installationStateId,
+        districtId: device.installationDistrictId,
+        communeId: device.installationCommuneId,
+        cityId: device.installationCityId,
+        streetId: device.installationStreetId,
+    });
+}
+
+async function serializeDevice(device: CustomerDevice) {
+    const installationAddress = await buildInstallationAddress(device);
+
     return {
         id: device.id,
         customerId: device.customerId,
@@ -46,15 +75,25 @@ function serializeDevice(device: CustomerDevice) {
         remotePort: device.remotePort ?? null,
         remoteProfileName: device.remoteProfileName ?? null,
         remoteRxPowerDbm: device.remoteRxPowerDbm ?? null,
-        installationState: device.installationState ?? null,
-        installationCounty: device.installationCounty ?? null,
-        installationCity: device.installationCity ?? null,
-        installationStreet: device.installationStreet ?? null,
+        installationStateId: installationAddress?.state?.id ?? device.installationStateId ?? null,
+        installationDistrictId: installationAddress?.district?.id ?? device.installationDistrictId ?? null,
+        installationCommuneId: installationAddress?.commune?.id ?? device.installationCommuneId ?? null,
+        installationCityId: installationAddress?.city?.id ?? device.installationCityId ?? null,
+        installationStreetId: installationAddress?.street?.id ?? device.installationStreetId ?? null,
+        installationState: installationAddress?.state?.name ?? device.installationState ?? null,
+        installationCounty: installationAddress?.district?.name ?? device.installationCounty ?? null,
+        installationCity: installationAddress?.city?.name ?? device.installationCity ?? null,
+        installationStreet: installationAddress?.street?.name ?? device.installationStreet ?? null,
         installationStreetNumber: device.installationStreetNumber ?? null,
         installationApartmentNumber: device.installationApartmentNumber ?? null,
         installationPostalCode: device.installationPostalCode ?? null,
         installationCountry: device.installationCountry ?? null,
         locationDescription: device.locationDescription ?? null,
+        installationStateEntry: serializeTerytEntry(installationAddress?.state ?? null),
+        installationDistrictEntry: serializeTerytEntry(installationAddress?.district ?? null),
+        installationCommuneEntry: serializeTerytEntry(installationAddress?.commune ?? null),
+        installationCityEntry: serializeTerytEntry(installationAddress?.city ?? null),
+        installationStreetEntry: serializeTerytEntry(installationAddress?.street ?? null),
         customer: device.customer
             ? {
                 id: device.customer.id,
@@ -67,7 +106,54 @@ function serializeDevice(device: CustomerDevice) {
     };
 }
 
-function applyDevicePayload(device: CustomerDevice, payload: Record<string, unknown>, isCreate = false) {
+function hasAnyTerytAddressInput(payload: Record<string, unknown>) {
+    return [
+        "installationStateId",
+        "installationDistrictId",
+        "installationCommuneId",
+        "installationCityId",
+        "installationStreetId",
+    ].some((key) => Object.prototype.hasOwnProperty.call(payload, key));
+}
+
+function applyResolvedInstallationAddress(device: CustomerDevice, resolved: ResolvedTerytAddress) {
+    device.installationStateId = resolved.state?.id;
+    device.installationDistrictId = resolved.district?.id;
+    device.installationCommuneId = resolved.commune?.id;
+    device.installationCityId = resolved.city?.id;
+    device.installationStreetId = resolved.street?.id;
+
+    if (resolved.state) {
+        device.installationState = resolved.state.name;
+    }
+    if (resolved.district) {
+        device.installationCounty = resolved.district.name;
+    }
+    if (resolved.city) {
+        device.installationCity = resolved.city.name;
+    }
+    if (resolved.street) {
+        device.installationStreet = resolved.street.name;
+    }
+}
+
+async function syncInstallationAddress(device: CustomerDevice, payload: Record<string, unknown>) {
+    if (!hasAnyTerytAddressInput(payload)) {
+        return;
+    }
+
+    const resolved = await resolveTerytAddress({
+        stateId: device.installationStateId,
+        districtId: device.installationDistrictId,
+        communeId: device.installationCommuneId,
+        cityId: device.installationCityId,
+        streetId: device.installationStreetId,
+    });
+
+    applyResolvedInstallationAddress(device, resolved);
+}
+
+async function applyDevicePayload(device: CustomerDevice, payload: Record<string, unknown>, isCreate = false) {
     if (payload.customerId !== undefined || isCreate) {
         const customerId = parseOptionalInteger(payload.customerId);
         if (!customerId) {
@@ -133,6 +219,21 @@ function applyDevicePayload(device: CustomerDevice, payload: Record<string, unkn
         const rxPower = Number.parseFloat(String(payload.remoteRxPowerDbm));
         device.remoteRxPowerDbm = Number.isFinite(rxPower) ? rxPower : undefined;
     }
+    if (payload.installationStateId !== undefined) {
+        device.installationStateId = parseOptionalInteger(payload.installationStateId);
+    }
+    if (payload.installationDistrictId !== undefined) {
+        device.installationDistrictId = parseOptionalInteger(payload.installationDistrictId);
+    }
+    if (payload.installationCommuneId !== undefined) {
+        device.installationCommuneId = parseOptionalInteger(payload.installationCommuneId);
+    }
+    if (payload.installationCityId !== undefined) {
+        device.installationCityId = parseOptionalInteger(payload.installationCityId);
+    }
+    if (payload.installationStreetId !== undefined) {
+        device.installationStreetId = parseOptionalInteger(payload.installationStreetId);
+    }
     if (payload.installationState !== undefined) {
         device.installationState = parseOptionalString(payload.installationState);
     }
@@ -160,6 +261,8 @@ function applyDevicePayload(device: CustomerDevice, payload: Record<string, unkn
     if (payload.locationDescription !== undefined) {
         device.locationDescription = parseOptionalString(payload.locationDescription);
     }
+
+    await syncInstallationAddress(device, payload);
 }
 
 router.get("/", async (req, res) => {
@@ -188,7 +291,7 @@ router.get("/", async (req, res) => {
         });
 
         res.set("X-Total-Count", total.toString());
-        res.json(items.map((item) => serializeDevice(item)));
+        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
     } catch (error) {
         console.error("Error fetching customer devices:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -206,7 +309,7 @@ router.get("/:id", async (req, res) => {
         if (!device) {
             return res.status(404).json({ message: "Device not found" });
         }
-        res.json(serializeDevice(device));
+        res.json(await serializeDevice(device));
     } catch (error) {
         console.error("Error fetching customer device:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -220,13 +323,13 @@ router.post("/", async (req, res) => {
         }
 
         const device = deviceRepo.create();
-        applyDevicePayload(device, req.body as Record<string, unknown>, true);
+        await applyDevicePayload(device, req.body as Record<string, unknown>, true);
         await deviceRepo.save(device);
         const savedDevice = await deviceRepo.findOne({
             where: { id: device.id },
             relations: ["customer"],
         });
-        res.status(201).json(serializeDevice(savedDevice ?? device));
+        res.status(201).json(await serializeDevice(savedDevice ?? device));
     } catch (error) {
         console.error("Error creating customer device:", error);
         res.status(400).json({ message: error instanceof Error ? error.message : "Failed to create device" });
@@ -241,13 +344,13 @@ router.put("/:id", async (req, res) => {
             return res.status(404).json({ message: "Device not found" });
         }
 
-        applyDevicePayload(device, req.body ?? {});
+        await applyDevicePayload(device, req.body ?? {});
         await deviceRepo.save(device);
         const savedDevice = await deviceRepo.findOne({
             where: { id: device.id },
             relations: ["customer"],
         });
-        res.json(serializeDevice(savedDevice ?? device));
+        res.json(await serializeDevice(savedDevice ?? device));
     } catch (error) {
         console.error("Error updating customer device:", error);
         res.status(400).json({ message: error instanceof Error ? error.message : "Failed to update device" });
