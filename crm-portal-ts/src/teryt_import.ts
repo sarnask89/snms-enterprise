@@ -13,6 +13,25 @@ const communeRepo = AppDataSource.getRepository(LocationCommune);
 const cityRepo = AppDataSource.getRepository(LocationCity);
 const streetRepo = AppDataSource.getRepository(LocationStreet);
 
+const STATE_NAME_BY_TERYT_CODE: Record<string, string> = {
+    "02": "Dolnośląskie",
+    "04": "Kujawsko-Pomorskie",
+    "06": "Lubelskie",
+    "08": "Lubuskie",
+    "10": "Łódzkie",
+    "12": "Małopolskie",
+    "14": "Mazowieckie",
+    "16": "Opolskie",
+    "18": "Podkarpackie",
+    "20": "Podlaskie",
+    "22": "Pomorskie",
+    "24": "Śląskie",
+    "26": "Świętokrzyskie",
+    "28": "Warmińsko-Mazurskie",
+    "30": "Wielkopolskie",
+    "32": "Zachodniopomorskie",
+};
+
 function clean(value: string | null | undefined) {
     const trimmed = value?.trim() ?? "";
     return trimmed.length > 0 ? trimmed : null;
@@ -55,6 +74,7 @@ export async function importTercXml(xmlContent: string) {
     const statesData = new Map<string, string>();
     const districtsData: Array<{ woj: string; powiat: string; name: string }> = [];
     const communesData: Array<{ woj: string; powiat: string; gmina: string; rodz: string | null; name: string }> = [];
+    const fallbackStateCodes = new Set<string>();
 
     for (const row of rows) {
         const woj = findTag(row, "WOJ");
@@ -67,8 +87,16 @@ export async function importTercXml(xmlContent: string) {
             statesData.set(woj, name);
         } else if (woj && powiat && !gmina && name) {
             districtsData.push({ woj, powiat, name });
+            fallbackStateCodes.add(woj);
         } else if (woj && powiat && gmina && name) {
             communesData.push({ woj, powiat, gmina, rodz, name });
+            fallbackStateCodes.add(woj);
+        }
+    }
+
+    for (const woj of fallbackStateCodes) {
+        if (!statesData.has(woj) && STATE_NAME_BY_TERYT_CODE[woj]) {
+            statesData.set(woj, STATE_NAME_BY_TERYT_CODE[woj]);
         }
     }
 

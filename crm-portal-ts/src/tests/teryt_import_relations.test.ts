@@ -91,7 +91,6 @@ test("TERYT XML import builds commune relations, default area and syncs customer
 
     const tercXml = `
         <root>
-            <row><WOJ>14</WOJ><POW></POW><GMI></GMI><RODZ></RODZ><NAZWA>mazowieckie</NAZWA></row>
             <row><WOJ>14</WOJ><POW>32</POW><GMI></GMI><RODZ></RODZ><NAZWA>warszawa</NAZWA></row>
             <row><WOJ>14</WOJ><POW>32</POW><GMI>08</GMI><RODZ>2</RODZ><NAZWA>Bemowo</NAZWA></row>
         </root>
