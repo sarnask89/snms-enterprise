@@ -75,17 +75,19 @@
         <template #actions-data="{ row }">
           <div class="flex items-center gap-2">
             <UButton
-              icon="i-heroicons-pencil-square"
+              icon="i-heroicons-pencil-square-20-solid"
               size="xs"
               color="gray"
-              variant="ghost"
+              variant="soft"
+              label="Edytuj"
               :to="`/customers/${row.id}`"
             />
             <UButton
-              icon="i-heroicons-trash"
+              icon="i-heroicons-trash-20-solid"
               size="xs"
               color="red"
-              variant="ghost"
+              variant="soft"
+              label="Usuń"
               @click="confirmDelete(row)"
             />
           </div>
