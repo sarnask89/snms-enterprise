@@ -5,6 +5,7 @@ from datetime import datetime
 from app.models.network import NetDevice
 from app.models.monitoring import NetworkStat
 from app.database import SessionLocal
+from typing import Any
 import sqlalchemy as sa
 import logging
 
