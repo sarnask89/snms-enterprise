@@ -4,6 +4,19 @@ export enum CustomerStatus {
     terminated = "terminated"
 }
 
+export enum CustomerType {
+    individual = "individual",
+    company = "company"
+}
+
+export enum PaymentMethod {
+    bankTransfer = "bank_transfer",
+    cash = "cash",
+    directDebit = "direct_debit",
+    card = "card",
+    other = "other"
+}
+
 export enum InvoiceStatus {
     draft = "draft",
     issued = "issued",

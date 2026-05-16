@@ -6,10 +6,19 @@
   "type": "module",
   "scripts": {
     "start": "node dist/main.js",
-    "dev": "ts-node-esm src/main.ts",
+    "dev": "npm run build && npm run start",
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
-    "test": "npm run build && node --test dist/tests/smoke.test.js"
+    "migrate": "ts-node-esm src/migrate.ts run",
+    "migrate:status": "ts-node-esm src/migrate.ts status",
+    "smoke": "node --test dist/tests/smoke.test.js dist/tests/migrations.test.js dist/tests/network_vendor_parsers.test.js dist/tests/network_auto_import.test.js tests/runtime-config.test.mjs",
+    "deployment:test": "node --test tests/deployment.test.mjs tests/ci-workflow.test.mjs",
+    "test": "npm run build && npm run smoke",
+    "container:smoke": "node scripts/container-smoke.mjs",
+    "frontend:test": "npm --prefix frontend test",
+    "frontend:build": "npm --prefix frontend run build",
+    "verify:release": "npm run test && npm run deployment:test && npm run frontend:test && npm run frontend:build",
+    "verify:ci": "npm run verify:release && npm run container:smoke"
   },
   "dependencies": {
     "cors": "^2.8.5",

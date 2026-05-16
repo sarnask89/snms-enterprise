@@ -1,7 +1,13 @@
 import { Router } from "express";
 import { Brackets } from "typeorm";
 import { AppDataSource } from "../database.js";
-import { Customer, type CustomerGroup, type CustomerNotice, type Document } from "../models/customer.js";
+import {
+    Customer,
+    type CustomerGroup,
+    type CustomerNotice,
+    type Document,
+} from "../models/customer.js";
+import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
 import { type CustomerDevice } from "../models/network.js";
 
 export const router = Router();
@@ -14,20 +20,118 @@ type CustomerWithRelations = Customer & {
     documents?: Document[];
 };
 
+function parseOptionalString(value: unknown) {
+    const parsed = String(value ?? "").trim();
+    return parsed ? parsed : undefined;
+}
+
+function parseOptionalInteger(value: unknown) {
+    if (value === null || value === undefined || String(value).trim() === "") {
+        return undefined;
+    }
+
+    const parsed = Number.parseInt(String(value), 10);
+    return Number.isInteger(parsed) ? parsed : undefined;
+}
+
+function parseOptionalBoolean(value: unknown) {
+    if (value === null || value === undefined || String(value).trim() === "") {
+        return undefined;
+    }
+
+    if (typeof value === "boolean") {
+        return value;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    if (["true", "1", "yes", "on"].includes(normalized)) {
+        return true;
+    }
+    if (["false", "0", "no", "off"].includes(normalized)) {
+        return false;
+    }
+
+    return undefined;
+}
+
+function parseCustomerType(value: unknown, fallback = CustomerType.individual) {
+    const candidate = String(value ?? "").trim() as CustomerType;
+    return Object.values(CustomerType).includes(candidate) ? candidate : fallback;
+}
+
+function parsePaymentMethod(value: unknown) {
+    const candidate = String(value ?? "").trim() as PaymentMethod;
+    return Object.values(PaymentMethod).includes(candidate) ? candidate : undefined;
+}
+
+function parseCustomerStatus(value: unknown, fallback = CustomerStatus.active) {
+    const candidate = String(value ?? "").trim() as CustomerStatus;
+    return Object.values(CustomerStatus).includes(candidate) ? candidate : fallback;
+}
+
+function parseDateString(value: unknown) {
+    return parseOptionalString(value);
+}
+
 function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
     const groups = customer.groups ?? [];
 
     return {
         id: customer.id,
         customerCode: customer.customerCode,
+        customerType: customer.customerType,
+        displayName: customer.customerType === CustomerType.company
+            ? (customer.companyName ?? customer.lastName)
+            : `${customer.firstName} ${customer.lastName}`.trim(),
         firstName: customer.firstName,
+        middleName: customer.middleName ?? null,
         lastName: customer.lastName,
+        companyName: customer.companyName ?? null,
         email: customer.email ?? null,
         phone: customer.phone ?? null,
+        secondaryPhone: customer.secondaryPhone ?? null,
+        billingEmail: customer.billingEmail ?? null,
+        pesel: customer.pesel ?? null,
+        nip: customer.nip ?? null,
+        regon: customer.regon ?? null,
+        krs: customer.krs ?? null,
+        idDocumentType: customer.idDocumentType ?? null,
+        idDocumentNumber: customer.idDocumentNumber ?? null,
+        birthDate: customer.birthDate ?? null,
+        contactFirstName: customer.contactFirstName ?? null,
+        contactLastName: customer.contactLastName ?? null,
+        contactPhone: customer.contactPhone ?? null,
+        contactEmail: customer.contactEmail ?? null,
         status: customer.status,
         creationDate: customer.creationDate,
         notes: customer.notes ?? null,
         portalLogin: customer.portalLogin ?? null,
+        locationCityId: customer.locationCityId ?? null,
+        locationStreetId: customer.locationStreetId ?? null,
+        streetNumber: customer.streetNumber ?? null,
+        apartmentNumber: customer.apartmentNumber ?? null,
+        correspondenceState: customer.correspondenceState ?? null,
+        correspondenceCounty: customer.correspondenceCounty ?? null,
+        correspondenceCity: customer.correspondenceCity ?? null,
+        correspondenceStreet: customer.correspondenceStreet ?? null,
+        correspondenceStreetNumber: customer.correspondenceStreetNumber ?? null,
+        correspondenceApartmentNumber: customer.correspondenceApartmentNumber ?? null,
+        correspondencePostalCode: customer.correspondencePostalCode ?? null,
+        correspondenceCountry: customer.correspondenceCountry ?? null,
+        contractNumber: customer.contractNumber ?? null,
+        contractSignedAt: customer.contractSignedAt ?? null,
+        serviceStartDate: customer.serviceStartDate ?? null,
+        paymentMethod: customer.paymentMethod ?? null,
+        paymentDueDay: customer.paymentDueDay ?? null,
+        invoiceRecipientName: customer.invoiceRecipientName ?? null,
+        invoiceRecipientTaxId: customer.invoiceRecipientTaxId ?? null,
+        billingNotes: customer.billingNotes ?? null,
+        marketingConsent: customer.marketingConsent,
+        emailConsent: customer.emailConsent,
+        smsConsent: customer.smsConsent,
+        documentDeliveryConsent: customer.documentDeliveryConsent,
+        isAutoGenerated: customer.isAutoGenerated,
+        autoImportSource: customer.autoImportSource ?? null,
         groupCount: groups.length,
         groups: groups.map((group) => ({
             id: group.id,
@@ -40,16 +144,197 @@ function serializeCustomer(customer: CustomerWithRelations, includeDetails = fal
                 ipAddress: device.ipAddress ?? null,
                 macAddress: device.macAddress ?? null,
                 status: device.status,
+                installationCity: device.installationCity ?? null,
+                installationStreet: device.installationStreet ?? null,
+                installationStreetNumber: device.installationStreetNumber ?? null,
             }))
             : undefined,
     };
 }
 
+function applyCustomerPayload(customer: Customer, payload: Record<string, unknown>, isCreate = false) {
+    if (payload.customerCode !== undefined || isCreate) {
+        const customerCode = parseOptionalString(payload.customerCode);
+        if (!customerCode) {
+            throw new Error("customerCode is required");
+        }
+        customer.customerCode = customerCode;
+    }
+
+    const customerType = payload.customerType !== undefined || isCreate
+        ? parseCustomerType(payload.customerType, customer.customerType ?? CustomerType.individual)
+        : customer.customerType;
+    customer.customerType = customerType;
+
+    if (payload.firstName !== undefined || (isCreate && customerType === CustomerType.individual)) {
+        customer.firstName = parseOptionalString(payload.firstName) ?? "";
+    }
+
+    if (payload.middleName !== undefined) {
+        customer.middleName = parseOptionalString(payload.middleName);
+    }
+
+    if (payload.lastName !== undefined || (isCreate && customerType === CustomerType.individual)) {
+        customer.lastName = parseOptionalString(payload.lastName) ?? "";
+    }
+
+    if (payload.companyName !== undefined) {
+        customer.companyName = parseOptionalString(payload.companyName);
+    }
+
+    if (payload.email !== undefined) {
+        customer.email = parseOptionalString(payload.email);
+    }
+    if (payload.phone !== undefined) {
+        customer.phone = parseOptionalString(payload.phone);
+    }
+    if (payload.secondaryPhone !== undefined) {
+        customer.secondaryPhone = parseOptionalString(payload.secondaryPhone);
+    }
+    if (payload.billingEmail !== undefined) {
+        customer.billingEmail = parseOptionalString(payload.billingEmail);
+    }
+    if (payload.pesel !== undefined) {
+        customer.pesel = parseOptionalString(payload.pesel);
+    }
+    if (payload.nip !== undefined) {
+        customer.nip = parseOptionalString(payload.nip);
+    }
+    if (payload.regon !== undefined) {
+        customer.regon = parseOptionalString(payload.regon);
+    }
+    if (payload.krs !== undefined) {
+        customer.krs = parseOptionalString(payload.krs);
+    }
+    if (payload.idDocumentType !== undefined) {
+        customer.idDocumentType = parseOptionalString(payload.idDocumentType);
+    }
+    if (payload.idDocumentNumber !== undefined) {
+        customer.idDocumentNumber = parseOptionalString(payload.idDocumentNumber);
+    }
+    if (payload.birthDate !== undefined) {
+        customer.birthDate = parseDateString(payload.birthDate);
+    }
+    if (payload.contactFirstName !== undefined) {
+        customer.contactFirstName = parseOptionalString(payload.contactFirstName);
+    }
+    if (payload.contactLastName !== undefined) {
+        customer.contactLastName = parseOptionalString(payload.contactLastName);
+    }
+    if (payload.contactPhone !== undefined) {
+        customer.contactPhone = parseOptionalString(payload.contactPhone);
+    }
+    if (payload.contactEmail !== undefined) {
+        customer.contactEmail = parseOptionalString(payload.contactEmail);
+    }
+    if (payload.status !== undefined || isCreate) {
+        customer.status = parseCustomerStatus(payload.status, customer.status ?? CustomerStatus.active);
+    }
+    if (payload.notes !== undefined) {
+        customer.notes = parseOptionalString(payload.notes);
+    }
+    if (payload.locationCityId !== undefined) {
+        customer.locationCityId = parseOptionalInteger(payload.locationCityId);
+    }
+    if (payload.locationStreetId !== undefined) {
+        customer.locationStreetId = parseOptionalInteger(payload.locationStreetId);
+    }
+    if (payload.streetNumber !== undefined) {
+        customer.streetNumber = parseOptionalString(payload.streetNumber);
+    }
+    if (payload.apartmentNumber !== undefined) {
+        customer.apartmentNumber = parseOptionalString(payload.apartmentNumber);
+    }
+    if (payload.correspondenceState !== undefined) {
+        customer.correspondenceState = parseOptionalString(payload.correspondenceState);
+    }
+    if (payload.correspondenceCounty !== undefined) {
+        customer.correspondenceCounty = parseOptionalString(payload.correspondenceCounty);
+    }
+    if (payload.correspondenceCity !== undefined) {
+        customer.correspondenceCity = parseOptionalString(payload.correspondenceCity);
+    }
+    if (payload.correspondenceStreet !== undefined) {
+        customer.correspondenceStreet = parseOptionalString(payload.correspondenceStreet);
+    }
+    if (payload.correspondenceStreetNumber !== undefined) {
+        customer.correspondenceStreetNumber = parseOptionalString(payload.correspondenceStreetNumber);
+    }
+    if (payload.correspondenceApartmentNumber !== undefined) {
+        customer.correspondenceApartmentNumber = parseOptionalString(payload.correspondenceApartmentNumber);
+    }
+    if (payload.correspondencePostalCode !== undefined) {
+        customer.correspondencePostalCode = parseOptionalString(payload.correspondencePostalCode);
+    }
+    if (payload.correspondenceCountry !== undefined) {
+        customer.correspondenceCountry = parseOptionalString(payload.correspondenceCountry);
+    }
+    if (payload.contractNumber !== undefined) {
+        customer.contractNumber = parseOptionalString(payload.contractNumber);
+    }
+    if (payload.contractSignedAt !== undefined) {
+        customer.contractSignedAt = parseDateString(payload.contractSignedAt);
+    }
+    if (payload.serviceStartDate !== undefined) {
+        customer.serviceStartDate = parseDateString(payload.serviceStartDate);
+    }
+    if (payload.paymentMethod !== undefined) {
+        customer.paymentMethod = parsePaymentMethod(payload.paymentMethod);
+    }
+    if (payload.paymentDueDay !== undefined) {
+        customer.paymentDueDay = parseOptionalInteger(payload.paymentDueDay);
+    }
+    if (payload.invoiceRecipientName !== undefined) {
+        customer.invoiceRecipientName = parseOptionalString(payload.invoiceRecipientName);
+    }
+    if (payload.invoiceRecipientTaxId !== undefined) {
+        customer.invoiceRecipientTaxId = parseOptionalString(payload.invoiceRecipientTaxId);
+    }
+    if (payload.billingNotes !== undefined) {
+        customer.billingNotes = parseOptionalString(payload.billingNotes);
+    }
+    if (payload.marketingConsent !== undefined) {
+        customer.marketingConsent = parseOptionalBoolean(payload.marketingConsent) ?? false;
+    }
+    if (payload.emailConsent !== undefined) {
+        customer.emailConsent = parseOptionalBoolean(payload.emailConsent) ?? false;
+    }
+    if (payload.smsConsent !== undefined) {
+        customer.smsConsent = parseOptionalBoolean(payload.smsConsent) ?? false;
+    }
+    if (payload.documentDeliveryConsent !== undefined) {
+        customer.documentDeliveryConsent = parseOptionalBoolean(payload.documentDeliveryConsent) ?? false;
+    }
+    if (payload.isAutoGenerated !== undefined) {
+        customer.isAutoGenerated = parseOptionalBoolean(payload.isAutoGenerated) ?? false;
+    }
+    if (payload.autoImportSource !== undefined) {
+        customer.autoImportSource = parseOptionalString(payload.autoImportSource);
+    }
+
+    if (customer.customerType === CustomerType.individual) {
+        if (!customer.firstName.trim() || !customer.lastName.trim()) {
+            throw new Error("Individual customer requires firstName and lastName");
+        }
+        customer.companyName = parseOptionalString(customer.companyName);
+    } else {
+        const companyName = parseOptionalString(customer.companyName);
+        if (!companyName) {
+            throw new Error("Company customer requires companyName");
+        }
+        customer.companyName = companyName;
+        customer.firstName = customer.firstName.trim();
+        customer.lastName = customer.lastName.trim() || companyName;
+    }
+}
+
 router.get("/", async (req, res) => {
     try {
-        const { q, status, skip, limit } = req.query;
+        const { q, status, customerType, autoGenerated, skip, limit } = req.query;
         const search = String(q ?? "").trim();
         const statusValue = String(status ?? "").trim();
+        const customerTypeValue = String(customerType ?? "").trim();
+        const autoGeneratedValue = parseOptionalBoolean(autoGenerated);
         const skipNum = Number.parseInt(String(skip ?? "0"), 10) || 0;
         const limitNum = Number.parseInt(String(limit ?? "20"), 10) || 20;
 
@@ -64,15 +349,26 @@ router.get("/", async (req, res) => {
         if (search) {
             qb.andWhere(new Brackets((subQuery) => {
                 subQuery
-                    .where("customer.firstName LIKE :search", { search: `%${search}%` })
-                    .orWhere("customer.lastName LIKE :search", { search: `%${search}%` })
-                    .orWhere("customer.customerCode LIKE :search", { search: `%${search}%` })
-                    .orWhere("customer.email LIKE :search", { search: `%${search}%` });
+                    .where("customer.first_name LIKE :search", { search: `%${search}%` })
+                    .orWhere("customer.last_name LIKE :search", { search: `%${search}%` })
+                    .orWhere("customer.company_name LIKE :search", { search: `%${search}%` })
+                    .orWhere("customer.customer_code LIKE :search", { search: `%${search}%` })
+                    .orWhere("customer.email LIKE :search", { search: `%${search}%` })
+                    .orWhere("customer.billing_email LIKE :search", { search: `%${search}%` })
+                    .orWhere("customer.phone LIKE :search", { search: `%${search}%` });
             }));
         }
 
         if (statusValue) {
             qb.andWhere("customer.status = :status", { status: statusValue });
+        }
+
+        if (customerTypeValue && Object.values(CustomerType).includes(customerTypeValue as CustomerType)) {
+            qb.andWhere("customer.customer_type = :customerType", { customerType: customerTypeValue });
+        }
+
+        if (autoGeneratedValue !== undefined) {
+            qb.andWhere("customer.is_auto_generated = :autoGenerated", { autoGenerated: autoGeneratedValue ? 1 : 0 });
         }
 
         const [items, total] = await qb.getManyAndCount();
@@ -110,15 +406,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const customer = customerRepo.create({
-            customerCode: req.body?.customerCode,
-            firstName: req.body?.firstName,
-            lastName: req.body?.lastName,
-            email: req.body?.email ?? undefined,
-            phone: req.body?.phone ?? undefined,
-            status: req.body?.status,
-            notes: req.body?.notes ?? undefined,
-        });
+        const customer = customerRepo.create();
+        applyCustomerPayload(customer, req.body ?? {}, true);
         await customerRepo.save(customer);
 
         const savedCustomer = await customerRepo.findOne({
@@ -129,7 +418,7 @@ router.post("/", async (req, res) => {
         res.status(201).json(serializeCustomer(savedCustomer ?? customer));
     } catch (error) {
         console.error("Error creating customer:", error);
-        res.status(400).json({ message: "Failed to create customer" });
+        res.status(400).json({ message: error instanceof Error ? error.message : "Failed to create customer" });
     }
 });
 
@@ -145,7 +434,7 @@ router.put("/:id", async (req, res) => {
             return res.status(404).json({ message: "Customer not found" });
         }
 
-        customerRepo.merge(customer, req.body);
+        applyCustomerPayload(customer, req.body ?? {});
         await customerRepo.save(customer);
 
         const savedCustomer = await customerRepo.findOne({
@@ -156,7 +445,7 @@ router.put("/:id", async (req, res) => {
         res.json(serializeCustomer(savedCustomer ?? customer, true));
     } catch (error) {
         console.error("Error updating customer:", error);
-        res.status(400).json({ message: "Failed to update customer" });
+        res.status(400).json({ message: error instanceof Error ? error.message : "Failed to update customer" });
     }
 });
 

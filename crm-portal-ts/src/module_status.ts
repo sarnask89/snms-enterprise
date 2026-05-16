@@ -1,6 +1,8 @@
 export const ACTIVE_RUNTIME_MODULES = [
     "dashboard",
     "admin",
+    "auth",
+    "config-snms",
     "addresses",
     "customers",
     "customer-groups",
@@ -11,9 +13,14 @@ export const ACTIVE_RUNTIME_MODULES = [
     "helpdesk",
     "net-nodes",
     "ip-networks",
+    "monitoring",
     "net-devices",
     "network-discovery",
     "pit",
+    "reports",
+    "search",
+    "snms-entities",
+    "stats",
     "subscriptions",
     "teryt",
     "architect",
@@ -29,6 +36,16 @@ export const MODULE_MIGRATION_STATUS = [
         module: "admin",
         status: "works_in_ts",
         notes: "Mounted under /api/v1/admin with runtime info, audit logs, backups and reload endpoints.",
+    },
+    {
+        module: "auth",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/auth with login, logout, session introspection and password change endpoints.",
+    },
+    {
+        module: "config-snms",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/config with divisions, VAT rates and numbering plan CRUD for the TS runtime.",
     },
     {
         module: "addresses",
@@ -48,7 +65,7 @@ export const MODULE_MIGRATION_STATUS = [
     {
         module: "customers",
         status: "works_in_ts",
-        notes: "Mounted under /api/v1/customers with CRUD baseline and Nuxt page support.",
+        notes: "Mounted under /api/v1/customers with expanded individual/company profiles, correspondence/billing fields and auto-generated customer filtering.",
     },
     {
         module: "customer-groups",
@@ -58,7 +75,7 @@ export const MODULE_MIGRATION_STATUS = [
     {
         module: "customer-devices",
         status: "works_in_ts",
-        notes: "Mounted under /api/v1/customer-devices with CRUD baseline.",
+        notes: "Mounted under /api/v1/customer-devices with CRUD baseline plus installation-address fields for per-service locations.",
     },
     {
         module: "diagnostics",
@@ -91,6 +108,11 @@ export const MODULE_MIGRATION_STATUS = [
         notes: "Mounted under /api/v1/ip-networks with searchable CRUD baseline and usage counts.",
     },
     {
+        module: "monitoring",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/monitoring with local summary and runtime-safe device/global traffic series.",
+    },
+    {
         module: "net-devices",
         status: "works_in_ts",
         notes: "Mounted under /api/v1/net-devices with searchable CRUD baseline and linked customer/node/network payloads.",
@@ -98,7 +120,7 @@ export const MODULE_MIGRATION_STATUS = [
     {
         module: "network-discovery",
         status: "works_in_ts",
-        notes: "Mounted under /api/v1/network-discovery with local lease and network import baseline.",
+        notes: "Mounted under /api/v1/network-discovery with live scan staging, session auto-import, fallback customers and Mikrotik rate-limit tariff/subscription mapping.",
     },
     {
         module: "pit",
@@ -106,9 +128,29 @@ export const MODULE_MIGRATION_STATUS = [
         notes: "Mounted under /api/v1/pit with local NetNode GML export and sync readiness summary.",
     },
     {
+        module: "reports",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/reports with PIT UKE CSV export and network passport map payloads.",
+    },
+    {
         module: "reload",
         status: "works_in_ts",
         notes: "Config reload log create/list flow is active under /api/v1/admin/reload.",
+    },
+    {
+        module: "search",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/search with global customer and customer-device lookup.",
+    },
+    {
+        module: "snms-entities",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/snms with message templates, outbound messages, timetable, traffic stats and app settings CRUD.",
+    },
+    {
+        module: "stats",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/stats with network, finance, inventory and growth summaries.",
     },
     {
         module: "subscriptions",
@@ -129,11 +171,6 @@ export const MODULE_MIGRATION_STATUS = [
         module: "dashboard",
         status: "works_in_ts",
         notes: "Mounted under /api/v1/dashboard with live customer, node and device counts for the active runtime.",
-    },
-    {
-        module: "auth-config",
-        status: "present_but_not_wired",
-        notes: "Files exist in src/, but are excluded from the production baseline until repaired.",
     },
     {
         module: "translated-legacy-artifacts",
