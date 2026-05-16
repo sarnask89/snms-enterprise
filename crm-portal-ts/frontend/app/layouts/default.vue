@@ -110,6 +110,7 @@
 <script setup>
 const route = useRoute()
 const { session: authSession, visibleLinks, loadSession } = usePortalAuth()
+await loadSession({ silent: true })
 const currentUser = computed(() => authSession.value?.user ?? null)
 
 const navigationSections = [
@@ -239,10 +240,6 @@ const sessionSummary = computed(() => {
   }
 
   return `${currentUser.value.role} · sesja aktywna`
-})
-
-onMounted(() => {
-  loadSession({ silent: true })
 })
 
 function normalizePath(path) {

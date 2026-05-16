@@ -538,8 +538,8 @@ const driverOptions = [
 ]
 
 const booleanOptions = [
-  { label: 'Nie', value: false },
-  { label: 'Tak', value: true }
+  { label: 'Nie', value: 'false' },
+  { label: 'Tak', value: 'true' }
 ]
 
 const profileColumns = [
@@ -592,7 +592,7 @@ const accessProfileForm = reactive({
   username: '',
   password: '',
   enablePassword: '',
-  useTls: false
+  useTls: 'false'
 })
 
 const recordImportForm = reactive({
@@ -626,13 +626,13 @@ const autoImportOptions = reactive({
 })
 
 const { data: discoveryDevices, refresh: refreshDiscoveryDevices } = await useFetch('/api/v1/network-discovery/devices', {
-  server: false
+  default: () => []
 })
 const { data: accessProfiles, refresh: refreshAccessProfiles } = await useFetch('/api/v1/network-discovery/access-profiles', {
-  server: false
+  default: () => []
 })
 const { data: discoverySessions, refresh: refreshDiscoverySessions } = await useFetch('/api/v1/network-discovery/sessions', {
-  server: false
+  default: () => []
 })
 const { data: pitSync, refresh: refreshPitSync } = await useFetch('/api/v1/pit/sync', {
   method: 'POST',
@@ -644,7 +644,7 @@ const {
   refresh: refreshImportedLeases
 } = await useFetch('/api/v1/network-discovery/imported-leases', {
   query: { q: leaseSearch },
-  server: false
+  default: () => []
 })
 
 watch(leaseSearch, () => refreshImportedLeases())
@@ -709,7 +709,7 @@ const saveAccessProfile = async () => {
         username: accessProfileForm.username,
         password: accessProfileForm.password,
         enablePassword: accessProfileForm.enablePassword || null,
-        useTls: accessProfileForm.useTls
+        useTls: accessProfileForm.useTls === 'true'
       }
     })
 
@@ -721,7 +721,7 @@ const saveAccessProfile = async () => {
       username: '',
       password: '',
       enablePassword: '',
-      useTls: false
+      useTls: 'false'
     })
 
     await Promise.all([

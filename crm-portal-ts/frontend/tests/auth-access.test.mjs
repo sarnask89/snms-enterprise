@@ -120,6 +120,39 @@ test('operator shell resolves truthful section and page labels for the architect
   )
 })
 
+test('operator shell bootstraps auth session during setup instead of waiting for mount', () => {
+  const layoutScript = readLayoutScript()
+  const authComposableSource = readFileSync(
+    resolve(process.cwd(), 'app/composables/usePortalAuth.js'),
+    'utf8'
+  )
+  const authMiddlewareSource = readFileSync(
+    resolve(process.cwd(), 'app/middleware/auth.global.js'),
+    'utf8'
+  )
+
+  assert.match(
+    layoutScript,
+    /await\s+loadSession\(\{\s*silent:\s*true\s*\}\)/,
+    'default layout should hydrate the session during setup so SSR sees the active user'
+  )
+  assert.doesNotMatch(
+    layoutScript,
+    /onMounted\(\(\)\s*=>\s*\{\s*loadSession\(\{\s*silent:\s*true\s*\}\)/,
+    'default layout should not defer the primary session bootstrap until mount'
+  )
+  assert.match(
+    authComposableSource,
+    /useRequestHeaders\(\s*\[\s*['"]cookie['"]\s*\]\s*\)/,
+    'auth composable should forward request cookies when resolving SSR session state'
+  )
+  assert.doesNotMatch(
+    authMiddlewareSource,
+    /if\s*\(\s*import\.meta\.server\s*\)\s*\{\s*return\s*\}/,
+    'route middleware should not skip auth checks on the server'
+  )
+})
+
 function readLayoutScript() {
   const layoutSource = readFileSync(
     resolve(process.cwd(), 'app/layouts/default.vue'),

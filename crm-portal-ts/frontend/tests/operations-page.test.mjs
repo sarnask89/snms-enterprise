@@ -30,3 +30,12 @@ test('operations page keeps readable actions and persistent auto-import reportin
   assert.match(source, /Importuj rekord/, 'page should keep import action readable')
   assert.match(source, /Wynik auto-importu/, 'page should expose persistent import reporting')
 })
+
+test('operations page keeps select values string-safe for Nuxt UI controls', async () => {
+  const source = await readFile(pagePath, 'utf8')
+
+  assert.match(source, /const booleanOptions = \[\s*\{\s*label:\s*'Nie',\s*value:\s*'false'/, 'boolean select options should use string values expected by USelect')
+  assert.match(source, /label:\s*'Tak',\s*value:\s*'true'/, 'boolean select should expose a string true option')
+  assert.match(source, /useTls:\s*'false'/, 'form state should initialize the select with a string value')
+  assert.match(source, /useTls:\s*accessProfileForm\.useTls\s*===\s*'true'/, 'submit payload should coerce the select value back to boolean')
+})
