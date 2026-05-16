@@ -64,14 +64,14 @@
         <div class="flex items-center gap-3">
           <div class="hidden text-right sm:block">
             <div class="text-sm font-medium text-slate-900 dark:text-white">
-              {{ authSession.user?.username ?? 'Gość' }}
+              {{ currentUser?.username ?? 'Gość' }}
             </div>
             <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
               {{ sessionSummary }}
             </div>
           </div>
           <UButton
-            v-if="authSession.user"
+            v-if="currentUser"
             color="gray"
             variant="ghost"
             size="sm"
@@ -110,6 +110,7 @@
 <script setup>
 const route = useRoute()
 const { session: authSession, visibleLinks, loadSession } = usePortalAuth()
+const currentUser = computed(() => authSession.value?.user ?? null)
 
 const navigationSections = [
   {
@@ -215,19 +216,29 @@ const filteredSections = computed(() =>
   }, [])
 )
 
+const staticRouteLabels = [
+  {
+    path: '/architect',
+    sectionLabel: 'AI',
+    pageLabel: 'Architekt Modułów'
+  }
+]
+
 const currentRoutePath = computed(() => normalizePath(route.path))
 
-const activeNavigation = computed(() => findActiveNavigation(filteredSections.value, currentRoutePath.value))
+const activeNavigation = computed(() =>
+  findActiveNavigation(filteredSections.value, currentRoutePath.value, staticRouteLabels)
+)
 
 const currentSectionLabel = computed(() => activeNavigation.value?.sectionLabel ?? 'CRM')
 const currentPageLabel = computed(() => activeNavigation.value?.pageLabel ?? 'Pulpit')
 
 const sessionSummary = computed(() => {
-  if (!authSession.user) {
+  if (!currentUser.value) {
     return 'Brak sesji'
   }
 
-  return `${authSession.user.role} · sesja aktywna`
+  return `${currentUser.value.role} · sesja aktywna`
 })
 
 onMounted(() => {
@@ -265,7 +276,16 @@ function findActiveLink(links, currentPath) {
   return null
 }
 
-function findActiveNavigation(sections, currentPath) {
+function findActiveNavigation(sections, currentPath, staticLabels = []) {
+  const staticLabel = staticLabels.find(({ path }) => matchesPath(path, currentPath))
+
+  if (staticLabel) {
+    return {
+      sectionLabel: staticLabel.sectionLabel,
+      pageLabel: staticLabel.pageLabel
+    }
+  }
+
   for (const section of sections) {
     const pageLabel = findActiveLink(section.links, currentPath)
 
