@@ -110,6 +110,7 @@
                 color="gray"
                 variant="ghost"
                 :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
+                :label="row.isManaged ? 'Zdejmij managed' : 'Oznacz managed'"
                 @click="toggleManagedCommune(row)"
               />
               <UButton
@@ -117,6 +118,7 @@
                 color="primary"
                 variant="ghost"
                 icon="i-heroicons-star"
+                label="Ustaw domyślną"
                 :disabled="row.isDefault"
                 @click="setDefaultCommune(row)"
               />
@@ -172,28 +174,31 @@
 
         <template #actions-data="{ row }">
           <div class="flex items-center gap-2">
-            <UButton
-              size="xs"
-              color="gray"
-              variant="ghost"
-              :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
-              @click="toggleManagedCity(row)"
-            />
-            <UButton
-              size="xs"
-              color="primary"
-              variant="ghost"
-              icon="i-heroicons-star"
-              :disabled="row.isDefault"
-              @click="setDefaultCity(row)"
-            />
-            <UButton
-              size="xs"
-              color="yellow"
-              variant="ghost"
-              icon="i-heroicons-arrow-path"
-              @click="scheduleSync(row)"
-            />
+              <UButton
+                size="xs"
+                color="gray"
+                variant="ghost"
+                :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
+                :label="row.isManaged ? 'Zdejmij managed' : 'Oznacz managed'"
+                @click="toggleManagedCity(row)"
+              />
+              <UButton
+                size="xs"
+                color="primary"
+                variant="ghost"
+                icon="i-heroicons-star"
+                label="Ustaw domyślne"
+                :disabled="row.isDefault"
+                @click="setDefaultCity(row)"
+              />
+              <UButton
+                size="xs"
+                color="yellow"
+                variant="ghost"
+                icon="i-heroicons-arrow-path"
+                label="Synchronizuj"
+                @click="scheduleSync(row)"
+              />
           </div>
         </template>
       </UTable>
@@ -216,14 +221,14 @@
           />
           <div class="space-y-2">
             <div
-              v-for="city in addressSearchResults"
+              v-for="city in addressSearchRows"
               :key="city.id"
               class="rounded-lg border border-gray-200 dark:border-gray-800 p-3"
             >
               <div class="font-medium text-gray-900 dark:text-white">{{ city.name }}</div>
               <div class="text-sm text-gray-500">TERYT: {{ city.terytCode || 'brak' }}</div>
             </div>
-            <p v-if="search.length >= 2 && !addressSearchResults.length" class="text-sm text-gray-500">Brak wyników.</p>
+            <p v-if="search.length >= 2 && !addressSearchRows.length" class="text-sm text-gray-500">Brak wyników.</p>
           </div>
         </div>
       </UCard>
@@ -245,13 +250,13 @@
           </div>
           <div class="space-y-2">
             <div
-              v-for="street in streets"
+              v-for="street in streetRows"
               :key="street.id"
               class="rounded-lg border border-gray-200 dark:border-gray-800 p-3 text-sm text-gray-700 dark:text-gray-300"
             >
               {{ street.name }}
             </div>
-            <p v-if="!streets.length" class="text-sm text-gray-500">Brak ulic dla wybranego miasta.</p>
+            <p v-if="!streetRows.length" class="text-sm text-gray-500">Brak ulic dla wybranego miasta.</p>
           </div>
         </div>
         <p v-else class="text-sm text-gray-500">Wybierz miasto z tabeli, aby zobaczyć ulice.</p>
@@ -312,11 +317,16 @@ const loadingImports = reactive({
   ulic: false
 })
 
-const { data: cities, pending: pendingCities, refresh: refreshCities } = await useFetch('/api/v1/teryt/cities')
-const { data: communes, pending: pendingCommunes, refresh: refreshCommunes } = await useFetch('/api/v1/teryt/communes')
+const { data: cities, pending: pendingCities, refresh: refreshCities } = await useFetch('/api/v1/teryt/cities', {
+  default: () => []
+})
+const { data: communes, pending: pendingCommunes, refresh: refreshCommunes } = await useFetch('/api/v1/teryt/communes', {
+  default: () => []
+})
 const { data: defaultArea, refresh: refreshDefaultArea } = await useFetch('/api/v1/addresses/default-area')
 const { data: addressSearchData, refresh: refreshAddressSearch } = await useFetch('/api/v1/addresses/search-teryt', {
-  query: { q: search }
+  query: { q: search },
+  default: () => []
 })
 
 const selectedCity = computed(() => (cities.value || []).find((city) => city.id === selectedCityId.value) || null)
@@ -368,7 +378,8 @@ const filteredCommunes = computed(() => {
   )
 })
 
-const addressSearchResults = computed(() => addressSearchData.value || [])
+const addressSearchRows = computed(() => addressSearchData.value || [])
+const streetRows = computed(() => streets.value || [])
 
 watch(filteredCities, (rows) => {
   if (!rows.length) {
