@@ -1,459 +1,512 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto space-y-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Operacje sieciowe</h1>
-        <p class="text-sm text-gray-500">Live discovery, import i zdalne testy dla Mikrotik API oraz Dasan SSH</p>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
-        <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT GML" @click="downloadPitExport" />
-      </div>
-    </div>
-
-    <div class="grid lg:grid-cols-4 gap-4">
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-        <div class="text-sm text-gray-500">Discovery devices</div>
-        <div class="text-2xl font-bold">{{ discoveryDevices?.length || 0 }}</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-        <div class="text-sm text-gray-500">Access profiles</div>
-        <div class="text-2xl font-bold">{{ accessProfiles?.length || 0 }}</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-        <div class="text-sm text-gray-500">Discovery sessions</div>
-        <div class="text-2xl font-bold">{{ discoverySessions?.length || 0 }}</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-        <div class="text-sm text-gray-500">Zaimportowane urządzenia</div>
-        <div class="text-2xl font-bold">{{ importedLeases?.length || 0 }}</div>
-      </div>
-    </div>
-
-    <div class="grid xl:grid-cols-2 gap-6">
-      <UCard>
-        <template #header>
+  <div class="mx-auto max-w-[1600px] space-y-5 px-4 py-5 sm:px-6 xl:px-8">
+    <section class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 text-slate-50 shadow-sm">
+      <div class="flex flex-col gap-4 border-b border-slate-800 px-5 py-5 lg:flex-row lg:items-start lg:justify-between">
+        <div class="space-y-2">
+          <p class="text-[11px] font-medium uppercase tracking-[0.28em] text-cyan-300/75">Network discovery desk</p>
           <div>
-            <h2 class="font-semibold text-lg">Profil dostępu do urządzenia</h2>
-            <p class="text-sm text-gray-500">Konfiguracja live-connect dla Mikrotika lub Dasana</p>
+            <h1 class="text-2xl font-semibold">Konsola operatorska</h1>
+            <p class="mt-1 max-w-3xl text-sm text-slate-300">
+              Live discovery, staging importu i diagnostyka urządzeń w jednym przebiegu operatora.
+            </p>
           </div>
-        </template>
+        </div>
 
-        <form class="space-y-4" @submit.prevent="saveAccessProfile">
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Urządzenie" required>
-              <USelect v-model="accessProfileForm.netDeviceId" :options="deviceOptions" option-attribute="label" />
-            </UFormGroup>
-            <UFormGroup label="Driver" required>
-              <USelect v-model="accessProfileForm.driver" :options="driverOptions" option-attribute="label" />
-            </UFormGroup>
+        <div class="flex flex-wrap items-center gap-2">
+          <UButton color="gray" variant="soft" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+          <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT GML" @click="downloadPitExport" />
+        </div>
+      </div>
+
+      <div class="grid gap-3 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3">
+          <div class="text-[11px] uppercase tracking-[0.22em] text-slate-400">Discovery devices</div>
+          <div class="mt-2 flex items-end justify-between gap-3">
+            <div class="text-2xl font-semibold">{{ discoveryDevices?.length || 0 }}</div>
+            <div class="text-xs text-slate-400">gotowe do skanu</div>
           </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Host" required>
-              <UInput v-model="accessProfileForm.host" placeholder="10.0.222.x" />
-            </UFormGroup>
-            <UFormGroup label="Port">
-              <UInput v-model="accessProfileForm.port" type="number" />
-            </UFormGroup>
+        </div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3">
+          <div class="text-[11px] uppercase tracking-[0.22em] text-slate-400">Access profiles</div>
+          <div class="mt-2 flex items-end justify-between gap-3">
+            <div class="text-2xl font-semibold">{{ accessProfiles?.length || 0 }}</div>
+            <div class="text-xs text-slate-400">profile live-connect</div>
           </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Login" required>
-              <UInput v-model="accessProfileForm.username" />
-            </UFormGroup>
-            <UFormGroup label="Hasło" required>
-              <UInput v-model="accessProfileForm.password" type="password" />
-            </UFormGroup>
+        </div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3">
+          <div class="text-[11px] uppercase tracking-[0.22em] text-slate-400">Discovery sessions</div>
+          <div class="mt-2 flex items-end justify-between gap-3">
+            <div class="text-2xl font-semibold">{{ discoverySessions?.length || 0 }}</div>
+            <div class="text-xs text-slate-400">aktywna: {{ activeSessionId || 'brak' }}</div>
           </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Enable password">
-              <UInput v-model="accessProfileForm.enablePassword" type="password" />
-            </UFormGroup>
-            <UFormGroup label="Mikrotik TLS">
-              <USelect v-model="accessProfileForm.useTls" :options="booleanOptions" option-attribute="label" />
-            </UFormGroup>
+        </div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3">
+          <div class="text-[11px] uppercase tracking-[0.22em] text-slate-400">Zaimportowane urządzenia</div>
+          <div class="mt-2 flex items-end justify-between gap-3">
+            <div class="text-2xl font-semibold">{{ importedLeases?.length || 0 }}</div>
+            <div class="text-xs text-slate-400">staging i leasing</div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isSavingProfile" label="Zapisz profil" />
-          </div>
-        </form>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="font-semibold text-lg">Aktywne profile</h2>
-            <p class="text-sm text-gray-500">Zapisane profile dostępu używane przez skany live</p>
-          </div>
-        </template>
-
-        <UTable :rows="accessProfiles || []" :columns="profileColumns">
-          <template #hasPassword-data="{ row }">
-            <UBadge :color="row.hasPassword ? 'green' : 'gray'" variant="soft">
-              {{ row.hasPassword ? 'has secret' : 'missing' }}
-            </UBadge>
-          </template>
-          <template #hasEnablePassword-data="{ row }">
-            <UBadge :color="row.hasEnablePassword ? 'green' : 'gray'" variant="soft">
-              {{ row.hasEnablePassword ? 'yes' : 'no' }}
-            </UBadge>
-          </template>
-        </UTable>
-      </UCard>
-    </div>
-
-    <div class="grid xl:grid-cols-2 gap-6">
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="font-semibold text-lg">Discovery devices</h2>
-            <p class="text-sm text-gray-500">Uruchamianie skanów live dla urządzeń szkieletowych</p>
-          </div>
-        </template>
-
-        <UTable :rows="discoveryDevices || []" :columns="deviceColumns">
-          <template #readyForDiscovery-data="{ row }">
-            <UBadge :color="row.readyForDiscovery ? 'green' : 'amber'" variant="soft">
-              {{ row.readyForDiscovery ? 'ready' : 'needs profile' }}
-            </UBadge>
-          </template>
-          <template #actions-data="{ row }">
-            <div class="flex justify-end">
-              <UButton
-                size="xs"
-                color="primary"
-                variant="soft"
-                icon="i-heroicons-bolt"
-                :disabled="!row.readyForDiscovery"
-                :loading="activeScanDeviceId === row.id"
-                label="Skanuj"
-                @click="runScan(row.id)"
-              />
+    <div class="grid gap-4 xl:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)]">
+      <section class="space-y-4">
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Krok 1</div>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Profil dostępu</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Konfiguracja live-connect dla Mikrotika lub Dasana.</p>
+              </div>
             </div>
           </template>
-        </UTable>
-      </UCard>
 
-      <UCard>
-        <template #header>
-          <div class="space-y-3">
+          <form class="space-y-4" @submit.prevent="saveAccessProfile">
+            <div class="grid gap-4 md:grid-cols-2">
+              <UFormGroup label="Urządzenie" required>
+                <USelect v-model="accessProfileForm.netDeviceId" :options="deviceOptions" option-attribute="label" />
+              </UFormGroup>
+              <UFormGroup label="Driver" required>
+                <USelect v-model="accessProfileForm.driver" :options="driverOptions" option-attribute="label" />
+              </UFormGroup>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <UFormGroup label="Host" required>
+                <UInput v-model="accessProfileForm.host" placeholder="10.0.222.x" />
+              </UFormGroup>
+              <UFormGroup label="Port">
+                <UInput v-model="accessProfileForm.port" type="number" />
+              </UFormGroup>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <UFormGroup label="Login" required>
+                <UInput v-model="accessProfileForm.username" />
+              </UFormGroup>
+              <UFormGroup label="Hasło" required>
+                <UInput v-model="accessProfileForm.password" type="password" />
+              </UFormGroup>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <UFormGroup label="Enable password">
+                <UInput v-model="accessProfileForm.enablePassword" type="password" />
+              </UFormGroup>
+              <UFormGroup label="Mikrotik TLS">
+                <USelect v-model="accessProfileForm.useTls" :options="booleanOptions" option-attribute="label" />
+              </UFormGroup>
+            </div>
+
+            <div class="flex justify-end">
+              <UButton type="submit" color="primary" :loading="isSavingProfile" label="Zapisz profil" />
+            </div>
+          </form>
+
+          <div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-800">
+            <div class="mb-3">
+              <h3 class="font-medium text-slate-900 dark:text-white">Aktywne profile</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Zapisane profile dostępu używane przez skany live.</p>
+            </div>
+
+            <UTable :rows="accessProfiles || []" :columns="profileColumns">
+              <template #hasPassword-data="{ row }">
+                <UBadge :color="row.hasPassword ? 'green' : 'gray'" variant="soft">
+                  {{ row.hasPassword ? 'has secret' : 'missing' }}
+                </UBadge>
+              </template>
+              <template #hasEnablePassword-data="{ row }">
+                <UBadge :color="row.hasEnablePassword ? 'green' : 'gray'" variant="soft">
+                  {{ row.hasEnablePassword ? 'yes' : 'no' }}
+                </UBadge>
+              </template>
+            </UTable>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Krok 2</div>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Discovery devices</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Uruchamianie skanów live dla urządzeń szkieletowych.</p>
+              </div>
+            </div>
+          </template>
+
+          <UTable :rows="discoveryDevices || []" :columns="deviceColumns">
+            <template #readyForDiscovery-data="{ row }">
+              <UBadge :color="row.readyForDiscovery ? 'green' : 'amber'" variant="soft">
+                {{ row.readyForDiscovery ? 'ready' : 'needs profile' }}
+              </UBadge>
+            </template>
+            <template #actions-data="{ row }">
+              <div class="flex justify-end">
+                <UButton
+                  size="xs"
+                  color="primary"
+                  variant="soft"
+                  icon="i-heroicons-bolt"
+                  :disabled="!row.readyForDiscovery"
+                  :loading="activeScanDeviceId === row.id"
+                  label="Skanuj"
+                  @click="runScan(row.id)"
+                />
+              </div>
+            </template>
+          </UTable>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+              <div class="space-y-1">
+                <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Krok 3</div>
+                <div>
+                  <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Sesje discovery</h2>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">Ostatnie skany i ich rekordy stagingowe.</p>
+                </div>
+              </div>
+
+              <div class="max-w-md">
+                <UCheckbox
+                  v-model="autoImportOptions.importTariffsAndSubscriptions"
+                  label="Auto-import ma tworzyć też taryfy i subskrypcje z rate-limit DHCP"
+                />
+              </div>
+            </div>
+          </template>
+
+          <UTable :rows="discoverySessions || []" :columns="sessionColumns">
+            <template #status-data="{ row }">
+              <UBadge :color="row.status === 'succeeded' ? 'green' : row.status === 'failed' ? 'red' : 'amber'" variant="soft">
+                {{ row.status }}
+              </UBadge>
+            </template>
+            <template #actions-data="{ row }">
+              <div class="flex justify-end gap-2">
+                <UButton
+                  size="xs"
+                  color="gray"
+                  variant="soft"
+                  icon="i-heroicons-eye"
+                  :loading="activeSessionId === row.id && isLoadingSessionRecords"
+                  label="Rekordy"
+                  @click="loadSessionRecords(row.id)"
+                />
+                <UButton
+                  size="xs"
+                  color="primary"
+                  variant="soft"
+                  icon="i-heroicons-arrow-down-tray"
+                  :loading="autoImportingSessionId === row.id"
+                  label="Auto-import"
+                  @click="runAutoImport(row.id)"
+                />
+              </div>
+            </template>
+          </UTable>
+        </UCard>
+      </section>
+
+      <section class="space-y-4">
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Raport operatora</div>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Wynik auto-importu</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Raport pozostaje widoczny po wykonaniu importu sesji.</p>
+              </div>
+            </div>
+          </template>
+
+          <div v-if="autoImportSummary" class="space-y-4 text-sm">
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100">
+              Wynik auto-importu sesji #{{ autoImportSummary.sessionId }}
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">Urządzenia: <span class="font-semibold">{{ autoImportSummary.summary.importedCustomerDevices }}</span></div>
+              <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">Klienci: <span class="font-semibold">{{ autoImportSummary.summary.createdCustomers }}</span></div>
+              <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">Auto-generated: <span class="font-semibold">{{ autoImportSummary.summary.autoGeneratedCustomers }}</span></div>
+              <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">Taryfy: <span class="font-semibold">{{ autoImportSummary.summary.createdTariffs }}</span></div>
+              <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">Subskrypcje: <span class="font-semibold">{{ autoImportSummary.summary.createdSubscriptions }}</span></div>
+              <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">Pominięte rekordy: <span class="font-semibold">{{ autoImportSummary.summary.skippedRecords }}</span></div>
+            </div>
+          </div>
+          <div v-else class="rounded-xl border border-dashed border-gray-300 px-4 py-5 text-sm text-slate-500 dark:border-gray-700 dark:text-slate-400">
+            Uruchom `Auto-import` z tabeli sesji, aby utrwalić raport operatora w tej kolumnie.
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Krok 4</div>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Rekordy sesji</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Staging rekordów wybranej sesji discovery.</p>
+              </div>
+            </div>
+          </template>
+
+          <div class="mb-4 flex flex-col gap-2 text-sm text-slate-500 dark:text-slate-400 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 class="font-semibold text-lg">Sesje discovery</h2>
-              <p class="text-sm text-gray-500">Ostatnie skany i ich rekordy stagingowe</p>
+              Aktywna sesja: <span class="font-medium text-slate-900 dark:text-white">{{ activeSessionId || 'brak' }}</span>
             </div>
-            <UCheckbox
-              v-model="autoImportOptions.importTariffsAndSubscriptions"
-              label="Auto-import ma tworzyć też taryfy i subskrypcje z rate-limit DHCP"
-            />
-          </div>
-        </template>
-
-        <UTable :rows="discoverySessions || []" :columns="sessionColumns">
-          <template #status-data="{ row }">
-            <UBadge :color="row.status === 'succeeded' ? 'green' : row.status === 'failed' ? 'red' : 'amber'" variant="soft">
-              {{ row.status }}
-            </UBadge>
-          </template>
-          <template #actions-data="{ row }">
-            <div class="flex justify-end gap-2">
-              <UButton
-                size="xs"
-                color="gray"
-                variant="soft"
-                icon="i-heroicons-eye"
-                :loading="activeSessionId === row.id && isLoadingSessionRecords"
-                label="Rekordy"
-                @click="loadSessionRecords(row.id)"
-              />
-              <UButton
-                size="xs"
-                color="primary"
-                variant="soft"
-                icon="i-heroicons-arrow-down-tray"
-                :loading="autoImportingSessionId === row.id"
-                label="Auto-import"
-                @click="runAutoImport(row.id)"
-              />
+            <div v-if="selectedRecord">
+              Wybrany rekord: <span class="font-medium text-slate-900 dark:text-white">{{ selectedRecord.recordKind }} #{{ selectedRecord.id }}</span>
             </div>
-          </template>
-        </UTable>
+          </div>
 
-        <div v-if="autoImportSummary" class="mt-4 rounded-lg border border-gray-200 dark:border-gray-800 p-4 text-sm space-y-2">
-          <div class="font-medium text-gray-900 dark:text-white">
-            Wynik auto-importu sesji #{{ autoImportSummary.sessionId }}
-          </div>
-          <div class="grid md:grid-cols-3 gap-2">
-            <div>Urządzenia: <span class="font-medium">{{ autoImportSummary.summary.importedCustomerDevices }}</span></div>
-            <div>Klienci: <span class="font-medium">{{ autoImportSummary.summary.createdCustomers }}</span></div>
-            <div>Auto-generated: <span class="font-medium">{{ autoImportSummary.summary.autoGeneratedCustomers }}</span></div>
-            <div>Taryfy: <span class="font-medium">{{ autoImportSummary.summary.createdTariffs }}</span></div>
-            <div>Subskrypcje: <span class="font-medium">{{ autoImportSummary.summary.createdSubscriptions }}</span></div>
-            <div>Pominięte rekordy: <span class="font-medium">{{ autoImportSummary.summary.skippedRecords }}</span></div>
-          </div>
-        </div>
-      </UCard>
-    </div>
+          <UTable :rows="sessionRecords" :columns="recordColumns">
+            <template #recordStatus-data="{ row }">
+              <UBadge :color="row.recordStatus === 'active' || row.recordStatus === 'bound' ? 'green' : 'gray'" variant="soft">
+                {{ row.recordStatus || 'n/a' }}
+              </UBadge>
+            </template>
+            <template #actions-data="{ row }">
+              <div class="flex justify-end">
+                <UButton
+                  size="xs"
+                  color="primary"
+                  variant="soft"
+                  icon="i-heroicons-arrow-down-circle"
+                  label="Wybierz"
+                  @click="selectRecord(row)"
+                />
+              </div>
+            </template>
+          </UTable>
+        </UCard>
 
-    <div class="grid xl:grid-cols-2 gap-6">
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="font-semibold text-lg">Rekordy ostatniej sesji</h2>
-            <p class="text-sm text-gray-500">Staging rekordów z live discovery przed importem</p>
-          </div>
-        </template>
-
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <div class="text-sm text-gray-500">
-            Aktywna sesja: <span class="font-medium">{{ activeSessionId || 'brak' }}</span>
-          </div>
-          <div v-if="selectedRecord" class="text-sm text-gray-500">
-            Wybrany rekord: <span class="font-medium">{{ selectedRecord.recordKind }} #{{ selectedRecord.id }}</span>
-          </div>
-        </div>
-
-        <UTable :rows="sessionRecords" :columns="recordColumns">
-          <template #recordStatus-data="{ row }">
-            <UBadge :color="row.recordStatus === 'active' || row.recordStatus === 'bound' ? 'green' : 'gray'" variant="soft">
-              {{ row.recordStatus || 'n/a' }}
-            </UBadge>
-          </template>
-          <template #actions-data="{ row }">
-            <div class="flex justify-end">
-              <UButton
-                size="xs"
-                color="primary"
-                variant="soft"
-                icon="i-heroicons-arrow-down-circle"
-                label="Wybierz"
-                @click="selectRecord(row)"
-              />
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Krok 5</div>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Import i staging</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Import wybranego rekordu oraz fallback dla wpisów ręcznych.</p>
+              </div>
             </div>
           </template>
-        </UTable>
-      </UCard>
 
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="font-semibold text-lg">Import wybranego rekordu</h2>
-            <p class="text-sm text-gray-500">Import do customer-devices albo ip-networks</p>
+          <div class="space-y-6">
+            <div>
+              <div class="mb-4 text-sm text-slate-500 dark:text-slate-400">
+                {{ selectedRecord ? `Wybrano ${selectedRecord.recordKind} #${selectedRecord.id}` : 'Najpierw wybierz rekord z tabeli powyżej.' }}
+              </div>
+
+              <form class="space-y-4" @submit.prevent="importSelectedRecord">
+                <div class="grid gap-4 md:grid-cols-2">
+                  <UFormGroup label="ID klienta">
+                    <UInput v-model="recordImportForm.customerId" type="number" />
+                  </UFormGroup>
+                  <UFormGroup label="ID sieci IP">
+                    <UInput v-model="recordImportForm.ipNetworkId" type="number" />
+                  </UFormGroup>
+                </div>
+
+                <UFormGroup label="Nazwa / hostname override">
+                  <UInput v-model="recordImportForm.name" />
+                </UFormGroup>
+
+                <UFormGroup label="Komentarz">
+                  <UTextarea v-model="recordImportForm.comment" :rows="2" />
+                </UFormGroup>
+
+                <div class="flex justify-end">
+                  <UButton
+                    type="submit"
+                    color="primary"
+                    :disabled="!selectedRecord"
+                    :loading="isImportingRecord"
+                    label="Importuj rekord"
+                  />
+                </div>
+              </form>
+            </div>
+
+            <div class="border-t border-gray-200 pt-5 dark:border-gray-800">
+              <div class="grid gap-4 2xl:grid-cols-2">
+                <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+                  <div class="mb-3">
+                    <h3 class="font-medium text-slate-900 dark:text-white">Ręczny import lease</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Fallback dla wpisów spoza live discovery.</p>
+                  </div>
+
+                  <form class="space-y-4" @submit.prevent="importLease">
+                    <div class="grid gap-4 md:grid-cols-2">
+                      <UFormGroup label="ID klienta" required>
+                        <UInput v-model="leaseForm.customerId" type="number" />
+                      </UFormGroup>
+                      <UFormGroup label="ID urządzenia sieciowego">
+                        <UInput v-model="leaseForm.netDeviceId" type="number" />
+                      </UFormGroup>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                      <UFormGroup label="ID sieci IP">
+                        <UInput v-model="leaseForm.ipNetworkId" type="number" />
+                      </UFormGroup>
+                      <UFormGroup label="Hostname" required>
+                        <UInput v-model="leaseForm.hostname" />
+                      </UFormGroup>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                      <UFormGroup label="Adres IP">
+                        <UInput v-model="leaseForm.ipAddress" />
+                      </UFormGroup>
+                      <UFormGroup label="MAC">
+                        <UInput v-model="leaseForm.macAddress" />
+                      </UFormGroup>
+                    </div>
+
+                    <UFormGroup label="Komentarz">
+                      <UTextarea v-model="leaseForm.comment" :rows="2" />
+                    </UFormGroup>
+
+                    <div class="flex justify-end">
+                      <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" />
+                    </div>
+                  </form>
+                </div>
+
+                <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+                  <div class="mb-3">
+                    <h3 class="font-medium text-slate-900 dark:text-white">Ręczny import sieci</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Fallback dla ręcznego zapisu podsieci.</p>
+                  </div>
+
+                  <form class="space-y-4" @submit.prevent="importNetwork">
+                    <div class="grid gap-4 md:grid-cols-2">
+                      <UFormGroup label="Nazwa">
+                        <UInput v-model="networkForm.name" />
+                      </UFormGroup>
+                      <UFormGroup label="CIDR" required>
+                        <UInput v-model="networkForm.cidr" placeholder="10.10.200.0/24" />
+                      </UFormGroup>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-3">
+                      <UFormGroup label="Gateway">
+                        <UInput v-model="networkForm.gateway" />
+                      </UFormGroup>
+                      <UFormGroup label="VLAN">
+                        <UInput v-model="networkForm.vlanId" type="number" />
+                      </UFormGroup>
+                      <UFormGroup label="Źródłowe device ID">
+                        <UInput v-model="networkForm.deviceId" type="number" />
+                      </UFormGroup>
+                    </div>
+
+                    <UFormGroup label="Komentarz">
+                      <UTextarea v-model="networkForm.comment" :rows="2" />
+                    </UFormGroup>
+
+                    <div class="flex justify-end">
+                      <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" />
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
-        </template>
+        </UCard>
 
-        <div class="mb-4 text-sm text-gray-500">
-          {{ selectedRecord ? `Wybrano ${selectedRecord.recordKind} #${selectedRecord.id}` : 'Najpierw wybierz rekord z tabeli obok.' }}
-        </div>
+        <UCard>
+          <template #header>
+            <div class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+              <div class="space-y-1">
+                <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-slate-400">Krok 6</div>
+                <div>
+                  <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Diagnostyka operatora</h2>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">Readiness, sync lease i live test z urządzenia dostępowego.</p>
+                </div>
+              </div>
 
-        <form class="space-y-4" @submit.prevent="importSelectedRecord">
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="ID klienta">
-              <UInput v-model="recordImportForm.customerId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="ID sieci IP">
-              <UInput v-model="recordImportForm.ipNetworkId" type="number" />
-            </UFormGroup>
-          </div>
+              <div class="flex flex-wrap gap-2">
+                <UButton color="gray" variant="soft" icon="i-heroicons-bolt" label="Readiness" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
+                <UButton color="primary" variant="soft" icon="i-heroicons-signal" label="Test zdalny" :loading="isRunningRemoteTest" @click="runRemoteTest" />
+              </div>
+            </div>
+          </template>
 
-          <UFormGroup label="Nazwa / hostname override">
-            <UInput v-model="recordImportForm.name" />
+          <UFormGroup label="Customer device ID">
+            <UInput v-model="diagnosticsDeviceId" type="number" placeholder="np. 1" />
           </UFormGroup>
 
-          <UFormGroup label="Komentarz">
-            <UTextarea v-model="recordImportForm.comment" :rows="2" />
-          </UFormGroup>
+          <div v-if="diagnosticsResult" class="mt-4 space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <UBadge :color="diagnosticsResult.ready ? 'green' : 'red'" variant="soft">
+                {{ diagnosticsResult.ready ? 'Gotowe lokalnie' : 'Brakuje danych lokalnych' }}
+              </UBadge>
 
-          <div class="flex justify-end">
-            <UButton
-              type="submit"
-              color="primary"
-              :disabled="!selectedRecord"
-              :loading="isImportingRecord"
-              label="Importuj rekord"
-            />
-          </div>
-        </form>
-      </UCard>
-    </div>
-
-    <div class="grid xl:grid-cols-2 gap-6">
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <h2 class="font-semibold text-lg">Zaimportowane urządzenia</h2>
-              <p class="text-sm text-gray-500">Customer-devices po imporcie discovery</p>
+              <UButton
+                color="primary"
+                variant="soft"
+                icon="i-heroicons-arrow-path-rounded-square"
+                label="Sync lease"
+                :loading="isSyncingLease"
+                @click="syncLease"
+              />
             </div>
-            <UInput v-model="leaseSearch" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Szukaj IP, MAC, serial..." class="w-72" />
-          </div>
-        </template>
 
-        <UTable :rows="importedLeases || []" :columns="leaseColumns" :loading="pendingImportedLeases">
-          <template #ipAddress-data="{ row }">
-            <span class="font-mono text-sm">{{ row.ipAddress || 'n/a' }}</span>
-          </template>
-          <template #remoteSerialNumber-data="{ row }">
-            <span class="font-mono text-sm">{{ row.remoteSerialNumber || 'n/a' }}</span>
-          </template>
-        </UTable>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <h2 class="font-semibold text-lg">Diagnostyka lokalna i zdalna</h2>
-              <p class="text-sm text-gray-500">Readiness, sync lease i live test z urządzenia dostępowego</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <UButton color="gray" variant="soft" icon="i-heroicons-bolt" label="Readiness" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
-              <UButton color="primary" variant="soft" icon="i-heroicons-signal" label="Test zdalny" :loading="isRunningRemoteTest" @click="runRemoteTest" />
+            <div class="space-y-2">
+              <div v-for="check in diagnosticsResult.checks" :key="check.key" class="flex items-center justify-between gap-4 text-sm">
+                <span>{{ check.label }}</span>
+                <UBadge :color="check.ok ? 'green' : check.severity === 'blocking' ? 'red' : 'amber'" variant="soft">
+                  {{ check.ok ? 'OK' : check.severity }}
+                </UBadge>
+              </div>
             </div>
           </div>
-        </template>
 
-        <UFormGroup label="Customer device ID">
-          <UInput v-model="diagnosticsDeviceId" type="number" placeholder="np. 1" />
-        </UFormGroup>
-
-        <div v-if="diagnosticsResult" class="mt-4 space-y-3">
-          <UBadge :color="diagnosticsResult.ready ? 'green' : 'red'" variant="soft">
-            {{ diagnosticsResult.ready ? 'Gotowe lokalnie' : 'Brakuje danych lokalnych' }}
-          </UBadge>
-
-          <div class="flex justify-end">
-            <UButton
-              color="primary"
-              variant="soft"
-              icon="i-heroicons-arrow-path-rounded-square"
-              label="Sync lease"
-              :loading="isSyncingLease"
-              @click="syncLease"
-            />
+          <div v-if="leaseSyncResult" class="mt-4 rounded-lg border border-gray-200 p-3 text-sm space-y-1 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">Wynik sync lease</div>
+            <div>Status: <span class="font-medium">{{ leaseSyncResult.synced ? 'zsynchronizowano' : 'bez zmian' }}</span></div>
+            <div v-if="leaseSyncResult.reason" class="text-gray-500">Powód: {{ leaseSyncResult.reason }}</div>
           </div>
 
-          <div class="space-y-2">
-            <div v-for="check in diagnosticsResult.checks" :key="check.key" class="flex items-center justify-between gap-4 text-sm">
+          <div v-if="remoteTestResult" class="mt-4 rounded-lg border border-gray-200 p-3 text-sm space-y-2 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">
+              Remote test: {{ remoteTestResult.remoteDiagnostics.driver }}
+            </div>
+            <UBadge :color="remoteTestResult.remoteDiagnostics.ok ? 'green' : 'red'" variant="soft">
+              {{ remoteTestResult.remoteDiagnostics.ok ? 'PASS' : 'FAIL' }}
+            </UBadge>
+            <div v-for="check in remoteTestResult.remoteDiagnostics.checks" :key="check.key" class="flex items-center justify-between gap-4">
               <span>{{ check.label }}</span>
               <UBadge :color="check.ok ? 'green' : check.severity === 'blocking' ? 'red' : 'amber'" variant="soft">
                 {{ check.ok ? 'OK' : check.severity }}
               </UBadge>
             </div>
           </div>
-        </div>
 
-        <div v-if="leaseSyncResult" class="mt-4 rounded-lg border border-gray-200 dark:border-gray-800 p-3 text-sm space-y-1">
-          <div class="font-medium text-gray-900 dark:text-white">Wynik sync lease</div>
-          <div>Status: <span class="font-medium">{{ leaseSyncResult.synced ? 'zsynchronizowano' : 'bez zmian' }}</span></div>
-          <div v-if="leaseSyncResult.reason" class="text-gray-500">Powód: {{ leaseSyncResult.reason }}</div>
-        </div>
+          <div class="mt-6 border-t border-gray-200 pt-5 dark:border-gray-800">
+            <div class="mb-4 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div>
+                <h3 class="font-medium text-slate-900 dark:text-white">Zaimportowane urządzenia</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Customer-devices po imporcie discovery.</p>
+              </div>
+              <UInput v-model="leaseSearch" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Szukaj IP, MAC, serial..." class="xl:w-72" />
+            </div>
 
-        <div v-if="remoteTestResult" class="mt-4 rounded-lg border border-gray-200 dark:border-gray-800 p-3 text-sm space-y-2">
-          <div class="font-medium text-gray-900 dark:text-white">
-            Remote test: {{ remoteTestResult.remoteDiagnostics.driver }}
+            <UTable :rows="importedLeases || []" :columns="leaseColumns" :loading="pendingImportedLeases">
+              <template #ipAddress-data="{ row }">
+                <span class="font-mono text-sm">{{ row.ipAddress || 'n/a' }}</span>
+              </template>
+              <template #remoteSerialNumber-data="{ row }">
+                <span class="font-mono text-sm">{{ row.remoteSerialNumber || 'n/a' }}</span>
+              </template>
+            </UTable>
           </div>
-          <UBadge :color="remoteTestResult.remoteDiagnostics.ok ? 'green' : 'red'" variant="soft">
-            {{ remoteTestResult.remoteDiagnostics.ok ? 'PASS' : 'FAIL' }}
-          </UBadge>
-          <div v-for="check in remoteTestResult.remoteDiagnostics.checks" :key="check.key" class="flex items-center justify-between gap-4">
-            <span>{{ check.label }}</span>
-            <UBadge :color="check.ok ? 'green' : check.severity === 'blocking' ? 'red' : 'amber'" variant="soft">
-              {{ check.ok ? 'OK' : check.severity }}
-            </UBadge>
-          </div>
-        </div>
-      </UCard>
-    </div>
-
-    <div class="grid xl:grid-cols-2 gap-6">
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="font-semibold text-lg">Ręczny import lease</h2>
-            <p class="text-sm text-gray-500">Fallback dla ręcznych wpisów spoza live discovery</p>
-          </div>
-        </template>
-
-        <form class="space-y-4" @submit.prevent="importLease">
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="ID klienta" required>
-              <UInput v-model="leaseForm.customerId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="ID urządzenia sieciowego">
-              <UInput v-model="leaseForm.netDeviceId" type="number" />
-            </UFormGroup>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="ID sieci IP">
-              <UInput v-model="leaseForm.ipNetworkId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="Hostname" required>
-              <UInput v-model="leaseForm.hostname" />
-            </UFormGroup>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Adres IP">
-              <UInput v-model="leaseForm.ipAddress" />
-            </UFormGroup>
-            <UFormGroup label="MAC">
-              <UInput v-model="leaseForm.macAddress" />
-            </UFormGroup>
-          </div>
-
-          <UFormGroup label="Komentarz">
-            <UTextarea v-model="leaseForm.comment" :rows="2" />
-          </UFormGroup>
-
-          <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" />
-          </div>
-        </form>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <div>
-            <h2 class="font-semibold text-lg">Ręczny import sieci</h2>
-            <p class="text-sm text-gray-500">Fallback dla ręcznego zapisu podsieci</p>
-          </div>
-        </template>
-
-        <form class="space-y-4" @submit.prevent="importNetwork">
-          <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Nazwa">
-              <UInput v-model="networkForm.name" />
-            </UFormGroup>
-            <UFormGroup label="CIDR" required>
-              <UInput v-model="networkForm.cidr" placeholder="10.10.200.0/24" />
-            </UFormGroup>
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-4">
-            <UFormGroup label="Gateway">
-              <UInput v-model="networkForm.gateway" />
-            </UFormGroup>
-            <UFormGroup label="VLAN">
-              <UInput v-model="networkForm.vlanId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="Źródłowe device ID">
-              <UInput v-model="networkForm.deviceId" type="number" />
-            </UFormGroup>
-          </div>
-
-          <UFormGroup label="Komentarz">
-            <UTextarea v-model="networkForm.comment" :rows="2" />
-          </UFormGroup>
-
-          <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" />
-          </div>
-        </form>
-      </UCard>
+        </UCard>
+      </section>
     </div>
   </div>
 </template>
