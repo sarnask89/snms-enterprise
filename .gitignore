@@ -1,4 +1,4 @@
-﻿# Environment
+# Environment
 .env
 .env.*
 !.env.example
@@ -55,6 +55,3 @@ gha-creds-*.json
 
 # Generated media
 static/images/
-*.png
-*.jpg
-*.jpeg
