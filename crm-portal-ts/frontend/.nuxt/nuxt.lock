@@ -1,9 +1,0 @@
-{
-  "pid": 21528,
-  "startedAt": 1779012257579,
-  "command": "dev",
-  "cwd": "C:/Users/xxx/crm-portal/crm-portal-ts/frontend",
-  "port": 3000,
-  "hostname": "::1",
-  "url": "http://[::1]:3000"
-}

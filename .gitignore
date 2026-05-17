@@ -1,67 +1,60 @@
+﻿# Environment
 .env
+.env.*
+!.env.example
+
+# Python
 .venv/
 venv/
 __pycache__/
-*.sqlite
-uploads/
 *.pyc
 .pytest_cache/
-crm-portal-ts/node_modules/Act as an Expert Vue 3 / Nuxt 3 Developer. You will write a very long code file. 
-Because you have a strict output token limit, we will use a chunking strategy.
 
-CRITICAL RULES:
-1. Start writing the code inside a standard markdown code block (```vue).
-2. If you reach your output limit, just stop abruptly. Do NOT try to wrap up or close the tags if you are not actually finished.
-3. When I reply with exactly the word "CONTINUE", you must resume generating code EXACTLY from the next character where you left off. 
-4. DO NOT repeat code you already generated.
-5. DO NOT start the continuation with a new markdown 
-``` block or any explanations. Just continue the raw code stream.
-
-Task: Write the complete `CrmDashboard.vue` file with the 11 tables (Account, Contact, Subscription, etc.) and full CSS grid layout. Start generating the code now.
-
-.gemini/
-gha-creds-*.json
-. v e n v / 
- 
- n o d e _ m o d u l e s / 
- 
- * . s q l i t e 
- 
- * . l o g 
- 
- l o g s / 
- 
- b a c k u p s / 
- 
- u p l o a d s / 
- 
- d x c _ 2 0 2 5 _ 0 7 _ 1 4 / 
-
- 
- s t a t i c / i m a g e s / 
- 
- * . p n g 
- 
- * . j p g 
- 
- * . j p e g 
- 
- * . 7 z 
- 
- p a c k a g e - l o c k . j s o n 
- 
- 
- #   N o d e   /   V u e   /   N u x t 
- n o d e _ m o d u l e s / 
- . n u x t / 
- . o u t p u t / 
- . v e r c e l / 
- d i s t / 
- . e n v . * 
- ! . e n v . e x a m p l e 
- 
- 
- node_modules/
-**/node_modules/
+# Node / Nuxt / Vue
 node_modules/
 **/node_modules/
+.nuxt/
+**/.nuxt/
+.output/
+**/.output/
+dist/
+**/dist/
+.vercel/
+
+# Logs
+*.log
+logs/
+agent.log
+frontend-dev*.log
+
+# Databases / local runtime
+*.sqlite
+*.sqlite3
+*.db
+uploads/
+backups/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Credentials / generated secrets
+gha-creds-*.json
+*.pem
+*.key
+
+# Archives / binaries
+*.7z
+*.zip
+*.tar
+*.tar.gz
+
+# Generated media
+static/images/
+*.png
+*.jpg
+*.jpeg
