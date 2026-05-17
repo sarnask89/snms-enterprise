@@ -1,7 +1,17 @@
 import fs from 'fs';
 import path from 'path';
+import { createError } from 'h3';
 
 export default defineEventHandler((event) => {
+  const agentApiEnabled = process.env.NUXT_ENABLE_AGENT_API === 'true';
+
+  if (!agentApiEnabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Agent API is disabled'
+    });
+  }
+
   const rootDir = path.resolve(process.cwd(), '../../');
   const pidFile = path.join(rootDir, '.agent.pid');
   const logFile = path.join(rootDir, 'agent.log');

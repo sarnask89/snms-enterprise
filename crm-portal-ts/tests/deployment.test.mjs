@@ -26,6 +26,8 @@ test('production deployment artifacts exist and wire backend, frontend, and reve
   assert.match(composeFile, /CRM_PORTAL_TS_BACKEND_HOST_PORT:-8080/)
   assert.match(composeFile, /CRM_PORTAL_TS_PROXY_PORT:-80/)
   assert.match(composeFile, /CRM_PORTAL_TS_ENV_FILE:-\.env/)
+  assert.match(composeFile, /NUXT_API_BASE:\s*http:\/\/backend:8080/)
+  assert.match(composeFile, /NUXT_PUBLIC_API_BASE:\s*\/api\/v1/)
   assert.match(composeFile, /healthcheck:/)
   assert.match(composeFile, /health\/ready/)
   assert.match(composeFile, /health\/live/)
@@ -42,4 +44,20 @@ test('production deployment artifacts exist and wire backend, frontend, and reve
   assert.match(nginxConfig, /location \/health\/ \{/)
   assert.match(nginxConfig, /location \/ \{/)
   assert.match(nginxConfig, /proxy_pass http:\/\/frontend:3000;/)
+})
+
+test('frontend Nitro agent endpoints are disabled by default and require explicit enable flag', async () => {
+  const [nuxtConfig, agentStartRoute, agentStatusRoute] = await Promise.all([
+    readProjectFile('frontend/nuxt.config.ts'),
+    readProjectFile('frontend/server/api/agent/start.post.ts'),
+    readProjectFile('frontend/server/api/agent/status.get.ts')
+  ])
+
+  assert.match(nuxtConfig, /NUXT_API_BASE/)
+  assert.doesNotMatch(nuxtConfig, /PORTAL_API_BASE/)
+
+  assert.match(agentStartRoute, /NUXT_ENABLE_AGENT_API/)
+  assert.match(agentStartRoute, /statusCode:\s*403/)
+  assert.match(agentStatusRoute, /NUXT_ENABLE_AGENT_API/)
+  assert.match(agentStatusRoute, /statusCode:\s*403/)
 })

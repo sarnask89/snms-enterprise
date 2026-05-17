@@ -1,8 +1,18 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import { createError } from 'h3';
 
 export default defineEventHandler(async (event) => {
+  const agentApiEnabled = process.env.NUXT_ENABLE_AGENT_API === 'true';
+
+  if (!agentApiEnabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Agent API is disabled'
+    });
+  }
+
   const body = await readBody(event);
   const target = body.target || 'app'; 
   
