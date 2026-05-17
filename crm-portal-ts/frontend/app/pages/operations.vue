@@ -1,9 +1,9 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto space-y-8">
+  <div class="space-y-6 overflow-x-hidden">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Operacje sieciowe</h1>
-        <p class="text-sm text-gray-500">Live discovery, import i zdalne testy dla Mikrotik API oraz Dasan SSH</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Operacje sieciowe</h1>
+        <p class="text-sm text-gray-500">Standardowy widok roboczy dla discovery, importu i zdalnych testów Mikrotik API oraz Dasan SSH.</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
@@ -11,30 +11,30 @@
       </div>
     </div>
 
-    <div class="grid lg:grid-cols-4 gap-4">
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <UCard>
         <div class="text-sm text-gray-500">Discovery devices</div>
         <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ discoveryDevices?.length || 0 }}</div>
         <div class="text-xs text-gray-500 mt-1">gotowe do skanu</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4">
+      </UCard>
+      <UCard>
         <div class="text-sm text-gray-500">Access profiles</div>
         <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ accessProfiles?.length || 0 }}</div>
         <div class="text-xs text-gray-500 mt-1">profile live-connect</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4">
+      </UCard>
+      <UCard>
         <div class="text-sm text-gray-500">Discovery sessions</div>
         <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ discoverySessions?.length || 0 }}</div>
         <div class="text-xs text-gray-500 mt-1">aktywna: {{ activeSessionId || 'brak' }}</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4">
+      </UCard>
+      <UCard>
         <div class="text-sm text-gray-500">Zaimportowane urządzenia</div>
         <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ importedLeases?.length || 0 }}</div>
         <div class="text-xs text-gray-500 mt-1">staging i leasing</div>
-      </div>
+      </UCard>
     </div>
 
-    <div class="grid xl:grid-cols-2 gap-6">
+    <div class="grid gap-6 xl:grid-cols-2">
       <UCard>
         <template #header>
           <div>
@@ -105,11 +105,42 @@
               {{ row.hasEnablePassword ? 'yes' : 'no' }}
             </UBadge>
           </template>
+          <template #actions-data="{ row }">
+            <div class="flex justify-end">
+              <UButton
+                size="xs"
+                color="gray"
+                variant="soft"
+                icon="i-heroicons-bolt"
+                :loading="activeProfileTestId === row.id"
+                label="Test połączenia"
+                @click="runProfileTest(row.id)"
+              />
+            </div>
+          </template>
         </UTable>
+
+        <div v-if="profileTestResult" class="mt-4 rounded-lg border border-gray-200 p-4 text-sm dark:border-gray-800">
+          <div class="font-medium text-gray-900 dark:text-white">
+            Test profilu #{{ profileTestResult.profile.id }}: {{ profileTestResult.result.driver }}
+          </div>
+          <div class="mt-2 flex flex-wrap items-center gap-3">
+            <UBadge :color="profileTestResult.result.ok ? 'green' : 'red'" variant="soft">
+              {{ profileTestResult.result.ok ? 'Połączenie OK' : 'Błąd połączenia' }}
+            </UBadge>
+            <span
+              v-for="(value, key) in profileTestResult.result.summary"
+              :key="key"
+              class="text-gray-500 dark:text-gray-400"
+            >
+              {{ key }}: <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+            </span>
+          </div>
+        </div>
       </UCard>
     </div>
 
-    <div class="grid xl:grid-cols-2 gap-6">
+    <div class="grid gap-6 xl:grid-cols-2">
       <UCard>
         <template #header>
           <div>
@@ -201,7 +232,7 @@
       </UCard>
     </div>
 
-    <div class="grid xl:grid-cols-2 gap-6">
+    <div class="grid gap-6 xl:grid-cols-2">
       <UCard>
         <template #header>
           <div>
@@ -283,7 +314,7 @@
       </UCard>
     </div>
 
-    <div class="grid xl:grid-cols-2 gap-6">
+    <div class="grid gap-6 xl:grid-cols-2">
       <UCard>
         <template #header>
           <div class="flex items-center justify-between gap-4">
@@ -469,11 +500,13 @@ const diagnosticsResult = ref(null)
 const leaseSyncResult = ref(null)
 const remoteTestResult = ref(null)
 const activeScanDeviceId = ref(null)
+const activeProfileTestId = ref(null)
 const activeSessionId = ref(null)
 const sessionRecords = ref([])
 const selectedRecord = ref(null)
 const autoImportingSessionId = ref(null)
 const autoImportSummary = ref(null)
+const profileTestResult = ref(null)
 const isImportingLease = ref(false)
 const isImportingNetwork = ref(false)
 const isSavingProfile = ref(false)
@@ -499,7 +532,8 @@ const profileColumns = [
   { key: 'host', label: 'Host' },
   { key: 'port', label: 'Port' },
   { key: 'hasPassword', label: 'Secret' },
-  { key: 'hasEnablePassword', label: 'Enable' }
+  { key: 'hasEnablePassword', label: 'Enable' },
+  { key: 'actions', label: '' }
 ]
 
 const deviceColumns = [
@@ -699,6 +733,17 @@ const runScan = async (deviceId) => {
     ])
   } finally {
     activeScanDeviceId.value = null
+  }
+}
+
+const runProfileTest = async (profileId) => {
+  activeProfileTestId.value = profileId
+  try {
+    profileTestResult.value = await $fetch(`/api/v1/network-discovery/access-profiles/${profileId}/test`, {
+      method: 'POST'
+    })
+  } finally {
+    activeProfileTestId.value = null
   }
 }
 

@@ -505,6 +505,18 @@ test("server starts and customers/groups parity baseline works", async (t) => {
     assert.equal(mikrotikProfilePayload.port, 8728);
     assert.equal(mikrotikProfilePayload.hasPassword, true);
 
+    const mikrotikProfileTest = await fetchWithAuth(`${baseUrl}/api/v1/network-discovery/access-profiles/${mikrotikProfilePayload.id}/test`, {
+        method: "POST",
+    });
+    assert.equal(mikrotikProfileTest.status, 200);
+    const mikrotikProfileTestPayload = await mikrotikProfileTest.json() as {
+        result: { driver: string; ok: boolean; summary: { leaseCount: number; networkCount: number } };
+    };
+    assert.equal(mikrotikProfileTestPayload.result.driver, "mikrotik_api");
+    assert.equal(mikrotikProfileTestPayload.result.ok, true);
+    assert.ok(mikrotikProfileTestPayload.result.summary.leaseCount > 0);
+    assert.ok(mikrotikProfileTestPayload.result.summary.networkCount > 0);
+
     const discoveryDevices = await fetchWithAuth(`${baseUrl}/api/v1/network-discovery/devices`);
     assert.equal(discoveryDevices.status, 200);
     const discoveryDevicesPayload = await discoveryDevices.json() as Array<{
@@ -1378,6 +1390,21 @@ test("server starts and customers/groups parity baseline works", async (t) => {
         }),
     });
     assert.equal(createdDasanProfile.status, 201);
+    const dasanProfilePayload = await createdDasanProfile.json() as { id: number; driver: string };
+    assert.equal(dasanProfilePayload.driver, "dasan_ssh");
+
+    const dasanProfileTest = await fetchWithAuth(`${baseUrl}/api/v1/network-discovery/access-profiles/${dasanProfilePayload.id}/test`, {
+        method: "POST",
+    });
+    assert.equal(dasanProfileTest.status, 200);
+    const dasanProfileTestPayload = await dasanProfileTest.json() as {
+        result: { driver: string; ok: boolean; summary: { onuCount: number; macCount: number; activeOnuCount: number } };
+    };
+    assert.equal(dasanProfileTestPayload.result.driver, "dasan_ssh");
+    assert.equal(dasanProfileTestPayload.result.ok, true);
+    assert.ok(dasanProfileTestPayload.result.summary.onuCount > 0);
+    assert.ok(dasanProfileTestPayload.result.summary.macCount > 0);
+    assert.ok(dasanProfileTestPayload.result.summary.activeOnuCount > 0);
 
     const dasanScan = await fetchWithAuth(`${baseUrl}/api/v1/network-discovery/scan/${dasanDevicePayload.id}`, {
         method: "POST",

@@ -20,6 +20,7 @@ import {
     DISCOVERY_DRIVER_MIKROTIK,
     runDiscoveryScanForDevice,
     serializeDiscoveryRecord,
+    testDiscoveryAccessProfile,
 } from "../services/network_discovery_live.js";
 import { autoImportDiscoverySession } from "../services/network_auto_import.js";
 import { buildDiagnosticsSummary } from "./diagnostics.js";
@@ -376,6 +377,34 @@ router.put("/access-profiles/:id", async (req, res) => {
     } catch (error) {
         console.error("Error updating discovery access profile:", error);
         res.status(400).json({ message: "Failed to update discovery access profile" });
+    }
+});
+
+router.post("/access-profiles/:id/test", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const profile = await accessProfileRepo.findOneBy({ id });
+        if (!profile) {
+            return res.status(404).json({ message: "Access profile not found" });
+        }
+
+        const result = await testDiscoveryAccessProfile(profile);
+
+        await recordAudit({
+            action: "network_discovery_profile_test",
+            resourceType: "network_device_access_profile",
+            resourceId: profile.id,
+            details: `${profile.driver} host=${profile.host} ok=${result.ok}`,
+            request: req,
+        });
+
+        res.json({
+            profile: serializeAccessProfile(profile),
+            result,
+        });
+    } catch (error) {
+        console.error("Error testing discovery access profile:", error);
+        res.status(502).json({ message: "Failed to test discovery access profile" });
     }
 });
 

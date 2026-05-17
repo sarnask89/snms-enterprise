@@ -69,6 +69,8 @@ test('operator shell source keeps grouped navigation labels and session affordan
   assert.match(layoutSource, /label:\s*'CRM'/)
   assert.match(layoutSource, /label:\s*'Operacje'/)
   assert.match(layoutSource, /label:\s*'Administracja'/)
+  assert.match(layoutSource, /<UDropdown/, 'default layout should use a standard Nuxt UI dropdown navigation shell')
+  assert.doesNotMatch(layoutSource, /<UVerticalNavigation/, 'default layout should no longer use the custom sidebar navigation shell')
   assert.match(layoutSource, /label="Sesja"|label:\s*'Sesja'/)
   assert.match(layoutSource, /label="Zaloguj"|label:\s*'Zaloguj'/)
 })
