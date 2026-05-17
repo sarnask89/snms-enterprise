@@ -41,7 +41,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
 
     const server = await startServer(0);
     const schemaMigrationStatus = await getSchemaMigrationStatus(AppDataSource);
-    assert.equal(schemaMigrationStatus.applied.length, 4);
+    assert.equal(schemaMigrationStatus.applied.length, 5);
     assert.equal(schemaMigrationStatus.pending.length, 0);
     const portalUserRepo = AppDataSource.getRepository(PortalUser);
     const adminUser = await portalUserRepo.findOneBy({ username: "admin" });
@@ -448,6 +448,10 @@ test("server starts and customers/groups parity baseline works", async (t) => {
             serialNumber: "ABC123",
             managementIp: "10.10.100.2",
             deviceType: "router",
+            driverType: "mikrotik_api",
+            mgmtUsername: "router-admin",
+            snmpCommunity: "public-ro",
+            loginUrl: "https://10.10.100.2",
             status: "active",
             ipNetworkId: networkPayload.id,
             netNodeId: nodePayload.id,
@@ -458,11 +462,19 @@ test("server starts and customers/groups parity baseline works", async (t) => {
     assert.equal(createdNetDevice.status, 201);
     const netDevicePayload = await createdNetDevice.json() as {
         id: number;
+        driverType: string | null;
+        mgmtUsername: string | null;
+        snmpCommunity: string | null;
+        loginUrl: string | null;
         customer?: { id: number };
         ipNetwork?: { id: number };
         netNode?: { id: number };
     };
     assert.ok(netDevicePayload.id > 0);
+    assert.equal(netDevicePayload.driverType, "mikrotik_api");
+    assert.equal(netDevicePayload.mgmtUsername, "router-admin");
+    assert.equal(netDevicePayload.snmpCommunity, "public-ro");
+    assert.equal(netDevicePayload.loginUrl, "https://10.10.100.2");
     assert.equal(netDevicePayload.customer?.id, customerPayload.id);
     assert.equal(netDevicePayload.ipNetwork?.id, networkPayload.id);
     assert.equal(netDevicePayload.netNode?.id, nodePayload.id);
@@ -548,12 +560,27 @@ test("server starts and customers/groups parity baseline works", async (t) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             status: "maintenance",
+            driverType: "mikrotik_api_tls",
+            mgmtUsername: "noc-user",
+            snmpCommunity: "noc-rw",
+            loginUrl: "https://router.example.local",
             notes: "Planowany serwis",
         }),
     });
     assert.equal(updatedNetDevice.status, 200);
-    const updatedNetDevicePayload = await updatedNetDevice.json() as { status: string; notes: string };
+    const updatedNetDevicePayload = await updatedNetDevice.json() as {
+        status: string;
+        driverType: string | null;
+        mgmtUsername: string | null;
+        snmpCommunity: string | null;
+        loginUrl: string | null;
+        notes: string;
+    };
     assert.equal(updatedNetDevicePayload.status, "maintenance");
+    assert.equal(updatedNetDevicePayload.driverType, "mikrotik_api_tls");
+    assert.equal(updatedNetDevicePayload.mgmtUsername, "noc-user");
+    assert.equal(updatedNetDevicePayload.snmpCommunity, "noc-rw");
+    assert.equal(updatedNetDevicePayload.loginUrl, "https://router.example.local");
     assert.equal(updatedNetDevicePayload.notes, "Planowany serwis");
 
     const networkUsage = await fetchWithAuth(`${baseUrl}/api/v1/ip-networks/${networkPayload.id}`);

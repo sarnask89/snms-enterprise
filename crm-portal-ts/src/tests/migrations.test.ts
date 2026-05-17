@@ -19,17 +19,24 @@ test("baseline schema migrations bootstrap empty runtime database and stay idemp
 
         const before = await getSchemaMigrationStatus(AppDataSource);
         assert.equal(before.applied.length, 0);
-        assert.equal(before.pending.length, 4);
+        assert.equal(before.pending.length, 5);
 
         const firstRun = await runSchemaMigrations(AppDataSource);
-        assert.equal(firstRun.applied.length, 4);
+        assert.equal(firstRun.applied.length, 5);
         assert.equal(firstRun.pending.length, 0);
-        assert.equal(firstRun.current?.id, "20260516_0004_teryt_relational_addressing");
+        assert.equal(firstRun.current?.id, "20260517_0005_backbone_inventory_parity");
 
         const secondRun = await runSchemaMigrations(AppDataSource);
-        assert.equal(secondRun.applied.length, 4);
+        assert.equal(secondRun.applied.length, 5);
         assert.equal(secondRun.pending.length, 0);
-        assert.equal(secondRun.current?.id, "20260516_0004_teryt_relational_addressing");
+        assert.equal(secondRun.current?.id, "20260517_0005_backbone_inventory_parity");
+
+        const columns = await AppDataSource.query("PRAGMA table_info(net_devices)") as Array<{ name: string }>;
+        const columnNames = new Set(columns.map((column) => column.name));
+        assert.equal(columnNames.has("snmp_community"), true);
+        assert.equal(columnNames.has("login_url"), true);
+        assert.equal(columnNames.has("driver_type"), true);
+        assert.equal(columnNames.has("mgmt_username"), true);
 
         const tables = await AppDataSource.query(`
             SELECT name

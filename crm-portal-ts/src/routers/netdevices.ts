@@ -34,6 +34,10 @@ function serializeDevice(device: NetDevice) {
         serialNumber: device.serialNumber ?? null,
         macAddress: device.macAddress ?? null,
         managementIp: device.managementIp ?? null,
+        snmpCommunity: device.snmpCommunity ?? null,
+        loginUrl: device.loginUrl ?? null,
+        driverType: device.driverType ?? null,
+        mgmtUsername: device.mgmtUsername ?? null,
         deviceType: device.deviceType,
         status: device.status,
         notes: device.notes ?? null,
@@ -62,6 +66,17 @@ function serializeDevice(device: NetDevice) {
                 lastName: device.customer.lastName,
             }
             : null,
+        accessProfile: device.accessProfile
+            ? {
+                id: device.accessProfile.id,
+                driver: device.accessProfile.driver,
+                host: device.accessProfile.host,
+                port: device.accessProfile.port ?? null,
+                username: device.accessProfile.username,
+                hasPassword: true,
+                hasEnablePassword: !!device.accessProfile.enablePasswordCiphertext,
+            }
+            : null,
     };
 }
 
@@ -73,6 +88,7 @@ router.get("/", async (req, res) => {
             .leftJoinAndSelect("device.ipNetwork", "ipNetwork")
             .leftJoinAndSelect("device.netNode", "netNode")
             .leftJoinAndSelect("device.customer", "customer")
+            .leftJoinAndSelect("device.accessProfile", "accessProfile")
             .where(search
                 ? new Brackets((qb) => {
                     qb.where("device.name LIKE :search", { search: `%${search}%` })
@@ -97,7 +113,7 @@ router.get("/:id", async (req, res) => {
         const id = Number.parseInt(req.params.id, 10);
         const device = await deviceRepo.findOne({
             where: { id },
-            relations: { ipNetwork: true, netNode: true, customer: true },
+            relations: { ipNetwork: true, netNode: true, customer: true, accessProfile: true },
         });
 
         if (!device) {
@@ -124,6 +140,10 @@ router.post("/", async (req, res) => {
             serialNumber: parseOptionalString(req.body?.serialNumber),
             macAddress: parseOptionalString(req.body?.macAddress),
             managementIp: parseOptionalString(req.body?.managementIp),
+            snmpCommunity: parseOptionalString(req.body?.snmpCommunity),
+            loginUrl: parseOptionalString(req.body?.loginUrl),
+            driverType: parseOptionalString(req.body?.driverType),
+            mgmtUsername: parseOptionalString(req.body?.mgmtUsername),
             deviceType: parseOptionalString(req.body?.deviceType) ?? "other",
             status: parseStatus(req.body?.status),
             ipNetworkId: parseOptionalInteger(req.body?.ipNetworkId),
@@ -136,7 +156,7 @@ router.post("/", async (req, res) => {
 
         const savedDevice = await deviceRepo.findOne({
             where: { id: device.id },
-            relations: { ipNetwork: true, netNode: true, customer: true },
+            relations: { ipNetwork: true, netNode: true, customer: true, accessProfile: true },
         });
 
         res.status(201).json(serializeDevice(savedDevice ?? device));
@@ -151,7 +171,7 @@ router.put("/:id", async (req, res) => {
         const id = Number.parseInt(req.params.id, 10);
         const device = await deviceRepo.findOne({
             where: { id },
-            relations: { ipNetwork: true, netNode: true, customer: true },
+            relations: { ipNetwork: true, netNode: true, customer: true, accessProfile: true },
         });
 
         if (!device) {
@@ -182,6 +202,22 @@ router.put("/:id", async (req, res) => {
             device.managementIp = parseOptionalString(req.body.managementIp);
         }
 
+        if (req.body?.snmpCommunity !== undefined) {
+            device.snmpCommunity = parseOptionalString(req.body.snmpCommunity);
+        }
+
+        if (req.body?.loginUrl !== undefined) {
+            device.loginUrl = parseOptionalString(req.body.loginUrl);
+        }
+
+        if (req.body?.driverType !== undefined) {
+            device.driverType = parseOptionalString(req.body.driverType);
+        }
+
+        if (req.body?.mgmtUsername !== undefined) {
+            device.mgmtUsername = parseOptionalString(req.body.mgmtUsername);
+        }
+
         if (req.body?.deviceType !== undefined) {
             device.deviceType = parseOptionalString(req.body.deviceType) ?? "other";
         }
@@ -210,7 +246,7 @@ router.put("/:id", async (req, res) => {
 
         const savedDevice = await deviceRepo.findOne({
             where: { id: device.id },
-            relations: { ipNetwork: true, netNode: true, customer: true },
+            relations: { ipNetwork: true, netNode: true, customer: true, accessProfile: true },
         });
 
         res.json(serializeDevice(savedDevice ?? device));

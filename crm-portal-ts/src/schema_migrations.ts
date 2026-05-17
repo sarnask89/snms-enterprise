@@ -18,6 +18,10 @@ const TERYT_RELATIONAL_ADDRESSING_MIGRATION = {
     id: "20260516_0004_teryt_relational_addressing",
     name: "teryt_relational_addressing",
 };
+const BACKBONE_INVENTORY_PARITY_MIGRATION = {
+    id: "20260517_0005_backbone_inventory_parity",
+    name: "backbone_inventory_parity",
+};
 
 type MigrationRow = {
     id: string;
@@ -273,6 +277,13 @@ async function applyTerytRelationalAddressingMigration(dataSource: DataSource) {
     `);
 }
 
+async function applyBackboneInventoryParityMigration(dataSource: DataSource) {
+    await addColumnIfMissing(dataSource, "net_devices", "snmp_community", "snmp_community TEXT");
+    await addColumnIfMissing(dataSource, "net_devices", "login_url", "login_url TEXT");
+    await addColumnIfMissing(dataSource, "net_devices", "driver_type", "driver_type TEXT");
+    await addColumnIfMissing(dataSource, "net_devices", "mgmt_username", "mgmt_username TEXT");
+}
+
 const MANAGED_MIGRATIONS: ManagedMigration[] = [
     BASELINE_MIGRATION,
     {
@@ -286,6 +297,10 @@ const MANAGED_MIGRATIONS: ManagedMigration[] = [
     {
         ...TERYT_RELATIONAL_ADDRESSING_MIGRATION,
         apply: applyTerytRelationalAddressingMigration,
+    },
+    {
+        ...BACKBONE_INVENTORY_PARITY_MIGRATION,
+        apply: applyBackboneInventoryParityMigration,
     },
 ];
 

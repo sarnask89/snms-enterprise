@@ -110,6 +110,18 @@ export class NetDevice {
     @Column({ type: "varchar", name: "management_ip", length: 64, nullable: true })
     managementIp?: string;
 
+    @Column({ type: "varchar", name: "snmp_community", length: 128, nullable: true })
+    snmpCommunity?: string;
+
+    @Column({ type: "varchar", name: "login_url", length: 255, nullable: true })
+    loginUrl?: string;
+
+    @Column({ type: "varchar", name: "driver_type", length: 64, nullable: true })
+    driverType?: string;
+
+    @Column({ type: "varchar", name: "mgmt_username", length: 128, nullable: true })
+    mgmtUsername?: string;
+
     @Column({ type: "varchar", name: "device_type", length: 64, default: "other" })
     deviceType!: string;
 
