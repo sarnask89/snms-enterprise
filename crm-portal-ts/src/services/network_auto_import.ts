@@ -273,6 +273,11 @@ async function findOrCreateDeviceForRecord(
 ) {
     const existing = await findExistingCustomerDevice(customerDeviceRepo, record);
     if (existing) {
+        if (record.recordKind === "dasan_onu" && existing.deviceType !== "onu") {
+            existing.deviceType = "onu";
+            await customerDeviceRepo.save(existing);
+        }
+
         return {
             device: existing,
             created: false,
@@ -285,6 +290,7 @@ async function findOrCreateDeviceForRecord(
         customerId: customer.id,
         name: buildDeviceName(record),
         hostname: buildDeviceName(record),
+        deviceType: record.recordKind === "dasan_onu" ? "onu" : undefined,
         ipAddress: normalizeText(record.ipAddress) ?? undefined,
         macAddress: normalizeMac(record.macAddress) ?? undefined,
         status: record.recordStatus === "inactive" ? CustomerDeviceStatus.inactive : CustomerDeviceStatus.active,

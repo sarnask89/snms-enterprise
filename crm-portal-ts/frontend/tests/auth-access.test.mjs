@@ -23,6 +23,7 @@ test('anonymous user cannot access protected routes', () => {
 
 test('view role can access read-oriented modules but not admin routes', () => {
   assert.equal(canAccessRoute('view', '/customers'), true)
+  assert.equal(canAccessRoute('view', '/customer-devices'), true)
   assert.equal(canAccessRoute('view', '/network/devices'), true)
   assert.equal(canAccessRoute('view', '/admin'), false)
   assert.equal(canAccessRoute('view', '/settings'), true)
@@ -69,8 +70,9 @@ test('operator shell source keeps grouped navigation labels and session affordan
   assert.match(layoutSource, /label:\s*'CRM'/)
   assert.match(layoutSource, /label:\s*'Operacje'/)
   assert.match(layoutSource, /label:\s*'Administracja'/)
-  assert.match(layoutSource, /<UDropdown/, 'default layout should use a standard Nuxt UI dropdown navigation shell')
-  assert.doesNotMatch(layoutSource, /<UVerticalNavigation/, 'default layout should no longer use the custom sidebar navigation shell')
+  assert.match(layoutSource, /label:\s*'Urządzenia klientów'/)
+  assert.match(layoutSource, /<UVerticalNavigation/, 'default layout should use standard sidebar navigation')
+  assert.match(layoutSource, /label="Administracja"/, 'default layout should expose administration in the top menu')
   assert.match(layoutSource, /label="Sesja"|label:\s*'Sesja'/)
   assert.match(layoutSource, /label="Zaloguj"|label:\s*'Zaloguj'/)
 })

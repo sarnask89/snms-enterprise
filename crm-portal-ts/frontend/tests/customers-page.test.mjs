@@ -9,7 +9,8 @@ test('customers index keeps the calmer abonenci workspace and inline create flow
   const source = await readFile(customersIndexPath, 'utf8')
 
   assert.match(source, /Abonenci/, 'index should expose the calmer abonenci heading')
-  assert.match(source, /Szybkie dodanie abonenta/, 'index should keep create flow visible in-page')
+  assert.match(source, /Nowy abonent/, 'index should keep create flow visible in-page')
+  assert.match(source, /Więcej/, 'index should keep extra actions behind an optional dropdown')
   assert.match(source, /Źródło rekordu|Źródło danych/, 'index should label source badges clearly')
   assert.match(source, /Status operacyjny|Status/, 'index should keep readable status labels')
   assert.match(source, /Otwórz dossier/, 'index should keep the explicit dossier action visible')

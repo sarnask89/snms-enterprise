@@ -22,6 +22,10 @@ const BACKBONE_INVENTORY_PARITY_MIGRATION = {
     id: "20260517_0005_backbone_inventory_parity",
     name: "backbone_inventory_parity",
 };
+const CUSTOMER_DEVICE_TYPE_MIGRATION = {
+    id: "20260517_0006_customer_device_type",
+    name: "customer_device_type",
+};
 
 type MigrationRow = {
     id: string;
@@ -284,6 +288,10 @@ async function applyBackboneInventoryParityMigration(dataSource: DataSource) {
     await addColumnIfMissing(dataSource, "net_devices", "mgmt_username", "mgmt_username TEXT");
 }
 
+async function applyCustomerDeviceTypeMigration(dataSource: DataSource) {
+    await addColumnIfMissing(dataSource, "customer_devices", "device_type", "device_type TEXT");
+}
+
 const MANAGED_MIGRATIONS: ManagedMigration[] = [
     BASELINE_MIGRATION,
     {
@@ -301,6 +309,10 @@ const MANAGED_MIGRATIONS: ManagedMigration[] = [
     {
         ...BACKBONE_INVENTORY_PARITY_MIGRATION,
         apply: applyBackboneInventoryParityMigration,
+    },
+    {
+        ...CUSTOMER_DEVICE_TYPE_MIGRATION,
+        apply: applyCustomerDeviceTypeMigration,
     },
 ];
 

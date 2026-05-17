@@ -61,6 +61,7 @@ async function serializeDevice(device: CustomerDevice) {
         customerId: device.customerId,
         name: device.name ?? null,
         hostname: device.hostname,
+        deviceType: device.deviceType ?? null,
         login: device.login ?? null,
         ipAddress: device.ipAddress ?? null,
         macAddress: device.macAddress ?? null,
@@ -172,6 +173,9 @@ async function applyDevicePayload(device: CustomerDevice, payload: Record<string
 
     if (payload.name !== undefined) {
         device.name = parseOptionalString(payload.name);
+    }
+    if (payload.deviceType !== undefined) {
+        device.deviceType = parseOptionalString(payload.deviceType);
     }
     if (payload.login !== undefined) {
         device.login = parseOptionalString(payload.login);

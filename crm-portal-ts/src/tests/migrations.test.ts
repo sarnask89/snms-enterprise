@@ -19,17 +19,17 @@ test("baseline schema migrations bootstrap empty runtime database and stay idemp
 
         const before = await getSchemaMigrationStatus(AppDataSource);
         assert.equal(before.applied.length, 0);
-        assert.equal(before.pending.length, 5);
+        assert.equal(before.pending.length, 6);
 
         const firstRun = await runSchemaMigrations(AppDataSource);
-        assert.equal(firstRun.applied.length, 5);
+        assert.equal(firstRun.applied.length, 6);
         assert.equal(firstRun.pending.length, 0);
-        assert.equal(firstRun.current?.id, "20260517_0005_backbone_inventory_parity");
+        assert.equal(firstRun.current?.id, "20260517_0006_customer_device_type");
 
         const secondRun = await runSchemaMigrations(AppDataSource);
-        assert.equal(secondRun.applied.length, 5);
+        assert.equal(secondRun.applied.length, 6);
         assert.equal(secondRun.pending.length, 0);
-        assert.equal(secondRun.current?.id, "20260517_0005_backbone_inventory_parity");
+        assert.equal(secondRun.current?.id, "20260517_0006_customer_device_type");
 
         const columns = await AppDataSource.query("PRAGMA table_info(net_devices)") as Array<{ name: string }>;
         const columnNames = new Set(columns.map((column) => column.name));
@@ -37,6 +37,10 @@ test("baseline schema migrations bootstrap empty runtime database and stay idemp
         assert.equal(columnNames.has("login_url"), true);
         assert.equal(columnNames.has("driver_type"), true);
         assert.equal(columnNames.has("mgmt_username"), true);
+
+        const customerDeviceColumns = await AppDataSource.query("PRAGMA table_info(customer_devices)") as Array<{ name: string }>;
+        const customerDeviceColumnNames = new Set(customerDeviceColumns.map((column) => column.name));
+        assert.equal(customerDeviceColumnNames.has("device_type"), true);
 
         const tables = await AppDataSource.query(`
             SELECT name

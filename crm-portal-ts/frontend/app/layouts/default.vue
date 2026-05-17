@@ -1,46 +1,73 @@
 <template>
-  <div class="min-h-screen overflow-x-hidden bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-white">
-    <header class="border-b border-gray-200 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
-      <UContainer class="max-w-full px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between gap-4 py-4">
-          <div class="min-w-0">
-            <NuxtLink to="/" class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400">
-                <UIcon name="i-heroicons-cpu-chip" class="h-5 w-5" />
-              </div>
-              <div class="min-w-0">
-                <div class="text-xs font-medium text-gray-500 dark:text-gray-400">CRM Portal</div>
-                <div class="truncate text-lg font-semibold">SNMS Enterprise</div>
-              </div>
-            </NuxtLink>
+  <div class="flex h-dvh overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
+    <aside class="hidden w-72 shrink-0 border-r border-gray-200 bg-white lg:flex lg:flex-col dark:border-gray-800 dark:bg-gray-900">
+      <div class="border-b border-gray-200 px-5 py-5 dark:border-gray-800">
+        <NuxtLink to="/" class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400">
+            <UIcon name="i-heroicons-cpu-chip" class="h-5 w-5" />
           </div>
+          <div class="min-w-0">
+            <div class="text-xs font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">CRM Portal</div>
+            <div class="truncate text-lg font-semibold">SNMS Enterprise</div>
+          </div>
+        </NuxtLink>
+      </div>
 
-          <div class="flex flex-wrap items-center gap-2">
+      <div class="sidebar-scroll flex-1 overflow-y-auto px-4 py-4">
+        <div class="flex min-h-full flex-col gap-5">
+          <section
+            v-for="section in sidebarSections"
+            :key="section.label"
+            class="min-h-0 space-y-2"
+          >
+            <div class="px-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              {{ section.label }}
+            </div>
+            <UVerticalNavigation :links="section.links" />
+          </section>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <header class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <div class="flex min-w-0 items-center gap-3">
             <UDropdown
-              v-for="section in filteredSections"
-              :key="section.label"
-              :items="[section.links]"
+              class="lg:hidden"
+              :items="mobileNavigationItems"
               :popper="{ placement: 'bottom-start' }"
             >
-              <UButton
-                color="gray"
-                variant="ghost"
-                :label="section.label"
-                trailing-icon="i-heroicons-chevron-down-20-solid"
-              />
+              <UButton color="gray" variant="ghost" icon="i-heroicons-bars-3" label="Menu" />
             </UDropdown>
-            <UButton color="gray" variant="ghost" to="/architect" label="AI Architekt" icon="i-heroicons-sparkles" />
+
+            <div class="min-w-0">
+              <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ currentPageLabel }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentSectionLabel }}</div>
+            </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="text-right">
-              <div class="text-sm font-medium text-gray-900 dark:text-white">
-                {{ currentUser?.username ?? 'Gość' }}
-              </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
-                {{ sessionSummary }}
-              </div>
+          <div class="flex min-w-0 flex-1 items-center justify-end gap-2">
+            <div class="hidden min-w-[20rem] max-w-xl flex-1 xl:block">
+              <UInput
+                icon="i-heroicons-magnifying-glass-20-solid"
+                placeholder="Szukaj modułu lub funkcji..."
+                readonly
+                size="md"
+              >
+                <template #trailing>
+                  <UKbd value="K" />
+                </template>
+              </UInput>
             </div>
+            <UButton color="gray" variant="ghost" to="/architect" label="AI Architekt" icon="i-heroicons-sparkles" />
+            <UDropdown
+              v-if="adminLinks.length > 0"
+              :items="[adminLinks]"
+              :popper="{ placement: 'bottom-end' }"
+            >
+              <UButton color="gray" variant="ghost" label="Administracja" trailing-icon="i-heroicons-chevron-down-20-solid" />
+            </UDropdown>
             <UButton
               v-if="currentUser"
               color="gray"
@@ -62,31 +89,35 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 py-3 text-sm dark:border-gray-800">
+        <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm sm:px-6 lg:px-8 dark:border-gray-800">
           <UBreadcrumb
             :links="[
               { label: currentSectionLabel, icon: 'i-heroicons-home' },
               { label: currentPageLabel }
             ]"
           />
-          <span class="text-gray-400">/</span>
-          <span class="text-gray-500 dark:text-gray-400">{{ currentPageLabel }}</span>
+          <div class="ml-auto text-right">
+            <div class="text-sm font-medium text-gray-900 dark:text-white">
+              {{ currentUser?.username ?? 'Gość' }}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+              {{ sessionSummary }}
+            </div>
+          </div>
         </div>
-      </UContainer>
-    </header>
+      </header>
 
-    <main class="overflow-x-hidden">
-      <UContainer class="max-w-full px-4 py-6 sm:px-6 lg:px-8">
-        <div class="overflow-x-hidden">
+      <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+        <div class="overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
           <slot v-if="$route.path !== '/'" />
           <iframe
             v-else
             src="http://localhost:8081/dashboard?embed=true"
-            class="h-[calc(100dvh-11rem)] w-full rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
+            class="h-[calc(100dvh-11rem)] w-full rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
           ></iframe>
         </div>
-      </UContainer>
-    </main>
+      </main>
+    </div>
 
     <AiAssistant />
   </div>
@@ -104,6 +135,7 @@ const navigationSections = [
     links: [
       { label: 'Pulpit', icon: 'i-heroicons-home', to: '/' },
       { label: 'Abonenci', icon: 'i-heroicons-users', to: '/customers' },
+      { label: 'Urządzenia klientów', icon: 'i-heroicons-computer-desktop', to: '/customer-devices' },
       { label: 'Węzły', icon: 'i-heroicons-circle-stack', to: '/network/nodes' },
       { label: 'Urządzenia', icon: 'i-heroicons-server-stack', to: '/network/devices' },
       { label: 'Finanse', icon: 'i-heroicons-banknotes', to: '/finances' },
@@ -145,6 +177,24 @@ const filteredSections = computed(() =>
     return result
   }, [])
 )
+
+const sidebarSections = computed(() =>
+  filteredSections.value.filter((section) => section.label !== 'Administracja')
+)
+
+const adminLinks = computed(() =>
+  filteredSections.value.find((section) => section.label === 'Administracja')?.links ?? []
+)
+
+const mobileNavigationItems = computed(() => {
+  const items = sidebarSections.value.map((section) => section.links)
+
+  if (adminLinks.value.length > 0) {
+    items.push(adminLinks.value)
+  }
+
+  return items
+})
 
 const staticRouteLabels = [
   {
@@ -226,3 +276,14 @@ function findActiveNavigation(sections, currentPath, staticLabels = []) {
   return null
 }
 </script>
+
+<style scoped>
+.sidebar-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  display: none;
+}
+</style>

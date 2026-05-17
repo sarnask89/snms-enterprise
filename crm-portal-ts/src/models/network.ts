@@ -177,6 +177,9 @@ export class CustomerDevice {
     @Column({ type: "varchar", length: 255 })
     hostname!: string;
 
+    @Column({ type: "varchar", name: "device_type", length: 64, nullable: true })
+    deviceType?: string;
+
     @Column({ type: "varchar", length: 64, nullable: true })
     login?: string;
 

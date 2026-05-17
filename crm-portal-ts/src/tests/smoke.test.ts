@@ -41,7 +41,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
 
     const server = await startServer(0);
     const schemaMigrationStatus = await getSchemaMigrationStatus(AppDataSource);
-    assert.equal(schemaMigrationStatus.applied.length, 5);
+    assert.equal(schemaMigrationStatus.applied.length, 6);
     assert.equal(schemaMigrationStatus.pending.length, 0);
     const portalUserRepo = AppDataSource.getRepository(PortalUser);
     const adminUser = await portalUserRepo.findOneBy({ username: "admin" });
@@ -1433,6 +1433,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
     const importedDasanPayload = await importedDasanDevice.json() as {
         customerDevice: {
             id: number;
+            deviceType: string | null;
             remoteVendor: string | null;
             remoteSerialNumber: string | null;
             remoteOlt: number | null;
@@ -1440,6 +1441,7 @@ test("server starts and customers/groups parity baseline works", async (t) => {
         };
     };
     assert.ok(importedDasanPayload.customerDevice.id > 0);
+    assert.equal(importedDasanPayload.customerDevice.deviceType, "onu");
     assert.equal(importedDasanPayload.customerDevice.remoteVendor, "dasan");
     assert.equal(importedDasanPayload.customerDevice.remoteSerialNumber, "DSNW276d9298");
     assert.equal(importedDasanPayload.customerDevice.remoteOlt, 1);
