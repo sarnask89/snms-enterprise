@@ -16,8 +16,10 @@
     "test": "npm run build && npm run smoke",
     "container:smoke": "node scripts/container-smoke.mjs",
     "frontend:test": "npm --prefix frontend test",
+    "frontend:typecheck": "npm --prefix frontend run typecheck",
+    "frontend:lint": "npm --prefix frontend run lint",
     "frontend:build": "npm --prefix frontend run build",
-    "verify:release": "npm run test && npm run deployment:test && npm run frontend:test && npm run frontend:build",
+    "verify:release": "npm run test && npm run deployment:test && npm run frontend:test && npm run frontend:typecheck && npm run frontend:lint && npm run frontend:build",
     "verify:ci": "npm run verify:release && npm run container:smoke"
   },
   "dependencies": {

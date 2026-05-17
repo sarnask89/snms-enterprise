@@ -510,7 +510,7 @@ const login = async () => {
     if (redirect && redirect !== '/settings') {
       await navigateTo(redirect)
     }
-  } catch (_error) {
+  } catch {
     authMessage.value = 'Logowanie nie powiodło się.'
   } finally {
     isLoggingIn.value = false
@@ -535,7 +535,7 @@ const changePassword = async () => {
     await changeSessionPassword({ ...passwordForm })
     Object.assign(passwordForm, { currentPassword: '', newPassword: '', newPassword2: '' })
     authMessage.value = 'Hasło zostało zmienione.'
-  } catch (_error) {
+  } catch {
     authMessage.value = 'Zmiana hasła nie powiodła się.'
   } finally {
     isChangingPassword.value = false

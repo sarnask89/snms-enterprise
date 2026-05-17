@@ -152,8 +152,7 @@ const sendMessage = async () => {
     const content = data.message.content
     messages.value.push({ role: 'assistant', content })
     lastSpec.value = content
-    
-  } catch (error) {
+  } catch {
     messages.value.push({ role: 'assistant', content: '❌ Błąd połączenia z serwerem Ollama. Upewnij się, że działa.' })
   } finally {
     isLoading.value = false
@@ -161,18 +160,17 @@ const sendMessage = async () => {
 }
 
 const implementModule = async () => {
-  isImplementing.value = true;
+  isImplementing.value = true
   try {
     const res = await $fetch('/api/v1/architect/implement', {
       method: 'POST',
       body: { spec: lastSpec.value }
     })
-    
     alert(`Wdrożono pomyślnie! Utworzono pliki:\n` + res.files.join('\n'))
   } catch (error) {
     alert(`Błąd wdrażania: ${error.data?.message || error.message}`)
   } finally {
-    isImplementing.value = false;
+    isImplementing.value = false
   }
 }
 </script>

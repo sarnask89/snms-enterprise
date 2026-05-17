@@ -353,7 +353,7 @@ const { data: invoices, pending: pendingInvoices, refresh: refreshInvoices } = a
 const { data: payments, refresh: refreshPayments } = await useFetch('/api/v1/finances/payments')
 const { data: ledgerEntries, refresh: refreshLedgerEntries } = await useFetch('/api/v1/finances/balance')
 const { data: cashReceipts, refresh: refreshCashReceipts } = await useFetch('/api/v1/finances/cash')
-const { data: customers, refresh: refreshCustomers } = await useFetch('/api/v1/customers', {
+const { data: customers } = await useFetch('/api/v1/customers', {
   query: { limit: 200 }
 })
 

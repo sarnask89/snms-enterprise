@@ -620,7 +620,7 @@ const { data: accessProfiles, refresh: refreshAccessProfiles } = await useFetch(
 const { data: discoverySessions, refresh: refreshDiscoverySessions } = await useFetch('/api/v1/network-discovery/sessions', {
   default: () => []
 })
-const { data: pitSync, refresh: refreshPitSync } = await useFetch('/api/v1/pit/sync', {
+const { refresh: refreshPitSync } = await useFetch('/api/v1/pit/sync', {
   method: 'POST',
   server: false
 })

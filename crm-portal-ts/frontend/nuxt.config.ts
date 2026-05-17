@@ -1,13 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  modules: ['@nuxt/eslint', '@nuxt/ui'],
   devtools: { enabled: true },
-  modules: ['@nuxt/ui'],
   compatibilityDate: '2024-07-04',
   srcDir: 'app/',
   css: ['~/assets/css/main.css'],
-  ui: {
-    global: true,
-    icons: ['heroicons', 'simple-icons']
+  eslint: {
+    config: {
+      stylistic: {
+        commaDangle: 'never',
+        braceStyle: '1tbs'
+      }
+    }
   },
   nitro: {
     devProxy: {

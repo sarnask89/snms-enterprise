@@ -1,5 +1,4 @@
 <script setup>
-const route = useRoute()
 const { session: authSession, visibleLinks, loadSession, logout } = usePortalAuth()
 
 await loadSession({ silent: true })
@@ -182,51 +181,6 @@ const userMenuItems = computed(() => [[{
     await navigateTo('/settings')
   }
 }]])
-
-const currentPageLabel = computed(() => {
-  const currentPath = normalizePath(route.path)
-
-  for (const section of links.value) {
-    for (const item of section) {
-      const label = findActiveLabel(item, currentPath)
-      if (label) {
-        return label
-      }
-    }
-  }
-
-  return 'Dashboard'
-})
-
-function normalizePath(path) {
-  if (!path) {
-    return '/'
-  }
-
-  return String(path).split('?')[0] || '/'
-}
-
-function matchesPath(candidate, currentPath) {
-  const normalizedCandidate = normalizePath(candidate)
-  return currentPath === normalizedCandidate || currentPath.startsWith(`${normalizedCandidate}/`)
-}
-
-function findActiveLabel(item, currentPath) {
-  if (item.to && matchesPath(item.to, currentPath)) {
-    return item.label
-  }
-
-  if (Array.isArray(item.children)) {
-    for (const child of item.children) {
-      const childLabel = findActiveLabel(child, currentPath)
-      if (childLabel) {
-        return childLabel
-      }
-    }
-  }
-
-  return null
-}
 </script>
 
 <template>

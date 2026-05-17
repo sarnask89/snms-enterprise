@@ -121,12 +121,6 @@ const promptForContext = () => {
   isContextModalOpen.value = true
 }
 
-const saveContext = () => {
-  systemContext.value = tempContext.value
-  isContextModalOpen.value = false
-  messages.value.push({ role: 'assistant', content: '✅ API Documentation received and saved to session context. I will use this for future code generation.' })
-}
-
 const sendMessage = async () => {
   if (!input.value.trim()) return
 
@@ -145,7 +139,7 @@ const sendMessage = async () => {
       try {
         const res = await $fetch('/api/agent/start', { method: 'POST', body: { target } })
         messages.value.push({ role: 'assistant', content: `🤖 Agent Status: ${res.message}` })
-      } catch (e) {
+      } catch {
         messages.value.push({ role: 'assistant', content: `❌ Failed to start agent.` })
       }
       isLoading.value = false
@@ -160,7 +154,7 @@ const sendMessage = async () => {
           role: 'assistant', 
           content: `🤖 Agent is ${res.isRunning ? 'RUNNING' : 'STOPPED'}.\n\nLast logs:\n${res.logs || 'No logs yet.'}` 
         })
-      } catch (e) {
+      } catch {
         messages.value.push({ role: 'assistant', content: `❌ Failed to fetch agent status.` })
       }
       isLoading.value = false
@@ -207,7 +201,7 @@ const sendMessage = async () => {
 
     const data = await response.json()
     messages.value.push({ role: 'assistant', content: data.message.content })
-  } catch (error) {
+  } catch {
     messages.value.push({ role: 'assistant', content: '❌ Error connecting to Ollama. Make sure the server is running on port 11434.' })
   } finally {
     isLoading.value = false
