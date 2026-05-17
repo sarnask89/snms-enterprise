@@ -65,54 +65,54 @@
           </template>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <UFormGroup label="Kod klienta" required>
+            <UFormField label="Kod klienta" required>
               <UInput v-model="form.customerCode" />
-            </UFormGroup>
-            <UFormGroup label="Typ klienta" required>
-              <USelect v-model="form.customerType" :options="customerTypeOptions" />
-            </UFormGroup>
-            <UFormGroup label="Status operacyjny">
-              <USelect v-model="form.status" :options="statusOptions" />
-            </UFormGroup>
+            </UFormField>
+            <UFormField label="Typ klienta" required>
+              <USelect v-model="form.customerType" :items="customerTypeOptions" />
+            </UFormField>
+            <UFormField label="Status operacyjny">
+              <USelect v-model="form.status" :items="statusOptions" />
+            </UFormField>
           </div>
 
           <div v-if="form.customerType === 'individual'" class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <UFormGroup label="Imię" required>
+            <UFormField label="Imię" required>
               <UInput v-model="form.firstName" />
-            </UFormGroup>
-            <UFormGroup label="Drugie imię">
+            </UFormField>
+            <UFormField label="Drugie imię">
               <UInput v-model="form.middleName" />
-            </UFormGroup>
-            <UFormGroup label="Nazwisko" required>
+            </UFormField>
+            <UFormField label="Nazwisko" required>
               <UInput v-model="form.lastName" />
-            </UFormGroup>
-            <UFormGroup label="PESEL">
+            </UFormField>
+            <UFormField label="PESEL">
               <UInput v-model="form.pesel" />
-            </UFormGroup>
-            <UFormGroup label="Typ dokumentu">
+            </UFormField>
+            <UFormField label="Typ dokumentu">
               <UInput v-model="form.idDocumentType" />
-            </UFormGroup>
-            <UFormGroup label="Numer dokumentu">
+            </UFormField>
+            <UFormField label="Numer dokumentu">
               <UInput v-model="form.idDocumentNumber" />
-            </UFormGroup>
-            <UFormGroup label="Data urodzenia">
+            </UFormField>
+            <UFormField label="Data urodzenia">
               <UInput v-model="form.birthDate" type="date" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div v-else class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <UFormGroup label="Nazwa firmy" required class="md:col-span-2">
+            <UFormField label="Nazwa firmy" required class="md:col-span-2">
               <UInput v-model="form.companyName" />
-            </UFormGroup>
-            <UFormGroup label="NIP">
+            </UFormField>
+            <UFormField label="NIP">
               <UInput v-model="form.nip" />
-            </UFormGroup>
-            <UFormGroup label="REGON">
+            </UFormField>
+            <UFormField label="REGON">
               <UInput v-model="form.regon" />
-            </UFormGroup>
-            <UFormGroup label="KRS">
+            </UFormField>
+            <UFormField label="KRS">
               <UInput v-model="form.krs" />
-            </UFormGroup>
+            </UFormField>
           </div>
         </UCard>
 
@@ -125,37 +125,37 @@
           </template>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <UFormGroup label="Email">
+            <UFormField label="Email">
               <UInput v-model="form.email" type="email" />
-            </UFormGroup>
-            <UFormGroup label="Telefon">
+            </UFormField>
+            <UFormField label="Telefon">
               <UInput v-model="form.phone" />
-            </UFormGroup>
-            <UFormGroup label="Telefon dodatkowy">
+            </UFormField>
+            <UFormField label="Telefon dodatkowy">
               <UInput v-model="form.secondaryPhone" />
-            </UFormGroup>
-            <UFormGroup label="Email billingowy">
+            </UFormField>
+            <UFormField label="Email billingowy">
               <UInput v-model="form.billingEmail" type="email" />
-            </UFormGroup>
-            <UFormGroup label="Login portalu">
+            </UFormField>
+            <UFormField label="Login portalu">
               <UInput :model-value="customer.portalLogin || ''" disabled />
-            </UFormGroup>
-            <UFormGroup label="Źródło auto-importu">
+            </UFormField>
+            <UFormField label="Źródło auto-importu">
               <UInput :model-value="form.autoImportSource || ''" disabled />
-            </UFormGroup>
+            </UFormField>
             <template v-if="form.customerType === 'company'">
-              <UFormGroup label="Kontakt - imię">
+              <UFormField label="Kontakt - imię">
                 <UInput v-model="form.contactFirstName" />
-              </UFormGroup>
-              <UFormGroup label="Kontakt - nazwisko">
+              </UFormField>
+              <UFormField label="Kontakt - nazwisko">
                 <UInput v-model="form.contactLastName" />
-              </UFormGroup>
-              <UFormGroup label="Kontakt - telefon">
+              </UFormField>
+              <UFormField label="Kontakt - telefon">
                 <UInput v-model="form.contactPhone" />
-              </UFormGroup>
-              <UFormGroup label="Kontakt - email">
+              </UFormField>
+              <UFormField label="Kontakt - email">
                 <UInput v-model="form.contactEmail" type="email" />
-              </UFormGroup>
+              </UFormField>
             </template>
           </div>
         </UCard>
@@ -165,80 +165,55 @@
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 class="text-base font-semibold text-slate-900 dark:text-white">Adres korespondencyjny</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Autosugestie korzystają z zaimportowanych słowników TERYT.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Adres korzysta z zarządzanych miast i ulic TERYT.</p>
               </div>
-              <UButton size="sm" color="gray" variant="soft" label="Użyj domyślnego obszaru" @click="applyDefaultAreaToCustomer" />
+              <UButton size="sm" color="gray" variant="soft" label="Użyj domyślnego miasta" @click="applyDefaultAreaToCustomer" />
             </div>
           </template>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <UFormGroup label="Województwo">
-              <UInput v-model="form.correspondenceState" readonly />
-            </UFormGroup>
-            <UFormGroup label="Powiat">
-              <UInput v-model="form.correspondenceCounty" readonly />
-            </UFormGroup>
-            <div class="md:col-span-3" />
-
-            <UFormGroup label="Gmina">
-              <UInput v-model="form.correspondenceCommuneName" @input="onCustomerCommuneInput" />
-              <div v-if="customerAddressSuggestions.communes.length" class="mt-2 rounded-lg border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
+            <UFormField label="Miasto">
+              <UInput v-model="form.correspondenceCity" @input="customerAddress.onCityInput" />
+              <div v-if="customerAddress.suggestions.cities.length" class="mt-2 overflow-hidden rounded-lg border border-default divide-y divide-default">
                 <button
-                  v-for="suggestion in customerAddressSuggestions.communes"
+                  v-for="suggestion in customerAddress.suggestions.cities"
                   :key="suggestion.id"
                   type="button"
-                  class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
-                  @click="selectCustomerCommune(suggestion)"
+                  class="w-full px-3 py-2 text-left text-sm hover:bg-elevated"
+                  @click="customerAddress.selectCity(suggestion)"
                 >
-                  <div class="font-medium">{{ suggestion.text }}</div>
-                  <div class="text-xs text-gray-500">{{ suggestion.districtName || 'Brak powiatu' }} · {{ suggestion.stateName || 'Brak województwa' }}</div>
+                  <div class="font-medium text-highlighted">{{ suggestion.text }}</div>
                 </button>
               </div>
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Miasto">
-              <UInput v-model="form.correspondenceCity" @input="onCustomerCityInput" />
-              <div v-if="customerAddressSuggestions.cities.length" class="mt-2 rounded-lg border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
+            <UFormField label="Ulica" class="md:col-span-1">
+              <UInput v-model="form.correspondenceStreet" @input="customerAddress.onStreetInput" />
+              <div v-if="customerAddress.suggestions.streets.length" class="mt-2 overflow-hidden rounded-lg border border-default divide-y divide-default">
                 <button
-                  v-for="suggestion in customerAddressSuggestions.cities"
+                  v-for="suggestion in customerAddress.suggestions.streets"
                   :key="suggestion.id"
                   type="button"
-                  class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
-                  @click="selectCustomerCity(suggestion)"
+                  class="w-full px-3 py-2 text-left text-sm hover:bg-elevated"
+                  @click="customerAddress.selectStreet(suggestion)"
                 >
-                  <div class="font-medium">{{ suggestion.text }}</div>
-                  <div class="text-xs text-gray-500">{{ suggestion.communeName || form.correspondenceCommuneName || 'Brak gminy' }} · {{ suggestion.districtName || 'Brak powiatu' }}</div>
+                  <div class="font-medium text-highlighted">{{ suggestion.text }}</div>
                 </button>
               </div>
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Ulica" class="md:col-span-1">
-              <UInput v-model="form.correspondenceStreet" @input="onCustomerStreetInput" />
-              <div v-if="customerAddressSuggestions.streets.length" class="mt-2 rounded-lg border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
-                <button
-                  v-for="suggestion in customerAddressSuggestions.streets"
-                  :key="suggestion.id"
-                  type="button"
-                  class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
-                  @click="selectCustomerStreet(suggestion)"
-                >
-                  <div class="font-medium">{{ suggestion.text }}</div>
-                </button>
-              </div>
-            </UFormGroup>
-
-            <UFormGroup label="Nr budynku">
+            <UFormField label="Nr budynku">
               <UInput v-model="form.correspondenceStreetNumber" />
-            </UFormGroup>
-            <UFormGroup label="Nr lokalu">
+            </UFormField>
+            <UFormField label="Nr lokalu">
               <UInput v-model="form.correspondenceApartmentNumber" />
-            </UFormGroup>
-            <UFormGroup label="Kod pocztowy">
+            </UFormField>
+            <UFormField label="Kod pocztowy">
               <UInput v-model="form.correspondencePostalCode" />
-            </UFormGroup>
-            <UFormGroup label="Kraj">
+            </UFormField>
+            <UFormField label="Kraj">
               <UInput v-model="form.correspondenceCountry" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
         </UCard>
@@ -251,31 +226,31 @@
             </div>
           </template>
           <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <UFormGroup label="Numer umowy">
+            <UFormField label="Numer umowy">
               <UInput v-model="form.contractNumber" />
-            </UFormGroup>
-            <UFormGroup label="Data zawarcia">
+            </UFormField>
+            <UFormField label="Data zawarcia">
               <UInput v-model="form.contractSignedAt" type="date" />
-            </UFormGroup>
-            <UFormGroup label="Start świadczenia">
+            </UFormField>
+            <UFormField label="Start świadczenia">
               <UInput v-model="form.serviceStartDate" type="date" />
-            </UFormGroup>
-            <UFormGroup label="Sposób płatności">
-              <USelect v-model="form.paymentMethod" :options="paymentMethodOptions" />
-            </UFormGroup>
-            <UFormGroup label="Dzień terminu płatności">
+            </UFormField>
+            <UFormField label="Sposób płatności">
+              <USelect v-model="form.paymentMethod" :items="paymentMethodOptions" />
+            </UFormField>
+            <UFormField label="Dzień terminu płatności">
               <UInput v-model="form.paymentDueDay" type="number" />
-            </UFormGroup>
-            <UFormGroup label="Odbiorca faktur" class="md:col-span-2">
+            </UFormField>
+            <UFormField label="Odbiorca faktur" class="md:col-span-2">
               <UInput v-model="form.invoiceRecipientName" />
-            </UFormGroup>
-            <UFormGroup label="NIP odbiorcy">
+            </UFormField>
+            <UFormField label="NIP odbiorcy">
               <UInput v-model="form.invoiceRecipientTaxId" />
-            </UFormGroup>
+            </UFormField>
           </div>
-          <UFormGroup label="Uwagi billingowe" class="mt-4">
-            <UTextarea v-model="form.billingNotes" :rows="3" />
-          </UFormGroup>
+          <UFormField label="Uwagi billingowe" class="mt-4">
+            <UTextarea v-model="form.billingNotes" :data="3" />
+          </UFormField>
         </UCard>
 
         <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
@@ -291,9 +266,9 @@
             <UCheckbox v-model="form.smsConsent" label="Zgoda SMS" />
             <UCheckbox v-model="form.documentDeliveryConsent" label="Zgoda na dostarczanie dokumentów" />
           </div>
-          <UFormGroup label="Notatki" class="mt-4">
-            <UTextarea v-model="form.notes" :rows="5" />
-          </UFormGroup>
+          <UFormField label="Notatki" class="mt-4">
+            <UTextarea v-model="form.notes" :data="5" />
+          </UFormField>
         </UCard>
 
         <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
@@ -343,75 +318,53 @@
 
               <form v-if="isDeviceEditorOpen" class="mt-4 space-y-4" @submit.prevent="saveDeviceAddress">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <UFormGroup label="Województwo">
-                    <UInput v-model="deviceEditor.installationState" readonly />
-                  </UFormGroup>
-                  <UFormGroup label="Powiat">
-                    <UInput v-model="deviceEditor.installationCounty" readonly />
-                  </UFormGroup>
-                  <UFormGroup label="Gmina">
-                    <UInput v-model="deviceEditor.installationCommuneName" @input="onDeviceCommuneInput" />
-                    <div v-if="deviceAddressSuggestions.communes.length" class="mt-2 rounded-lg border border-slate-200 divide-y divide-slate-100 dark:border-slate-800 dark:divide-slate-800">
+                  <UFormField label="Miasto">
+                    <UInput v-model="deviceEditor.installationCity" @input="deviceAddress.onCityInput" />
+                    <div v-if="deviceAddress.suggestions.cities.length" class="mt-2 overflow-hidden rounded-lg border border-default divide-y divide-default">
                       <button
-                        v-for="suggestion in deviceAddressSuggestions.communes"
+                        v-for="suggestion in deviceAddress.suggestions.cities"
                         :key="suggestion.id"
                         type="button"
-                        class="w-full px-3 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
-                        @click="selectDeviceCommune(suggestion)"
+                        class="w-full px-3 py-2 text-left text-sm hover:bg-elevated"
+                        @click="deviceAddress.selectCity(suggestion)"
                       >
-                        <div class="font-medium">{{ suggestion.text }}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ suggestion.districtName || 'Brak powiatu' }} · {{ suggestion.stateName || 'Brak województwa' }}</div>
+                        <div class="font-medium text-highlighted">{{ suggestion.text }}</div>
                       </button>
                     </div>
-                  </UFormGroup>
-                  <UFormGroup label="Miasto">
-                    <UInput v-model="deviceEditor.installationCity" @input="onDeviceCityInput" />
-                    <div v-if="deviceAddressSuggestions.cities.length" class="mt-2 rounded-lg border border-slate-200 divide-y divide-slate-100 dark:border-slate-800 dark:divide-slate-800">
+                  </UFormField>
+                  <UFormField label="Ulica">
+                    <UInput v-model="deviceEditor.installationStreet" @input="deviceAddress.onStreetInput" />
+                    <div v-if="deviceAddress.suggestions.streets.length" class="mt-2 overflow-hidden rounded-lg border border-default divide-y divide-default">
                       <button
-                        v-for="suggestion in deviceAddressSuggestions.cities"
+                        v-for="suggestion in deviceAddress.suggestions.streets"
                         :key="suggestion.id"
                         type="button"
-                        class="w-full px-3 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
-                        @click="selectDeviceCity(suggestion)"
+                        class="w-full px-3 py-2 text-left text-sm hover:bg-elevated"
+                        @click="deviceAddress.selectStreet(suggestion)"
                       >
-                        <div class="font-medium">{{ suggestion.text }}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ suggestion.communeName || deviceEditor.installationCommuneName || 'Brak gminy' }} · {{ suggestion.districtName || 'Brak powiatu' }}</div>
+                        <div class="font-medium text-highlighted">{{ suggestion.text }}</div>
                       </button>
                     </div>
-                  </UFormGroup>
-                  <UFormGroup label="Ulica" class="md:col-span-2">
-                    <UInput v-model="deviceEditor.installationStreet" @input="onDeviceStreetInput" />
-                    <div v-if="deviceAddressSuggestions.streets.length" class="mt-2 rounded-lg border border-slate-200 divide-y divide-slate-100 dark:border-slate-800 dark:divide-slate-800">
-                      <button
-                        v-for="suggestion in deviceAddressSuggestions.streets"
-                        :key="suggestion.id"
-                        type="button"
-                        class="w-full px-3 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
-                        @click="selectDeviceStreet(suggestion)"
-                      >
-                        <div class="font-medium">{{ suggestion.text }}</div>
-                      </button>
-                    </div>
-                  </UFormGroup>
-                  <UFormGroup label="Nr budynku">
+                  </UFormField>
+                  <UFormField label="Nr budynku">
                     <UInput v-model="deviceEditor.installationStreetNumber" />
-                  </UFormGroup>
-                  <UFormGroup label="Nr lokalu">
+                  </UFormField>
+                  <UFormField label="Nr lokalu">
                     <UInput v-model="deviceEditor.installationApartmentNumber" />
-                  </UFormGroup>
-                  <UFormGroup label="Kod pocztowy">
+                  </UFormField>
+                  <UFormField label="Kod pocztowy">
                     <UInput v-model="deviceEditor.installationPostalCode" />
-                  </UFormGroup>
-                  <UFormGroup label="Kraj">
+                  </UFormField>
+                  <UFormField label="Kraj">
                     <UInput v-model="deviceEditor.installationCountry" />
-                  </UFormGroup>
-                  <UFormGroup label="Opis lokalizacji" class="md:col-span-2">
+                  </UFormField>
+                  <UFormField label="Opis lokalizacji" class="md:col-span-2">
                     <UInput v-model="deviceEditor.locationDescription" />
-                  </UFormGroup>
+                  </UFormField>
                 </div>
 
                 <div class="flex items-center justify-between gap-3">
-                  <UButton size="sm" color="gray" variant="soft" label="Użyj domyślnego obszaru" @click="applyDefaultAreaToDevice" />
+                  <UButton size="sm" color="gray" variant="soft" label="Użyj domyślnego miasta" @click="applyDefaultAreaToDevice" />
                   <div class="flex gap-2">
                     <UButton color="gray" variant="ghost" label="Anuluj" @click="isDeviceEditorOpen = false" />
                     <UButton type="submit" color="primary" :loading="isSavingDevice" label="Zapisz adres" />
@@ -563,18 +516,6 @@ const deviceEditor = reactive({
   locationDescription: ''
 })
 
-const customerAddressSuggestions = reactive({
-  communes: [],
-  cities: [],
-  streets: []
-})
-
-const deviceAddressSuggestions = reactive({
-  communes: [],
-  cities: [],
-  streets: []
-})
-
 const { data: customer, refresh } = await useFetch(() => `/api/v1/customers/${customerId.value}`, {
   onResponseError({ response }) {
     fetchError.value = response._data?.message || 'Nieznany błąd'
@@ -582,6 +523,20 @@ const { data: customer, refresh } = await useFetch(() => `/api/v1/customers/${cu
 })
 
 const { data: defaultArea } = await useFetch('/api/v1/addresses/default-area')
+
+const customerAddress = useManagedTerytAddress(form, {
+  cityId: 'correspondenceCityId',
+  streetId: 'correspondenceStreetId',
+  city: 'correspondenceCity',
+  street: 'correspondenceStreet'
+}, defaultArea)
+
+const deviceAddress = useManagedTerytAddress(deviceEditor, {
+  cityId: 'installationCityId',
+  streetId: 'installationStreetId',
+  city: 'installationCity',
+  street: 'installationStreet'
+}, defaultArea)
 
 const headerTitle = computed(() => {
   if (!customer.value) {
@@ -636,202 +591,12 @@ const statusLabel = (status) => {
   }
 }
 
-const clearSuggestionBucket = (bucket) => {
-  bucket.communes = []
-  bucket.cities = []
-  bucket.streets = []
-}
-
-const applyDefaultArea = (target) => {
-  if (!defaultArea.value?.commune) {
-    return
-  }
-
-  const isDevice = Object.prototype.hasOwnProperty.call(target, 'installationCity')
-
-  if (isDevice) {
-    target.installationStateId = defaultArea.value.state?.id || null
-    target.installationDistrictId = defaultArea.value.district?.id || null
-    target.installationCommuneId = defaultArea.value.commune?.id || null
-    target.installationCityId = defaultArea.value.city?.id || null
-    target.installationState = defaultArea.value.state?.name || ''
-    target.installationCounty = defaultArea.value.district?.name || ''
-    target.installationCommuneName = defaultArea.value.commune?.name || ''
-    target.installationCity = defaultArea.value.city?.name || ''
-    target.installationStreetId = null
-    target.installationStreet = ''
-  } else {
-    target.correspondenceStateId = defaultArea.value.state?.id || null
-    target.correspondenceDistrictId = defaultArea.value.district?.id || null
-    target.correspondenceCommuneId = defaultArea.value.commune?.id || null
-    target.correspondenceCityId = defaultArea.value.city?.id || null
-    target.correspondenceState = defaultArea.value.state?.name || ''
-    target.correspondenceCounty = defaultArea.value.district?.name || ''
-    target.correspondenceCommuneName = defaultArea.value.commune?.name || ''
-    target.correspondenceCity = defaultArea.value.city?.name || ''
-    target.correspondenceStreetId = null
-    target.correspondenceStreet = ''
-  }
-}
-
 const applyDefaultAreaToCustomer = () => {
-  applyDefaultArea(form)
-  clearSuggestionBucket(customerAddressSuggestions)
+  customerAddress.applyDefaultArea()
 }
 
 const applyDefaultAreaToDevice = () => {
-  applyDefaultArea(deviceEditor)
-  clearSuggestionBucket(deviceAddressSuggestions)
-}
-
-const fetchSuggestions = async (kind, query, extraQuery = {}) => {
-  if (!query || query.trim().length < 2) {
-    return []
-  }
-
-  return await $fetch('/api/v1/teryt/suggest', {
-    query: {
-      kind,
-      q: query.trim(),
-      ...extraQuery
-    }
-  })
-}
-
-const onCustomerCommuneInput = async () => {
-  form.correspondenceCommuneId = null
-  form.correspondenceCityId = null
-  form.correspondenceStreetId = null
-  form.correspondenceCity = ''
-  form.correspondenceStreet = ''
-  customerAddressSuggestions.cities = []
-  customerAddressSuggestions.streets = []
-  customerAddressSuggestions.communes = await fetchSuggestions('commune', form.correspondenceCommuneName)
-}
-
-const onCustomerCityInput = async () => {
-  form.correspondenceCityId = null
-  form.correspondenceStreetId = null
-  form.correspondenceStreet = ''
-  customerAddressSuggestions.streets = []
-  customerAddressSuggestions.cities = await fetchSuggestions('city', form.correspondenceCity, {
-    communeId: form.correspondenceCommuneId || undefined
-  })
-}
-
-const onCustomerStreetInput = async () => {
-  form.correspondenceStreetId = null
-  customerAddressSuggestions.streets = await fetchSuggestions('street', form.correspondenceStreet, {
-    cityId: form.correspondenceCityId || undefined,
-    communeId: form.correspondenceCommuneId || undefined
-  })
-}
-
-const onDeviceCommuneInput = async () => {
-  deviceEditor.installationCommuneId = null
-  deviceEditor.installationCityId = null
-  deviceEditor.installationStreetId = null
-  deviceEditor.installationCity = ''
-  deviceEditor.installationStreet = ''
-  deviceAddressSuggestions.cities = []
-  deviceAddressSuggestions.streets = []
-  deviceAddressSuggestions.communes = await fetchSuggestions('commune', deviceEditor.installationCommuneName)
-}
-
-const onDeviceCityInput = async () => {
-  deviceEditor.installationCityId = null
-  deviceEditor.installationStreetId = null
-  deviceEditor.installationStreet = ''
-  deviceAddressSuggestions.streets = []
-  deviceAddressSuggestions.cities = await fetchSuggestions('city', deviceEditor.installationCity, {
-    communeId: deviceEditor.installationCommuneId || undefined
-  })
-}
-
-const onDeviceStreetInput = async () => {
-  deviceEditor.installationStreetId = null
-  deviceAddressSuggestions.streets = await fetchSuggestions('street', deviceEditor.installationStreet, {
-    cityId: deviceEditor.installationCityId || undefined,
-    communeId: deviceEditor.installationCommuneId || undefined
-  })
-}
-
-const selectCustomerCommune = (suggestion) => {
-  form.correspondenceCommuneId = suggestion.id
-  form.correspondenceCommuneName = suggestion.text
-  form.correspondenceDistrictId = suggestion.districtId || null
-  form.correspondenceCounty = suggestion.districtName || ''
-  form.correspondenceStateId = suggestion.stateId || null
-  form.correspondenceState = suggestion.stateName || ''
-  form.correspondenceCityId = null
-  form.correspondenceStreetId = null
-  form.correspondenceCity = ''
-  form.correspondenceStreet = ''
-  clearSuggestionBucket(customerAddressSuggestions)
-}
-
-const selectCustomerCity = (suggestion) => {
-  form.correspondenceCityId = suggestion.id
-  form.correspondenceCity = suggestion.text
-  if (suggestion.communeId && !form.correspondenceCommuneId) {
-    form.correspondenceCommuneId = suggestion.communeId
-  }
-  if (suggestion.communeName && !form.correspondenceCommuneName) {
-    form.correspondenceCommuneName = suggestion.communeName
-  }
-  form.correspondenceDistrictId = suggestion.districtId || form.correspondenceDistrictId || null
-  form.correspondenceCounty = suggestion.districtName || form.correspondenceCounty || ''
-  form.correspondenceStateId = suggestion.stateId || form.correspondenceStateId || null
-  form.correspondenceState = suggestion.stateName || form.correspondenceState || ''
-  form.correspondenceStreetId = null
-  form.correspondenceStreet = ''
-  customerAddressSuggestions.cities = []
-  customerAddressSuggestions.streets = []
-}
-
-const selectCustomerStreet = (suggestion) => {
-  form.correspondenceStreetId = suggestion.id
-  form.correspondenceStreet = suggestion.text
-  customerAddressSuggestions.streets = []
-}
-
-const selectDeviceCommune = (suggestion) => {
-  deviceEditor.installationCommuneId = suggestion.id
-  deviceEditor.installationCommuneName = suggestion.text
-  deviceEditor.installationDistrictId = suggestion.districtId || null
-  deviceEditor.installationCounty = suggestion.districtName || ''
-  deviceEditor.installationStateId = suggestion.stateId || null
-  deviceEditor.installationState = suggestion.stateName || ''
-  deviceEditor.installationCityId = null
-  deviceEditor.installationStreetId = null
-  deviceEditor.installationCity = ''
-  deviceEditor.installationStreet = ''
-  clearSuggestionBucket(deviceAddressSuggestions)
-}
-
-const selectDeviceCity = (suggestion) => {
-  deviceEditor.installationCityId = suggestion.id
-  deviceEditor.installationCity = suggestion.text
-  if (suggestion.communeId && !deviceEditor.installationCommuneId) {
-    deviceEditor.installationCommuneId = suggestion.communeId
-  }
-  if (suggestion.communeName && !deviceEditor.installationCommuneName) {
-    deviceEditor.installationCommuneName = suggestion.communeName
-  }
-  deviceEditor.installationDistrictId = suggestion.districtId || deviceEditor.installationDistrictId || null
-  deviceEditor.installationCounty = suggestion.districtName || deviceEditor.installationCounty || ''
-  deviceEditor.installationStateId = suggestion.stateId || deviceEditor.installationStateId || null
-  deviceEditor.installationState = suggestion.stateName || deviceEditor.installationState || ''
-  deviceEditor.installationStreetId = null
-  deviceEditor.installationStreet = ''
-  deviceAddressSuggestions.cities = []
-  deviceAddressSuggestions.streets = []
-}
-
-const selectDeviceStreet = (suggestion) => {
-  deviceEditor.installationStreetId = suggestion.id
-  deviceEditor.installationStreet = suggestion.text
-  deviceAddressSuggestions.streets = []
+  deviceAddress.applyDefaultArea()
 }
 
 const formatInstallationAddress = (device) => {
@@ -862,7 +627,7 @@ const openDeviceEditor = async (device) => {
     installationCountry: detail.installationCountry || '',
     locationDescription: detail.locationDescription || ''
   })
-  clearSuggestionBucket(deviceAddressSuggestions)
+  deviceAddress.clearSuggestions()
   isDeviceEditorOpen.value = true
 }
 
@@ -876,13 +641,8 @@ const saveDeviceAddress = async () => {
     await $fetch(`/api/v1/customer-devices/${deviceEditor.id}`, {
       method: 'PUT',
       body: {
-        installationStateId: deviceEditor.installationStateId,
-        installationDistrictId: deviceEditor.installationDistrictId,
-        installationCommuneId: deviceEditor.installationCommuneId,
         installationCityId: deviceEditor.installationCityId,
         installationStreetId: deviceEditor.installationStreetId,
-        installationState: nullIfEmpty(deviceEditor.installationState),
-        installationCounty: nullIfEmpty(deviceEditor.installationCounty),
         installationCity: nullIfEmpty(deviceEditor.installationCity),
         installationStreet: nullIfEmpty(deviceEditor.installationStreet),
         installationStreetNumber: nullIfEmpty(deviceEditor.installationStreetNumber),
@@ -961,7 +721,7 @@ watchEffect(() => {
     isAutoGenerated: !!customer.value.isAutoGenerated,
     autoImportSource: customer.value.autoImportSource || ''
   })
-  clearSuggestionBucket(customerAddressSuggestions)
+  customerAddress.clearSuggestions()
 })
 
 const saveCustomer = async () => {
@@ -992,13 +752,8 @@ const saveCustomer = async () => {
         contactPhone: form.customerType === 'company' ? nullIfEmpty(form.contactPhone) : null,
         contactEmail: form.customerType === 'company' ? nullIfEmpty(form.contactEmail) : null,
         status: form.status,
-        correspondenceStateId: form.correspondenceStateId,
-        correspondenceDistrictId: form.correspondenceDistrictId,
-        correspondenceCommuneId: form.correspondenceCommuneId,
         correspondenceCityId: form.correspondenceCityId,
         correspondenceStreetId: form.correspondenceStreetId,
-        correspondenceState: nullIfEmpty(form.correspondenceState),
-        correspondenceCounty: nullIfEmpty(form.correspondenceCounty),
         correspondenceCity: nullIfEmpty(form.correspondenceCity),
         correspondenceStreet: nullIfEmpty(form.correspondenceStreet),
         correspondenceStreetNumber: nullIfEmpty(form.correspondenceStreetNumber),

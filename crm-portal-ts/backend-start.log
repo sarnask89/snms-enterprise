@@ -1,0 +1,20 @@
+
+> crm-portal-ts@1.0.0 start
+> node dist/main.js
+
+Data Source has been initialized!
+TS Backend running on http://localhost:8080
+[0mGET /health [32m200[0m 5.022 ms - 37[0m
+[0mGET /api/v1/auth/me [33m401[0m 2.241 ms - 13[0m
+[0mGET /health [32m200[0m 0.482 ms - 37[0m
+[0mGET /health/ready [32m200[0m 3.986 ms - 374[0m
+[0mGET /api/v1/module-status [32m200[0m 1.024 ms - 4731[0m
+[0mGET /api/v1/auth/me [33m401[0m 0.994 ms - 13[0m
+[0mGET /api/_nuxt_icon/heroicons.json?icons=arrow-path%2Cchat-bubble-left-ellipsis-solid%2Cchevron-down-20-solid%2Cdocument-plus%2Clock-closed%2Cpaper-airplane%2Cx-mark [33m404[0m 2.689 ms - 168[0m
+[0mGET /api/_nuxt_icon/heroicons.json?icons=document-magnifying-glass%2Cinformation-circle%2Ctrash [33m404[0m 0.724 ms - 168[0m
+[0mGET /api/v1/auth/me [33m401[0m 1.594 ms - 13[0m
+[0mGET /api/_nuxt_icon/heroicons.json?icons=arrow-path-20-solid [33m404[0m 0.259 ms - 168[0m
+[0mPOST /api/v1/auth/login [33m401[0m 42.284 ms - 42[0m
+[0mPOST /api/v1/auth/login [33m401[0m 11.273 ms - 42[0m
+[0mPOST /api/v1/auth/login [33m401[0m 13.612 ms - 42[0m
+[0mGET /api/v1/auth/me [33m401[0m 0.592 ms - 13[0m

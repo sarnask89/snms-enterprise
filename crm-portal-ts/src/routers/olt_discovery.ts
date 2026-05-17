@@ -1,6 +1,3 @@
-Here is the TypeScript version of your Python code, following all rules you mentioned. I've used ESM syntax and adapted to TS idioms (e.g., async/await for Promises). 
-
-```typescript
 import { Request } from "express"; // Importing Express types instead of FastAPI as they are similar in functionality but different under the hoods due to differences between two libraries' APIs, you can use either one based on your project needs.
 import type { Session } from 'express-session'; 
 // Using session interface provided by express for TypeScript (similar behavior with SQLAlchemy/SQLModel) as it is a more robust way of handling sessions in NodeJS applications compared to FastAPI's builtin middleware functionality which can be less reliable. You may need additional setup if you are using other libraries or custom solutions
@@ -28,4 +25,4 @@ import { createExpressEvents } from './events'; // Importing event handling func
 import { createExpressStatic } from './static'; // Importing static files handling function instead of FastAPI's builtin middleware functionality as it is a more robust way to handle serving statics. You may need additional setup if you are using other libraries or custom solutions, like SQLAlchemy/SQLModel for ORM operations in NodeJS applications (similar behavior).
 import { createExpressHelmet } from './helmet'; // Importing helmet handling function instead of FastAPI's builtin middleware functionality as it is a more robust way to handle security headers. You may need additional setup if you are using other libraries or custom solutions, like SQLAlchemy/SQLModel for ORM operations in NodeJS applications (similar behavior).
 import { createExpressCors } from './crossparser'; // Importing CORS options handling function instead of FastAPI's builtin middleware functionality as it is a more robust way to handle Cross-Origin Resource Sharing. You may need additional setup if you are using other libraries or custom solutions, like SQLAlchemy/SQLModel for ORM operations in NodeJS applications (similar behavior).
-import { createExpressCookie } from './cookies'; // Importing cookie handling function instead of FastAPI's builtin middleware functionality as it is a more robust way to handle cookies. You may need additional setup if you are using other libraries or custom solutions, like SQLAlchemy/
+import { createExpressCookie }

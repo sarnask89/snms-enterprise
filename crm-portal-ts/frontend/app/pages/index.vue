@@ -32,7 +32,7 @@
           </div>
         </template>
         
-        <UTable :rows="recentCustomers" :columns="recentColumns">
+        <UTable :data="recentCustomers" :columns="recentColumns">
            <template #status-data="{ row }">
             <UBadge :color="row.status === 'active' ? 'emerald' : 'gray'" variant="soft" size="xs">
               {{ row.status }}
@@ -81,8 +81,8 @@ const { data: recentCustomers } = await useFetch('/api/v1/customers', {
 })
 
 const recentColumns = [
-  { key: 'customer_code', label: 'Kod' },
-  { key: 'last_name', label: 'Nazwisko' },
-  { key: 'status', label: 'Status' }
+  { accessorKey: 'customer_code', header: 'Kod' },
+  { accessorKey: 'last_name', header: 'Nazwisko' },
+  { accessorKey: 'status', header: 'Status' }
 ]
 </script>

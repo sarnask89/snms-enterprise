@@ -1,0 +1,36 @@
+
+> dev
+> nuxt dev
+
+|
+•  [32mNuxt [1m4.4.5[22m[39m[90m (with [39m[90mNitro [1m2.13.4[22m[39m[90m, Vite [1m7.3.3[22m[39m[90m and Vue [1m3.5.34[22m[39m[90m)[39m
+
+[32m  ➜ Local:   [39m [36m[4mhttp://localhost:[1m3000[22m/[24m[39m
+[90m  ➜ Network:  use [37m--host[90m to expose[39m
+
+[90m[[90mnuxt:tailwindcss[90m][39m [36mi[39m Using default Tailwind CSS file
+[33m  ➜ DevTools: [39m[2mpress [22m[32mShift[39m[2m + [22m[32mAlt[39m[2m + [22m[32mD[39m[2m in the browser (v3.2.4)[22m
+
+[36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+[32m√[39m Nuxt Icon discovered local-installed 1 collections: heroicons
+[32m√[39m Vite client built in 150ms
+[32m√[39m Vite server built in 83ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 5287ms
+[36mi[39m Vite server warmed up in 2ms
+[36mi[39m Vite client warmed up in 4ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mplugins.server.mjs[39m in 531.86ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mplugins.client.mjs[39m in 669.73ms
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mtypes/plugins.d.ts[39m in 785.23ms
+[36mi[39m nuxt.config.ts updated. Restarting Nuxt...
+[90m[[90mnuxt:tailwindcss[90m][39m [36mi[39m Using default Tailwind CSS file
+[33m  ➜ DevTools: [39m[2mpress [22m[32mShift[39m[2m + [22m[32mAlt[39m[2m + [22m[32mD[39m[2m in the browser (v3.2.4)[22m
+
+[36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+[32m√[39m Nuxt Icon discovered local-installed 1 collections: heroicons
+[32m√[39m Vite client built in 112ms
+[32m√[39m Vite server built in 53ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 6531ms
+[36mi[39m Vite server warmed up in 3ms
+[36mi[39m Vite client warmed up in 6ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 1422ms
+[36mi[39m .nuxt/dist directory has been removed. Restarting Nuxt...

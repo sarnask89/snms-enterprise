@@ -23,7 +23,7 @@
         </div>
       </template>
 
-      <UTable :rows="filteredGroups" :columns="columns" :loading="pendingGroups">
+      <UTable :data="filteredGroups" :columns="columns" :loading="pendingGroups">
         <template #customerCount-data="{ row }">
           <UBadge color="primary" variant="soft">{{ row.customerCount }}</UBadge>
         </template>
@@ -52,13 +52,13 @@
         </template>
 
         <form class="space-y-4 p-4" @submit.prevent="saveGroup">
-          <UFormGroup label="Nazwa grupy" required>
+          <UFormField label="Nazwa grupy" required>
             <UInput v-model="form.name" />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Opis">
-            <UTextarea v-model="form.description" :rows="3" />
-          </UFormGroup>
+          <UFormField label="Opis">
+            <UTextarea v-model="form.description" :data="3" />
+          </UFormField>
 
           <div>
             <div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Członkowie grupy</div>
@@ -96,11 +96,11 @@ const isModalOpen = ref(false)
 const isSaving = ref(false)
 
 const columns = [
-  { key: 'name', label: 'Nazwa' },
-  { key: 'description', label: 'Opis' },
-  { key: 'customerCount', label: 'Liczba klientów' },
-  { key: 'members', label: 'Członkowie' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'name', header: 'Nazwa' },
+  { accessorKey: 'description', header: 'Opis' },
+  { accessorKey: 'customerCount', header: 'Liczba klientów' },
+  { accessorKey: 'members', header: 'Członkowie' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const form = reactive({

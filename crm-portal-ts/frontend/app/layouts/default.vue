@@ -1,224 +1,201 @@
-<template>
-  <div class="flex h-dvh overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
-    <aside class="hidden w-72 shrink-0 border-r border-gray-200 bg-white lg:flex lg:flex-col dark:border-gray-800 dark:bg-gray-900">
-      <div class="border-b border-gray-200 px-5 py-5 dark:border-gray-800">
-        <NuxtLink to="/" class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400">
-            <UIcon name="i-heroicons-cpu-chip" class="h-5 w-5" />
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">CRM Portal</div>
-            <div class="truncate text-lg font-semibold">SNMS Enterprise</div>
-          </div>
-        </NuxtLink>
-      </div>
-
-      <div class="sidebar-scroll flex-1 overflow-y-auto px-4 py-4">
-        <div class="flex min-h-full flex-col gap-5">
-          <section
-            v-for="section in sidebarSections"
-            :key="section.label"
-            class="min-h-0 space-y-2"
-          >
-            <div class="px-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              {{ section.label }}
-            </div>
-            <UVerticalNavigation :links="section.links" />
-          </section>
-        </div>
-      </div>
-    </aside>
-
-    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-      <header class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div class="flex min-w-0 items-center gap-3">
-            <UDropdown
-              class="lg:hidden"
-              :items="mobileNavigationItems"
-              :popper="{ placement: 'bottom-start' }"
-            >
-              <UButton color="gray" variant="ghost" icon="i-heroicons-bars-3" label="Menu" />
-            </UDropdown>
-
-            <div class="min-w-0">
-              <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ currentPageLabel }}</div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentSectionLabel }}</div>
-            </div>
-          </div>
-
-          <div class="flex min-w-0 flex-1 items-center justify-end gap-2">
-            <div class="hidden min-w-[20rem] max-w-xl flex-1 xl:block">
-              <UInput
-                icon="i-heroicons-magnifying-glass-20-solid"
-                placeholder="Szukaj modułu lub funkcji..."
-                readonly
-                size="md"
-              >
-                <template #trailing>
-                  <UKbd value="K" />
-                </template>
-              </UInput>
-            </div>
-            <UButton color="gray" variant="ghost" to="/architect" label="AI Architekt" icon="i-heroicons-sparkles" />
-            <UDropdown
-              v-if="adminLinks.length > 0"
-              :items="[adminLinks]"
-              :popper="{ placement: 'bottom-end' }"
-            >
-              <UButton color="gray" variant="ghost" label="Administracja" trailing-icon="i-heroicons-chevron-down-20-solid" />
-            </UDropdown>
-            <UButton
-              v-if="currentUser"
-              color="gray"
-              variant="soft"
-              size="sm"
-              icon="i-heroicons-cog-6-tooth"
-              to="/settings"
-              label="Sesja"
-            />
-            <UButton
-              v-else
-              color="primary"
-              variant="soft"
-              size="sm"
-              icon="i-heroicons-arrow-right-end-on-rectangle"
-              to="/settings"
-              label="Zaloguj"
-            />
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm sm:px-6 lg:px-8 dark:border-gray-800">
-          <UBreadcrumb
-            :links="[
-              { label: currentSectionLabel, icon: 'i-heroicons-home' },
-              { label: currentPageLabel }
-            ]"
-          />
-          <div class="ml-auto text-right">
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ currentUser?.username ?? 'Gość' }}
-            </div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
-              {{ sessionSummary }}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
-        <div class="overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-          <slot v-if="$route.path !== '/'" />
-          <iframe
-            v-else
-            src="http://localhost:8081/dashboard?embed=true"
-            class="h-[calc(100dvh-11rem)] w-full rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
-          ></iframe>
-        </div>
-      </main>
-    </div>
-
-    <AiAssistant />
-  </div>
-</template>
-
 <script setup>
 const route = useRoute()
-const { session: authSession, visibleLinks, loadSession } = usePortalAuth()
+const { session: authSession, visibleLinks, loadSession, logout } = usePortalAuth()
+
 await loadSession({ silent: true })
+
+const open = ref(false)
 const currentUser = computed(() => authSession.value?.user ?? null)
 
 const navigationSections = [
-  {
-    label: 'CRM',
-    links: [
-      { label: 'Pulpit', icon: 'i-heroicons-home', to: '/' },
-      { label: 'Abonenci', icon: 'i-heroicons-users', to: '/customers' },
-      { label: 'Urządzenia klientów', icon: 'i-heroicons-computer-desktop', to: '/customer-devices' },
-      { label: 'Węzły', icon: 'i-heroicons-circle-stack', to: '/network/nodes' },
-      { label: 'Urządzenia', icon: 'i-heroicons-server-stack', to: '/network/devices' },
-      { label: 'Finanse', icon: 'i-heroicons-banknotes', to: '/finances' },
-      { label: 'Subskrypcje', icon: 'i-heroicons-receipt-percent', to: '/subscriptions' },
-      { label: 'Helpdesk', icon: 'i-heroicons-lifebuoy', to: '/helpdesk' },
-      { label: 'Dokumenty', icon: 'i-heroicons-folder', to: '/documents' },
-      { label: 'TERYT', icon: 'i-heroicons-map', to: '/teryt' }
-    ]
-  },
-  {
+  [{
+    label: 'Home',
+    icon: 'i-lucide-house',
+    to: '/',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Abonenci',
+    icon: 'i-lucide-users',
+    to: '/customers',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Urządzenia klientów',
+    icon: 'i-lucide-monitor-smartphone',
+    to: '/customer-devices',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
     label: 'Operacje',
-    links: [
-      { label: 'Operacje', icon: 'i-heroicons-wrench-screwdriver', to: '/operations' },
-      { label: 'Analityka', icon: 'i-heroicons-chart-bar', to: '/analytics' },
-      { label: 'Monitoring', icon: 'i-heroicons-signal', to: '/monitoring' },
-      { label: 'SNMS', icon: 'i-heroicons-chat-bubble-left-right', to: '/snms' }
+    icon: 'i-lucide-wrench',
+    to: '/operations',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Monitoring',
+    icon: 'i-lucide-chart-no-axes-column',
+    to: '/monitoring',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Analityka',
+    icon: 'i-lucide-chart-pie',
+    to: '/analytics',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Sieć',
+    icon: 'i-lucide-network',
+    type: 'trigger',
+    defaultOpen: true,
+    children: [
+      {
+        label: 'Węzły',
+        to: '/network/nodes',
+        onSelect: () => {
+          open.value = false
+        }
+      },
+      {
+        label: 'Urządzenia sieciowe',
+        to: '/network/devices',
+        onSelect: () => {
+          open.value = false
+        }
+      },
+      {
+        label: 'IP Networks',
+        to: '/network/ip-networks',
+        onSelect: () => {
+          open.value = false
+        }
+      }
     ]
-  },
-  {
+  }],
+  [{
+    label: 'Finanse',
+    icon: 'i-lucide-banknote',
+    to: '/finances',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Subskrypcje',
+    icon: 'i-lucide-receipt',
+    to: '/subscriptions',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Helpdesk',
+    icon: 'i-lucide-life-buoy',
+    to: '/helpdesk',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'Dokumenty',
+    icon: 'i-lucide-folder',
+    to: '/documents',
+    onSelect: () => {
+      open.value = false
+    }
+  }, {
+    label: 'TERYT',
+    icon: 'i-lucide-map',
+    to: '/teryt',
+    onSelect: () => {
+      open.value = false
+    }
+  }],
+  [{
     label: 'Administracja',
-    links: [
-      { label: 'Administracja', icon: 'i-heroicons-shield-check', to: '/admin' },
-      { label: 'Ustawienia', icon: 'i-heroicons-cog-6-tooth', to: '/settings' }
+    icon: 'i-lucide-shield',
+    type: 'trigger',
+    children: [
+      {
+        label: 'Panel administracyjny',
+        to: '/admin',
+        onSelect: () => {
+          open.value = false
+        }
+      },
+      {
+        label: 'Ustawienia',
+        to: '/settings',
+        onSelect: () => {
+          open.value = false
+        }
+      }
     ]
-  }
+  }, {
+    label: 'AI Architekt',
+    icon: 'i-lucide-sparkles',
+    to: '/architect',
+    onSelect: () => {
+      open.value = false
+    }
+  }]
 ]
 
-const filteredSections = computed(() =>
-  navigationSections.reduce((result, section) => {
-    const sectionLinks = visibleLinks(section.links)
+const visibleSections = computed(() =>
+  navigationSections
+    .map(section => visibleLinks(section))
+    .filter(section => section.length > 0)
+)
 
-    if (sectionLinks.length > 0) {
-      result.push({
-        ...section,
-        links: sectionLinks
-      })
+const links = computed(() => visibleSections.value)
+
+const groups = computed(() => [
+  {
+    id: 'links',
+    label: 'Przejdź do',
+    items: links.value.flat()
+  }
+])
+
+const userMenuItems = computed(() => [[{
+  type: 'label',
+  label: currentUser.value?.username ?? 'Gość',
+  icon: 'i-lucide-user'
+}], [{
+  label: 'Ustawienia',
+  icon: 'i-lucide-settings',
+  to: '/settings'
+}, {
+  label: currentUser.value ? 'Wyloguj' : 'Zaloguj',
+  icon: currentUser.value ? 'i-lucide-log-out' : 'i-lucide-log-in',
+  click: async () => {
+    if (currentUser.value) {
+      await logout()
+      await navigateTo('/settings')
+      return
     }
 
-    return result
-  }, [])
-)
+    await navigateTo('/settings')
+  }
+}]])
 
-const sidebarSections = computed(() =>
-  filteredSections.value.filter((section) => section.label !== 'Administracja')
-)
+const currentPageLabel = computed(() => {
+  const currentPath = normalizePath(route.path)
 
-const adminLinks = computed(() =>
-  filteredSections.value.find((section) => section.label === 'Administracja')?.links ?? []
-)
-
-const mobileNavigationItems = computed(() => {
-  const items = sidebarSections.value.map((section) => section.links)
-
-  if (adminLinks.value.length > 0) {
-    items.push(adminLinks.value)
+  for (const section of links.value) {
+    for (const item of section) {
+      const label = findActiveLabel(item, currentPath)
+      if (label) {
+        return label
+      }
+    }
   }
 
-  return items
-})
-
-const staticRouteLabels = [
-  {
-    path: '/architect',
-    sectionLabel: 'AI',
-    pageLabel: 'Architekt Modułów'
-  }
-]
-
-const currentRoutePath = computed(() => normalizePath(route.path))
-
-const activeNavigation = computed(() =>
-  findActiveNavigation(filteredSections.value, currentRoutePath.value, staticRouteLabels)
-)
-
-const currentSectionLabel = computed(() => activeNavigation.value?.sectionLabel ?? 'CRM')
-const currentPageLabel = computed(() => activeNavigation.value?.pageLabel ?? 'Pulpit')
-
-const sessionSummary = computed(() => {
-  if (!currentUser.value) {
-    return 'Brak sesji'
-  }
-
-  return `${currentUser.value.role} · sesja aktywna`
+  return 'Dashboard'
 })
 
 function normalizePath(path) {
@@ -234,15 +211,14 @@ function matchesPath(candidate, currentPath) {
   return currentPath === normalizedCandidate || currentPath.startsWith(`${normalizedCandidate}/`)
 }
 
-function findActiveLink(links, currentPath) {
-  for (const link of links) {
-    if (link.to && matchesPath(link.to, currentPath)) {
-      return link.label
-    }
+function findActiveLabel(item, currentPath) {
+  if (item.to && matchesPath(item.to, currentPath)) {
+    return item.label
+  }
 
-    if (Array.isArray(link.children)) {
-      const childLabel = findActiveLink(link.children, currentPath)
-
+  if (Array.isArray(item.children)) {
+    for (const child of item.children) {
+      const childLabel = findActiveLabel(child, currentPath)
       if (childLabel) {
         return childLabel
       }
@@ -251,39 +227,88 @@ function findActiveLink(links, currentPath) {
 
   return null
 }
-
-function findActiveNavigation(sections, currentPath, staticLabels = []) {
-  const staticLabel = staticLabels.find(({ path }) => matchesPath(path, currentPath))
-
-  if (staticLabel) {
-    return {
-      sectionLabel: staticLabel.sectionLabel,
-      pageLabel: staticLabel.pageLabel
-    }
-  }
-
-  for (const section of sections) {
-    const pageLabel = findActiveLink(section.links, currentPath)
-
-    if (pageLabel) {
-      return {
-        sectionLabel: section.label,
-        pageLabel
-      }
-    }
-  }
-
-  return null
-}
 </script>
 
-<style scoped>
-.sidebar-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+<template>
+  <UDashboardGroup unit="rem">
+    <UDashboardSidebar
+      id="default"
+      v-model:open="open"
+      collapsible
+      resizable
+      class="bg-elevated/30"
+      :ui="{ footer: 'lg:border-t lg:border-default' }"
+    >
+      <template #header="{ collapsed }">
+        <div class="flex items-center gap-3 px-1">
+          <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <UIcon name="i-lucide-cpu" class="size-5" />
+          </div>
+          <div v-if="!collapsed" class="min-w-0">
+            <div class="truncate text-sm font-semibold text-highlighted">SNMS Enterprise</div>
+            <div class="text-xs text-muted">CRM Portal</div>
+          </div>
+        </div>
+      </template>
 
-.sidebar-scroll::-webkit-scrollbar {
-  display: none;
-}
-</style>
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[0] || []"
+          orientation="vertical"
+          tooltip
+          popover
+        />
+
+        <UNavigationMenu
+          v-if="links[1]?.length"
+          :collapsed="collapsed"
+          :items="links[1]"
+          orientation="vertical"
+          tooltip
+          popover
+          class="mt-4"
+        />
+
+        <UNavigationMenu
+          v-if="links[2]?.length"
+          :collapsed="collapsed"
+          :items="links[2]"
+          orientation="vertical"
+          tooltip
+          popover
+          class="mt-auto"
+        />
+      </template>
+
+      <template #footer="{ collapsed }">
+        <UDropdownMenu
+          :items="userMenuItems"
+          :content="{ align: 'center', collisionPadding: 12 }"
+          :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
+        >
+          <UButton
+            :label="collapsed ? undefined : (currentUser?.username ?? 'Gość')"
+            :icon="currentUser ? 'i-lucide-user-check' : 'i-lucide-user'"
+            :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
+            color="neutral"
+            variant="ghost"
+            block
+            :square="collapsed"
+            class="data-[state=open]:bg-elevated"
+          />
+        </UDropdownMenu>
+      </template>
+    </UDashboardSidebar>
+
+    <UDashboardSearch :groups="groups" />
+
+    <div class="min-w-0 flex-1">
+      <slot />
+    </div>
+
+    <AiAssistant />
+  </UDashboardGroup>
+</template>

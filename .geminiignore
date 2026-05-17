@@ -1,0 +1,16 @@
+# Prevent Gemini from consuming huge amounts of tokens on irrelevant files
+.git/
+.venv/
+node_modules/
+*.sqlite
+*.log
+logs/
+backups/
+uploads/
+dxc_2025_07_14/
+static/images/
+*.png
+*.jpg
+*.jpeg
+*.7z
+package-lock.json

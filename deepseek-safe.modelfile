@@ -1,0 +1,5 @@
+FROM deepseek-coder:1.3b
+PARAMETER num_ctx 4096
+PARAMETER num_gpu 99
+PARAMETER num_batch 128
+PARAMETER temperature 0.1

@@ -39,7 +39,7 @@
           </div>
         </template>
 
-        <UTable :rows="backups || []" :columns="backupColumns" :loading="pendingBackups">
+        <UTable :data="backups || []" :columns="backupColumns" :loading="pendingBackups">
           <template #createdAt-data="{ row }">
             <div class="text-sm text-gray-600 dark:text-gray-300">{{ formatDate(row.createdAt) }}</div>
           </template>
@@ -68,7 +68,7 @@
           </div>
         </template>
 
-        <UTable :rows="reloadLogs || []" :columns="reloadColumns" :loading="pendingReloadLogs">
+        <UTable :data="reloadLogs || []" :columns="reloadColumns" :loading="pendingReloadLogs">
           <template #createdAt-data="{ row }">
             <div class="text-sm text-gray-600 dark:text-gray-300">{{ formatDate(row.createdAt) }}</div>
           </template>
@@ -96,7 +96,7 @@
         </div>
       </template>
 
-      <UTable :rows="filteredAuditLogs" :columns="auditColumns" :loading="pendingAuditLogs">
+      <UTable :data="filteredAuditLogs" :columns="auditColumns" :loading="pendingAuditLogs">
         <template #timestamp-data="{ row }">
           <div class="text-sm text-gray-600 dark:text-gray-300">{{ formatDate(row.timestamp) }}</div>
         </template>
@@ -114,9 +114,9 @@
         </template>
 
         <form class="space-y-4 p-4" @submit.prevent="createReload">
-          <UFormGroup label="Notatka">
-            <UTextarea v-model="reloadForm.note" :rows="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
-          </UFormGroup>
+          <UFormField label="Notatka">
+            <UTextarea v-model="reloadForm.note" :data="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
+          </UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isReloadModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isCreatingReload" label="Zapisz" />
@@ -129,22 +129,22 @@
 
 <script setup>
 const backupColumns = [
-  { key: 'filename', label: 'Plik' },
-  { key: 'createdAt', label: 'Utworzono' },
-  { key: 'sizeBytes', label: 'Rozmiar' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'filename', header: 'Plik' },
+  { accessorKey: 'createdAt', header: 'Utworzono' },
+  { accessorKey: 'sizeBytes', header: 'Rozmiar' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const reloadColumns = [
-  { key: 'createdAt', label: 'Data' },
-  { key: 'note', label: 'Notatka' }
+  { accessorKey: 'createdAt', header: 'Data' },
+  { accessorKey: 'note', header: 'Notatka' }
 ]
 
 const auditColumns = [
-  { key: 'timestamp', label: 'Data' },
-  { key: 'action', label: 'Akcja' },
-  { key: 'resourceType', label: 'Zasób' },
-  { key: 'details', label: 'Szczegóły' }
+  { accessorKey: 'timestamp', header: 'Data' },
+  { accessorKey: 'action', header: 'Akcja' },
+  { accessorKey: 'resourceType', header: 'Zasób' },
+  { accessorKey: 'details', header: 'Szczegóły' }
 ]
 
 const auditSearch = ref('')

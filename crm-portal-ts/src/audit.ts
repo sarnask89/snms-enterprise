@@ -28,7 +28,7 @@ function extractIpAddress(request?: Request | null) {
 
 export async function recordAudit(input: AuditInput) {
     const entry = auditRepo.create({
-        actorId: input.actorId ?? undefined,
+        actorId: input.actorId ?? input.request?.portalUser?.id ?? undefined,
         action: input.action,
         resourceType: input.resourceType ?? undefined,
         resourceId: input.resourceId ?? undefined,

@@ -1,0 +1,38 @@
+
+> dev
+> nuxt dev --host 127.0.0.1 --port 3000
+
+|
+•  [32mNuxt [1m4.4.5[22m[39m[90m (with [39m[90mNitro [1m2.13.4[22m[39m[90m, Vite [1m7.3.3[22m[39m[90m and Vue [1m3.5.34[22m[39m[90m)[39m
+
+[32m  ➜ Local:   [39m [36m[4mhttp://127.0.0.1:[1m3000[22m/[24m[39m
+[90m  ➜ Network:  use [37m--host[90m to expose[39m
+
+[90m[[90mnuxt:tailwindcss[90m][39m [36mi[39m Using default Tailwind CSS file
+[33m  ➜ DevTools: [39m[2mpress [22m[32mShift[39m[2m + [22m[32mAlt[39m[2m + [22m[32mD[39m[2m in the browser (v3.2.4)[22m
+
+[36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+[32m√[39m Nuxt Icon discovered local-installed 1 collections: heroicons
+[32m√[39m Vite client built in 142ms
+[32m√[39m Vite server built in 57ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 3446ms
+[36mi[39m Vite server warmed up in 1ms
+[36mi[39m Vite client warmed up in 4ms
+[43m[30m WARN [39m[49m [Vue warn]: Failed to resolve component: UColorModeSelect
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. at <Settings>
+at <RouteProvider>
+at <RouterView>
+at <NuxtPage>
+at <Default>
+at <AsyncComponentWrapper>
+at <LayoutLoader>
+at <NuxtLayoutProvider>
+at <NuxtLayout>
+at <App>
+at <NuxtRoot>
+[43m[30m WARN [39m[49m [Vue Router warn]: No match found for location with path "/api/v1/customers?q&status&skip=0&limit=20"
+[43m[30m WARN [39m[49m [Vue Router warn]: No match found for location with path "/api/v1/customers"
+[43m[30m WARN [39m[49m [Vue Router warn]: No match found for location with path "/api/v1/monitoring/summary"
+[43m[30m WARN [39m[49m [Vue Router warn]: No match found for location with path "/api/v1/monitoring/summary"
+[43m[30m WARN [39m[49m [Vue Router warn]: No match found for location with path "/api/v1/monitoring/global/stats"
+[43m[30m WARN [39m[49m [Vue Router warn]: No match found for location with path "/api/v1/monitoring/global/stats"

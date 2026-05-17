@@ -6,12 +6,31 @@ import {
     LocationState,
     LocationStreet,
 } from "./models/location.js";
+import { getDefaultArea } from "./teryt_defaults.js";
 
 const stateRepo = AppDataSource.getRepository(LocationState);
 const districtRepo = AppDataSource.getRepository(LocationDistrict);
 const communeRepo = AppDataSource.getRepository(LocationCommune);
 const cityRepo = AppDataSource.getRepository(LocationCity);
 const streetRepo = AppDataSource.getRepository(LocationStreet);
+
+function normalizeAddressToken(value: string | null | undefined) {
+    return String(value ?? "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase()
+        .replace(/^(ul(?:ica)?|os(?:iedle)?|al(?:eja)?|pl(?:ac)?|rondo)\.?\s+/u, "")
+        .replace(/[^\p{L}\p{N}]+/gu, " ")
+        .trim();
+}
+
+function normalizeAddressWordSet(value: string | null | undefined) {
+    return normalizeAddressToken(value)
+        .split(" ")
+        .filter(Boolean)
+        .sort((left, right) => left.localeCompare(right))
+        .join(" ");
+}
 
 export type ResolvedTerytAddress = {
     state: LocationState | null;
@@ -103,6 +122,74 @@ export async function resolveTerytAddress(input: TerytIdInput): Promise<Resolved
         commune: commune ?? null,
         city: city ?? null,
         street: street ?? null,
+    };
+}
+
+export async function resolveParsedStreetWithinDefaultArea(streetName: string | null | undefined): Promise<ResolvedTerytAddress | null> {
+    const normalizedStreet = normalizeAddressToken(streetName);
+    const defaultArea = await getDefaultArea();
+
+    if (!defaultArea || !normalizedStreet) {
+        return defaultArea
+            ? {
+                state: defaultArea.state ?? null,
+                district: defaultArea.district ?? null,
+                commune: defaultArea.commune ?? null,
+                city: defaultArea.city ?? null,
+                street: null,
+            }
+            : null;
+    }
+
+    const candidateStreetRows = defaultArea.city
+        ? await streetRepo.find({
+            where: { cityId: defaultArea.city.id },
+            relations: {
+                city: {
+                    district: {
+                        state: true,
+                    },
+                    commune: {
+                        district: {
+                            state: true,
+                        },
+                    },
+                },
+                commune: {
+                    district: {
+                        state: true,
+                    },
+                },
+            },
+        })
+        : [];
+
+    const normalizedWordSet = normalizeAddressWordSet(streetName);
+    const exactStreet = candidateStreetRows.find((street) => {
+        const normalizedCandidate = normalizeAddressToken(street.name);
+        return normalizedCandidate === normalizedStreet || normalizeAddressWordSet(street.name) === normalizedWordSet;
+    });
+    const fuzzyStreet = exactStreet ?? candidateStreetRows.find((street) => {
+        const normalizedCandidate = normalizeAddressToken(street.name);
+        return normalizedCandidate.includes(normalizedStreet) || normalizedStreet.includes(normalizedCandidate);
+    });
+
+    if (!fuzzyStreet) {
+        return {
+            state: defaultArea.state ?? null,
+            district: defaultArea.district ?? null,
+            commune: defaultArea.commune ?? null,
+            city: defaultArea.city ?? null,
+            street: null,
+        };
+    }
+
+    return {
+        state: fuzzyStreet.city?.district?.state ?? defaultArea.state ?? null,
+        district: fuzzyStreet.city?.district ?? defaultArea.district ?? null,
+        commune: fuzzyStreet.commune ?? fuzzyStreet.city?.commune ?? defaultArea.commune ?? null,
+        city: fuzzyStreet.city ?? defaultArea.city ?? null,
+        street: fuzzyStreet,
     };
 }
 

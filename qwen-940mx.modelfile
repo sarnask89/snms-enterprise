@@ -1,0 +1,16 @@
+# Ekstremalna optymalizacja pod 2GB VRAM
+FROM qwen2.5-coder:1.5b
+
+# Podbijamy kontekst do 16384 tokenów (limit modelu) - to dawało 1.9/1 VRAM/Shared
+PARAMETER num_ctx 16384
+
+# Wymuszamy 100% warstw na GPU
+PARAMETER num_gpu 99
+
+# Maksymalny batch dla tej karty
+PARAMETER num_batch 512
+
+PARAMETER temperature 0.3
+PARAMETER top_p 0.9
+
+SYSTEM """Jesteś ekspertem programowania. Odpowiadaj zwięźle, dostarczając jedynie niezbędny kod źródłowy TypeScript. Konwertuj logikę z Python na TS zachowując czytelność i typowanie."""

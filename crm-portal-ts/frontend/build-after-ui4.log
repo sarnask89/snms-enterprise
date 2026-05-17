@@ -1,0 +1,283 @@
+
+> build
+> nuxt build
+
+T  [36mBuilding Nuxt for production...[39m
+|
+•  [32mNuxt [1m4.4.5[22m[39m[90m (with [39m[90mNitro [1m2.13.4[22m[39m[90m, Vite [1m7.3.3[22m[39m[90m and Vue [1m3.5.34[22m[39m[90m)[39m
+[36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+[32m√[39m Nuxt Icon discovered local-installed 3 collections: heroicons, lucide, simple-icons
+|
+•  Nitro preset: [36mnode-server[39m
+[36mi[39m Building client...
+[36mi[39m [36mvite v7.3.3 [32mbuilding client environment for production...[36m[39m
+
+ WARN  [plugin nuxt:module-preload-polyfill] Sourcemap is likely to be incorrect: a plugin (nuxt:module-preload-polyfill) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help
+
+[36mi[39m transforming...
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x2)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x3)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x4)
+
+
+ WARN  node_modules/@vueuse/core/dist/index.js (3362:0): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+
+
+ WARN  node_modules/@vueuse/core/dist/index.js (5780:22): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+
+[36mi[39m [32m✓[39m 902 modules transformed.
+[36mi[39m rendering chunks...
+[36mi[39m computing gzip size...
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[32mmanifest.json                 [39m[1m[2m 17.03 kB[22m[1m[22m[2m │ gzip:   1.95 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[35m_nuxt/default.CaynGBsT.css    [39m[1m[2m  0.07 kB[22m[1m[22m[2m │ gzip:   0.08 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[35m_nuxt/error-500.DBWf9FGj.css  [39m[1m[2m  1.91 kB[22m[1m[22m[2m │ gzip:   0.73 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[35m_nuxt/error-404.C-Ezrlz-.css  [39m[1m[2m  2.43 kB[22m[1m[22m[2m │ gzip:   0.86 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[35m_nuxt/entry.BOYRudpD.css      [39m[1m[2m194.88 kB[22m[1m[22m[2m │ gzip:  26.53 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/5HPLEJ9t.js             [39m[1m[2m  0.09 kB[22m[1m[22m[2m │ gzip:   0.10 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/r3k-_w9t.js             [39m[1m[2m  0.13 kB[22m[1m[22m[2m │ gzip:   0.14 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/C9d-7v_7.js             [39m[1m[2m  0.24 kB[22m[1m[22m[2m │ gzip:   0.20 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/lxIYq9TX.js             [39m[1m[2m  0.44 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/1B4XKNeT.js             [39m[1m[2m  0.70 kB[22m[1m[22m[2m │ gzip:   0.42 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DqO5v8mA.js             [39m[1m[2m  0.86 kB[22m[1m[22m[2m │ gzip:   0.51 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CruT30zy.js             [39m[1m[2m  1.56 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/PLKCX6Lc.js             [39m[1m[2m  1.97 kB[22m[1m[22m[2m │ gzip:   0.77 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CiNnsgDg.js             [39m[1m[2m  2.05 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/D1Tnainl.js             [39m[1m[2m  2.15 kB[22m[1m[22m[2m │ gzip:   0.86 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DoG-yxrY.js             [39m[1m[2m  3.21 kB[22m[1m[22m[2m │ gzip:   1.51 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CNZCYXGo.js             [39m[1m[2m  3.45 kB[22m[1m[22m[2m │ gzip:   1.55 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/HGiTYQmm.js             [39m[1m[2m  3.74 kB[22m[1m[22m[2m │ gzip:   1.69 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/_fgDO631.js             [39m[1m[2m  4.95 kB[22m[1m[22m[2m │ gzip:   2.61 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DIhzQoFc.js             [39m[1m[2m  5.38 kB[22m[1m[22m[2m │ gzip:   2.32 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/-P6Q2iuk.js             [39m[1m[2m  5.62 kB[22m[1m[22m[2m │ gzip:   2.28 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/PX9rKWcY.js             [39m[1m[2m  5.62 kB[22m[1m[22m[2m │ gzip:   1.56 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/Dwh8SUht.js             [39m[1m[2m  5.74 kB[22m[1m[22m[2m │ gzip:   2.87 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/Byz8nWho.js             [39m[1m[2m  5.81 kB[22m[1m[22m[2m │ gzip:   2.06 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CTR9f6Ob.js             [39m[1m[2m  5.87 kB[22m[1m[22m[2m │ gzip:   2.19 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/jWoOo7e3.js             [39m[1m[2m  5.89 kB[22m[1m[22m[2m │ gzip:   1.99 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/BjExk6n0.js             [39m[1m[2m  6.10 kB[22m[1m[22m[2m │ gzip:   1.72 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/BsUr7FYf.js             [39m[1m[2m  6.24 kB[22m[1m[22m[2m │ gzip:   2.45 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/Js1dZp0r.js             [39m[1m[2m  6.28 kB[22m[1m[22m[2m │ gzip:   2.69 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/BksHHrgq.js             [39m[1m[2m  7.17 kB[22m[1m[22m[2m │ gzip:   2.58 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/Bg-7pHFa.js             [39m[1m[2m  7.23 kB[22m[1m[22m[2m │ gzip:   2.94 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/BoDQXf7V.js             [39m[1m[2m  7.91 kB[22m[1m[22m[2m │ gzip:   2.80 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CeM9znok.js             [39m[1m[2m  8.00 kB[22m[1m[22m[2m │ gzip:   2.72 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CZ0nv9lg.js             [39m[1m[2m  8.35 kB[22m[1m[22m[2m │ gzip:   2.80 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/C6UstHDd.js             [39m[1m[2m  8.41 kB[22m[1m[22m[2m │ gzip:   2.48 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/eA4G1b24.js             [39m[1m[2m  8.98 kB[22m[1m[22m[2m │ gzip:   2.65 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DoKAyoTH.js             [39m[1m[2m  9.68 kB[22m[1m[22m[2m │ gzip:   2.83 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/9pXYCJD4.js             [39m[1m[2m 10.60 kB[22m[1m[22m[2m │ gzip:   3.52 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CjhP8XD4.js             [39m[1m[2m 12.53 kB[22m[1m[22m[2m │ gzip:   3.85 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/Z_uzUdFs.js             [39m[1m[2m 13.42 kB[22m[1m[22m[2m │ gzip:   3.79 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/BGRGTdtp.js             [39m[1m[2m 14.00 kB[22m[1m[22m[2m │ gzip:   3.69 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CfCVLeHS.js             [39m[1m[2m 14.50 kB[22m[1m[22m[2m │ gzip:   5.46 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DSiBiVDo.js             [39m[1m[2m 16.45 kB[22m[1m[22m[2m │ gzip:   5.19 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CLY_ohTk.js             [39m[1m[2m 18.64 kB[22m[1m[22m[2m │ gzip:   5.30 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/CQsqSbLL.js             [39m[1m[2m 19.49 kB[22m[1m[22m[2m │ gzip:   4.50 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DgIbM9A8.js             [39m[1m[2m 22.66 kB[22m[1m[22m[2m │ gzip:   6.81 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/C7rvMJ4O.js             [39m[1m[2m 25.37 kB[22m[1m[22m[2m │ gzip:   6.38 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DQG_sgx1.js             [39m[1m[2m 30.35 kB[22m[1m[22m[2m │ gzip:  11.48 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DyVVSjQJ.js             [39m[1m[2m 37.42 kB[22m[1m[22m[2m │ gzip:  10.01 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/qE04BOWn.js             [39m[1m[2m 38.88 kB[22m[1m[22m[2m │ gzip:   8.18 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/B6yu8z53.js             [39m[1m[2m 38.95 kB[22m[1m[22m[2m │ gzip:  11.10 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/BBTrniPD.js             [39m[1m[2m 68.93 kB[22m[1m[22m[2m │ gzip:  18.58 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/DN-xFoko.js             [39m[1m[2m 85.82 kB[22m[1m[22m[2m │ gzip:  19.28 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/SVLhKyeq.js             [39m[1m[2m165.77 kB[22m[1m[22m[2m │ gzip:  45.56 kB[22m
+[36mi[39m [2m../node_modules/.cache/nuxt/.nuxt/dist/client/[22m[36m_nuxt/JjaNaXFm.js             [39m[1m[2m386.42 kB[22m[1m[22m[2m │ gzip: 133.76 kB[22m
+[36mi[39m [32m✓ built in 18.61s[39m
+[32m√[39m Client built in 18657ms
+[36mi[39m Building server...
+[36mi[39m [36mvite v7.3.3 [32mbuilding ssr environment for production...[36m[39m
+[36mi[39m transforming...
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x2)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x3)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x4)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x5)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x6)
+
+
+ WARN  [plugin @tailwindcss/vite:generate:build] Sourcemap is likely to be incorrect: a plugin (@tailwindcss/vite:generate:build) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help (x7)
+
+[36mi[39m [32m✓[39m 779 modules transformed.
+[36mi[39m rendering chunks...
+[36mi[39m [32m✓ built in 18.02s[39m
+[32m√[39m Server built in 18054ms
+[90m[[90mnitro[90m][39m [32m√[39m Generated public [36m.output/public[39m
+[90m[[90mnitro[90m][39m [36mi[39m Building Nuxt Nitro server (preset: [36mnode-server[39m, compatibility date: [36m2024-07-04[39m)
+(node:10004) [DEP0155] DeprecationWarning: Use of deprecated trailing slash pattern mapping "./" in the "exports" field module resolution of the package at C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\@iconify\utils\package.json imported from C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\@nuxt\icon\dist\runtime\server\api.js. Mapping specifiers ending in "/" is no longer supported.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:10004) [DEP0155] DeprecationWarning: Use of deprecated trailing slash pattern mapping "./" in the "exports" field module resolution of the package at C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\@vue\shared\package.json imported from C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\@nuxt\nitro-server\dist\runtime\templates\error-500.mjs. Mapping specifiers ending in "/" is no longer supported.
+(node:10004) [DEP0155] DeprecationWarning: Use of deprecated trailing slash pattern mapping "./" in the "exports" field module resolution of the package at C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\@vueuse\core\package.json imported from C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\.cache\nuxt\.nuxt\dist\server\server.mjs. Mapping specifiers ending in "/" is no longer supported.
+(node:10004) [DEP0155] DeprecationWarning: Use of deprecated trailing slash pattern mapping "./" in the "exports" field module resolution of the package at C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\@vueuse\shared\package.json imported from C:\Users\xxx\crm-portal\crm-portal-ts\frontend\node_modules\.cache\nuxt\.nuxt\dist\server\server.mjs. Mapping specifiers ending in "/" is no longer supported.
+node_modules/@vueuse/core/dist/index.js (3362:0): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+node_modules/@vueuse/core/dist/index.js (5780:22): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built
+[90m  ├─ .output/server/chunks/_/error-500.mjs (5.09 kB)[39m[90m (2.07 kB gzip)[39m
+[90m  ├─ .output/server/chunks/_/error-500.mjs.map (182 B)[39m[90m (154 B gzip)[39m
+[90m  ├─ .output/server/chunks/_/icons.mjs (616 kB)[39m[90m (129 kB gzip)[39m
+[90m  ├─ .output/server/chunks/_/icons.mjs.map (5.26 kB)[39m[90m (100 B gzip)[39m
+[90m  ├─ .output/server/chunks/_/icons2.mjs (544 kB)[39m[90m (82.5 kB gzip)[39m
+[90m  ├─ .output/server/chunks/_/icons2.mjs.map (6.11 kB)[39m[90m (102 B gzip)[39m
+[90m  ├─ .output/server/chunks/_/icons3.mjs (4.73 MB)[39m[90m (1.89 MB gzip)[39m
+[90m  ├─ .output/server/chunks/_/icons3.mjs.map (11.5 kB)[39m[90m (110 B gzip)[39m
+[90m  ├─ .output/server/chunks/_/nitro.mjs (198 kB)[39m[90m (50.1 kB gzip)[39m
+[90m  ├─ .output/server/chunks/_/nitro.mjs.map (3.5 kB)[39m[90m (871 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/_id_-B27EgvF1.mjs (155 kB)[39m[90m (12.9 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/_id_-B27EgvF1.mjs.map (280 B)[39m[90m (182 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/admin-DhIQbPdm.mjs (28.5 kB)[39m[90m (4.31 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/admin-DhIQbPdm.mjs.map (268 B)[39m[90m (182 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Alert-BfdHzlGn.mjs (17 kB)[39m[90m (2.82 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Alert-BfdHzlGn.mjs.map (226 B)[39m[90m (174 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/analytics-CccpZ3gk.mjs (15.7 kB)[39m[90m (3.36 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/analytics-CccpZ3gk.mjs.map (248 B)[39m[90m (178 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/architect-D0oz2y0O.mjs (15.1 kB)[39m[90m (4.17 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/architect-D0oz2y0O.mjs.map (276 B)[39m[90m (185 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Badge-BAD4kFV-.mjs (12.1 kB)[39m[90m (2.37 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Badge-BAD4kFV-.mjs.map (212 B)[39m[90m (172 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Card-DHbgptuu.mjs (6.92 kB)[39m[90m (1.55 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Card-DHbgptuu.mjs.map (183 B)[39m[90m (156 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Checkbox-uQsTo2O7.mjs (28.5 kB)[39m[90m (5.45 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Checkbox-uQsTo2O7.mjs.map (222 B)[39m[90m (180 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/client.precomputed.mjs (34.4 kB)[39m[90m (3.21 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/client.precomputed.mjs.map (188 B)[39m[90m (150 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/composables-BNOzMr9A.mjs (200 B)[39m[90m (174 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/composables-BNOzMr9A.mjs.map (197 B)[39m[90m (162 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/customer-devices-Bo-KDRNC.mjs (28.6 kB)[39m[90m (4.47 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/customer-devices-Bo-KDRNC.mjs.map (304 B)[39m[90m (197 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/DashboardSidebarCollapse-CUcMww9c.mjs (15.6 kB)[39m[90m (3.23 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/DashboardSidebarCollapse-CUcMww9c.mjs.map (278 B)[39m[90m (194 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/DashboardSidebarToggle-IgVpYP_u.mjs (249 kB)[39m[90m (28.4 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/DashboardSidebarToggle-IgVpYP_u.mjs.map (302 B)[39m[90m (200 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/default-D33RHdV5.mjs (550 kB)[39m[90m (55.2 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/default-D33RHdV5.mjs.map (427 B)[39m[90m (231 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/default-styles.Bdj1TmWy.mjs (338 B)[39m[90m (218 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/default-styles.Bdj1TmWy.mjs.map (311 B)[39m[90m (188 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/devices-BU2MVkuu.mjs (48 kB)[39m[90m (5.27 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/devices-BU2MVkuu.mjs.map (300 B)[39m[90m (191 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/documents-nn8mUjRo.mjs (39.1 kB)[39m[90m (5.5 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/documents-nn8mUjRo.mjs.map (304 B)[39m[90m (190 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-404-_YbzgvVg.mjs (5.76 kB)[39m[90m (2.3 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-404-_YbzgvVg.mjs.map (213 B)[39m[90m (171 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-404-styles.DuDrf-v0.mjs (2.72 kB)[39m[90m (986 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-404-styles.DuDrf-v0.mjs.map (317 B)[39m[90m (188 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-500-CKLF4M7X.mjs (4.98 kB)[39m[90m (2.04 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-500-CKLF4M7X.mjs.map (193 B)[39m[90m (163 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-500-styles.8IYEHzz6.mjs (2.19 kB)[39m[90m (860 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/error-500-styles.8IYEHzz6.mjs.map (317 B)[39m[90m (193 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/fetch-nJb60Bq_.mjs (4.1 kB)[39m[90m (1.42 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/fetch-nJb60Bq_.mjs.map (185 B)[39m[90m (158 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/finances-Cn8U1G47.mjs (123 kB)[39m[90m (8.67 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/finances-Cn8U1G47.mjs.map (302 B)[39m[90m (191 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/FocusScope-DBTXHsxx.mjs (20.1 kB)[39m[90m (4.79 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/FocusScope-DBTXHsxx.mjs.map (195 B)[39m[90m (163 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/groups-DXNCAQPK.mjs (27 kB)[39m[90m (4.54 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/groups-DXNCAQPK.mjs.map (284 B)[39m[90m (190 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/helpdesk-C8qbwEvg.mjs (79.6 kB)[39m[90m (6.83 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/helpdesk-C8qbwEvg.mjs.map (274 B)[39m[90m (184 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/index-B9MCefez.mjs (12.2 kB)[39m[90m (2.75 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/index-B9MCefez.mjs.map (240 B)[39m[90m (175 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/index-Biit39Un.mjs (112 kB)[39m[90m (12.8 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/index-Biit39Un.mjs.map (324 B)[39m[90m (192 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Input-D5bP2rhQ.mjs (18 kB)[39m[90m (3.51 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Input-D5bP2rhQ.mjs.map (212 B)[39m[90m (173 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/ip-networks-CRcWIQcR.mjs (31.5 kB)[39m[90m (4.38 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/ip-networks-CRcWIQcR.mjs.map (294 B)[39m[90m (190 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/isValueEqualOrExist-BJQCphmQ.mjs (391 B)[39m[90m (242 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/isValueEqualOrExist-BJQCphmQ.mjs.map (213 B)[39m[90m (169 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Label-WdS84WcL.mjs (1.09 kB)[39m[90m (540 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Label-WdS84WcL.mjs.map (185 B)[39m[90m (158 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Modal-DEIv_QqB.mjs (66.1 kB)[39m[90m (7.03 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Modal-DEIv_QqB.mjs.map (198 B)[39m[90m (167 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/monitoring-DXIaSKNk.mjs (17.3 kB)[39m[90m (3.21 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/monitoring-DXIaSKNk.mjs.map (264 B)[39m[90m (188 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/nodes-B8sDCx-Y.mjs (46.9 kB)[39m[90m (5.33 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/nodes-B8sDCx-Y.mjs.map (296 B)[39m[90m (186 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/operations-BH12HTsf.mjs (122 kB)[39m[90m (11.1 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/operations-BH12HTsf.mjs.map (306 B)[39m[90m (192 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/PopperArrow-2OhqBmEd.mjs (19.2 kB)[39m[90m (4.67 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/PopperArrow-2OhqBmEd.mjs.map (197 B)[39m[90m (162 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/RovingFocusGroup-BSKPtt51.mjs (4.8 kB)[39m[90m (1.54 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/RovingFocusGroup-BSKPtt51.mjs.map (207 B)[39m[90m (167 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Select-C9VmHHla.mjs (181 kB)[39m[90m (19.3 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Select-C9VmHHla.mjs.map (228 B)[39m[90m (175 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/SelectMenu-Chb8l1OX.mjs (161 kB)[39m[90m (17.5 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/SelectMenu-Chb8l1OX.mjs.map (290 B)[39m[90m (197 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/server.mjs (295 kB)[39m[90m (57.9 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/server.mjs.map (342 B)[39m[90m (194 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/settings-BKDvumdi.mjs (68.3 kB)[39m[90m (8.87 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/settings-BKDvumdi.mjs.map (309 B)[39m[90m (198 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/snms-h0PIgfjO.mjs (34.8 kB)[39m[90m (4.56 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/snms-h0PIgfjO.mjs.map (280 B)[39m[90m (181 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/styles.mjs (1.09 kB)[39m[90m (351 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/styles.mjs.map (164 B)[39m[90m (142 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/subscriptions-xbHAfyTw.mjs (44.7 kB)[39m[90m (5.17 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/subscriptions-xbHAfyTw.mjs.map (298 B)[39m[90m (194 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Table-BG1OeeGw.mjs (44.5 kB)[39m[90m (7.11 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Table-BG1OeeGw.mjs.map (185 B)[39m[90m (158 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/teryt-DZWE7CMQ.mjs (51.5 kB)[39m[90m (6.59 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/teryt-DZWE7CMQ.mjs.map (282 B)[39m[90m (186 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/Textarea-Cor6MOCv.mjs (19.1 kB)[39m[90m (3.77 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/Textarea-Cor6MOCv.mjs.map (218 B)[39m[90m (174 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/useFilter-DmtP1-i5.mjs (3.41 kB)[39m[90m (1.01 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/useFilter-DmtP1-i5.mjs.map (193 B)[39m[90m (160 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/useResolvedVariants-D-YuM3Ek.mjs (610 B)[39m[90m (343 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/useResolvedVariants-D-YuM3Ek.mjs.map (213 B)[39m[90m (168 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/utils-BPFzn3vt.mjs (2.03 kB)[39m[90m (834 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/utils-BPFzn3vt.mjs.map (185 B)[39m[90m (157 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/utils-hJzaKrUG.mjs (1.48 kB)[39m[90m (666 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/utils-hJzaKrUG.mjs.map (185 B)[39m[90m (157 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/virtualizer-DKHChrFa.mjs (32.6 kB)[39m[90m (7.19 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/virtualizer-DKHChrFa.mjs.map (197 B)[39m[90m (161 B gzip)[39m
+[90m  ├─ .output/server/chunks/build/VisuallyHiddenInput-DuMd4tvZ.mjs (4.86 kB)[39m[90m (1.29 kB gzip)[39m
+[90m  ├─ .output/server/chunks/build/VisuallyHiddenInput-DuMd4tvZ.mjs.map (213 B)[39m[90m (168 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/api/agent/start.post.mjs (1.66 kB)[39m[90m (711 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/api/agent/start.post.mjs.map (1.61 kB)[39m[90m (391 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/api/agent/status.get.mjs (1.01 kB)[39m[90m (458 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/api/agent/status.get.mjs.map (939 B)[39m[90m (282 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/api/v1/_...path_.mjs (950 B)[39m[90m (490 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/api/v1/_...path_.mjs.map (654 B)[39m[90m (261 B gzip)[39m
+[90m  ├─ .output/server/chunks/routes/renderer.mjs (15.2 kB)[39m[90m (4.72 kB gzip)[39m
+[90m  ├─ .output/server/chunks/routes/renderer.mjs.map (768 B)[39m[90m (267 B gzip)[39m
+[90m  ├─ .output/server/chunks/virtual/_virtual_spa-template.mjs (94 B)[39m[90m (100 B gzip)[39m
+[90m  ├─ .output/server/chunks/virtual/_virtual_spa-template.mjs.map (90 B)[39m[90m (98 B gzip)[39m
+[90m  ├─ .output/server/index.mjs (1.71 kB)[39m[90m (753 B gzip)[39m
+[90m  └─ .output/server/package.json (1.67 kB)[39m[90m (604 B gzip)[39m
+[36mΣ Total size:[39m 13.8 MB (3.85 MB gzip)
+[90m[[90mnitro[90m][39m [32m√[39m You can preview this build using [36mnode .output/server/index.mjs[39m
+|
+—  ✨ Build complete!

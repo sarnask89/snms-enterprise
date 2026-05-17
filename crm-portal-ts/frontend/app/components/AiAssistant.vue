@@ -81,32 +81,7 @@
         </div>
       </div>
 
-      <!-- Context Modal -->
-      <UModal v-model="isContextModalOpen">
-        <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                Paste API Documentation
-              </h3>
-              <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isContextModalOpen = false" />
-            </div>
-          </template>
-          
-          <div class="p-4">
-            <p class="text-xs text-gray-500 mb-4">Paste the documentation for the external service you want to integrate. I will use this as reference for all generation tasks.</p>
-            <UTextarea v-model="tempContext" :rows="12" placeholder="Endpoint: /v1/api... Params: { ... } etc." />
-          </div>
-
-          <template #footer>
-            <div class="flex justify-end gap-2">
-              <UButton color="gray" variant="ghost" label="Clear" @click="systemContext = ''; isContextModalOpen = false" />
-              <UButton color="primary" label="Save Context" @click="saveContext" />
-            </div>
-          </template>
-        </UCard>
-      </UModal>
-    </div>
+         </div>
   </ClientOnly>
 </template>
 

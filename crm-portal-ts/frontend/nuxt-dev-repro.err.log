@@ -1,0 +1,25 @@
+
+[41m[30m ERROR [39m[49m
+Another Nuxt dev server is already running:
+
+  URL:     http://[::1]:3000
+  PID:     13304
+  Dir:     C:/Users/xxx/crm-portal/crm-portal-ts/frontend
+  Started: 17.05.2026, 05:24:05
+
+Run [36mtaskkill /PID 13304 /F[39m to stop it, or connect to http://[::1]:3000
+Set NUXT_IGNORE_LOCK=1 to bypass this check.
+
+
+
+[41m[30m ERROR [39m[49m Another Nuxt dev is already running (PID 13304).
+
+    [90mat [39m#acquireDevLock ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-DFnFBwYf.mjs:565:10[39m)
+    [90mat [39mNuxtDevServer.init ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-DFnFBwYf.mjs:383:23[39m)
+    [90mat [39masync initialize ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-DFnFBwYf.mjs:722:2[39m)
+    [90mat [39masync Object.run ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-BejZ6jii.mjs:198:51[39m)
+    [90mat [39masync runCommand ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/citty/dist/index.mjs:228:47[39m)
+    [90mat [39masync runCommand ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/citty/dist/index.mjs:217:5[39m)
+    [90mat [39masync runMain ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/citty/dist/index.mjs:394:10[39m) 
+
+

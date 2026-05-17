@@ -1,0 +1,5 @@
+FROM qwen2.5-coder:1.5b
+PARAMETER num_ctx 2048
+PARAMETER num_gpu 99
+PARAMETER num_batch 128
+PARAMETER temperature 0.1

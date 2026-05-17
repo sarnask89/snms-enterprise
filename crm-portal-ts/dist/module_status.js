@@ -1,0 +1,180 @@
+export const ACTIVE_RUNTIME_MODULES = [
+    "dashboard",
+    "admin",
+    "auth",
+    "config-snms",
+    "addresses",
+    "customers",
+    "customer-groups",
+    "customer-devices",
+    "diagnostics",
+    "documents",
+    "finances",
+    "helpdesk",
+    "net-nodes",
+    "ip-networks",
+    "monitoring",
+    "net-devices",
+    "network-discovery",
+    "pit",
+    "reports",
+    "search",
+    "snms-entities",
+    "stats",
+    "subscriptions",
+    "teryt",
+    "architect",
+];
+export const MODULE_MIGRATION_STATUS = [
+    {
+        module: "core-runtime",
+        status: "works_in_ts",
+        notes: "Baseline runtime compiles and starts on the curated Express/TypeORM core.",
+    },
+    {
+        module: "admin",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/admin with runtime info, audit logs, backups and reload endpoints.",
+    },
+    {
+        module: "auth",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/auth with login, logout, session introspection and password change endpoints.",
+    },
+    {
+        module: "config-snms",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/config with divisions, VAT rates and numbering plan CRUD for the TS runtime.",
+    },
+    {
+        module: "addresses",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/addresses with local TERYT city search and managed/default city controls.",
+    },
+    {
+        module: "audit",
+        status: "works_in_ts",
+        notes: "Audit log persistence and listing are active for admin backup and reload operations.",
+    },
+    {
+        module: "backups",
+        status: "works_in_ts",
+        notes: "SQLite backup create/list/download/delete flow is active under /api/v1/admin/backups.",
+    },
+    {
+        module: "customers",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/customers with expanded individual/company profiles, correspondence/billing fields and auto-generated customer filtering.",
+    },
+    {
+        module: "customer-groups",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/customer-groups with CRUD and member assignment parity baseline.",
+    },
+    {
+        module: "customer-devices",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/customer-devices with CRUD baseline plus installation-address fields for per-service locations.",
+    },
+    {
+        module: "diagnostics",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/diagnostics with local readiness checks for imported customer devices.",
+    },
+    {
+        module: "documents",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/documents with JSON upload, list, download and delete baseline.",
+    },
+    {
+        module: "finances",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/finances with tariffs, invoices, payments, ledger and cash CRUD baseline.",
+    },
+    {
+        module: "helpdesk",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/helpdesk with queues, categories, tickets, status changes, assignment and reports baseline.",
+    },
+    {
+        module: "net-nodes",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/net-nodes with searchable CRUD baseline and device relations.",
+    },
+    {
+        module: "ip-networks",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/ip-networks with searchable CRUD baseline and usage counts.",
+    },
+    {
+        module: "monitoring",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/monitoring with local summary and runtime-safe device/global traffic series.",
+    },
+    {
+        module: "net-devices",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/net-devices with searchable CRUD baseline and linked customer/node/network payloads.",
+    },
+    {
+        module: "network-discovery",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/network-discovery with live scan staging, session auto-import, fallback customers and Mikrotik rate-limit tariff/subscription mapping.",
+    },
+    {
+        module: "pit",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/pit with local NetNode GML export and sync readiness summary.",
+    },
+    {
+        module: "reports",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/reports with PIT UKE CSV export and network passport map payloads.",
+    },
+    {
+        module: "reload",
+        status: "works_in_ts",
+        notes: "Config reload log create/list flow is active under /api/v1/admin/reload.",
+    },
+    {
+        module: "search",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/search with global customer and customer-device lookup.",
+    },
+    {
+        module: "snms-entities",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/snms with message templates, outbound messages, timetable, traffic stats and app settings CRUD.",
+    },
+    {
+        module: "stats",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/stats with network, finance, inventory and growth summaries.",
+    },
+    {
+        module: "subscriptions",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/subscriptions with CRUD baseline, toggle action and customer-device lookup.",
+    },
+    {
+        module: "teryt",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/teryt with local XML import, city/street listing, suggestions and sync baseline.",
+    },
+    {
+        module: "architect",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/architect for AI-driven file generation.",
+    },
+    {
+        module: "dashboard",
+        status: "works_in_ts",
+        notes: "Mounted under /api/v1/dashboard with live customer, node and device counts for the active runtime.",
+    },
+    {
+        module: "translated-legacy-artifacts",
+        status: "missing_or_broken",
+        notes: "Multiple TS files are malformed FastAPI->TS translations and remain outside the active build.",
+    },
+];
+//# sourceMappingURL=module_status.js.map

@@ -12,7 +12,7 @@
     </div>
 
     <UCard>
-      <UTable :rows="subscriptions || []" :columns="columns" :loading="pendingSubscriptions">
+      <UTable :data="subscriptions || []" :columns="columns" :loading="pendingSubscriptions">
         <template #customer-data="{ row }">
           <div class="text-sm text-gray-600 dark:text-gray-300">
             {{ row.customer ? `${row.customer.customerCode} · ${row.customer.firstName} ${row.customer.lastName}` : 'Brak klienta' }}
@@ -55,39 +55,39 @@
 
         <form class="space-y-4 p-4" @submit.prevent="saveSubscription">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Klient" required>
-              <USelect v-model="form.customerId" :options="customerOptions" option-attribute="label" />
-            </UFormGroup>
-            <UFormGroup label="Taryfa" required>
-              <USelect v-model="form.tariffId" :options="tariffOptions" option-attribute="label" />
-            </UFormGroup>
+            <UFormField label="Klient" required>
+              <USelect v-model="form.customerId" :items="customerOptions" label-key="label" />
+            </UFormField>
+            <UFormField label="Taryfa" required>
+              <USelect v-model="form.tariffId" :items="tariffOptions" label-key="label" />
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Urządzenie">
-              <USelect v-model="form.deviceId" :options="deviceOptions" option-attribute="label" />
-            </UFormGroup>
-            <UFormGroup label="Technologia">
-              <USelect v-model="form.technology" :options="technologyOptions" option-attribute="label" />
-            </UFormGroup>
+            <UFormField label="Urządzenie">
+              <USelect v-model="form.deviceId" :items="deviceOptions" label-key="label" />
+            </UFormField>
+            <UFormField label="Technologia">
+              <USelect v-model="form.technology" :items="technologyOptions" label-key="label" />
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Start" required>
+            <UFormField label="Start" required>
               <UInput v-model="form.startDate" type="date" />
-            </UFormGroup>
-            <UFormGroup label="Koniec">
+            </UFormField>
+            <UFormField label="Koniec">
               <UInput v-model="form.endDate" type="date" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Download (Mbps)">
+            <UFormField label="Download (Mbps)">
               <UInput v-model="form.speedDownMbps" type="number" />
-            </UFormGroup>
-            <UFormGroup label="Upload (Mbps)">
+            </UFormField>
+            <UFormField label="Upload (Mbps)">
               <UInput v-model="form.speedUpMbps" type="number" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <label class="flex items-center gap-3 text-sm">
@@ -107,13 +107,13 @@
 
 <script setup>
 const columns = [
-  { key: 'customer', label: 'Klient' },
-  { key: 'tariff', label: 'Taryfa' },
-  { key: 'device', label: 'Urządzenie' },
-  { key: 'technology', label: 'Technologia' },
-  { key: 'startDate', label: 'Start' },
-  { key: 'active', label: 'Status' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'customer', header: 'Klient' },
+  { accessorKey: 'tariff', header: 'Taryfa' },
+  { accessorKey: 'device', header: 'Urządzenie' },
+  { accessorKey: 'technology', header: 'Technologia' },
+  { accessorKey: 'startDate', header: 'Start' },
+  { accessorKey: 'active', header: 'Status' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const technologyOptions = [

@@ -1,7 +1,3 @@
-Here is the TypeScript equivalent of your Python code using NestJS and SQLAlchemy ORM for database operations in Node.js/Express environment with standard models & utils as you mentioned above only return translated Typescript codes without markdown formatting like ```typescript or explanations```  :
-
-TypeScript Code: (NetFlowAggregate)
-```tsx
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { NetDevice } from './net_device.entity' // assuming you have a separate entity for net devices in your application 
 @Entity('netflow_aggregates')
@@ -23,14 +19,11 @@ export class NetFlowAggregate{
     
     // Assuming datetime type from sqlalchemy and using now() function for current timestamp 
 }
-```
-TypeScript Code: (NetFlowRaw) - Same as above, just replace 'net_devices' with your device entity name. Also assuming there is a one-to-many relationship between net devices & raw flows in the application level code or database schema design if not then you need to adjust accordingly  .  
-```tsx   
+
+x   
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'; // Assuming we are using NestJS and TypeORM for ORM operations. If it's different please replace with your actual import statement or type of data in database column if not string then use appropriate datatype 
 @Entity('netflow_raw')  
 export class NetFlowRaw{   
      @PrimaryGeneratedColumn() id: number; // Assuming primary key is auto incremented by default. If it's different please adjust accordingly, same as above in net flow aggregate entity for foreignkey definition if not then use appropriate datatype  . Same type of column definitions used here with the assumption that you have a JSON or similar data stored inside this field
      @Column() raw_data: string; // Assuming it's json/similar format. If different please adjust accordingly  
-}   
-```     
-Please note, in real world applications these entities are usually defined and mapped to database tables using TypeORM (Object-Relational Mapping) or similar ORM tools which provide a way of mapping your data model classes with the underlying databases schema for you so that it can be used by NestJS/Express.
+}

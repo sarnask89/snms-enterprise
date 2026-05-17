@@ -1,0 +1,5 @@
+Przeanalizowany kod jest zaimplementowaniem klasy `NetFlowAggregate` w bazie danych SQLAlchemy. Klasa reprezentuje agregowane dane NetFlow dla 5-minute intervału. W tym przypadku, kolumny `id`, `device_id`, `src_ip`, `dst_ip`, `src_port`, `dst_port`, `protocol`, `bytes`, `packets` i `timestamp` są używane do przechowywania danych NetFlow. Kolumna `raw_data` jest opcjonalna, która może być używana do przechowywania danych NetFlow w formacie JSON lub innych formatów.
+
+Klasa `NetFlowRaw` jest zaimplementowaniem klasy `Base` i reprezentuje temporary storage dla danych NetFlow przed agregacją. W tym przypadku, kolumna `id` jest używana do przechowywania identyfikatorów danych NetFlow, a kolumna `raw_data` jest używana do przechowywania danych NetFlow w formacie JSON lub innych formatów.
+
+Wszystkie klasy są zaimplementowane za pomocą SQLAlchemy i reprezentują struktury danych bazy danych.

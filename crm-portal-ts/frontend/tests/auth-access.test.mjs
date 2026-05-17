@@ -61,65 +61,34 @@ test('navigation is filtered by role', () => {
   )
 })
 
-test('operator shell source keeps grouped navigation labels and session affordances visible', () => {
+test('operator shell source uses dashboard template primitives and exposes key navigation entries', () => {
   const layoutSource = readFileSync(
     resolve(process.cwd(), 'app/layouts/default.vue'),
     'utf8'
   )
 
-  assert.match(layoutSource, /label:\s*'CRM'/)
-  assert.match(layoutSource, /label:\s*'Operacje'/)
-  assert.match(layoutSource, /label:\s*'Administracja'/)
+  assert.match(layoutSource, /<UDashboardGroup/)
+  assert.match(layoutSource, /<UDashboardSidebar/)
+  assert.match(layoutSource, /<UDashboardSearchButton/)
+  assert.match(layoutSource, /<UNavigationMenu/)
+  assert.match(layoutSource, /label:\s*'Abonenci'/)
   assert.match(layoutSource, /label:\s*'Urządzenia klientów'/)
-  assert.match(layoutSource, /<UVerticalNavigation/, 'default layout should use standard sidebar navigation')
-  assert.match(layoutSource, /label="Administracja"/, 'default layout should expose administration in the top menu')
-  assert.match(layoutSource, /label="Sesja"|label:\s*'Sesja'/)
-  assert.match(layoutSource, /label="Zaloguj"|label:\s*'Zaloguj'/)
+  assert.match(layoutSource, /label:\s*'Administracja'/)
+  assert.match(layoutSource, /label:\s*'Monitoring'/)
+  assert.match(layoutSource, /Wyloguj' : 'Zaloguj'|'Wyloguj' : 'Zaloguj'|Zaloguj/)
 })
 
-test('operator shell session summary reads the auth session as a ref-backed state object', () => {
-  const sessionSummaryBody = extractBlock(
-    readLayoutScript(),
-    'const sessionSummary = computed(() =>'
-  )
-
-  const evaluateSessionSummary = new Function('currentUser', sessionSummaryBody)
-
-  assert.equal(
-    evaluateSessionSummary({
-      value: {
-        role: 'admin'
-      }
-    }),
-    'admin · sesja aktywna'
-  )
-
-  assert.equal(
-    evaluateSessionSummary({
-      value: null
-    }),
-    'Brak sesji'
-  )
-})
-
-test('operator shell resolves truthful section and page labels for the architect route', () => {
+test('operator shell resolves truthful page labels from dashboard navigation for the architect route', () => {
   const layoutScript = readLayoutScript()
-  const navigationSections = new Function(
-    `return (${extractArrayLiteral(layoutScript, 'const navigationSections = ')})`
-  )()
-  const staticRouteLabels = new Function(
-    `return (${extractArrayLiteral(layoutScript, 'const staticRouteLabels = ')})`
-  )()
-
-  const architectNavigation = findExpectedNavigationEntry(
-    navigationSections,
-    staticRouteLabels,
-    '/architect'
-  )
+  const navigationSections = new Function('open', `
+    return ${extractBetween(layoutScript, 'const navigationSections = ', '\n\nconst visibleSections = computed(() =>')}
+  `)({ value: false })
+  const links = navigationSections.flat()
+  const architectNavigation = findExpectedNavigationEntry(links, '/architect')
 
   assert.ok(architectNavigation, 'expected /architect to be represented in topbar navigation lookup')
   assert.deepEqual(
-    findActiveNavigation(navigationSections, '/architect', staticRouteLabels),
+    findActiveNavigation(links, '/architect'),
     architectNavigation
   )
 })
@@ -168,45 +137,15 @@ function readLayoutScript() {
   return match[1]
 }
 
-function extractArrayLiteral(source, marker) {
-  const markerIndex = source.indexOf(marker)
-  assert.notEqual(markerIndex, -1, `expected to find marker: ${marker}`)
+function extractBetween(source, startMarker, endMarker) {
+  const startIndex = source.indexOf(startMarker)
+  assert.notEqual(startIndex, -1, `expected to find marker: ${startMarker}`)
 
-  const startIndex = source.indexOf('[', markerIndex)
-  assert.notEqual(startIndex, -1, `expected array literal after marker: ${marker}`)
+  const contentStart = startIndex + startMarker.length
+  const endIndex = source.indexOf(endMarker, contentStart)
+  assert.notEqual(endIndex, -1, `expected to find marker: ${endMarker}`)
 
-  return extractBalancedSegment(source, startIndex, '[', ']')
-}
-
-function extractBlock(source, marker) {
-  const markerIndex = source.indexOf(marker)
-  assert.notEqual(markerIndex, -1, `expected to find marker: ${marker}`)
-
-  const startIndex = source.indexOf('{', markerIndex)
-  assert.notEqual(startIndex, -1, `expected block after marker: ${marker}`)
-
-  const block = extractBalancedSegment(source, startIndex, '{', '}')
-  return block.slice(1, -1)
-}
-
-function extractBalancedSegment(source, startIndex, openChar, closeChar) {
-  let depth = 0
-
-  for (let index = startIndex; index < source.length; index += 1) {
-    const char = source[index]
-
-    if (char === openChar) {
-      depth += 1
-    } else if (char === closeChar) {
-      depth -= 1
-
-      if (depth === 0) {
-        return source.slice(startIndex, index + 1)
-      }
-    }
-  }
-
-  assert.fail(`unterminated ${openChar}${closeChar} segment starting at ${startIndex}`)
+  return source.slice(contentStart, endIndex).trim()
 }
 
 function normalizePath(path) {
@@ -222,14 +161,14 @@ function matchesPath(candidate, currentPath) {
   return currentPath === normalizedCandidate || currentPath.startsWith(`${normalizedCandidate}/`)
 }
 
-function findActiveLink(links, currentPath) {
-  for (const link of links) {
-    if (link.to && matchesPath(link.to, currentPath)) {
-      return link.label
+function findActiveLink(items, currentPath) {
+  for (const item of items) {
+    if (item.to && matchesPath(item.to, currentPath)) {
+      return item.label
     }
 
-    if (Array.isArray(link.children)) {
-      const childLabel = findActiveLink(link.children, currentPath)
+    if (Array.isArray(item.children)) {
+      const childLabel = findActiveLink(item.children, currentPath)
 
       if (childLabel) {
         return childLabel
@@ -240,22 +179,11 @@ function findActiveLink(links, currentPath) {
   return null
 }
 
-function findActiveNavigation(sections, currentPath, staticLabels = []) {
-  const staticLabel = staticLabels.find(({ path }) => matchesPath(path, currentPath))
-
-  if (staticLabel) {
-    return {
-      sectionLabel: staticLabel.sectionLabel,
-      pageLabel: staticLabel.pageLabel
-    }
-  }
-
-  for (const section of sections) {
-    const pageLabel = findActiveLink(section.links, currentPath)
-
+function findActiveNavigation(items, currentPath) {
+  for (const item of items) {
+    const pageLabel = findActiveLink([item], currentPath)
     if (pageLabel) {
       return {
-        sectionLabel: section.label,
         pageLabel
       }
     }
@@ -264,22 +192,11 @@ function findActiveNavigation(sections, currentPath, staticLabels = []) {
   return null
 }
 
-function findExpectedNavigationEntry(sections, staticLabels, targetPath) {
-  const staticLabel = staticLabels.find(({ path }) => matchesPath(path, targetPath))
-
-  if (staticLabel) {
-    return {
-      sectionLabel: staticLabel.sectionLabel,
-      pageLabel: staticLabel.pageLabel
-    }
-  }
-
-  for (const section of sections) {
-    const pageLabel = findActiveLink(section.links, targetPath)
-
+function findExpectedNavigationEntry(items, targetPath) {
+  for (const item of items) {
+    const pageLabel = findActiveLink([item], targetPath)
     if (pageLabel) {
       return {
-        sectionLabel: section.label,
         pageLabel
       }
     }

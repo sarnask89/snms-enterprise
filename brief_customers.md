@@ -1,0 +1,3 @@
+This code snippet defines a set of routes for managing customers in an application. It includes routes for creating, editing, viewing, and deleting customers, as well as routes for managing the portal access for each customer. The routes are protected by the `require_business_write` dependency, which ensures that only users with business write permissions can access these routes.
+
+The code uses SQLAlchemy to interact with a database, and it includes functions for generating new document numbers and hashing passwords. It also includes functions for auditing changes made to customers in the database.

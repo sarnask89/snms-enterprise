@@ -19,7 +19,7 @@
           </div>
         </template>
 
-        <UTable :rows="queues || []" :columns="queueColumns" :loading="pendingQueues">
+        <UTable :data="queues || []" :columns="queueColumns" :loading="pendingQueues">
           <template #actions-data="{ row }">
             <div class="flex gap-2">
               <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openQueueEdit(row)" />
@@ -40,7 +40,7 @@
           </div>
         </template>
 
-        <UTable :rows="categories || []" :columns="categoryColumns" :loading="pendingCategories">
+        <UTable :data="categories || []" :columns="categoryColumns" :loading="pendingCategories">
           <template #queue-data="{ row }">
             <div class="text-sm text-gray-600 dark:text-gray-300">{{ row.queue?.name || 'Brak kolejki' }}</div>
           </template>
@@ -74,7 +74,7 @@
         </div>
       </template>
 
-      <UTable :rows="filteredTickets" :columns="ticketColumns" :loading="pendingTickets">
+      <UTable :data="filteredTickets" :columns="ticketColumns" :loading="pendingTickets">
         <template #customer-data="{ row }">
           <div class="text-sm text-gray-600 dark:text-gray-300">
             {{ row.customer ? `${row.customer.customerCode} · ${row.customer.firstName} ${row.customer.lastName}` : 'Brak klienta' }}
@@ -128,8 +128,8 @@
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header><h3 class="text-lg font-bold">{{ queueForm.id ? 'Edytuj kolejkę' : 'Dodaj kolejkę' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveQueue">
-          <UFormGroup label="Nazwa" required><UInput v-model="queueForm.name" /></UFormGroup>
-          <UFormGroup label="Opis"><UTextarea v-model="queueForm.description" :rows="3" /></UFormGroup>
+          <UFormField label="Nazwa" required><UInput v-model="queueForm.name" /></UFormField>
+          <UFormField label="Opis"><UTextarea v-model="queueForm.description" :data="3" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isQueueModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingQueue" label="Zapisz" />
@@ -142,9 +142,9 @@
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header><h3 class="text-lg font-bold">{{ categoryForm.id ? 'Edytuj kategorię' : 'Dodaj kategorię' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveCategory">
-          <UFormGroup label="Kolejka" required><USelect v-model="categoryForm.queueId" :options="queueOptions" option-attribute="label" /></UFormGroup>
-          <UFormGroup label="Nazwa" required><UInput v-model="categoryForm.name" /></UFormGroup>
-          <UFormGroup label="Opis"><UTextarea v-model="categoryForm.description" :rows="3" /></UFormGroup>
+          <UFormField label="Kolejka" required><USelect v-model="categoryForm.queueId" :items="queueOptions" label-key="label" /></UFormField>
+          <UFormField label="Nazwa" required><UInput v-model="categoryForm.name" /></UFormField>
+          <UFormField label="Opis"><UTextarea v-model="categoryForm.description" :data="3" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isCategoryModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingCategory" label="Zapisz" />
@@ -158,18 +158,18 @@
         <template #header><h3 class="text-lg font-bold">{{ ticketForm.id ? 'Edytuj zgłoszenie' : 'Dodaj zgłoszenie' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveTicket">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Klient"><USelect v-model="ticketForm.customerId" :options="customerOptionsWithEmpty" option-attribute="label" /></UFormGroup>
-            <UFormGroup label="Assignee ID"><UInput v-model="ticketForm.assigneeId" type="number" placeholder="np. 101" /></UFormGroup>
+            <UFormField label="Klient"><USelect v-model="ticketForm.customerId" :items="customerOptionsWithEmpty" label-key="label" /></UFormField>
+            <UFormField label="Assignee ID"><UInput v-model="ticketForm.assigneeId" type="number" placeholder="np. 101" /></UFormField>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Kolejka"><USelect v-model="ticketForm.queueId" :options="queueOptionsWithEmpty" option-attribute="label" /></UFormGroup>
-            <UFormGroup label="Kategoria"><USelect v-model="ticketForm.categoryId" :options="categoryOptionsWithEmpty" option-attribute="label" /></UFormGroup>
+            <UFormField label="Kolejka"><USelect v-model="ticketForm.queueId" :items="queueOptionsWithEmpty" label-key="label" /></UFormField>
+            <UFormField label="Kategoria"><USelect v-model="ticketForm.categoryId" :items="categoryOptionsWithEmpty" label-key="label" /></UFormField>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Status"><USelect v-model="ticketForm.status" :options="ticketStatusOptions" option-attribute="label" /></UFormGroup>
-            <UFormGroup label="Tytuł" required><UInput v-model="ticketForm.title" /></UFormGroup>
+            <UFormField label="Status"><USelect v-model="ticketForm.status" :items="ticketStatusOptions" label-key="label" /></UFormField>
+            <UFormField label="Tytuł" required><UInput v-model="ticketForm.title" /></UFormField>
           </div>
-          <UFormGroup label="Treść" required><UTextarea v-model="ticketForm.body" :rows="5" /></UFormGroup>
+          <UFormField label="Treść" required><UTextarea v-model="ticketForm.body" :data="5" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isTicketModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingTicket" label="Zapisz" />
@@ -182,28 +182,28 @@
 
 <script setup>
 const queueColumns = [
-  { key: 'name', label: 'Nazwa' },
-  { key: 'description', label: 'Opis' },
-  { key: 'categoryCount', label: 'Kategorie' },
-  { key: 'ticketCount', label: 'Tickety' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'name', header: 'Nazwa' },
+  { accessorKey: 'description', header: 'Opis' },
+  { accessorKey: 'categoryCount', header: 'Kategorie' },
+  { accessorKey: 'ticketCount', header: 'Tickety' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const categoryColumns = [
-  { key: 'name', label: 'Nazwa' },
-  { key: 'queue', label: 'Kolejka' },
-  { key: 'description', label: 'Opis' },
-  { key: 'ticketCount', label: 'Tickety' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'name', header: 'Nazwa' },
+  { accessorKey: 'queue', header: 'Kolejka' },
+  { accessorKey: 'description', header: 'Opis' },
+  { accessorKey: 'ticketCount', header: 'Tickety' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const ticketColumns = [
-  { key: 'title', label: 'Tytuł' },
-  { key: 'customer', label: 'Klient' },
-  { key: 'queue', label: 'Kolejka / kategoria' },
-  { key: 'status', label: 'Status' },
-  { key: 'assigneeId', label: 'Assignee' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'title', header: 'Tytuł' },
+  { accessorKey: 'customer', header: 'Klient' },
+  { accessorKey: 'queue', header: 'Kolejka / kategoria' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'assigneeId', header: 'Assignee' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const ticketStatusOptions = [

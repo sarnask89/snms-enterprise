@@ -1,20 +1,121 @@
-Here is the TypeScript equivalent of your Python code using NestJS framework and Node.js environment for backend codes with standard TS models/utils in mind :-
-```typescript
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from "express";  // Importing the necessary types to use Express's request and response objects.
-from fastapi import APIRouter , Depends, Form   /* FastAPI dependencies */;   
-/* Assuming you have already defined your routes in a separate file named app-routing or similar name*/ ;    
-import { get_db } from 'app/database';  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-from sqlalchemy import select, Session as Sess/* Assuming you have already defined your models in a separate file named app-models or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-import { PortalUser } from 'app/database';// Assuming you have already defined your models in a separate file named app-models or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-import { verify_session } from 'app/deps';// Assuming you have already defined your dependencies in a separate file named app-dependencies or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-import { hash_password, verify_password } from 'app/security';// Assuming you have already defined your security functions in a separate file named app-sec or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-import { render, RedirectResponse } from 'app/templating';// Assuming you have already defined your templating functions in a separate file named app-temp or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-import { record_audit } from 'app/audit';// Assuming you have already defined your audit functions in a separate file named app-sec or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope.   /*Assumed by FastAPI */;   
-/* End of import statements for dependencies, models and security function definitions assuming you have already defined them as per above comments in your code snippet or similar name*/ ;  // Importing the necessary types to use SQLAlchemy's session local scope
+import { Router } from "express";
+import { recordAudit } from "../audit.js";
+import { establishPortalSession, clearPortalSession, getSessionUser, serializePortalUser } from "../auth_runtime.js";
+import { AppDataSource } from "../database.js";
+import { PortalUser } from "../models/system.js";
+import { hashPassword, verifyPassword } from "../security.js";
+
+export const router = Router();
+
+const portalUserRepo = AppDataSource.getRepository(PortalUser);
+
+router.post("/login", async (req, res) => {
+    try {
+        const username = String(req.body?.username ?? "").trim();
+        const password = String(req.body?.password ?? "");
+        if (!username || !password) {
+            return res.status(400).json({ message: "username and password are required" });
+        }
+
+        const user = await portalUserRepo.findOneBy({ username });
+        if (!user || !user.active || !verifyPassword(password, user.passwordHash)) {
+            await recordAudit({
+                action: "login_failure",
+                details: `user: ${username}`,
+                request: req,
+            });
+            return res.status(401).json({ message: "Invalid username or password" });
+        }
+
+        establishPortalSession(res, user.id);
+        await recordAudit({
+            action: "login",
+            resourceType: "portal_user",
+            resourceId: user.id,
+            actorId: user.id,
+            details: user.username,
+            request: req,
+        });
+
+        res.json({ user: serializePortalUser(user) });
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/logout", async (req, res) => {
+    try {
+        const user = await getSessionUser(req);
+        clearPortalSession(res);
+
+        await recordAudit({
+            action: "logout",
+            resourceType: user ? "portal_user" : undefined,
+            resourceId: user?.id,
+            actorId: user?.id,
+            details: user?.username,
+            request: req,
+        });
+
+        res.status(204).send();
+    } catch (error) {
+        console.error("Error during logout:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.get("/me", async (req, res) => {
+    try {
+        const user = await getSessionUser(req);
+        if (!user) {
+            return res.status(401).json({ user: null });
+        }
+
+        res.json({ user: serializePortalUser(user) });
+    } catch (error) {
+        console.error("Error during auth me:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/change-password", async (req, res) => {
+    try {
+        const user = await getSessionUser(req);
+        if (!user) {
+            return res.status(401).json({ message: "Authentication required" });
+        }
+
+        const currentPassword = String(req.body?.currentPassword ?? "");
+        const newPassword = String(req.body?.newPassword ?? "").trim();
+        const newPassword2 = String(req.body?.newPassword2 ?? "").trim();
+
+        if (newPassword !== newPassword2) {
+            return res.status(400).json({ message: "New passwords do not match" });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: "New password must have at least 6 characters" });
+        }
+
+        if (!verifyPassword(currentPassword, user.passwordHash)) {
+            return res.status(400).json({ message: "Current password is invalid" });
+        }
+
+        user.passwordHash = hashPassword(newPassword);
+        await portalUserRepo.save(user);
+        await recordAudit({
+            action: "change_password",
+            resourceType: "portal_user",
+            resourceId: user.id,
+            actorId: user.id,
+            details: user.username,
+            request: req,
+        });
+
+        res.json({ ok: true });
+    } catch (error) {
+        console.error("Error during password change:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});

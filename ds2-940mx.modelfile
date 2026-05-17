@@ -1,0 +1,18 @@
+# Użycie wersji deepseek-coder:1.3b (stabilna na 2GB VRAM)
+FROM deepseek-coder:1.3b
+
+# Powiększenie kontekstu z powrotem do 4096 tokenów, aby kod plików pythona nie był obcinany
+PARAMETER num_ctx 4096
+
+# Offloading 12 warstw do GPU - powinno to zająć ok 1.2-1.4GB VRAM razem z buforem 4k
+PARAMETER num_gpu 12
+
+# Redukcja batcha przetwarzania wstępnego w celu uniknięcia błędów OOM
+PARAMETER num_batch 128
+
+# Parametry stabilności i jakości kodu
+PARAMETER temperature 0.3
+PARAMETER top_p 0.9
+
+# Instrukcje systemowe zwiększające efektywność programistyczną
+SYSTEM """Jesteś ekspertem programowania. Odpowiadaj zwięźle, dostarczając jedynie niezbędny kod źródłowy TypeScript. Konwertuj logikę z Python na TS zachowując czytelność i typowanie."""

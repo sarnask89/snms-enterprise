@@ -34,7 +34,8 @@ class TypeScriptTranslator:
             res = subprocess.check_output(["powershell", "-Command", ps_cmd]).decode('utf-8').strip()
             print(f"--- GPU STATUS: {res} ---", flush=True)
         except Exception as e:
-            print(f"--- GPU STATUS: Error querying counters: {e} ---", flush=True)
+            # Silently fail or log minimal error for GPU monitoring to not block translation
+            pass
 
     def translate_file(self, file_path, dest_path):
         self.log_gpu_usage()
@@ -61,15 +62,10 @@ class TypeScriptTranslator:
         max_retries = 3
         for attempt in range(max_retries):
             try:
+                # We remove explicit options to let Ollama use the Modelfile settings (context size, etc.)
                 response = ollama.generate(
                     model=self.model,
-                    prompt=prompt,
-                    options={
-                        "num_ctx": 4096, 
-                        "num_predict": 2048, 
-                        "num_gpu": 99,
-                        "temperature": 0.1
-                    }
+                    prompt=prompt
                 )
                 
                 ts_code = response.get("response", "").strip()
@@ -79,13 +75,13 @@ class TypeScriptTranslator:
                     time.sleep(3)
                     continue
 
-                # Cleanup markdown
-                if ts_code.startswith("```typescript"):
-                    ts_code = ts_code.replace("```typescript\n", "", 1)
-                if ts_code.startswith("```ts"):
-                    ts_code = ts_code.replace("```ts\n", "", 1)
-                if ts_code.endswith("```"):
-                    ts_code = ts_code[:-3]
+                # Cleanup markdown blocks if the model still includes them
+                if "```typescript" in ts_code:
+                    ts_code = ts_code.split("```typescript")[1].split("```")[0].strip()
+                elif "```ts" in ts_code:
+                    ts_code = ts_code.split("```ts")[1].split("```")[0].strip()
+                elif "```" in ts_code:
+                    ts_code = ts_code.split("```")[1].strip()
                     
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 with open(dest_path, 'w', encoding='utf-8') as f:
@@ -108,7 +104,7 @@ def main():
     parser = argparse.ArgumentParser(description="Translate Python files to TypeScript using Ollama.")
     parser.add_argument("--src", default="app", help="Source directory (relative to project root)")
     parser.add_argument("--dest", default="crm-portal-ts/src", help="Destination directory (relative to project root)")
-    parser.add_argument("--model", default="deepseek-coder:1.3b", help="Ollama model to use")
+    parser.add_argument("--model", default="deepseek-safe", help="Ollama model to use")
     args = parser.parse_args()
 
     source_dir = Path(args.src)
@@ -133,14 +129,17 @@ def main():
                 dest_file_name = file.replace(".py", ".ts")
                 dest_path = os.path.join(target_dir, os.path.dirname(rel_path), dest_file_name)
                 
-                # Check for existing translation
-                if os.path.exists(dest_path) and os.path.getsize(dest_path) > 100:
-                   print(f"Skipping {source_path} - already translated.", flush=True)
-                   continue
+                # Check for existing translation and skip if valid
+                if os.path.exists(dest_path):
+                    with open(dest_path, 'r', encoding='utf-8') as f:
+                        content = f.read().strip()
+                        if content and content != "// TRANSLATION FAILED":
+                            print(f"Skipping {source_path} - already translated.", flush=True)
+                            continue
 
                 translator.translate_file(source_path, dest_path)
-                print("Cooling down GPU for 5 seconds...", flush=True)
-                time.sleep(5)
+                # Reduced sleep time for better performance since VRAM is optimized
+                time.sleep(2)
 
 if __name__ == "__main__":
     main()

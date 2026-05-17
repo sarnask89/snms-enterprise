@@ -1,0 +1,232 @@
+
+[90m[[90mnuxt[90m][39m [43m[30m WARN [39m[49m Incremental route update failed, performing full rebuild ENOENT: no such file or directory, open 'C:\Users\xxx\crm-portal\crm-portal-ts\frontend\app\pages\customers.vue'
+
+    [90mat [39mObject.readFileSync ([36mnode:fs:441:20[39m)
+    [90mat [39maugmentPages ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/index.mjs:400:49[39m)
+    [90mat [39maugmentAndResolve ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/index.mjs:386:11[39m)
+    [90mat [39masync augmentAndResolvePages ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/index.mjs:1204:24[39m)
+    [90mat [39masync Array.<anonymous> ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/index.mjs:1429:37[39m)
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m[2m (x2)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m[2m (x3)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m[2m (x4)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m[2m (x5)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m[2m (x6)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+
+
+[41m[30m ERROR [39m[49m [31mInternal server error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29019:43)
+      at TransformPluginContext.error (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29016:14)
+      at normalizeUrl (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27139:18)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27197:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27165:4)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite-plugin-inspect/dist/shared/vite-plugin-inspect.BzUKaD4x.mjs:403:17
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:28817:14)
+      at async loadAndTransform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:22686:26)
+      at async viteTransformMiddleware (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:24562:20)
+
+
+[41m[30m ERROR [39m[49m [31mInternal server error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29019:43)
+      at TransformPluginContext.error (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29016:14)
+      at normalizeUrl (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27139:18)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27197:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27165:4)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite-plugin-inspect/dist/shared/vite-plugin-inspect.BzUKaD4x.mjs:403:17
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:28817:14)
+      at async loadAndTransform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:22686:26)
+      at async viteTransformMiddleware (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:24562:20)[2m (x2)[22m
+
+
+[41m[30m ERROR [39m[49m [31mInternal server error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29019:43)
+      at TransformPluginContext.error (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29016:14)
+      at normalizeUrl (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27139:18)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27197:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27165:4)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite-plugin-inspect/dist/shared/vite-plugin-inspect.BzUKaD4x.mjs:403:17
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:28817:14)
+      at async loadAndTransform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:22686:26)
+      at async viteTransformMiddleware (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:24562:20)[2m (x3)[22m
+
+
+[41m[30m ERROR [39m[49m [31mInternal server error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29019:43)
+      at TransformPluginContext.error (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29016:14)
+      at normalizeUrl (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27139:18)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27197:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27165:4)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite-plugin-inspect/dist/shared/vite-plugin-inspect.BzUKaD4x.mjs:403:17
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:28817:14)
+      at async loadAndTransform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:22686:26)
+      at async viteTransformMiddleware (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:24562:20)[2m (x4)[22m
+
+
+[41m[30m ERROR [39m[49m [31mInternal server error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=7d162c51[39m:16:6
+[33m  14 |        /* webpackIgnore: true */
+  15 |        /* @vite-ignore */
+  16 |        "#app-manifest"
+     |        ^
+  17 |      );
+  18 |    } else {[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29019:43)
+      at TransformPluginContext.error (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:29016:14)
+      at normalizeUrl (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27139:18)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27197:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:27165:4)
+      at async file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite-plugin-inspect/dist/shared/vite-plugin-inspect.BzUKaD4x.mjs:403:17
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:28817:14)
+      at async loadAndTransform (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:22686:26)
+      at async viteTransformMiddleware (file:///C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/vite/dist/node/chunks/config.js:24562:20)[2m (x5)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to load url /pages/customers/index.vue?macro=true (resolved id: C:/Users/xxx/crm-portal/crm-portal-ts/frontend/app/pages/customers/index.vue?macro=true) in virtual:nuxt:C%3A%2FUsers%2Fxxx%2Fcrm-portal%2Fcrm-portal-ts%2Ffrontend%2F.nuxt%2Froutes.mjs. Does the file exist?
+
+
+[41m[30m ERROR [39m[49m Cannot restart nuxt:  Could not load [36m@nuxtjs/tailwindcss[39m. Is it installed?
+
+    [90mat [39mloadNuxtModuleInstance ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/ui/node_modules/@nuxt/kit/dist/index.mjs:2774:9[39m)
+    [90mat [39masync installModule ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/ui/node_modules/@nuxt/kit/dist/index.mjs:2667:67[39m)
+    [90mat [39masync installTailwind ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/ui/dist/module.mjs:90:3[39m)
+    [90mat [39masync setup ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/ui/dist/module.mjs:134:5[39m)
+    [90mat [39masync normalizedModule ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/ui/node_modules/@nuxt/kit/dist/index.mjs:2137:17[39m)
+    [90mat [39masync callModule ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/kit/dist/index.mjs:735:46[39m)
+    [90mat [39masync installModules ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/kit/dist/index.mjs:569:3[39m)
+    [90mat [39masync initNuxt ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/nuxt/dist/index.mjs:7294:3[39m)
+    [90mat [39masync #initializeNuxt ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-DFnFBwYf.mjs:494:3[39m)
+    [90mat [39masync #load ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-DFnFBwYf.mjs:585:3[39m)
+    [90mat [39masync NuxtDevServer.load ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/@nuxt/cli/dist/dev-DFnFBwYf.mjs:396:4[39m)
+    [90mat [39masync _applyPromised ([36m/C:/Users/xxx/crm-portal/crm-portal-ts/frontend/node_modules/perfect-debounce/dist/index.mjs:85:9[39m)
+

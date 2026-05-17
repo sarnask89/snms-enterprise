@@ -18,18 +18,18 @@
         </template>
 
         <form class="space-y-4" @submit.prevent="submitImport(importJob.key)">
-          <UFormGroup label="Plik XML" required>
+          <UFormField label="Plik XML" required>
             <input
               type="file"
               accept=".xml,text/xml,application/xml"
               class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
               @change="onFileSelected(importJob.key, $event)"
             >
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Podgląd treści">
-            <UTextarea v-model="importForms[importJob.key]" :rows="8" />
-          </UFormGroup>
+          <UFormField label="Podgląd treści">
+            <UTextarea v-model="importForms[importJob.key]" :data="8" />
+          </UFormField>
 
           <div class="flex items-center justify-between gap-3">
             <div class="min-h-[20px] text-sm text-gray-500">{{ importResults[importJob.key] }}</div>
@@ -84,7 +84,7 @@
           </div>
         </template>
 
-        <UTable :rows="filteredCommunes" :columns="communeColumns" :loading="pendingCommunes">
+        <UTable :data="filteredCommunes" :columns="communeColumns" :loading="pendingCommunes">
           <template #district-data="{ row }">
             <div class="text-sm text-gray-600 dark:text-gray-300">
               {{ row.district?.name || 'Brak powiatu' }}
@@ -145,15 +145,15 @@
             />
             <USelect
               v-model="managedFilter"
-              :options="managedOptions"
-              option-attribute="label"
+              :items="managedOptions"
+              label-key="label"
               class="w-full md:w-56"
             />
           </div>
         </div>
       </template>
 
-      <UTable :rows="filteredCities" :columns="cityColumns" :loading="pendingCities">
+      <UTable :data="filteredCities" :columns="cityColumns" :loading="pendingCities">
         <template #district-data="{ row }">
           <div class="text-sm text-gray-600 dark:text-gray-300">{{ row.district?.name || 'Brak powiatu' }}</div>
         </template>
@@ -264,25 +264,25 @@
 
 <script setup>
 const importJobs = [
-  { key: 'terc', title: 'Import TERC', description: 'Województwa, powiaty i gminy' },
-  { key: 'simc', title: 'Import SIMC', description: 'Miejscowości i powiązania z gminami' },
-  { key: 'ulic', title: 'Import ULIC', description: 'Ulice powiązane z miastami i gminami' }
+  { accessorKey: 'terc', title: 'Import TERC', description: 'Województwa, powiaty i gminy' },
+  { accessorKey: 'simc', title: 'Import SIMC', description: 'Miejscowości i powiązania z gminami' },
+  { accessorKey: 'ulic', title: 'Import ULIC', description: 'Ulice powiązane z miastami i gminami' }
 ]
 
 const cityColumns = [
-  { key: 'name', label: 'Miasto' },
-  { key: 'commune', label: 'Gmina' },
-  { key: 'district', label: 'Powiat' },
-  { key: 'streetCount', label: 'Ulice' },
-  { key: 'flags', label: 'Flagi' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'name', header: 'Miasto' },
+  { accessorKey: 'commune', header: 'Gmina' },
+  { accessorKey: 'district', header: 'Powiat' },
+  { accessorKey: 'streetCount', header: 'Ulice' },
+  { accessorKey: 'flags', header: 'Flagi' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const communeColumns = [
-  { key: 'name', label: 'Gmina' },
-  { key: 'district', label: 'Powiat / województwo' },
-  { key: 'flags', label: 'Flagi' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'name', header: 'Gmina' },
+  { accessorKey: 'district', header: 'Powiat / województwo' },
+  { accessorKey: 'flags', header: 'Flagi' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const managedOptions = [

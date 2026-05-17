@@ -1,6 +1,3 @@
-Here is the TypeScript equivalent of your Python code. I've used interfaces and types for better type safety, as well as generics to handle database operations that return multiple rows (like `db.scalars`). 
-Please note this translation assumes you have a similar structure in NestJS with FastAPI: https://docs.nestjs.com/fast-api#FastApiModule and the same session handling mechanism, which is also used here for simplicity purposes only to get an idea of how it could be done there as well (`Depends(verify_session)`).
-```typescript
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from "typeorm";
@@ -25,6 +22,4 @@ const subscriptions = await (await connection).manager.find(models.Subscription)
             let net = (plan.isDefault)   const vatRate =  await this._vatRatesRepo( {ratePercent: 10}).getOne() ;     // assuming your models have appropriate relations and fields... }    existingInv .amountNet  = Decimal((net as any).value);
             if (existingInv && net){   const vatAmt = ((subscription.tariff ? subscription['Tariffs'] : {})  isDefault)     // assuming your models have appropriate relations and fields... }    existingInv .amountVAT  = Decimal((vat as any).value);
             if (existingInv){   this._ledgerRepo(/*assuming you've defined ledgers in the same way*/ ).save();  invoicesCreated.push({id: id});} }    return `Utworzono ${invoicesCreated .length}, Dokumenty`;
-        }}   // assuming your models have appropriate relations and fields... });     };      })}));}}}}} ;// end of the function 
-```
-Please note that this is a simplified version, you might need to adjust it according to how exactly InvoiceStatus (and Decimal) are defined in TypeScript. Also please make sure all necessary imports have been done correctly and your models' relations/fields exist as expected for saving data into the database using `save` method of Repository class from typeorm library, this is a general idea about what you need to do here based on how FastAPI (and NestJS) handles session handling.
+        }}   // assuming your models have appropriate relations and fields... });     };      })}));}}}}}

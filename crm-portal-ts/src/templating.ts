@@ -1,18 +1,15 @@
 import { Request } from 'express';
-import { Jinja2Templates } from 'jinja2';
-
-import { db_manager } from './database';
-import { UserRole } from './models/user-role';
-import { grouped_visible_nav, visible_nav_items } from './nav-access';
-import { ui_service } from './services/ui-service';
+import { Jinja2Templates } from 'jinja2-express';
+import { UserRole } from './models/UserRole'; // Assuming UserRole is defined in a separate file
+import { uiService } from './services/ui_service';
 
 // Preconfigure Jinja2 environment to avoid DeprecationWarning
-const env = new jinja2.Environment(
-    loader=jinja2.FileSystemLoader(__dirname + '/templates'),
-    extensions=["jinja2.ext.do"]
-);
+const env = new Jinja2Templates({
+    loader: new jinja2.FileSystemLoader(__dirname + '/templates'),
+    extensions: ['jinja2.ext.do']
+});
 
-const templates = new Jinja2Templates(env);
+const templates = env;
 
 async function render(
     request: Request,
@@ -26,17 +23,17 @@ async function render(
     const c = request.state.clientUser;
     ctx['client_user'] = c;
 
-    let cached = request.state.navItemsForTemplate;
+    let cachedNavItems: UserRole[] | undefined;
     if (u) {
-        if (cached !== undefined) {
-            ctx['nav_items'] = cached;
-            ctx['nav_groups'] = grouped_visible_nav(cached);
+        if (cachedNavItems !== undefined) {
+            ctx['nav_items'] = cachedNavItems;
+            ctx['nav_groups'] = groupedVisibleNav(cachedNavItems);
         } else {
-            const db = await db_manager.getSessionLocal();
+            const db = await dbManager.getSessionLocal();
             try {
                 const items = await visible_nav_items(db, u.role);
                 ctx['nav_items'] = items;
-                ctx['nav_groups'] = grouped_visible_nav(items);
+                ctx['nav_groups'] = groupedVisibleNav(items);
             } finally {
                 db.close();
             }
@@ -60,8 +57,12 @@ async function render(
     ctx['app_name'] = APP_DISPLAY_NAME;
 
     // UI Plugin Integration
-    ctx['ui'] = ui_service.getThemeAssets(request);
-    ctx['breadcrumbs'] = ui_service.getBreadcrumb(request, ctx['title']);
+    ctx['ui'] = uiService.getThemeAssets(request);
+    ctx['breadcrumbs'] = uiService.getBreadcrumb(request, ctx['title']);
 
-    return templates.renderTemplate(request, name, ctx);
+    const resp = templates.renderTemplate(request, name, ctx);
+    if (status_code !== undefined) {
+        resp.status(status_code);
+    }
+    return resp;
 }

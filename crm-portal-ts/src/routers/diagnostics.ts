@@ -1,10 +1,16 @@
 import { Router } from "express";
+import { recordAudit } from "../audit.js";
 import { AppDataSource } from "../database.js";
-import { CustomerDevice } from "../models/network.js";
+import { CustomerDevice, NetworkDeviceAccessProfile } from "../models/network.js";
+import {
+    runRemoteDiagnosticsForDevice,
+    syncMikrotikLease,
+} from "../services/network_discovery_live.js";
 
 export const router = Router();
 
 const customerDeviceRepo = AppDataSource.getRepository(CustomerDevice);
+const accessProfileRepo = AppDataSource.getRepository(NetworkDeviceAccessProfile);
 
 export type DiagnosticCheck = {
     key: string;
@@ -133,15 +139,88 @@ router.post("/sync-lease/:id", async (req, res) => {
             return res.status(404).json({ message: "Customer device not found" });
         }
 
+        if (!device.netDeviceId) {
+            return res.json({
+                customerDeviceId: device.id,
+                synced: false,
+                reason: "net_device_not_linked",
+                diagnostics: buildDiagnosticsSummary(device),
+            });
+        }
+
+        const accessProfile = await accessProfileRepo.findOneBy({ netDeviceId: device.netDeviceId });
+        if (!accessProfile) {
+            return res.json({
+                customerDeviceId: device.id,
+                synced: false,
+                reason: "external_router_not_configured",
+                diagnostics: buildDiagnosticsSummary(device),
+            });
+        }
+
+        const syncResult = await syncMikrotikLease(device, accessProfile);
+        if (syncResult.synced) {
+            await customerDeviceRepo.save(device);
+        }
+
         const diagnostics = buildDiagnosticsSummary(device);
+        await recordAudit({
+            action: "diagnostics_sync_lease",
+            resourceType: "customer_device",
+            resourceId: device.id,
+            details: `${accessProfile.driver} synced=${syncResult.synced} reason=${syncResult.reason ?? "updated"}`,
+            request: req,
+        });
+
         res.json({
             customerDeviceId: device.id,
-            synced: false,
-            reason: "external_router_not_configured",
+            synced: syncResult.synced,
+            reason: syncResult.reason,
+            updates: syncResult.updates,
             diagnostics,
         });
     } catch (error) {
         console.error("Error preparing lease sync:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post("/remote-test/:id", async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id, 10);
+        const device = await loadCustomerDevice(id);
+
+        if (!device) {
+            return res.status(404).json({ message: "Customer device not found" });
+        }
+
+        if (!device.netDeviceId) {
+            return res.status(400).json({ message: "Customer device is not linked to a network device" });
+        }
+
+        const accessProfile = await accessProfileRepo.findOneBy({ netDeviceId: device.netDeviceId });
+        if (!accessProfile) {
+            return res.status(400).json({ message: "Discovery access profile is not configured for linked network device" });
+        }
+
+        const localDiagnostics = buildDiagnosticsSummary(device);
+        const remoteDiagnostics = await runRemoteDiagnosticsForDevice(device, accessProfile);
+
+        await recordAudit({
+            action: "diagnostics_remote_test",
+            resourceType: "customer_device",
+            resourceId: device.id,
+            details: `${accessProfile.driver} ok=${remoteDiagnostics.ok}`,
+            request: req,
+        });
+
+        res.json({
+            customerDeviceId: device.id,
+            localDiagnostics,
+            remoteDiagnostics,
+        });
+    } catch (error) {
+        console.error("Error running remote diagnostic test:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });

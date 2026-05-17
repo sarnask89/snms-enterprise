@@ -11,7 +11,7 @@
     "lint": "eslint src/**/*.ts",
     "migrate": "ts-node-esm src/migrate.ts run",
     "migrate:status": "ts-node-esm src/migrate.ts status",
-    "smoke": "node --test dist/tests/smoke.test.js dist/tests/migrations.test.js dist/tests/teryt_import_relations.test.js dist/tests/network_vendor_parsers.test.js dist/tests/network_auto_import.test.js tests/runtime-config.test.mjs",
+    "smoke": "node --test dist/tests/smoke.test.js dist/tests/migrations.test.js dist/tests/teryt_import_relations.test.js dist/tests/network_vendor_parsers.test.js dist/tests/network_auto_import.test.js dist/tests/network_auto_import_teryt.test.js tests/runtime-config.test.mjs",
     "deployment:test": "node --test tests/deployment.test.mjs tests/ci-workflow.test.mjs",
     "test": "npm run build && npm run smoke",
     "container:smoke": "node scripts/container-smoke.mjs",

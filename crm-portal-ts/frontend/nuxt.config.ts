@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   compatibilityDate: '2024-07-04',
   srcDir: 'app/',
+  css: ['~/assets/css/main.css'],
   ui: {
     global: true,
     icons: ['heroicons', 'simple-icons']

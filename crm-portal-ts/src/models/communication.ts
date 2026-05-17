@@ -1,33 +1,120 @@
-Here is the TypeScript version of your Python code with some assumptions made based on common practices and best-practices in software development for NodeJS/Express or Nestjs environment using standard Typescript models & utils, as well as SQLAlchemy ORM. 
-Please note that this translation assumes a basic understanding about TypeScript syntaxes (like interfaces), classes with properties types etc., which are not the same level of detail in Python's `from __future__ import annotations` and other features used for type hinting, or how to handle SQLAlchemy ORM.
-Also note that this translation does NOT include error handling/exception management as it is assumed you have a more robust way setup your application (like using try-catch blocks in NodeJS). 
-```typescript
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-// Assuming MessageStatus and Customer are defined elsewhere. Here we're just importing them for the sake of this example:
-import {MessageStatus} from './common'; // or wherever your common definitions live 
-@Entity('message_templates')
-export class MessageTemplate{
-    @PrimaryGeneratedColumn() id: number;
-    
-    @Column({length:128, unique: true}) name: string;
-  
-    @Column({nullable: false}) subject:string ;
- 
-    @Column('text', { nullable:false }) body : String; // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string).
-} 
-@Entity('outbound_messages')  
-export class OutboundMessage{    // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @PrimaryGeneratedColumn() id: number;  
-    // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @ManyToOne(type => MessageTemplate)  
-    template_id: number | null; // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @Column({nullable : false}) subject:string ;   // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @Column('text', { nullable:false }) body : String; // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @Column({nullable: true}) customer_id : number | null; // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @Column({type: "enum", enum : MessageStatus}) status:MessageStatus; // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @Column({default : () => MessageStatus.draft}) created_at:Date; // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-}  
-@Entity('calendar_events')   
-export class CalendarEvent{ // Assuming you're using standard text type in SQLAlchemy. If not use `Text` from 'sqlalchemy'. Also, make sure to import it correctly based on your database setup and requirements (like Text or string). 
-     @PrimaryGeneratedColumn() id: number;  
-    // Assuming you're using standard text type in SQLAlchemy. If not use `
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { MessageStatus } from "./common.js";
+import { Customer } from "./customer.js";
+import { CustomerDevice } from "./network.js";
+
+@Entity("message_templates")
+export class MessageTemplate {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "varchar", length: 128, unique: true })
+    name!: string;
+
+    @Column({ type: "varchar", length: 255 })
+    subject!: string;
+
+    @Column({ type: "text" })
+    body!: string;
+}
+
+@Entity("outbound_messages")
+export class OutboundMessage {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "customer_id", nullable: true })
+    customerId?: number;
+
+    @Column({ type: "integer", name: "template_id", nullable: true })
+    templateId?: number;
+
+    @Column({ type: "varchar", length: 255 })
+    subject!: string;
+
+    @Column({ type: "text" })
+    body!: string;
+
+    @Column({
+        type: "simple-enum",
+        enum: MessageStatus,
+        default: MessageStatus.draft,
+    })
+    status!: MessageStatus;
+
+    @Column({ type: "datetime", name: "sent_at", nullable: true })
+    sentAt?: Date;
+
+    @CreateDateColumn({ name: "created_at", type: "datetime" })
+    createdAt!: Date;
+
+    @ManyToOne(() => Customer, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "customer_id" })
+    customer?: Customer | null;
+
+    @ManyToOne(() => MessageTemplate, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "template_id" })
+    template?: MessageTemplate | null;
+}
+
+@Entity("calendar_events")
+export class CalendarEvent {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "varchar", length: 255 })
+    title!: string;
+
+    @Column({ type: "text", nullable: true })
+    description?: string;
+
+    @Column({ type: "datetime", name: "starts_at" })
+    startsAt!: Date;
+
+    @Column({ type: "datetime", name: "ends_at" })
+    endsAt!: Date;
+
+    @Column({ type: "integer", name: "customer_id", nullable: true })
+    customerId?: number;
+
+    @Column({ type: "boolean", default: false })
+    done!: boolean;
+
+    @CreateDateColumn({ name: "created_at", type: "datetime" })
+    createdAt!: Date;
+
+    @ManyToOne(() => Customer, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "customer_id" })
+    customer?: Customer | null;
+}
+
+@Entity("traffic_stats")
+export class TrafficStat {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column({ type: "integer", name: "device_id", nullable: true })
+    deviceId?: number;
+
+    @Column({ type: "date", name: "period_start" })
+    periodStart!: string;
+
+    @Column({ type: "date", name: "period_end" })
+    periodEnd!: string;
+
+    @Column({ type: "integer", name: "bytes_in", default: 0 })
+    bytesIn!: number;
+
+    @Column({ type: "integer", name: "bytes_out", default: 0 })
+    bytesOut!: number;
+
+    @Column({ type: "text", nullable: true })
+    note?: string;
+
+    @CreateDateColumn({ name: "created_at", type: "datetime" })
+    createdAt!: Date;
+
+    @ManyToOne(() => CustomerDevice, { nullable: true, onDelete: "SET NULL" })
+    @JoinColumn({ name: "device_id" })
+    device?: CustomerDevice | null;
+}

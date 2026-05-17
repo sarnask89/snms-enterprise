@@ -1,10 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { CustomerStatus, TicketStatus } from './models';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Customer {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ unique: true })
   customer_code: string;
@@ -15,65 +14,57 @@ export class Customer {
   @Column()
   last_name: string;
 
-  @Column({ type: 'text', nullable: true })
-  email: string | null;
+  @Column({ nullable: true })
+  email?: string;
 
-  @Column({ type: 'varchar', length: 64, nullable: true })
-  phone: string | null;
+  @Column({ nullable: true })
+  phone?: string;
 
-  @Column({ enum: CustomerStatus, default: CustomerStatus.active })
+  @Column({ enum: CustomerStatus, default: 'active' })
   status: CustomerStatus;
 
-  @Column({ type: 'int', nullable: true })
-  location_state_id: number | null;
+  @Column({ nullable: true })
+  location_state_id?: number;
 
-  @Column({ type: 'int', nullable: true })
-  location_district_id: number | null;
+  @Column({ nullable: true })
+  location_district_id?: number;
 
-  @Column({ type: 'int', nullable: true })
-  location_city_id: number | null;
+  @Column({ nullable: true })
+  location_city_id?: number;
 
-  @Column({ type: 'int', nullable: true })
-  location_street_id: number | null;
+  @Column({ nullable: true })
+  location_street_id?: number;
 
-  @Column({ type: 'varchar', length: 32, nullable: true })
-  street_number: string | null;
-
-  constructor() {
-    super();
-  }
+  @Column({ nullable: true })
+  street_number?: string;
 }
 
 @Entity()
 export class SupportTicket {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ unique: true })
   title: string;
 
-  @Column({ type: 'text', nullable: true })
-  body: string | null;
+  @Column({ nullable: true })
+  body?: string;
 
-  @Column({ enum: TicketStatus, default: TicketStatus.open })
+  @Column({ enum: TicketStatus, default: 'open' })
   status: TicketStatus;
 
-  @Column({ type: 'varchar', length: 32, nullable: true })
-  queue: string;
+  @Column({ nullable: true })
+  queue?: string;
 
-  @Column({ type: 'int', nullable: true })
-  queue_id: number | null;
+  @Column({ nullable: true })
+  queue_id?: number;
 
-  @Column({ type: 'int', nullable: true })
-  category_id: number | null;
+  @Column({ nullable: true })
+  category_id?: number;
 
-  @Column({ type: 'int', nullable: true })
-  customer_id: number | null;
+  @Column({ nullable: true })
+  customer_id?: number;
 
-  @Column({ type: 'int', nullable: true })
-  assignee_id: number | null;
-
-  constructor() {
-    super();
-  }
+  @Column({ nullable: true })
+  assignee_id?: number;
 }

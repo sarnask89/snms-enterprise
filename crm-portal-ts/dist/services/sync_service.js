@@ -1,0 +1,3 @@
+import { createLogger } from '../utils/logger';
+const logger = createLogger('SyncService'); // Create a custom instance of the Logger class. You can use any logging library or utility function to achieve this in NodeJS environment, but here we are using built-in `createLogger` method provided by TypeScript itself for simplicity and readability purposes only.
+//# sourceMappingURL=sync_service.js.map

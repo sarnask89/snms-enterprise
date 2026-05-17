@@ -1,0 +1,392 @@
+2026-05-12 00:18:25,178 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 00:18:25,179 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 00:18:28,518 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 00:18:28,519 - INFO - app.services.registry - Starting all services...
+2026-05-12 00:18:28,526 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 00:18:28,573 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 00:18:29,004 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 00:18:29,713 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 00:18:29,714 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 00:18:29,716 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 00:18:30,213 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 00:18:30,406 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 00:28:30,445 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 00:28:30,448 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 00:28:30,842 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 00:28:31,316 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 00:28:31,316 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 00:28:31,318 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 00:28:31,739 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 00:28:31,883 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 00:38:31,905 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 00:38:31,906 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 00:38:32,132 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 00:38:32,418 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 00:38:32,418 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 00:38:32,420 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 00:38:32,712 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 00:38:32,815 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 00:48:32,827 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 00:48:32,828 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 00:48:33,067 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 00:48:33,340 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 00:48:33,341 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 00:48:33,342 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 00:48:33,641 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 00:48:33,734 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 00:58:33,751 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 00:58:33,752 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 00:58:34,089 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 00:58:34,473 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 00:58:34,473 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 00:58:34,475 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 00:58:34,873 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 00:58:34,996 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 01:08:35,017 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:08:35,019 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:08:35,356 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 01:08:36,660 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 01:08:36,661 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 01:08:36,665 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 01:08:37,075 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 01:08:37,221 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 01:18:37,243 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:18:37,273 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:18:37,968 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 701 dzier¿aw z portu 8728.
+2026-05-12 01:18:38,803 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 01:18:38,804 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 01:18:38,806 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 01:18:39,228 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 01:18:39,492 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 01:28:39,519 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:28:39,521 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:28:39,901 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 01:28:40,366 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 01:28:40,366 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 01:28:40,368 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 01:28:40,845 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 01:28:41,011 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 01:38:41,042 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:38:41,052 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:38:41,310 - INFO - app.services.registry - Stopping all services...
+2026-05-12 01:38:41,658 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 01:39:14,245 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 01:39:14,246 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 01:39:19,660 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 01:39:19,661 - INFO - app.services.registry - Starting all services...
+2026-05-12 01:39:19,670 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:39:19,683 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:39:20,352 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 01:39:21,429 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 01:39:21,430 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 01:39:21,433 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 01:39:22,100 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 01:39:22,449 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 01:49:22,496 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:49:22,519 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:49:22,924 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 01:49:23,442 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 01:49:23,442 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 01:49:23,444 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 01:49:23,860 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 01:49:24,317 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 01:59:21,821 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 01:59:21,823 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 01:59:22,266 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 01:59:22,845 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 01:59:22,845 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 01:59:22,848 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 01:59:23,278 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 01:59:23,462 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 02:09:23,484 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:09:23,487 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:09:23,673 - INFO - app.services.registry - Stopping all services...
+2026-05-12 02:09:23,723 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+ 2026-05-12 02:09:29,736 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 02:09:29,736 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 02:09:31,208 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 02:09:31,209 - INFO - app.services.registry - Starting all services...
+2026-05-12 02:09:31,212 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:09:31,217 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:09:31,330 - INFO - app.services.registry - Stopping all services...
+2026-05-12 02:09:31,562 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:09:37,242 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 02:09:37,242 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 02:09:38,743 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 02:09:38,743 - INFO - app.services.registry - Starting all services...
+2026-05-12 02:09:38,746 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:09:38,751 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:09:38,993 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:09:39,295 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:09:39,296 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:09:39,297 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:09:39,609 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:09:39,715 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 02:19:39,764 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:19:39,847 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:19:42,982 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:19:48,221 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:19:48,221 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:19:48,225 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:19:50,721 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:19:51,573 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 02:29:51,597 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:29:51,599 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:29:51,982 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:29:52,582 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:29:52,582 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:29:52,586 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:29:53,011 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:29:53,248 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 02:39:53,275 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:39:53,312 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:39:54,266 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:39:56,239 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:39:56,240 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:39:56,243 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:39:57,115 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:39:57,406 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 02:49:57,484 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:49:57,487 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:49:57,756 - INFO - app.services.registry - Stopping all services...
+2026-05-12 02:49:57,954 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:50:10,085 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 02:50:10,087 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 02:50:12,588 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 02:50:12,589 - INFO - app.services.registry - Starting all services...
+2026-05-12 02:50:12,594 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:50:12,601 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:50:12,951 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:50:13,468 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:50:13,469 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:50:13,472 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:50:13,888 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:50:14,049 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 02:55:00,592 - INFO - app.services.registry - Stopping all services...
+2026-05-12 02:55:09,469 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 02:55:09,469 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 02:55:12,554 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 02:55:12,554 - INFO - app.services.registry - Starting all services...
+2026-05-12 02:55:12,559 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:55:12,566 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:55:12,962 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:55:13,426 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:55:13,426 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:55:13,429 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:55:13,897 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:55:14,060 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:05:14,091 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:05:14,093 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:05:14,386 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:05:14,782 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:05:14,783 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:05:14,786 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:05:15,124 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:05:15,254 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 03:15:15,274 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:15:15,278 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:15:15,569 - INFO - app.services.registry - Stopping all services...
+2026-05-12 03:15:15,857 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+ 2026-05-12 03:15:30,712 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 03:15:30,713 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 03:15:33,017 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 03:15:33,018 - INFO - app.services.registry - Starting all services...
+2026-05-12 03:15:33,022 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:15:33,029 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:15:33,349 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:15:33,844 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:15:33,845 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:15:33,848 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:15:34,249 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:15:34,387 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:25:34,524 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:25:34,550 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:25:35,022 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:25:35,811 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:25:35,812 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:25:35,822 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:25:36,325 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:25:36,553 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:35:36,624 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:35:36,628 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:35:36,880 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:35:37,209 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:35:37,210 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:35:37,211 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:35:37,498 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:35:37,650 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 03:45:37,682 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:45:37,684 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:45:37,920 - INFO - app.services.registry - Stopping all services...
+2026-05-12 03:45:38,172 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:45:48,357 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 03:45:48,357 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 03:45:50,475 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 03:45:50,475 - INFO - app.services.registry - Starting all services...
+2026-05-12 03:45:50,480 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:45:50,491 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:45:50,800 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:45:51,435 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:45:51,436 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:45:51,438 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:45:51,813 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:45:51,983 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 03:49:06,015 - INFO - app.services.registry - Stopping all services...
+2026-05-12 03:49:12,449 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 03:49:12,450 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 03:49:13,921 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 03:49:13,921 - INFO - app.services.registry - Starting all services...
+2026-05-12 03:49:13,924 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:49:13,928 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:49:14,179 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:49:14,523 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:49:14,523 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:49:14,530 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:49:14,848 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:49:14,952 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 03:54:07,027 - INFO - app.services.registry - Stopping all services...
+ 2026-05-12 03:54:18,361 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 03:54:18,362 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 03:54:21,045 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 03:54:21,046 - INFO - app.services.registry - Starting all services...
+2026-05-12 03:54:21,049 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:54:21,056 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:54:21,460 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:54:21,968 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:54:21,968 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:54:21,971 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:54:22,575 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:54:22,721 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 04:04:22,747 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:04:22,749 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:04:23,277 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:04:23,736 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:04:23,736 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:04:23,738 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:04:24,233 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:04:24,403 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 04:14:24,477 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:14:24,492 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:14:25,768 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:14:27,104 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:14:27,105 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:14:27,110 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:14:28,254 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:14:28,596 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 04:24:28,648 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:24:28,653 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:24:29,180 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:24:29,649 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:24:29,650 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:24:29,653 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:24:30,192 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:24:30,346 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+ 2026-05-12 04:34:30,378 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:34:30,380 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:34:30,629 - INFO - app.services.registry - Stopping all services...
+2026-05-12 04:34:30,838 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:34:43,609 - INFO - app.services.registry - Registered service: SyncService
+2026-05-12 04:34:43,610 - INFO - app.services.registry - Registered service: NetFlowService
+2026-05-12 04:34:46,185 - INFO - app.init_db - Local TERYT data: OK (16 states, 480 cities)
+2026-05-12 04:34:46,195 - INFO - app.services.registry - Starting all services...
+2026-05-12 04:34:46,202 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:34:46,217 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:34:46,754 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:34:47,169 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:34:47,169 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:34:47,171 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:34:47,550 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:34:47,695 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:38:54,002 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:38:54,004 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:38:54,414 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:38:54,820 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 02:48:54,850 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:48:54,853 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:48:55,543 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:48:56,331 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:48:56,332 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:48:56,335 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:48:56,832 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:48:57,081 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 02:58:57,111 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 02:58:57,115 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 02:58:57,400 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 02:58:57,710 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 02:58:57,710 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 02:58:57,712 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 02:58:58,028 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 02:58:58,186 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:08:58,207 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:08:58,209 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:08:58,575 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:08:59,180 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:08:59,181 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:08:59,183 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:08:59,567 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:08:59,847 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:19:00,054 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:19:00,077 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:19:00,512 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:19:01,238 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:19:01,238 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:19:01,242 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:19:01,663 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:19:01,923 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:29:02,019 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:29:02,030 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:29:02,426 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:29:03,057 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:29:03,057 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:29:03,060 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:29:03,591 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:29:03,814 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:39:03,848 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:39:03,850 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:39:04,101 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:39:04,386 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:39:04,386 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:39:04,388 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:39:04,667 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:39:04,775 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:49:04,797 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:49:04,802 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:49:05,055 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:49:05,372 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:49:05,373 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:49:05,375 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:49:05,681 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:49:05,786 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 03:59:05,806 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 03:59:05,810 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 03:59:06,196 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 03:59:06,704 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 03:59:06,705 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 03:59:06,707 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 03:59:07,141 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 03:59:07,412 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 04:09:07,454 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:09:07,463 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:09:07,962 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:09:08,650 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:09:08,650 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:09:08,654 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:09:09,307 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:09:09,631 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 04:19:09,653 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:19:09,655 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:19:10,116 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:19:10,833 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:19:10,834 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:19:10,840 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:19:11,326 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:19:11,574 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.
+2026-05-12 04:29:11,621 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia Mikrotik Sandomierz CORE (10.0.222.86)
+2026-05-12 04:29:11,626 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.86:8728 as admin
+2026-05-12 04:29:12,062 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 700 dzier¿aw z portu 8728.
+2026-05-12 04:29:12,625 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla Mikrotik Sandomierz CORE. Zwrócono 6 pozycji.
+2026-05-12 04:29:12,626 - INFO - app.services.mikrotik_discovery - Rozpoczêcie procesu odkrywania dla urz¹dzenia R4-CCR2004-1G-12S+2XS (10.0.222.4)
+2026-05-12 04:29:12,629 - INFO - app.services.mikrotik - Mikrotik: Connecting to 10.0.222.4:8728 as admin
+2026-05-12 04:29:13,209 - INFO - app.services.mikrotik - Mikrotik: Zwrócono 712 dzier¿aw z portu 8728.
+2026-05-12 04:29:13,424 - INFO - app.services.mikrotik_discovery - Zakoñczono odkrywanie dla R4-CCR2004-1G-12S+2XS. Zwrócono 0 pozycji.

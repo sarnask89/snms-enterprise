@@ -1,5 +1,3 @@
-Here is the TypeScript version of your Python code with all rules applied and some adjustments to fit into a Node.js environment using Express for routers, Typescript patterns like models or interfaces/types definition etc.: 
-```typescript
 import { Request } from 'express'; // Importing express request type hinting as per the requirement in rule #2 (Typings)
 // ... other imports and types here if any...
 
@@ -33,4 +31,4 @@ class PortalUserMiddleware {
      private async * dispatchForLegacyRoutes(request: Request, callNext : Function) {    request.state = {};// Initializing state object if it doesn’t exist already       // ... other initializations here...        let path  = this._getPathFromRequest();   return await  _dispatchBasedOnAuthEnabled_andUserSession_(path ,callnext); }
      private async * dispatchForAdminPitAndStats(request: Request, callNext : Function) {    request.state = {};// Initializing state object if it doesn’t exist already       // ... other initializations here...        let path  = this._getPathFromRequest();   return await  _dispatchBasedOnAuthEnabled_andUserSession_(path ,callnext); }
      private async * dispatchForNodesAndDiagnostics(request: Request, callNext : Function) {    request.state = {};// Initializing state object if it doesn’t exist already       // ... other initializations here...        let path  = this._getPathFromRequest();   return await  _dispatchBasedOnAuthEnabled_andUserSession_(path ,callnext); }
-     private async * dispatchForTertiaryRoutes(request: Request, callNext : Function) {    request.state = {};// Initializing state object if it doesn’t exist already       // ... other initial
+     private async * dispatchForTertiaryRoutes(request: Request, callNext : Function) {    request.state = {}

@@ -20,8 +20,8 @@
             />
             <USelect
               v-model="customerFilter"
-              :options="customerOptionsWithEmpty"
-              option-attribute="label"
+              :items="customerOptionsWithEmpty"
+              label-key="label"
               class="w-full md:w-72"
             />
           </div>
@@ -29,7 +29,7 @@
         </div>
       </template>
 
-      <UTable :rows="filteredDocuments" :columns="columns" :loading="pendingDocuments">
+      <UTable :data="filteredDocuments" :columns="columns" :loading="pendingDocuments">
         <template #customer-data="{ row }">
           <div class="text-sm text-gray-600 dark:text-gray-300">
             {{ row.customer ? `${row.customer.customerCode} · ${row.customer.firstName} ${row.customer.lastName}` : 'Dokument ogólny' }}
@@ -68,33 +68,33 @@
 
         <form class="space-y-4 p-4" @submit.prevent="saveDocument">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Tytuł" required>
+            <UFormField label="Tytuł" required>
               <UInput v-model="form.title" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Typ dokumentu" required>
-              <USelect v-model="form.docType" :options="docTypeOptions" option-attribute="label" />
-            </UFormGroup>
+            <UFormField label="Typ dokumentu" required>
+              <USelect v-model="form.docType" :items="docTypeOptions" label-key="label" />
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Klient">
-              <USelect v-model="form.customerId" :options="customerOptionsWithEmpty" option-attribute="label" />
-            </UFormGroup>
+            <UFormField label="Klient">
+              <USelect v-model="form.customerId" :items="customerOptionsWithEmpty" label-key="label" />
+            </UFormField>
 
-            <UFormGroup label="Plik" required>
+            <UFormField label="Plik" required>
               <input
                 :key="fileInputKey"
                 type="file"
                 class="block w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900"
                 @change="onFileChange"
               >
-            </UFormGroup>
+            </UFormField>
           </div>
 
-          <UFormGroup label="Notatki">
-            <UTextarea v-model="form.notes" :rows="4" />
-          </UFormGroup>
+          <UFormField label="Notatki">
+            <UTextarea v-model="form.notes" :data="4" />
+          </UFormField>
 
           <div v-if="selectedFileName" class="rounded-lg border border-gray-200 dark:border-gray-800 p-3 text-sm text-gray-600 dark:text-gray-300">
             Wybrany plik: <span class="font-medium text-gray-900 dark:text-white">{{ selectedFileName }}</span>
@@ -113,12 +113,12 @@
 
 <script setup>
 const columns = [
-  { key: 'title', label: 'Tytuł' },
-  { key: 'customer', label: 'Klient' },
-  { key: 'docType', label: 'Typ' },
-  { key: 'file', label: 'Plik' },
-  { key: 'createdAt', label: 'Dodano' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'title', header: 'Tytuł' },
+  { accessorKey: 'customer', header: 'Klient' },
+  { accessorKey: 'docType', header: 'Typ' },
+  { accessorKey: 'file', header: 'Plik' },
+  { accessorKey: 'createdAt', header: 'Dodano' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const docTypeOptions = [

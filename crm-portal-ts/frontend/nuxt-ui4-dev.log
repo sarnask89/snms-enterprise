@@ -1,0 +1,22 @@
+
+> dev
+> nuxt dev
+
+|
+•  [32mNuxt [1m4.4.5[22m[39m[90m (with [39m[90mNitro [1m2.13.4[22m[39m[90m, Vite [1m7.3.3[22m[39m[90m and Vue [1m3.5.34[22m[39m[90m)[39m
+
+[32m  ➜ Local:   [39m [36m[4mhttp://localhost:[1m3000[22m/[24m[39m
+[90m  ➜ Network:  use [37m--host[90m to expose[39m
+
+[33m  ➜ DevTools: [39m[2mpress [22m[32mShift[39m[2m + [22m[32mAlt[39m[2m + [22m[32mD[39m[2m in the browser (v3.2.4)[22m
+
+[36mi[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+[32m√[39m Nuxt Icon discovered local-installed 3 collections: heroicons, lucide, simple-icons
+[32m√[39m Vite client built in 133ms
+[32m√[39m Vite server built in 78ms
+[90m[[90mnitro[90m][39m [32m√[39m Nuxt Nitro server built in 3094ms
+[36mi[39m Vite server warmed up in 3ms
+[36mi[39m Vite client warmed up in 7ms
+[36mi[39m [32mhmr update [39m[2m/components/AiAssistant.vue?direct&vue&type=style&index=0&scoped=172be1d0&lang.css, /components/AiAssistant.vue, /C:/Users/xxx/crm-portal/crm-portal-ts/frontend/app/assets/css/main.css?direct, /assets/css/main.css[22m
+[36mi[39m [32mpage reload [39m[2mcomponents/AiAssistant.vue[22m
+[90m[[90mnuxt[90m][39m [36mi[39m Compiled [36mrouter.options.mjs[39m in 880.52ms

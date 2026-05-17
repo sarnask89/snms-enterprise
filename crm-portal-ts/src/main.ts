@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { startServer } from "./app.js";
 
 const port = Number(process.env.PORT ?? "8080");

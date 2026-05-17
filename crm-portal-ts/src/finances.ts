@@ -1,5 +1,3 @@
-Here is the TypeScript version of your Python code, following all rules you've mentioned above (except for models):
-```typescript
 type GrossAndVat = { gross?: number; vatPercentage?: number };  // Define an interface or type to hold both values.
 function calculateNetFromGross(gross: Decimal | undefined, vat_percent: Decimal | undefined) : Promise<Decimal>{  
     return new Promise((resolve, reject) => {     /* Convert async logic into promise-based */ 
@@ -20,5 +18,4 @@ function calculateNetFromGross(gross: Decimal | undefined, vat_percent: Decimal 
             vatPercentageVal = parseInt(vat_percent.toString());   // Parse the 'Vat percentage' from a possible non-numeric value and assign to variable if valid, otherwise reject promise with error message "Invalid VAT Percent" as above in case of invalid string passed
         } 
     });     /* End Promise conversion */     
-}      
-```   This TypeScript code follows the same logic you provided but has been adapted for use within a Node.js environment using Express and Typescript with strict typing, error handling (using promises), variable naming in camelCase format as per your rules set forth by this AI assistant's request to produce production-ready Python/TypeScript migrations code based on the given requirements above:
+}

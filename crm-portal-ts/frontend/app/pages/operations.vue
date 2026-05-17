@@ -45,39 +45,39 @@
 
         <form class="space-y-4" @submit.prevent="saveAccessProfile">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Urządzenie" required>
-              <USelect v-model="accessProfileForm.netDeviceId" :options="deviceOptions" option-attribute="label" />
-            </UFormGroup>
-            <UFormGroup label="Driver" required>
-              <USelect v-model="accessProfileForm.driver" :options="driverOptions" option-attribute="label" />
-            </UFormGroup>
+            <UFormField label="Urządzenie" required>
+              <USelect v-model="accessProfileForm.netDeviceId" :items="deviceOptions" label-key="label" />
+            </UFormField>
+            <UFormField label="Driver" required>
+              <USelect v-model="accessProfileForm.driver" :items="driverOptions" label-key="label" />
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Host" required>
+            <UFormField label="Host" required>
               <UInput v-model="accessProfileForm.host" placeholder="10.0.222.x" />
-            </UFormGroup>
-            <UFormGroup label="Port">
+            </UFormField>
+            <UFormField label="Port">
               <UInput v-model="accessProfileForm.port" type="number" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Login" required>
+            <UFormField label="Login" required>
               <UInput v-model="accessProfileForm.username" />
-            </UFormGroup>
-            <UFormGroup label="Hasło" required>
+            </UFormField>
+            <UFormField label="Hasło" required>
               <UInput v-model="accessProfileForm.password" type="password" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Enable password">
+            <UFormField label="Enable password">
               <UInput v-model="accessProfileForm.enablePassword" type="password" />
-            </UFormGroup>
-            <UFormGroup label="Mikrotik TLS">
-              <USelect v-model="accessProfileForm.useTls" :options="booleanOptions" option-attribute="label" />
-            </UFormGroup>
+            </UFormField>
+            <UFormField label="Mikrotik TLS">
+              <USelect v-model="accessProfileForm.useTls" :items="booleanOptions" label-key="label" />
+            </UFormField>
           </div>
 
           <div class="flex justify-end">
@@ -94,7 +94,7 @@
           </div>
         </template>
 
-        <UTable :rows="accessProfiles || []" :columns="profileColumns">
+        <UTable :data="accessProfiles || []" :columns="profileColumns">
           <template #hasPassword-data="{ row }">
             <UBadge :color="row.hasPassword ? 'green' : 'gray'" variant="soft">
               {{ row.hasPassword ? 'has secret' : 'missing' }}
@@ -149,7 +149,7 @@
           </div>
         </template>
 
-        <UTable :rows="discoveryDevices || []" :columns="deviceColumns">
+        <UTable :data="discoveryDevices || []" :columns="deviceColumns">
           <template #readyForDiscovery-data="{ row }">
             <UBadge :color="row.readyForDiscovery ? 'green' : 'amber'" variant="soft">
               {{ row.readyForDiscovery ? 'ready' : 'needs profile' }}
@@ -186,7 +186,7 @@
           </div>
         </template>
 
-        <UTable :rows="discoverySessions || []" :columns="sessionColumns">
+        <UTable :data="discoverySessions || []" :columns="sessionColumns">
           <template #status-data="{ row }">
             <UBadge :color="row.status === 'succeeded' ? 'green' : row.status === 'failed' ? 'red' : 'amber'" variant="soft">
               {{ row.status }}
@@ -250,7 +250,7 @@
           </div>
         </div>
 
-        <UTable :rows="sessionRecords" :columns="recordColumns">
+        <UTable :data="sessionRecords" :columns="recordColumns">
           <template #recordStatus-data="{ row }">
             <UBadge :color="row.recordStatus === 'active' || row.recordStatus === 'bound' ? 'green' : 'gray'" variant="soft">
               {{ row.recordStatus || 'n/a' }}
@@ -285,21 +285,21 @@
 
         <form class="space-y-4" @submit.prevent="importSelectedRecord">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="ID klienta">
-              <UInput v-model="recordImportForm.customerId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="ID sieci IP">
-              <UInput v-model="recordImportForm.ipNetworkId" type="number" />
-            </UFormGroup>
+            <UFormField label="Klient">
+              <USelectMenu v-model="recordImportForm.customerId" :items="customerOptions" value-key="value" label-key="label" searchable />
+            </UFormField>
+            <UFormField label="Sieć IP">
+              <USelectMenu v-model="recordImportForm.ipNetworkId" :items="ipNetworkOptions" value-key="value" label-key="label" searchable />
+            </UFormField>
           </div>
 
-          <UFormGroup label="Nazwa / hostname override">
+          <UFormField label="Nazwa / hostname override">
             <UInput v-model="recordImportForm.name" />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Komentarz">
-            <UTextarea v-model="recordImportForm.comment" :rows="2" />
-          </UFormGroup>
+          <UFormField label="Komentarz">
+            <UTextarea v-model="recordImportForm.comment" :data="2" />
+          </UFormField>
 
           <div class="flex justify-end">
             <UButton
@@ -326,7 +326,7 @@
           </div>
         </template>
 
-        <UTable :rows="importedLeases || []" :columns="leaseColumns" :loading="pendingImportedLeases">
+        <UTable :data="importedLeases || []" :columns="leaseColumns" :loading="pendingImportedLeases">
           <template #ipAddress-data="{ row }">
             <span class="font-mono text-sm">{{ row.ipAddress || 'n/a' }}</span>
           </template>
@@ -350,9 +350,9 @@
           </div>
         </template>
 
-        <UFormGroup label="Customer device ID">
-          <UInput v-model="diagnosticsDeviceId" type="number" placeholder="np. 1" />
-        </UFormGroup>
+        <UFormField label="Urządzenie klienta">
+          <USelectMenu v-model="diagnosticsDeviceId" :items="customerDeviceOptions" value-key="value" label-key="label" searchable />
+        </UFormField>
 
         <div v-if="diagnosticsResult" class="mt-4 space-y-3">
           <UBadge :color="diagnosticsResult.ready ? 'green' : 'red'" variant="soft">
@@ -414,35 +414,35 @@
 
         <form class="space-y-4" @submit.prevent="importLease">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="ID klienta" required>
-              <UInput v-model="leaseForm.customerId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="ID urządzenia sieciowego">
-              <UInput v-model="leaseForm.netDeviceId" type="number" />
-            </UFormGroup>
+            <UFormField label="Klient" required>
+              <USelectMenu v-model="leaseForm.customerId" :items="customerOptions" value-key="value" label-key="label" searchable />
+            </UFormField>
+            <UFormField label="Urządzenie sieciowe">
+              <USelectMenu v-model="leaseForm.netDeviceId" :items="deviceOptions" value-key="value" label-key="label" searchable />
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="ID sieci IP">
-              <UInput v-model="leaseForm.ipNetworkId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="Hostname" required>
+            <UFormField label="Sieć IP">
+              <USelectMenu v-model="leaseForm.ipNetworkId" :items="ipNetworkOptions" value-key="value" label-key="label" searchable />
+            </UFormField>
+            <UFormField label="Hostname" required>
               <UInput v-model="leaseForm.hostname" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Adres IP">
+            <UFormField label="Adres IP">
               <UInput v-model="leaseForm.ipAddress" />
-            </UFormGroup>
-            <UFormGroup label="MAC">
+            </UFormField>
+            <UFormField label="MAC">
               <UInput v-model="leaseForm.macAddress" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
-          <UFormGroup label="Komentarz">
-            <UTextarea v-model="leaseForm.comment" :rows="2" />
-          </UFormGroup>
+          <UFormField label="Komentarz">
+            <UTextarea v-model="leaseForm.comment" :data="2" />
+          </UFormField>
 
           <div class="flex justify-end">
             <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" />
@@ -460,29 +460,29 @@
 
         <form class="space-y-4" @submit.prevent="importNetwork">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Nazwa">
+            <UFormField label="Nazwa">
               <UInput v-model="networkForm.name" />
-            </UFormGroup>
-            <UFormGroup label="CIDR" required>
+            </UFormField>
+            <UFormField label="CIDR" required>
               <UInput v-model="networkForm.cidr" placeholder="10.10.200.0/24" />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div class="grid md:grid-cols-3 gap-4">
-            <UFormGroup label="Gateway">
+            <UFormField label="Gateway">
               <UInput v-model="networkForm.gateway" />
-            </UFormGroup>
-            <UFormGroup label="VLAN">
+            </UFormField>
+            <UFormField label="VLAN">
               <UInput v-model="networkForm.vlanId" type="number" />
-            </UFormGroup>
-            <UFormGroup label="Źródłowe device ID">
-              <UInput v-model="networkForm.deviceId" type="number" />
-            </UFormGroup>
+            </UFormField>
+            <UFormField label="Źródłowe urządzenie">
+              <USelectMenu v-model="networkForm.deviceId" :items="deviceOptions" value-key="value" label-key="label" searchable />
+            </UFormField>
           </div>
 
-          <UFormGroup label="Komentarz">
-            <UTextarea v-model="networkForm.comment" :rows="2" />
-          </UFormGroup>
+          <UFormField label="Komentarz">
+            <UTextarea v-model="networkForm.comment" :data="2" />
+          </UFormField>
 
           <div class="flex justify-end">
             <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" />
@@ -494,6 +494,7 @@
 </template>
 
 <script setup>
+const route = useRoute()
 const leaseSearch = ref('')
 const diagnosticsDeviceId = ref('')
 const diagnosticsResult = ref(null)
@@ -527,46 +528,46 @@ const booleanOptions = [
 ]
 
 const profileColumns = [
-  { key: 'netDeviceId', label: 'Net device' },
-  { key: 'driver', label: 'Driver' },
-  { key: 'host', label: 'Host' },
-  { key: 'port', label: 'Port' },
-  { key: 'hasPassword', label: 'Secret' },
-  { key: 'hasEnablePassword', label: 'Enable' },
-  { key: 'actions', label: '' }
+  { accessorKey: 'netDeviceId', header: 'Net device' },
+  { accessorKey: 'driver', header: 'Driver' },
+  { accessorKey: 'host', header: 'Host' },
+  { accessorKey: 'port', header: 'Port' },
+  { accessorKey: 'hasPassword', header: 'Secret' },
+  { accessorKey: 'hasEnablePassword', header: 'Enable' },
+  { id: 'actions', header: '' }
 ]
 
 const deviceColumns = [
-  { key: 'name', label: 'Urządzenie' },
-  { key: 'deviceType', label: 'Typ' },
-  { key: 'managementIp', label: 'Management IP' },
-  { key: 'readyForDiscovery', label: 'Ready' },
-  { key: 'actions', label: '' }
+  { accessorKey: 'name', header: 'Urządzenie' },
+  { accessorKey: 'deviceType', header: 'Typ' },
+  { accessorKey: 'managementIp', header: 'Management IP' },
+  { accessorKey: 'readyForDiscovery', header: 'Ready' },
+  { id: 'actions', header: '' }
 ]
 
 const sessionColumns = [
-  { key: 'id', label: 'Sesja' },
-  { key: 'driver', label: 'Driver' },
-  { key: 'status', label: 'Status' },
-  { key: 'recordCount', label: 'Rekordy' },
-  { key: 'actions', label: '' }
+  { accessorKey: 'id', header: 'Sesja' },
+  { accessorKey: 'driver', header: 'Driver' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'recordCount', header: 'Rekordy' },
+  { id: 'actions', header: '' }
 ]
 
 const recordColumns = [
-  { key: 'recordKind', label: 'Kind' },
-  { key: 'hostname', label: 'Hostname / serial' },
-  { key: 'ipAddress', label: 'IP / CIDR' },
-  { key: 'macAddress', label: 'MAC' },
-  { key: 'recordStatus', label: 'Status' },
-  { key: 'actions', label: '' }
+  { accessorKey: 'recordKind', header: 'Kind' },
+  { accessorKey: 'hostname', header: 'Hostname / serial' },
+  { accessorKey: 'ipAddress', header: 'IP / CIDR' },
+  { accessorKey: 'macAddress', header: 'MAC' },
+  { accessorKey: 'recordStatus', header: 'Status' },
+  { id: 'actions', header: '' }
 ]
 
 const leaseColumns = [
-  { key: 'hostname', label: 'Hostname' },
-  { key: 'ipAddress', label: 'IP' },
-  { key: 'macAddress', label: 'MAC' },
-  { key: 'remoteSerialNumber', label: 'Remote serial' },
-  { key: 'netDeviceId', label: 'Net device' }
+  { accessorKey: 'hostname', header: 'Hostname' },
+  { accessorKey: 'ipAddress', header: 'IP' },
+  { accessorKey: 'macAddress', header: 'MAC' },
+  { accessorKey: 'remoteSerialNumber', header: 'Remote serial' },
+  { accessorKey: 'netDeviceId', header: 'Net device' }
 ]
 
 const accessProfileForm = reactive({
@@ -631,6 +632,17 @@ const {
   query: { q: leaseSearch },
   default: () => []
 })
+const { data: customers } = await useFetch('/api/v1/customers', {
+  query: { limit: 500 },
+  default: () => []
+})
+const { data: ipNetworks } = await useFetch('/api/v1/ip-networks', {
+  default: () => []
+})
+const { data: customerDevices } = await useFetch('/api/v1/customer-devices', {
+  query: { limit: 500 },
+  default: () => []
+})
 
 watch(leaseSearch, () => refreshImportedLeases())
 
@@ -638,6 +650,30 @@ const deviceOptions = computed(() => [
   { label: 'Wybierz urządzenie', value: null },
   ...((discoveryDevices.value || []).map((device) => ({
     label: `${device.name} (#${device.id})`,
+    value: device.id
+  })))
+])
+
+const customerOptions = computed(() => [
+  { label: 'Wybierz klienta', value: null },
+  ...((customers.value || []).map((customer) => ({
+    label: customer.companyName || [customer.firstName, customer.lastName].filter(Boolean).join(' ') || customer.customerCode,
+    value: customer.id
+  })))
+])
+
+const ipNetworkOptions = computed(() => [
+  { label: 'Wybierz sieć IP', value: null },
+  ...((ipNetworks.value || []).map((network) => ({
+    label: `${network.name} (${network.cidr})`,
+    value: network.id
+  })))
+])
+
+const customerDeviceOptions = computed(() => [
+  { label: 'Wybierz urządzenie klienta', value: null },
+  ...((customerDevices.value || []).map((device) => ({
+    label: `${device.hostname}${device.ipAddress ? ` · ${device.ipAddress}` : ''}`,
     value: device.id
   })))
 ])
@@ -951,7 +987,19 @@ const downloadPitExport = async () => {
   URL.revokeObjectURL(url)
 }
 
+const applyRoutePrefill = () => {
+  const candidate = route.query.deviceId
+  if (typeof candidate === 'string' && candidate.trim()) {
+    diagnosticsDeviceId.value = Number(candidate)
+  }
+}
+
+watch(() => route.query.deviceId, () => {
+  applyRoutePrefill()
+})
+
 onMounted(async () => {
+  applyRoutePrefill()
   await refreshAll()
 })
 </script>

@@ -261,6 +261,7 @@ router.get("/suggest", async (req, res) => {
     try {
         const kind = String(req.query.kind ?? "city").trim();
         const search = String(req.query.q ?? req.query.street_name ?? "").trim();
+        const managedOnly = String(req.query.managedOnly ?? "").toLowerCase() === "true";
 
         if (search.length < 2) {
             return res.json([]);
@@ -343,6 +344,7 @@ router.get("/suggest", async (req, res) => {
 
             const qb = streetRepo
                 .createQueryBuilder("street")
+                .leftJoin("street.city", "city")
                 .where("street.name LIKE :search", { search: `%${search}%` })
                 .orderBy("street.name", "ASC")
                 .limit(20);
@@ -352,6 +354,9 @@ router.get("/suggest", async (req, res) => {
             }
             if (Number.isFinite(communeId)) {
                 qb.andWhere("street.communeId = :communeId", { communeId });
+            }
+            if (managedOnly) {
+                qb.andWhere("city.isManaged = :managed", { managed: true });
             }
 
             const streets = await qb.getMany();
@@ -380,6 +385,9 @@ router.get("/suggest", async (req, res) => {
             qb.andWhere("city.communeId = :communeId", { communeId });
         } else if (Number.isFinite(districtId)) {
             qb.andWhere("city.districtId = :districtId", { districtId });
+        }
+        if (managedOnly) {
+            qb.andWhere("city.isManaged = :managed", { managed: true });
         }
 
         const cities = await qb.getMany();

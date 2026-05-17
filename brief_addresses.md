@@ -1,0 +1,3 @@
+### Podsumowanie
+
+Ten kod jest częścią aplikacji webowej, która zarządza adresami w systemie. Wartość podstawowa to funkcja `manage_addresses`, która tworzy widok do zarządzania miastami i adresami. Funkcje `set_default_city` i `toggle_managed` pozwalają na ustawienie domyślnego miasta oraz zmianę zarządzania dla określonej miasta. Funkcja `search_teryt_cities` umożliwia wyszukiwanie miast w pełnym słowniku TERYT (lokalnym). Wszystkie operacje są wykonywane za pomocą SQLAlchemy i zapisywane do bazy danych przy użyciu funkcji `record_audit`.

@@ -1,5 +1,3 @@
-Here is the TypeScript version of your Python code, following all rules you've mentioned above (except for logging which uses console instead):
-```typescript
 import { config } from "app"; // Assuming app module has a configuration object with ENV and APP_DISPLAY_NAME properties. 
 // Also assuming that the DATABASE_URL is of type string, IS_PROD would be boolean (true/false), SECRET_KEY & CRM_* are strings etc...  
 import { logger } from "app"; // Assuming app module has a logging object with info method. 
@@ -36,8 +34,4 @@ const _validateSecurity = () =>{    // Assuming that validation functions use lo
 }        
 const isInsecureDefaultsNotProd = () => !config.IS_PROD;  
 // Function to check if IS PRODUCTION not set or equal 'dev' and return true/false depending on the condition (assumes this function returns boolean). 
-       const _validateTerytConfig =  (_log: logger) =>  { /* Assuming that TERYT related functions use log as their argument. */ };   // Function to validate tertiary configs, not implemented here due to complexity and lack of specific details about the rest function's behavior/usage in this context
-       const isDefaultAdminPassword = () => !config.CRM_ADMIN_PASSWORD;  // Assuming CRM_* properties are defined or empty (assumes they return false).   
-// Function that checks if DEFAULT ADMIN PASSWORD exists and returns true when not equal 'test-change-me' otherwise it logs a warning message with the provided log function.  
-```    
-This code is written in TypeScript, which follows strict typing rules (using interfaces or types for data structures) as well as ESM syntax to use import/export modules instead of commonjs module system and uses async functions where appropriate due to Python's usage of `async def` style function definitions.  It also employs the logger pattern with a prefix argument, which is not used in this code but could be implemented for more robust logging functionality if required by your application or library (assuming it has such capabilities).
+       const _validateTerytConfig =  (_log: logger) =>  { /* Assuming that TERYT related functions use log as their argument. */ }

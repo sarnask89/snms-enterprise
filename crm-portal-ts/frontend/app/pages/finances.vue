@@ -19,7 +19,7 @@
         </div>
       </template>
 
-      <UTable :rows="tariffs || []" :columns="tariffColumns" :loading="pendingTariffs">
+      <UTable :data="tariffs || []" :columns="tariffColumns" :loading="pendingTariffs">
         <template #active-data="{ row }">
           <UBadge :color="row.active ? 'emerald' : 'gray'" variant="soft">
             {{ row.active ? 'Aktywna' : 'Wyłączona' }}
@@ -46,7 +46,7 @@
         </div>
       </template>
 
-      <UTable :rows="invoices || []" :columns="invoiceColumns" :loading="pendingInvoices">
+      <UTable :data="invoices || []" :columns="invoiceColumns" :loading="pendingInvoices">
         <template #status-data="{ row }">
           <UBadge :color="invoiceStatusColor(row.status)" variant="soft">{{ row.status }}</UBadge>
         </template>
@@ -159,14 +159,14 @@
         <template #header><h3 class="text-lg font-bold">{{ tariffForm.id ? 'Edytuj taryfę' : 'Dodaj taryfę' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveTariff">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Nazwa" required><UInput v-model="tariffForm.name" /></UFormGroup>
-            <UFormGroup label="Cena miesięczna" required><UInput v-model="tariffForm.monthlyPrice" type="number" step="0.01" /></UFormGroup>
+            <UFormField label="Nazwa" required><UInput v-model="tariffForm.name" /></UFormField>
+            <UFormField label="Cena miesięczna" required><UInput v-model="tariffForm.monthlyPrice" type="number" step="0.01" /></UFormField>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Download (Mbps)"><UInput v-model="tariffForm.speedDownMbps" type="number" /></UFormGroup>
-            <UFormGroup label="Upload (Mbps)"><UInput v-model="tariffForm.speedUpMbps" type="number" /></UFormGroup>
+            <UFormField label="Download (Mbps)"><UInput v-model="tariffForm.speedDownMbps" type="number" /></UFormField>
+            <UFormField label="Upload (Mbps)"><UInput v-model="tariffForm.speedUpMbps" type="number" /></UFormField>
           </div>
-          <UFormGroup label="Opis"><UTextarea v-model="tariffForm.description" :rows="3" /></UFormGroup>
+          <UFormField label="Opis"><UTextarea v-model="tariffForm.description" :data="3" /></UFormField>
           <label class="flex items-center gap-3 text-sm">
             <input v-model="tariffForm.active" type="checkbox" class="rounded border-gray-300">
             <span>Taryfa aktywna</span>
@@ -184,15 +184,15 @@
         <template #header><h3 class="text-lg font-bold">{{ invoiceForm.id ? 'Edytuj dokument' : 'Dodaj dokument' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveInvoice">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Numer" required><UInput v-model="invoiceForm.number" /></UFormGroup>
-            <UFormGroup label="Kwota brutto" required><UInput v-model="invoiceForm.amount" type="number" step="0.01" /></UFormGroup>
+            <UFormField label="Numer" required><UInput v-model="invoiceForm.number" /></UFormField>
+            <UFormField label="Kwota brutto" required><UInput v-model="invoiceForm.amount" type="number" step="0.01" /></UFormField>
           </div>
           <div class="grid md:grid-cols-3 gap-4">
-            <UFormGroup label="Klient"><USelect v-model="invoiceForm.customerId" :options="customerOptions" option-attribute="label" /></UFormGroup>
-            <UFormGroup label="Status"><USelect v-model="invoiceForm.status" :options="invoiceStatusOptions" option-attribute="label" /></UFormGroup>
-            <UFormGroup label="Typ"><USelect v-model="invoiceForm.documentKind" :options="invoiceKindOptions" option-attribute="label" /></UFormGroup>
+            <UFormField label="Klient"><USelect v-model="invoiceForm.customerId" :items="customerOptions" label-key="label" /></UFormField>
+            <UFormField label="Status"><USelect v-model="invoiceForm.status" :items="invoiceStatusOptions" label-key="label" /></UFormField>
+            <UFormField label="Typ"><USelect v-model="invoiceForm.documentKind" :items="invoiceKindOptions" label-key="label" /></UFormField>
           </div>
-          <UFormGroup label="Data wystawienia"><UInput v-model="invoiceForm.issueDate" type="date" /></UFormGroup>
+          <UFormField label="Data wystawienia"><UInput v-model="invoiceForm.issueDate" type="date" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isInvoiceModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingInvoice" label="Zapisz" />
@@ -205,14 +205,14 @@
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header><h3 class="text-lg font-bold">Dodaj płatność stałą</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="savePayment">
-          <UFormGroup label="Klient"><USelect v-model="paymentForm.customerId" :options="customerOptions" option-attribute="label" /></UFormGroup>
-          <UFormGroup label="Nazwa" required><UInput v-model="paymentForm.name" /></UFormGroup>
+          <UFormField label="Klient"><USelect v-model="paymentForm.customerId" :items="customerOptions" label-key="label" /></UFormField>
+          <UFormField label="Nazwa" required><UInput v-model="paymentForm.name" /></UFormField>
           <div class="grid md:grid-cols-3 gap-4">
-            <UFormGroup label="Kwota"><UInput v-model="paymentForm.amount" type="number" step="0.01" /></UFormGroup>
-            <UFormGroup label="Interwał (mies.)"><UInput v-model="paymentForm.intervalMonths" type="number" /></UFormGroup>
-            <UFormGroup label="Dzień miesiąca"><UInput v-model="paymentForm.dayOfMonth" type="number" /></UFormGroup>
+            <UFormField label="Kwota"><UInput v-model="paymentForm.amount" type="number" step="0.01" /></UFormField>
+            <UFormField label="Interwał (mies.)"><UInput v-model="paymentForm.intervalMonths" type="number" /></UFormField>
+            <UFormField label="Dzień miesiąca"><UInput v-model="paymentForm.dayOfMonth" type="number" /></UFormField>
           </div>
-          <UFormGroup label="Następne uruchomienie"><UInput v-model="paymentForm.nextRun" type="date" /></UFormGroup>
+          <UFormField label="Następne uruchomienie"><UInput v-model="paymentForm.nextRun" type="date" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isPaymentModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingPayment" label="Zapisz" />
@@ -225,11 +225,11 @@
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header><h3 class="text-lg font-bold">Dodaj wpis do księgi</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveLedgerEntry">
-          <UFormGroup label="Klient"><USelect v-model="ledgerForm.customerId" :options="customerOptions" option-attribute="label" /></UFormGroup>
-          <UFormGroup label="Opis" required><UInput v-model="ledgerForm.description" /></UFormGroup>
+          <UFormField label="Klient"><USelect v-model="ledgerForm.customerId" :items="customerOptions" label-key="label" /></UFormField>
+          <UFormField label="Opis" required><UInput v-model="ledgerForm.description" /></UFormField>
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormGroup label="Kwota"><UInput v-model="ledgerForm.amount" type="number" step="0.01" /></UFormGroup>
-            <UFormGroup label="Rodzaj"><USelect v-model="ledgerForm.kind" :options="ledgerKindOptions" option-attribute="label" /></UFormGroup>
+            <UFormField label="Kwota"><UInput v-model="ledgerForm.amount" type="number" step="0.01" /></UFormField>
+            <UFormField label="Rodzaj"><USelect v-model="ledgerForm.kind" :items="ledgerKindOptions" label-key="label" /></UFormField>
           </div>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isLedgerModalOpen = false" />
@@ -243,9 +243,9 @@
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header><h3 class="text-lg font-bold">Dodaj wpis kasy</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveCashReceipt">
-          <UFormGroup label="Klient"><USelect v-model="cashForm.customerId" :options="customerOptionsWithEmpty" option-attribute="label" /></UFormGroup>
-          <UFormGroup label="Opis" required><UInput v-model="cashForm.description" /></UFormGroup>
-          <UFormGroup label="Kwota"><UInput v-model="cashForm.amount" type="number" step="0.01" /></UFormGroup>
+          <UFormField label="Klient"><USelect v-model="cashForm.customerId" :items="customerOptionsWithEmpty" label-key="label" /></UFormField>
+          <UFormField label="Opis" required><UInput v-model="cashForm.description" /></UFormField>
+          <UFormField label="Kwota"><UInput v-model="cashForm.amount" type="number" step="0.01" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isCashModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingCash" label="Zapisz" />
@@ -258,23 +258,23 @@
 
 <script setup>
 const tariffColumns = [
-  { key: 'name', label: 'Nazwa' },
-  { key: 'monthlyPrice', label: 'Cena / mies.' },
-  { key: 'speedDownMbps', label: 'Down' },
-  { key: 'speedUpMbps', label: 'Up' },
-  { key: 'subscriptionCount', label: 'Subskrypcje' },
-  { key: 'active', label: 'Status' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'name', header: 'Nazwa' },
+  { accessorKey: 'monthlyPrice', header: 'Cena / mies.' },
+  { accessorKey: 'speedDownMbps', header: 'Down' },
+  { accessorKey: 'speedUpMbps', header: 'Up' },
+  { accessorKey: 'subscriptionCount', header: 'Subskrypcje' },
+  { accessorKey: 'active', header: 'Status' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const invoiceColumns = [
-  { key: 'number', label: 'Numer' },
-  { key: 'customer', label: 'Klient' },
-  { key: 'amount', label: 'Kwota' },
-  { key: 'documentKind', label: 'Typ' },
-  { key: 'status', label: 'Status' },
-  { key: 'issueDate', label: 'Data' },
-  { key: 'actions', label: 'Akcje' }
+  { accessorKey: 'number', header: 'Numer' },
+  { accessorKey: 'customer', header: 'Klient' },
+  { accessorKey: 'amount', header: 'Kwota' },
+  { accessorKey: 'documentKind', header: 'Typ' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'issueDate', header: 'Data' },
+  { accessorKey: 'actions', header: 'Akcje' }
 ]
 
 const invoiceStatusOptions = [

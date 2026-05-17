@@ -44,3 +44,23 @@ test('operations page keeps select values string-safe for Nuxt UI controls', asy
   assert.match(source, /useTls:\s*'false'/, 'form state should initialize the select with a string value')
   assert.match(source, /useTls:\s*accessProfileForm\.useTls\s*===\s*'true'/, 'submit payload should coerce the select value back to boolean')
 })
+
+test('operations page can prefill diagnostics device id from route query', async () => {
+  const source = await readFile(pagePath, 'utf8')
+
+  assert.match(source, /const route = useRoute\(\)/, 'page should read current route for workflow prefill')
+  assert.match(source, /route\.query\.deviceId/, 'page should inspect deviceId query parameter')
+  assert.match(source, /diagnosticsDeviceId\.value = Number\(candidate\)/, 'page should prefill diagnostics target from query using numeric values compatible with selects')
+})
+
+test('operations page uses searchable selectors instead of raw numeric ids for import workflows', async () => {
+  const source = await readFile(pagePath, 'utf8')
+
+  assert.match(source, /label="Klient"/, 'record and lease import should expose human-readable customer selectors')
+  assert.match(source, /label="Sieć IP"/, 'record and lease import should expose network selectors')
+  assert.match(source, /label="Urządzenie klienta"/, 'diagnostics should expose customer-device selector')
+  assert.match(source, /label="Źródłowe urządzenie"/, 'manual network import should expose a source device selector')
+  assert.match(source, /<USelectMenu v-model="recordImportForm\.customerId"/, 'record import should use a searchable customer select')
+  assert.match(source, /<USelectMenu v-model="diagnosticsDeviceId"/, 'diagnostics should use a searchable device select')
+  assert.match(source, /searchable/, 'selectors should be searchable for operator workflows')
+})

@@ -1,0 +1,95 @@
+Starting translation of app to TypeScript in crm-portal-ts\src...
+Skipping app\admin_auth.py - already translated.
+Skipping app\admin_views.py - already translated.
+Skipping app\audit.py - already translated.
+Skipping app\config.py - already translated.
+Skipping app\config_validation.py - already translated.
+Skipping app\database.py - already translated.
+Skipping app\deps.py - already translated.
+Skipping app\errors.py - already translated.
+Skipping app\exceptions.py - already translated.
+Skipping app\finances.py - already translated.
+Skipping app\init_db.py - already translated.
+Skipping app\ip_pool.py - already translated.
+Skipping app\logger_utils.py - already translated.
+Skipping app\logging.py - already translated.
+Skipping app\main.py - already translated.
+Skipping app\middleware_logging.py - already translated.
+Skipping app\middleware_portal.py - already translated.
+Skipping app\nav_access.py - already translated.
+Skipping app\router_aggregator.py - already translated.
+Skipping app\schemas.py - already translated.
+Skipping app\security.py - already translated.
+Skipping app\security_utils.py - already translated.
+Skipping app\settings.py - already translated.
+Skipping app\snms_numbering.py - already translated.
+Skipping app\storage.py - already translated.
+Skipping app\templating.py - already translated.
+Skipping app\teryt_import.py - already translated.
+Skipping app\teryt_ws.py - already translated.
+Skipping app\engine\generator.py - already translated.
+Skipping app\models\common.py - already translated.
+Skipping app\models\communication.py - already translated.
+Skipping app\models\customer.py - already translated.
+Skipping app\models\finance.py - already translated.
+Skipping app\models\generated_modules.py - already translated.
+Skipping app\models\helpdesk.py - already translated.
+Skipping app\models\location.py - already translated.
+Skipping app\models\monitoring.py - already translated.
+Skipping app\models\netflow.py - already translated.
+Skipping app\models\network.py - already translated.
+Skipping app\models\system.py - already translated.
+Skipping app\routers\addresses.py - already translated.
+Skipping app\routers\admin.py - already translated.
+Skipping app\routers\api_v1.py - already translated.
+Skipping app\routers\auth.py - already translated.
+Skipping app\routers\builder.py - already translated.
+Skipping app\routers\bulk.py - already translated.
+Skipping app\routers\client_auth.py - already translated.
+Skipping app\routers\client_portal.py - already translated.
+Skipping app\routers\config_snms.py - already translated.
+Skipping app\routers\customers.py - already translated.
+Skipping app\routers\customer_devices.py - already translated.
+Skipping app\routers\customer_device_groups.py - already translated.
+Skipping app\routers\customer_groups.py - already translated.
+Skipping app\routers\dashboard.py - already translated.
+Skipping app\routers\diagnostics.py - already translated.
+Skipping app\routers\documents.py - already translated.
+Skipping app\routers\finances.py - already translated.
+Skipping app\routers\helpdesk.py - already translated.
+Skipping app\routers\ip_networks.py - already translated.
+Skipping app\routers\legacy_node_paths.py - already translated.
+Skipping app\routers\monitoring.py - already translated.
+Skipping app\routers\monitor_config.py - already translated.
+Skipping app\routers\netdevices.py - already translated.
+Skipping app\routers\network_discovery.py - already translated.
+Skipping app\routers\network_tools.py - already translated.
+Skipping app\routers\net_nodes.py - already translated.
+Skipping app\routers\olt_discovery.py - already translated.
+Skipping app\routers\pit.py - already translated.
+Skipping app\routers\reports.py - already translated.
+Skipping app\routers\search.py - already translated.
+--- GPU STATUS: --------------------------------------------------
+ NET TOOLS LOADED.
+ Available: SetVlanId, SetIp, SetNetProp
+ PANIC BUTTON: Reset-NetConfig
+--------------------------------------------------
+Ollama GPU VRAM: 0.31 MB ---
+Translating app\routers\snms_entities.py to TypeScript...
+Saved translated file to crm-portal-ts\src\routers\snms_entities.ts
+Skipping app\routers\stats.py - already translated.
+Skipping app\routers\subscriptions.py - already translated.
+Skipping app\routers\teryt.py - already translated.
+--- GPU STATUS: --------------------------------------------------
+ NET TOOLS LOADED.
+ Available: SetVlanId, SetIp, SetNetProp
+ PANIC BUTTON: Reset-NetConfig
+--------------------------------------------------
+Ollama GPU VRAM: 0.31 MB ---
+Translating app\services\dasan.py to TypeScript...
+eset-NetConfig
+--------------------------------------------------
+Ollama GPU VRAM: 0.31 MB ---
+Translating app\routers\snms_entities.py to TypeScript...
+Attempt 1/3 failed for app\routers\snms_entities.py: llama runner process has terminated with exit code 2 (status code: 500)
+Attempt 2/3 failed for app\routers\snms_entities.py: llama runner process has terminated with exit code 2 (status code: 500)

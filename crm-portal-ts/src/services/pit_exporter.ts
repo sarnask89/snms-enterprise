@@ -1,0 +1,3 @@
+import { List } from 'lodash'; // Importing LODASH's type definition for a list. You can replace this with any other library if needed, but lodash is used here as it provides the functionality we need and has been tested in our project to be reliable enough. 
+// Also note that you should install `@types/lodash` via npm or yarn before using LODASH types for TypeScript type definitions (LTD). You can do this by running: "npm i @types/lodash" OR "yarn add @types/lodash".
+import { NetNode }
