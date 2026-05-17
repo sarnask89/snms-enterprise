@@ -1,0 +1,1 @@
+{"root":["./types/nitro-nuxt.d.ts","../server/api/agent/start.post.ts","../server/api/agent/status.get.ts","../server/api/v1/[...path].ts","./types/nitro.d.ts"],"version":"6.0.3"}

@@ -1,1 +1,0 @@
-import{E as f,n as i,aT as l,aC as p}from"./DANZwyyR.js";function V(s,e,n,u,t){const r=f(),o={};for(const a of u)o[a]=i(()=>(t?.[a]!==void 0?l(t[a]):p(e,a))??r.ui?.[s]?.defaultVariants?.[a]??n.defaultVariants?.[a]);return o}export{V as u};

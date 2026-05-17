@@ -119,7 +119,7 @@
         "./color-mode-options.mjs"
       ],
       "#app-manifest": [
-        "./manifest/meta/dev"
+        "./manifest/meta/bf030e97-064c-4930-90db-de42688593f0.json"
       ],
       "#components": [
         "./components"
@@ -190,6 +190,7 @@
     "../node_modules",
     "../../../node_modules",
     "../node_modules/nuxt/node_modules",
+    "../node_modules/@nuxt/eslint/node_modules",
     "../node_modules/@nuxt/ui/node_modules",
     "../node_modules/@nuxt/devtools/node_modules",
     "../node_modules/@nuxt/telemetry/node_modules",

@@ -1,4 +1,4 @@
-import { c as defineEventHandler } from '../../../_/nitro.mjs';
+import { c as defineEventHandler, e as createError } from '../../../_/nitro.mjs';
 import fs from 'fs';
 import path from 'path';
 import 'node:http';
@@ -12,7 +12,14 @@ import 'node:crypto';
 import 'consola';
 import 'node:path';
 
-const status_get = defineEventHandler((event) => {
+const status_get = defineEventHandler(() => {
+  const agentApiEnabled = process.env.NUXT_ENABLE_AGENT_API === "true";
+  if (!agentApiEnabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Agent API is disabled"
+    });
+  }
   const rootDir = path.resolve(process.cwd(), "../../");
   const pidFile = path.join(rootDir, ".agent.pid");
   const logFile = path.join(rootDir, "agent.log");
@@ -23,7 +30,7 @@ const status_get = defineEventHandler((event) => {
       const pid = parseInt(fs.readFileSync(pidFile, "utf-8"));
       process.kill(pid, 0);
       isRunning = true;
-    } catch (e) {
+    } catch {
       isRunning = false;
     }
   }

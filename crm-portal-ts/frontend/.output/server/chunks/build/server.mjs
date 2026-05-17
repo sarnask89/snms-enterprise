@@ -803,7 +803,7 @@ const _routes = [
   {
     name: "customers-id",
     path: "/customers/:id()",
-    component: () => import('./_id_-C5bd4FC7.mjs')
+    component: () => import('./_id_-Bw0LRfPN.mjs')
   },
   {
     name: "admin",
@@ -818,12 +818,12 @@ const _routes = [
   {
     name: "architect",
     path: "/architect",
-    component: () => import('./architect-Dnt0Lc7w.mjs')
+    component: () => import('./architect-CgkkPfm-.mjs')
   },
   {
     name: "customer-devices",
     path: "/customer-devices",
-    component: () => import('./customer-devices-Df05281W.mjs')
+    component: () => import('./customer-devices-ufLa5gVd.mjs')
   },
   {
     name: "customers",
@@ -838,7 +838,7 @@ const _routes = [
   {
     name: "finances",
     path: "/finances",
-    component: () => import('./finances-BCwRInUm.mjs')
+    component: () => import('./finances-BqSTRCaV.mjs')
   },
   {
     name: "helpdesk",
@@ -853,12 +853,12 @@ const _routes = [
   {
     name: "operations",
     path: "/operations",
-    component: () => import('./operations-CZHBLe6t.mjs')
+    component: () => import('./operations-DrD6_jCT.mjs')
   },
   {
     name: "settings",
     path: "/settings",
-    component: () => import('./settings-fv9nz0Tl.mjs')
+    component: () => import('./settings-C4WcHyg6.mjs')
   },
   {
     name: "snms",
@@ -7921,7 +7921,7 @@ const __nuxt_component_1 = defineComponent({
   }
 });
 const layouts = {
-  default: defineAsyncComponent(() => import('./default-BtyPk3Nk.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-DOShnMHk.mjs').then((m) => m.default || m))
 };
 const routeRulesMatcher = _routeRulesMatcher;
 const LayoutLoader = defineComponent({

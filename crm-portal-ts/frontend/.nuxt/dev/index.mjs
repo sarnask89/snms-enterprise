@@ -3403,6 +3403,13 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const start_post = defineEventHandler(async (event) => {
+  const agentApiEnabled = process.env.NUXT_ENABLE_AGENT_API === "true";
+  if (!agentApiEnabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Agent API is disabled"
+    });
+  }
   const body = await readBody(event);
   const target = body.target || "app";
   const rootDir = path.resolve(process.cwd(), "../../");
@@ -3412,8 +3419,8 @@ const start_post = defineEventHandler(async (event) => {
     try {
       const pid = parseInt(fs.readFileSync(pidFile, "utf-8"));
       process.kill(pid, 0);
-      return { status: "already_running", message: `Agent is already running.` };
-    } catch (e) {
+      return { status: "already_running", message: "Agent is already running." };
+    } catch {
       fs.unlinkSync(pidFile);
     }
   }
@@ -3428,10 +3435,16 @@ const start_post = defineEventHandler(async (event) => {
       stdio: ["ignore", out, err]
     });
     child.unref();
+    if (typeof child.pid !== "number") {
+      throw new Error("Agent process did not expose a valid pid");
+    }
     fs.writeFileSync(pidFile, child.pid.toString());
     return { status: "started", message: `Agent started on target: ${target}` };
-  } catch (e) {
-    return { status: "error", message: e.message };
+  } catch (error) {
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "Unknown agent startup error"
+    };
   }
 });
 
@@ -3440,7 +3453,14 @@ const start_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
   default: start_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const status_get = defineEventHandler((event) => {
+const status_get = defineEventHandler(() => {
+  const agentApiEnabled = process.env.NUXT_ENABLE_AGENT_API === "true";
+  if (!agentApiEnabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Agent API is disabled"
+    });
+  }
   const rootDir = path.resolve(process.cwd(), "../../");
   const pidFile = path.join(rootDir, ".agent.pid");
   const logFile = path.join(rootDir, "agent.log");
@@ -3451,7 +3471,7 @@ const status_get = defineEventHandler((event) => {
       const pid = parseInt(fs.readFileSync(pidFile, "utf-8"));
       process.kill(pid, 0);
       isRunning = true;
-    } catch (e) {
+    } catch {
       isRunning = false;
     }
   }
