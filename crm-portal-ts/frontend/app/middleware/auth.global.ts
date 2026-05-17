@@ -1,4 +1,4 @@
-import { canAccessRoute } from '../utils/auth-access.js'
+import { canAccessRoute } from '../utils/auth-access'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const { session, loadSession } = usePortalAuth()

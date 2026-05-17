@@ -1,15 +1,25 @@
-const INTERNAL_ROLES = ['admin', 'manager', 'service', 'view']
-const ADMIN_ROLES = ['admin']
+type InternalRole = 'admin' | 'manager' | 'service' | 'view'
+type RouteRole = InternalRole | null
+
+type NavigationLink = {
+  label?: string
+  to?: string
+  children?: NavigationLink[]
+  [key: string]: unknown
+}
+
+const INTERNAL_ROLES: InternalRole[] = ['admin', 'manager', 'service', 'view']
+const ADMIN_ROLES: InternalRole[] = ['admin']
 
 const PUBLIC_PREFIXES = ['/settings', '/architect']
-const ROUTE_POLICIES = [
+const ROUTE_POLICIES: Array<{ prefix: string, roles: InternalRole[] | null }> = [
   { prefix: '/admin', roles: ADMIN_ROLES },
   { prefix: '/settings', roles: null },
   { prefix: '/architect', roles: null },
   { prefix: '/', roles: INTERNAL_ROLES }
 ]
 
-function normalizePath(path) {
+function normalizePath(path: string | null | undefined) {
   if (!path) {
     return '/'
   }
@@ -18,7 +28,7 @@ function normalizePath(path) {
   return pathname || '/'
 }
 
-function getRoutePolicy(path) {
+function getRoutePolicy(path: string | null | undefined) {
   const normalized = normalizePath(path)
 
   return ROUTE_POLICIES.find((policy) => {
@@ -30,12 +40,12 @@ function getRoutePolicy(path) {
   }) ?? ROUTE_POLICIES[ROUTE_POLICIES.length - 1]
 }
 
-export function isPublicRoute(path) {
+export function isPublicRoute(path: string | null | undefined) {
   const normalized = normalizePath(path)
   return PUBLIC_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`))
 }
 
-export function canAccessRoute(role, path) {
+export function canAccessRoute(role: RouteRole, path: string | null | undefined) {
   const policy = getRoutePolicy(path)
   if (!policy || policy.roles === null) {
     return true
@@ -48,9 +58,9 @@ export function canAccessRoute(role, path) {
   return policy.roles.includes(role)
 }
 
-export function filterNavigationLinks(links, role) {
-  return (links || []).reduce((result, link) => {
-    const nextLink = { ...link }
+export function filterNavigationLinks(links: NavigationLink[] | null | undefined, role: RouteRole) {
+  return (links || []).reduce<NavigationLink[]>((result, link) => {
+    const nextLink: NavigationLink = { ...link }
 
     if (Array.isArray(link.children)) {
       nextLink.children = filterNavigationLinks(link.children, role)

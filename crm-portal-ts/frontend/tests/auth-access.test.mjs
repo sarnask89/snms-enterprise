@@ -2,12 +2,15 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { readdir } from 'node:fs/promises'
 
-import {
+import { importTypeScriptModule } from './support/load-ts-module.mjs'
+
+const {
   canAccessRoute,
   filterNavigationLinks,
   isPublicRoute
-} from '../app/utils/auth-access.js'
+} = await importTypeScriptModule('app/utils/auth-access.ts')
 
 test('public routes are limited to auth entry points', () => {
   assert.equal(isPublicRoute('/settings'), true)
@@ -96,11 +99,11 @@ test('operator shell resolves truthful page labels from dashboard navigation for
 test('operator shell bootstraps auth session during setup instead of waiting for mount', () => {
   const layoutScript = readLayoutScript()
   const authComposableSource = readFileSync(
-    resolve(process.cwd(), 'app/composables/usePortalAuth.js'),
+    resolve(process.cwd(), 'app/composables/usePortalAuth.ts'),
     'utf8'
   )
   const authMiddlewareSource = readFileSync(
-    resolve(process.cwd(), 'app/middleware/auth.global.js'),
+    resolve(process.cwd(), 'app/middleware/auth.global.ts'),
     'utf8'
   )
 
@@ -123,6 +126,17 @@ test('operator shell bootstraps auth session during setup instead of waiting for
     authMiddlewareSource,
     /if\s*\(\s*import\.meta\.server\s*\)\s*\{\s*return\s*\}/,
     'route middleware should not skip auth checks on the server'
+  )
+})
+
+test('frontend app source no longer keeps JavaScript modules after TS migration', async () => {
+  const appRoot = resolve(process.cwd(), 'app')
+  const jsFiles = await collectJavaScriptFiles(appRoot)
+
+  assert.deepEqual(jsFiles, [])
+  assert.match(
+    readFileSync(resolve(process.cwd(), 'app/utils/auth-access.ts'), 'utf8'),
+    /const INTERNAL_ROLES/
   )
 })
 
@@ -203,4 +217,23 @@ function findExpectedNavigationEntry(items, targetPath) {
   }
 
   return null
+}
+
+async function collectJavaScriptFiles(rootDir) {
+  const entries = await readdir(rootDir, { withFileTypes: true })
+  const files = []
+
+  for (const entry of entries) {
+    const absolutePath = resolve(rootDir, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...await collectJavaScriptFiles(absolutePath))
+      continue
+    }
+
+    if (entry.isFile() && entry.name.endsWith('.js')) {
+      files.push(absolutePath)
+    }
+  }
+
+  return files
 }

@@ -1,11 +1,39 @@
-export function useManagedTerytAddress(target, fieldMap, defaultArea) {
-  const suggestions = reactive({
+type AddressTarget = Record<string, string | number | null | undefined>
+
+type FieldMap = {
+  cityId: string
+  streetId: string
+  city: string
+  street: string
+}
+
+type TerytSuggestion = {
+  id: number
+  text: string
+}
+
+type DefaultAreaRef = Ref<{
+  city?: {
+    id?: number | null
+    name?: string | null
+  } | null
+} | null | undefined>
+
+export function useManagedTerytAddress(
+  target: AddressTarget,
+  fieldMap: FieldMap,
+  defaultArea: DefaultAreaRef
+) {
+  const suggestions = reactive<{
+    cities: TerytSuggestion[]
+    streets: TerytSuggestion[]
+  }>({
     cities: [],
     streets: []
   })
 
-  const getField = (key) => target[fieldMap[key]]
-  const setField = (key, value) => {
+  const getField = (key: keyof FieldMap) => target[fieldMap[key]]
+  const setField = (key: keyof FieldMap, value: string | number | null) => {
     target[fieldMap[key]] = value
   }
 
@@ -22,15 +50,19 @@ export function useManagedTerytAddress(target, fieldMap, defaultArea) {
     clearSuggestions()
   }
 
-  const fetchSuggestions = async (kind, query, extraQuery = {}) => {
-    if (!query || query.trim().length < 2) {
+  const fetchSuggestions = async (
+    kind: 'city' | 'street',
+    query: string | number | null | undefined,
+    extraQuery: Record<string, string | number | undefined> = {}
+  ) => {
+    if (!query || String(query).trim().length < 2) {
       return []
     }
 
-    return await $fetch('/api/v1/teryt/suggest', {
+    return await $fetch<TerytSuggestion[]>('/api/v1/teryt/suggest', {
       query: {
         kind,
-        q: query.trim(),
+        q: String(query).trim(),
         managedOnly: true,
         ...extraQuery
       }
@@ -48,11 +80,11 @@ export function useManagedTerytAddress(target, fieldMap, defaultArea) {
   const onStreetInput = async () => {
     setField('streetId', null)
     suggestions.streets = await fetchSuggestions('street', getField('street'), {
-      cityId: getField('cityId') || undefined
+      cityId: (getField('cityId') as number | null | undefined) || undefined
     })
   }
 
-  const selectCity = (suggestion) => {
+  const selectCity = (suggestion: TerytSuggestion) => {
     setField('cityId', suggestion.id)
     setField('city', suggestion.text)
     setField('streetId', null)
@@ -61,7 +93,7 @@ export function useManagedTerytAddress(target, fieldMap, defaultArea) {
     suggestions.streets = []
   }
 
-  const selectStreet = (suggestion) => {
+  const selectStreet = (suggestion: TerytSuggestion) => {
     setField('streetId', suggestion.id)
     setField('street', suggestion.text)
     suggestions.streets = []
