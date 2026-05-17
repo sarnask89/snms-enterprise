@@ -4,14 +4,12 @@ import { readFile } from 'node:fs/promises'
 
 const pagePath = new URL('../app/pages/teryt.vue', import.meta.url)
 
-test('teryt page exposes a dense registry manager layout', async () => {
+test('teryt page exposes a calmer registry workspace with legacy-like sections', async () => {
   const source = await readFile(pagePath, 'utf8')
 
-  assert.match(source, /xl:grid-cols-\[1\.2fr,0\.8fr\]/, 'page should keep a tight import and default-area split at the top')
-  assert.match(source, /xl:grid-cols-2/, 'page should keep side-by-side commune and city registries')
-  assert.match(source, /xl:grid-cols-\[0\.9fr,1\.1fr\]/, 'page should keep quick search and streets preview as support panes')
-  assert.match(source, /Rejestr importu/, 'page should frame imports as a compact registry section')
-  assert.match(source, /Obszar domyślny/, 'page should expose a compact default area summary')
+  assert.match(source, /TERYT i adresy/, 'page should keep the main registry heading')
+  assert.match(source, /grid lg:grid-cols-3 gap-6/, 'page should use the calmer three-column legacy-like layout blocks')
+  assert.match(source, /Domyślny obszar/, 'page should expose the default area summary')
   assert.match(source, /Rejestr gmin/, 'page should expose a dedicated commune registry')
   assert.match(source, /Rejestr miast/, 'page should expose a dedicated city registry')
   assert.match(source, /Podgląd ulic/, 'page should keep a streets preview helper pane')
@@ -42,4 +40,5 @@ test('teryt page exposes readable registry actions', async () => {
   assert.match(source, /Ustaw domyśln/, 'default action should expose a readable label')
   assert.match(source, /Importuj XML/, 'import action should stay readable')
   assert.match(source, /Synchronizuj/, 'sync action should stay readable')
+  assert.match(source, /Szybkie wyszukiwanie TERYT/, 'page should keep the fast address lookup helper visible')
 })

@@ -1,99 +1,79 @@
 <template>
-  <div class="space-y-4">
-    <section class="rounded-[28px] border border-slate-200 bg-white px-5 py-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-      <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div class="space-y-2">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Rejestr adresowy</div>
-          <div>
-            <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">TERYT i adresy</h1>
-            <p class="max-w-3xl text-sm text-slate-600 dark:text-slate-300">
-              Import pojedynczych plików XML TERC/SIMC/ULIC, domyślne obszary i lokalne słowniki autosugestii w jednym, gęstym panelu operatorskim.
-            </p>
-          </div>
-        </div>
-        <UButton color="gray" variant="soft" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+  <div class="p-8 max-w-7xl mx-auto space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">TERYT i adresy</h1>
+        <p class="text-sm text-gray-500">Import XML, domyślne obszary i słowniki adresowe do autosugestii formularzy.</p>
       </div>
-    </section>
+      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+    </div>
 
-    <section class="grid xl:grid-cols-[1.2fr,0.8fr] gap-4">
-      <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+    <div class="grid lg:grid-cols-3 gap-6">
+      <UCard v-for="importJob in importJobs" :key="importJob.key">
         <template #header>
           <div>
-            <h2 class="text-base font-semibold text-slate-900 dark:text-white">Rejestr importu</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Kompaktowy import XML dla słowników TERC, SIMC i ULIC.</p>
+            <h2 class="font-semibold text-lg">{{ importJob.title }}</h2>
+            <p class="text-sm text-gray-500">{{ importJob.description }}</p>
           </div>
         </template>
 
-        <div class="grid gap-4 lg:grid-cols-3">
-          <section
-            v-for="importJob in importJobs"
-            :key="importJob.key"
-            class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/70"
-          >
-            <div>
-              <h3 class="text-sm font-semibold text-slate-900 dark:text-white">{{ importJob.title }}</h3>
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ importJob.description }}</p>
-            </div>
+        <form class="space-y-4" @submit.prevent="submitImport(importJob.key)">
+          <UFormGroup label="Plik XML" required>
+            <input
+              type="file"
+              accept=".xml,text/xml,application/xml"
+              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+              @change="onFileSelected(importJob.key, $event)"
+            >
+          </UFormGroup>
 
-            <form class="mt-4 space-y-3" @submit.prevent="submitImport(importJob.key)">
-              <UFormGroup label="Plik XML" required>
-                <input
-                  type="file"
-                  accept=".xml,text/xml,application/xml"
-                  class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
-                  @change="onFileSelected(importJob.key, $event)"
-                >
-              </UFormGroup>
+          <UFormGroup label="Podgląd treści">
+            <UTextarea v-model="importForms[importJob.key]" :rows="8" />
+          </UFormGroup>
 
-              <UFormGroup label="Podgląd treści">
-                <UTextarea v-model="importForms[importJob.key]" :rows="7" />
-              </UFormGroup>
-
-              <div class="flex items-center justify-between gap-3">
-                <div class="min-h-[20px] text-xs text-slate-500 dark:text-slate-400">{{ importResults[importJob.key] }}</div>
-                <UButton type="submit" color="primary" size="sm" :loading="loadingImports[importJob.key]" label="Importuj XML" />
-              </div>
-            </form>
-          </section>
-        </div>
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-h-[20px] text-sm text-gray-500">{{ importResults[importJob.key] }}</div>
+            <UButton type="submit" color="primary" :loading="loadingImports[importJob.key]" label="Importuj XML" />
+          </div>
+        </form>
       </UCard>
+    </div>
 
-      <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+    <div class="grid lg:grid-cols-3 gap-6">
+      <UCard class="lg:col-span-1">
         <template #header>
           <div>
-            <h2 class="text-base font-semibold text-slate-900 dark:text-white">Obszar domyślny</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Prefill formularzy klienta i urządzeń na bazie aktywnego obszaru.</p>
+            <h2 class="font-semibold text-lg">Domyślny obszar</h2>
+            <p class="text-sm text-gray-500">Prefill dla formularzy klienta i urządzeń.</p>
           </div>
         </template>
 
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Województwo</div>
-            <div class="mt-1 font-semibold text-slate-900 dark:text-white">{{ defaultArea?.state?.name || 'Brak województwa domyślnego' }}</div>
+        <div class="space-y-3 text-sm">
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.state?.name || 'Brak województwa domyślnego' }}</div>
+            <div class="text-gray-500">Województwo</div>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Powiat</div>
-            <div class="mt-1 font-semibold text-slate-900 dark:text-white">{{ defaultArea?.district?.name || 'Brak powiatu domyślnego' }}</div>
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.district?.name || 'Brak powiatu domyślnego' }}</div>
+            <div class="text-gray-500">Powiat</div>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Gmina</div>
-            <div class="mt-1 font-semibold text-slate-900 dark:text-white">{{ defaultArea?.commune?.name || 'Brak gminy domyślnej' }}</div>
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.commune?.name || 'Brak gminy domyślnej' }}</div>
+            <div class="text-gray-500">Gmina</div>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Miasto</div>
-            <div class="mt-1 font-semibold text-slate-900 dark:text-white">{{ defaultArea?.city?.name || 'Brak miasta domyślnego' }}</div>
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">{{ defaultArea?.city?.name || 'Brak miasta domyślnego' }}</div>
+            <div class="text-gray-500">Miasto</div>
           </div>
         </div>
       </UCard>
-    </section>
 
-    <section class="grid xl:grid-cols-2 gap-4">
-      <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: '!p-0' } }">
+      <UCard class="lg:col-span-2">
         <template #header>
-          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
             <div>
-              <h2 class="text-base font-semibold text-slate-900 dark:text-white">Rejestr gmin</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Managed/default na poziomie gminy steruje domyślnym obszarem systemu.</p>
+              <h2 class="font-semibold text-lg">Rejestr gmin</h2>
+              <p class="text-sm text-gray-500">Managed/default na poziomie gminy steruje domyślnym obszarem systemu.</p>
             </div>
             <UInput
               v-model="communeSearch"
@@ -106,7 +86,7 @@
 
         <UTable :rows="filteredCommunes" :columns="communeColumns" :loading="pendingCommunes">
           <template #district-data="{ row }">
-            <div class="text-sm text-slate-600 dark:text-slate-300">
+            <div class="text-sm text-gray-600 dark:text-gray-300">
               {{ row.district?.name || 'Brak powiatu' }}
               <span v-if="row.district?.state?.name">· {{ row.district.state.name }}</span>
             </div>
@@ -147,89 +127,90 @@
         </UTable>
       </UCard>
 
-      <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: '!p-0' } }">
-        <template #header>
-          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h2 class="text-base font-semibold text-slate-900 dark:text-white">Rejestr miast</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Wyszukiwanie lokalnego słownika i zarządzanie flagami na poziomie miasta.</p>
-            </div>
-            <div class="flex w-full flex-col gap-3 md:flex-row lg:w-auto">
-              <UInput
-                v-model="search"
-                icon="i-heroicons-magnifying-glass-20-solid"
-                placeholder="Szukaj miasta po nazwie lub TERYT..."
-                class="w-full md:w-72"
-              />
-              <USelect
-                v-model="managedFilter"
-                :options="managedOptions"
-                option-attribute="label"
-                class="w-full md:w-56"
-              />
-            </div>
+    </div>
+
+    <UCard>
+      <template #header>
+        <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+          <div>
+            <h2 class="font-semibold text-lg">Rejestr miast</h2>
+            <p class="text-sm text-gray-500">Lokalny słownik miast i flagi zarządzające adresem domyślnym.</p>
+          </div>
+          <div class="flex flex-col md:flex-row gap-3">
+            <UInput
+              v-model="search"
+              icon="i-heroicons-magnifying-glass-20-solid"
+              placeholder="Szukaj miasta po nazwie lub TERYT..."
+              class="w-full md:w-80"
+            />
+            <USelect
+              v-model="managedFilter"
+              :options="managedOptions"
+              option-attribute="label"
+              class="w-full md:w-56"
+            />
+          </div>
+        </div>
+      </template>
+
+      <UTable :rows="filteredCities" :columns="cityColumns" :loading="pendingCities">
+        <template #district-data="{ row }">
+          <div class="text-sm text-gray-600 dark:text-gray-300">{{ row.district?.name || 'Brak powiatu' }}</div>
+        </template>
+
+        <template #commune-data="{ row }">
+          <div class="text-sm text-gray-600 dark:text-gray-300">{{ row.commune?.name || 'Brak gminy' }}</div>
+        </template>
+
+        <template #flags-data="{ row }">
+          <div class="flex gap-2">
+            <UBadge :color="row.isManaged ? 'emerald' : 'gray'" variant="soft">
+              {{ row.isManaged ? 'managed' : 'unmanaged' }}
+            </UBadge>
+            <UBadge :color="row.isDefault ? 'primary' : 'gray'" variant="soft">
+              {{ row.isDefault ? 'default' : 'standard' }}
+            </UBadge>
           </div>
         </template>
 
-        <UTable :rows="filteredCities" :columns="cityColumns" :loading="pendingCities">
-          <template #district-data="{ row }">
-            <div class="text-sm text-slate-600 dark:text-slate-300">{{ row.district?.name || 'Brak powiatu' }}</div>
-          </template>
+        <template #actions-data="{ row }">
+          <div class="flex items-center gap-2">
+            <UButton
+              size="xs"
+              color="gray"
+              variant="ghost"
+              :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
+              :label="row.isManaged ? 'Zdejmij managed' : 'Oznacz managed'"
+              @click="toggleManagedCity(row)"
+            />
+            <UButton
+              size="xs"
+              color="primary"
+              variant="ghost"
+              icon="i-heroicons-star"
+              label="Ustaw domyślne"
+              :disabled="row.isDefault"
+              @click="setDefaultCity(row)"
+            />
+            <UButton
+              size="xs"
+              color="yellow"
+              variant="ghost"
+              icon="i-heroicons-arrow-path"
+              label="Synchronizuj"
+              @click="scheduleSync(row)"
+            />
+          </div>
+        </template>
+      </UTable>
+    </UCard>
 
-          <template #commune-data="{ row }">
-            <div class="text-sm text-slate-600 dark:text-slate-300">{{ row.commune?.name || 'Brak gminy' }}</div>
-          </template>
-
-          <template #flags-data="{ row }">
-            <div class="flex gap-2">
-              <UBadge :color="row.isManaged ? 'emerald' : 'gray'" variant="soft">
-                {{ row.isManaged ? 'managed' : 'unmanaged' }}
-              </UBadge>
-              <UBadge :color="row.isDefault ? 'primary' : 'gray'" variant="soft">
-                {{ row.isDefault ? 'default' : 'standard' }}
-              </UBadge>
-            </div>
-          </template>
-
-          <template #actions-data="{ row }">
-            <div class="flex items-center gap-2">
-              <UButton
-                size="xs"
-                color="gray"
-                variant="ghost"
-                :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
-                :label="row.isManaged ? 'Zdejmij managed' : 'Oznacz managed'"
-                @click="toggleManagedCity(row)"
-              />
-              <UButton
-                size="xs"
-                color="primary"
-                variant="ghost"
-                icon="i-heroicons-star"
-                label="Ustaw domyślne"
-                :disabled="row.isDefault"
-                @click="setDefaultCity(row)"
-              />
-              <UButton
-                size="xs"
-                color="yellow"
-                variant="ghost"
-                icon="i-heroicons-arrow-path"
-                label="Synchronizuj"
-                @click="scheduleSync(row)"
-              />
-            </div>
-          </template>
-        </UTable>
-      </UCard>
-    </section>
-
-    <section class="grid xl:grid-cols-[0.9fr,1.1fr] gap-4">
-      <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+    <div class="grid lg:grid-cols-2 gap-6">
+      <UCard>
         <template #header>
           <div>
-            <h2 class="text-base font-semibold text-slate-900 dark:text-white">Szybkie wyszukiwanie TERYT</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Wsparcie operatora oparte o `/api/v1/addresses/search-teryt`.</p>
+            <h2 class="font-semibold text-lg">Szybkie wyszukiwanie TERYT</h2>
+            <p class="text-sm text-gray-500">Wyniki z lokalnego słownika do weryfikacji importu i podpowiedzi.</p>
           </div>
         </template>
 
@@ -239,45 +220,45 @@
             <div
               v-for="city in addressSearchRows"
               :key="city.id"
-              class="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/70"
+              class="rounded-lg border border-gray-200 p-3 dark:border-gray-800"
             >
-              <div class="font-medium text-slate-900 dark:text-white">{{ city.name }}</div>
-              <div class="text-sm text-slate-500 dark:text-slate-400">TERYT: {{ city.terytCode || 'brak' }}</div>
+              <div class="font-medium text-gray-900 dark:text-white">{{ city.name }}</div>
+              <div class="text-sm text-gray-500">TERYT: {{ city.terytCode || 'brak' }}</div>
             </div>
-            <p v-if="search.length >= 2 && !addressSearchRows.length" class="text-sm text-slate-500 dark:text-slate-400">Brak wyników.</p>
+            <p v-if="search.length >= 2 && !addressSearchRows.length" class="text-sm text-gray-500">Brak wyników.</p>
           </div>
         </div>
       </UCard>
 
-      <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+      <UCard>
         <template #header>
           <div>
-            <h2 class="text-base font-semibold text-slate-900 dark:text-white">Podgląd ulic</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Ulice dla aktywnego miasta z rejestru, bez odrywania się od głównej tabeli.</p>
+            <h2 class="font-semibold text-lg">Podgląd ulic</h2>
+            <p class="text-sm text-gray-500">Ulice dla wybranego miasta bez odrywania się od rejestru.</p>
           </div>
         </template>
 
         <div v-if="selectedCity" class="space-y-4">
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/70">
-            <div class="font-medium text-slate-900 dark:text-white">{{ selectedCity.name }}</div>
-            <div class="text-sm text-slate-500 dark:text-slate-400">
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <div class="font-medium text-gray-900 dark:text-white">{{ selectedCity.name }}</div>
+            <div class="text-sm text-gray-500">
               {{ selectedCity.commune?.name || 'Brak gminy' }} · {{ selectedCity.district?.name || 'Brak powiatu' }}
             </div>
           </div>
-          <div class="grid gap-2 md:grid-cols-2">
+          <div class="space-y-2">
             <div
               v-for="street in streetRows"
               :key="street.id"
-              class="rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+              class="rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-800 dark:text-gray-300"
             >
               {{ street.name }}
             </div>
           </div>
-          <p v-if="!streetRows.length" class="text-sm text-slate-500 dark:text-slate-400">Brak ulic dla wybranego miasta.</p>
+          <p v-if="!streetRows.length" class="text-sm text-gray-500">Brak ulic dla wybranego miasta.</p>
         </div>
-        <p v-else class="text-sm text-slate-500 dark:text-slate-400">Wybierz miasto z tabeli, aby zobaczyć ulice.</p>
+        <p v-else class="text-sm text-gray-500">Wybierz miasto z tabeli, aby zobaczyć ulice.</p>
       </UCard>
-    </section>
+    </div>
   </div>
 </template>
 

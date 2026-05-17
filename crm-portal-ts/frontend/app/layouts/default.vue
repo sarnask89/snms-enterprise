@@ -1,43 +1,43 @@
 <template>
-  <div class="flex h-screen bg-slate-100 text-slate-950 dark:bg-slate-950 dark:text-slate-50">
-    <aside class="flex w-72 flex-col border-r border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-950/95">
-      <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+  <div class="flex h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+    <aside class="flex w-64 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
+      <div class="border-b border-gray-200 px-6 py-5 dark:border-gray-800">
         <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500/12 text-primary-600 dark:text-primary-400">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400">
             <UIcon name="i-heroicons-cpu-chip" class="h-5 w-5" />
           </div>
           <div class="min-w-0">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">CRM</div>
-            <h1 class="truncate text-lg font-semibold text-slate-900 dark:text-white">Portal operatora</h1>
+            <div class="text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-400">CRM</div>
+            <h1 class="truncate text-lg font-bold text-primary-600 dark:text-primary-400">CRM Portal</h1>
           </div>
         </div>
       </div>
 
-      <div class="flex-1 space-y-5 overflow-y-auto px-3 py-4">
+      <div class="flex-1 space-y-6 overflow-y-auto px-4 py-4">
         <section
           v-for="section in filteredSections"
           :key="section.label"
           class="space-y-2"
         >
-          <div class="px-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+          <div class="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
             {{ section.label }}
           </div>
           <UVerticalNavigation
             :links="section.links"
-            class="rounded-2xl bg-slate-50/90 p-2 ring-1 ring-slate-200/80 dark:bg-slate-900/80 dark:ring-slate-800"
+            class="space-y-1"
             :ui="{
-              base: 'group rounded-xl',
-              padding: 'px-3 py-2.5',
-              rounded: 'rounded-xl',
+              base: 'group rounded-lg',
+              padding: 'px-3 py-2',
+              rounded: 'rounded-lg',
               font: 'font-medium',
-              inactive: 'text-slate-600 hover:text-slate-950 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/90',
-              active: 'bg-primary-500/12 text-primary-700 dark:bg-primary-500/20 dark:text-primary-300'
+              inactive: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800',
+              active: 'bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300'
             }"
           />
         </section>
       </div>
 
-      <div class="border-t border-slate-200 px-3 py-3 dark:border-slate-800">
+      <div class="border-t border-gray-200 px-4 py-4 dark:border-gray-800">
         <UButton
           icon="i-heroicons-sparkles"
           label="AI Architekt Modułów"
@@ -45,28 +45,30 @@
           variant="soft"
           block
           to="/architect"
-          class="justify-center"
         />
       </div>
     </aside>
 
     <main class="flex min-w-0 flex-1 flex-col overflow-hidden">
-      <header class="flex h-14 items-center justify-between border-b border-slate-200 bg-white/90 px-5 dark:border-slate-800 dark:bg-slate-950/90">
-        <div class="min-w-0">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-            {{ currentSectionLabel }}
-          </div>
-          <div class="truncate text-sm font-semibold text-slate-900 dark:text-white">
+      <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8 dark:border-gray-800 dark:bg-gray-950">
+        <div class="min-w-0 space-y-1">
+          <UBreadcrumb
+            :links="[
+              { label: currentSectionLabel, icon: 'i-heroicons-home' },
+              { label: currentPageLabel }
+            ]"
+          />
+          <div class="text-xs text-gray-500 dark:text-gray-400">
             {{ currentPageLabel }}
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <div class="hidden text-right sm:block">
-            <div class="text-sm font-medium text-slate-900 dark:text-white">
+          <div class="hidden text-right md:block">
+            <div class="text-sm font-medium text-gray-900 dark:text-white">
               {{ currentUser?.username ?? 'Gość' }}
             </div>
-            <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+            <div class="text-[11px] uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
               {{ sessionSummary }}
             </div>
           </div>
@@ -91,13 +93,13 @@
         </div>
       </header>
 
-      <div class="flex-1 overflow-auto bg-transparent p-3 sm:p-4">
-        <div class="h-full rounded-2xl">
+      <div class="flex-1 overflow-auto bg-transparent">
+        <div class="h-full">
           <slot v-if="$route.path !== '/'" />
           <iframe
             v-else
             src="http://localhost:8081/dashboard?embed=true"
-            class="h-full w-full rounded-2xl border-none bg-white dark:bg-slate-950"
+            class="h-full w-full border-none bg-white dark:bg-gray-950"
           ></iframe>
         </div>
       </div>

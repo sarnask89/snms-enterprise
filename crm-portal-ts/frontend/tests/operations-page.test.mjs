@@ -4,17 +4,18 @@ import { readFile } from 'node:fs/promises'
 
 const pagePath = new URL('../app/pages/operations.vue', import.meta.url)
 
-test('operations page exposes a split operator console workflow', async () => {
+test('operations page keeps the calmer legacy-like workbench while preserving key workflow sections', async () => {
   const source = await readFile(pagePath, 'utf8')
 
-  assert.match(source, /Konsola operatorska/, 'page should frame operations as an operator console')
-  assert.match(source, /xl:grid-cols-\[[^\]]+\]/, 'page should use an explicit split-pane console layout')
+  assert.match(source, /Operacje sieciowe/, 'page should frame operations with the simpler network operations heading')
+  assert.match(source, /Live discovery, import i zdalne testy/, 'page should keep the operator context visible in a calmer subtitle')
+  assert.match(source, /grid lg:grid-cols-4 gap-4/, 'page should expose summary tiles in a simpler grid instead of a dense console shell')
   assert.match(source, /Profil dostępu/, 'page should expose access profile control')
   assert.match(source, /Discovery devices/, 'page should keep device scan control visible')
   assert.match(source, /Sesje discovery/, 'page should expose session workflow control')
-  assert.match(source, /Rekordy sesji/, 'page should dedicate a records pane on the right side')
-  assert.match(source, /Import i staging/, 'page should dedicate an import context pane on the right side')
-  assert.match(source, /Diagnostyka operatora/, 'page should dedicate diagnostics context on the right side')
+  assert.match(source, /Rekordy sesji/, 'page should keep session records visible')
+  assert.match(source, /Import wybranego rekordu/, 'page should keep record import workflow visible')
+  assert.match(source, /Diagnostyka lokalna i zdalna/, 'page should keep diagnostics context visible')
 })
 
 test('operations page keeps readable actions and persistent auto-import reporting', async () => {
@@ -29,6 +30,7 @@ test('operations page keeps readable actions and persistent auto-import reportin
   assert.match(source, /Wybierz/, 'page should keep record selection action readable')
   assert.match(source, /Importuj rekord/, 'page should keep import action readable')
   assert.match(source, /Wynik auto-importu/, 'page should expose persistent import reporting')
+  assert.match(source, /Auto-import ma tworzyć też taryfy i subskrypcje z rate-limit DHCP/, 'page should keep the tariff and subscription auto-import toggle visible')
 })
 
 test('operations page keeps select values string-safe for Nuxt UI controls', async () => {

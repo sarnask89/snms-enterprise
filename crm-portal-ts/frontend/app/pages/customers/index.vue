@@ -1,51 +1,37 @@
 <template>
-  <div class="space-y-4">
-    <section class="rounded-[28px] border border-slate-200 bg-white px-5 py-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-      <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div class="space-y-2">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">CRM Workbench</div>
-          <div>
-            <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">Abonenci</h1>
-            <p class="max-w-3xl text-sm text-slate-600 dark:text-slate-300">
-              Gęsty pulpit operacyjny do przeglądu bazy klientów, źródła rekordu, statusu usług i szybkich działań bez odrywania się od listy.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <UButton
-            icon="i-heroicons-user-group"
-            color="gray"
-            variant="soft"
-            label="Grupy klientów"
-            to="/customers/groups"
-          />
-          <UButton
-            icon="i-heroicons-user-plus"
-            color="primary"
-            :variant="isCreatePanelOpen ? 'solid' : 'soft'"
-            :label="isCreatePanelOpen ? 'Zwiń dodawanie' : 'Nowy abonent'"
-            @click="isCreatePanelOpen = !isCreatePanelOpen"
-          />
-        </div>
+  <div class="p-8 max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Abonenci</h1>
+        <p class="text-sm text-gray-500">Obsługa klientów, źródeł rekordów, statusów i szybkiego przejścia do dossier.</p>
       </div>
-
-      <div class="mt-4 grid gap-3 md:grid-cols-4">
-        <div
-          v-for="stat in summaryStats"
-          :key="stat.label"
-          class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70"
-        >
-          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{{ stat.label }}</div>
-          <div class="mt-1 text-xl font-semibold text-slate-900 dark:text-white">{{ stat.value }}</div>
-          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ stat.caption }}</div>
-        </div>
+      <div class="flex flex-wrap gap-2">
+        <UButton icon="i-heroicons-user-group" color="gray" variant="ghost" label="Grupy klientów" to="/customers/groups" />
+        <UButton
+          icon="i-heroicons-user-plus"
+          color="primary"
+          :variant="isCreatePanelOpen ? 'solid' : 'soft'"
+          :label="isCreatePanelOpen ? 'Ukryj formularz' : 'Nowy abonent'"
+          @click="isCreatePanelOpen = !isCreatePanelOpen"
+        />
       </div>
-    </section>
+    </div>
 
-    <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+    <div class="grid md:grid-cols-4 gap-4">
+      <div
+        v-for="stat in summaryStats"
+        :key="stat.label"
+        class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4"
+      >
+        <div class="text-sm text-gray-500">{{ stat.label }}</div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ stat.value }}</div>
+        <div class="text-xs text-gray-500 mt-1">{{ stat.caption }}</div>
+      </div>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
       <section class="space-y-4">
-        <div class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <UCard>
           <div class="grid gap-3 lg:grid-cols-[minmax(0,1.8fr)_repeat(3,minmax(0,1fr))]">
             <UInput
               v-model="search"
@@ -68,11 +54,11 @@
               placeholder="Źródło rekordu"
             />
           </div>
-        </div>
+        </UCard>
 
         <UCard
           :ui="{
-            base: 'overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950',
+            base: 'overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950',
             header: { padding: 'px-4 py-4 sm:px-5' },
             body: { padding: '!p-0' },
             footer: { padding: 'px-4 py-4 sm:px-5' }
@@ -81,9 +67,9 @@
           <template #header>
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <h2 class="text-base font-semibold text-slate-900 dark:text-white">Lista operacyjna abonentów</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400">
-                  Źródło danych, status i dossier klienta są dostępne bez przechodzenia przez dodatkowe okna.
+                <h2 class="text-base font-semibold text-gray-900 dark:text-white">Lista abonentów</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Ulepszone filtry i akcje zostają, ale układ wraca do prostszego widoku roboczego.
                 </p>
               </div>
               <UBadge color="gray" variant="soft" class="w-fit">
@@ -98,13 +84,13 @@
             :loading="pending"
             :ui="{
               td: { padding: 'px-4 py-3 align-top' },
-              th: { padding: 'px-4 py-3 text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400' }
+              th: { padding: 'px-4 py-3 text-[11px] uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400' }
             }"
           >
             <template #displayName-data="{ row }">
               <div class="min-w-[15rem]">
-                <div class="font-medium text-slate-900 dark:text-white">{{ row.displayName }}</div>
-                <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <div class="font-medium text-gray-900 dark:text-white">{{ row.displayName }}</div>
+                <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <span>{{ row.customerCode }}</span>
                   <span>•</span>
                   <span>{{ row.email || 'brak email' }}</span>
@@ -119,7 +105,7 @@
             </template>
 
             <template #phone-data="{ row }">
-              <span class="text-sm text-slate-600 dark:text-slate-300">{{ row.phone || 'brak' }}</span>
+              <span class="text-sm text-gray-600 dark:text-gray-300">{{ row.phone || 'brak' }}</span>
             </template>
 
             <template #source-data="{ row }">
@@ -127,7 +113,7 @@
                 <UBadge :color="row.isAutoGenerated ? 'amber' : 'green'" variant="soft" size="xs">
                   {{ row.isAutoGenerated ? 'auto-import' : 'manualny' }}
                 </UBadge>
-                <div class="text-xs text-slate-500 dark:text-slate-400">
+                <div class="text-xs text-gray-500 dark:text-gray-400">
                   {{ row.autoImportSource || (row.isAutoGenerated ? 'sync zewnętrzny' : 'operator') }}
                 </div>
               </div>
@@ -142,7 +128,7 @@
                 >
                   {{ statusLabel(row.status) }}
                 </UBadge>
-                <div class="text-xs text-slate-500 dark:text-slate-400">Status operacyjny</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Status operacyjny</div>
               </div>
             </template>
 
@@ -178,7 +164,7 @@
 
           <template #footer>
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <span class="text-sm text-slate-500 dark:text-slate-400">
+              <span class="text-sm text-gray-500 dark:text-gray-400">
                 Pokazano {{ customers?.length || 0 }} z {{ total || customers?.length || 0 }} abonentów
               </span>
               <UPagination
@@ -192,11 +178,11 @@
       </section>
 
       <aside class="space-y-4">
-        <section class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <UCard>
           <div class="flex items-center justify-between gap-3">
             <div>
-              <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Create Flow</div>
-              <h2 class="mt-1 text-base font-semibold text-slate-900 dark:text-white">Szybkie dodanie abonenta</h2>
+              <div class="text-sm text-gray-500">Formularz</div>
+              <h2 class="mt-1 text-base font-semibold text-gray-900 dark:text-white">Szybkie dodanie abonenta</h2>
             </div>
             <UButton
               color="gray"
@@ -208,8 +194,8 @@
             />
           </div>
 
-          <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Formularz jest przypięty do workbencha, dzięki czemu operator może dopisać rekord bez wychodzenia z kontekstu listy.
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Funkcja zostaje, ale w spokojniejszym, prostszym panelu bocznym.
           </p>
 
           <form
@@ -253,8 +239,8 @@
               </UFormGroup>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
-              Rekord trafi od razu do CRM workbench i odziedziczy status <span class="font-semibold text-slate-700 dark:text-slate-200">aktywny</span>.
+            <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+              Rekord trafi od razu na listę i odziedziczy status <span class="font-semibold text-gray-700 dark:text-gray-200">aktywny</span>.
             </div>
 
             <div class="flex justify-end gap-2">
@@ -262,21 +248,21 @@
               <UButton type="submit" color="primary" label="Zapisz" :loading="isSaving" />
             </div>
           </form>
-        </section>
+        </UCard>
 
-        <section class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Skróty</div>
-          <div class="mt-3 space-y-3 text-sm text-slate-600 dark:text-slate-300">
-            <div class="rounded-2xl border border-slate-200 px-3 py-3 dark:border-slate-800">
-              <div class="font-medium text-slate-900 dark:text-white">Źródło rekordu</div>
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Filtruj auto-import i ręczne wpisy bez schodzenia do detailu.</p>
+        <UCard>
+          <div class="text-sm text-gray-500">Skróty operatora</div>
+          <div class="mt-3 space-y-3 text-sm text-gray-600 dark:text-gray-300">
+            <div class="rounded-lg border border-gray-200 px-3 py-3 dark:border-gray-800">
+              <div class="font-medium text-gray-900 dark:text-white">Źródło rekordu</div>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Filtruj auto-import i ręczne wpisy bez schodzenia do detailu.</p>
             </div>
-            <div class="rounded-2xl border border-slate-200 px-3 py-3 dark:border-slate-800">
-              <div class="font-medium text-slate-900 dark:text-white">Czytelne akcje</div>
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Dossier, edycja i usunięcie są jawnie opisane w każdym wierszu.</p>
+            <div class="rounded-lg border border-gray-200 px-3 py-3 dark:border-gray-800">
+              <div class="font-medium text-gray-900 dark:text-white">Czytelne akcje</div>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Dossier, edycja i usunięcie są jawnie opisane w każdym wierszu.</p>
             </div>
           </div>
-        </section>
+        </UCard>
       </aside>
     </div>
   </div>

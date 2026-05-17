@@ -1,17 +1,14 @@
 <template>
-  <div class="space-y-4">
-    <section class="rounded-[28px] border border-slate-200 bg-white px-5 py-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-      <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div class="space-y-2">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Dossier abonenta</div>
-          <div>
-            <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">
-              {{ headerTitle }}
-            </h1>
-            <p class="max-w-3xl text-sm text-slate-600 dark:text-slate-300">
-              Gęsty profil CRM z danymi klienta, kanałami kontaktu, rozliczeniami, źródłem danych oraz urządzeniami w jednym operacyjnym widoku.
-            </p>
-          </div>
+  <div class="p-8 max-w-6xl mx-auto space-y-6">
+    <section class="space-y-4">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ headerTitle }}
+          </h1>
+          <p class="text-sm text-gray-500">
+            Pełny profil klienta, dane rozliczeniowe, adresy TERYT i urządzenia w jednym widoku roboczym.
+          </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <UBadge :color="form.customerType === 'company' ? 'blue' : 'gray'" variant="soft">
@@ -27,26 +24,22 @@
         </div>
       </div>
 
-      <div class="mt-4 grid gap-3 md:grid-cols-4">
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Kod klienta</div>
-          <div class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{{ form.customerCode || 'Brak kodu' }}</div>
-          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Identyfikator dossier</div>
+      <div class="grid gap-3 md:grid-cols-4">
+        <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
+          <div class="text-sm text-gray-500">Kod klienta</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{{ form.customerCode || 'Brak kodu' }}</div>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Kanały kontaktu</div>
-          <div class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{{ contactChannelCount }}</div>
-          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Aktywne ścieżki kontaktu</div>
+        <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
+          <div class="text-sm text-gray-500">Kanały kontaktu</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{{ contactChannelCount }}</div>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Urządzenia</div>
-          <div class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{{ customer?.devices?.length || 0 }}</div>
-          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Powiązane instalacje</div>
+        <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
+          <div class="text-sm text-gray-500">Urządzenia</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{{ customer?.devices?.length || 0 }}</div>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/70">
-          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Źródło danych</div>
-          <div class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{{ sourceSummary }}</div>
-          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Pochodzenie rekordu</div>
+        <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
+          <div class="text-sm text-gray-500">Źródło danych</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{{ sourceSummary }}</div>
         </div>
       </div>
     </section>
@@ -61,9 +54,9 @@
       class="mb-6"
     />
 
-    <form v-if="customer" class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]" @submit.prevent="saveCustomer">
+    <form v-if="customer" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]" @submit.prevent="saveCustomer">
       <section class="space-y-4">
-        <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+        <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
           <template #header>
             <div>
               <h2 class="text-base font-semibold text-slate-900 dark:text-white">Dane podstawowe</h2>
@@ -123,7 +116,7 @@
           </div>
         </UCard>
 
-        <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+        <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
           <template #header>
             <div>
               <h2 class="text-base font-semibold text-slate-900 dark:text-white">Kanały kontaktu</h2>
@@ -167,7 +160,7 @@
           </div>
         </UCard>
 
-        <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+        <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
           <template #header>
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
@@ -250,7 +243,7 @@
 
         </UCard>
 
-        <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+        <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
           <template #header>
             <div>
               <h2 class="text-base font-semibold text-slate-900 dark:text-white">Umowa i rozliczenia</h2>
@@ -285,7 +278,7 @@
           </UFormGroup>
         </UCard>
 
-        <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+        <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
           <template #header>
             <div>
               <h2 class="text-base font-semibold text-slate-900 dark:text-white">Zgody i notatki</h2>
@@ -303,7 +296,7 @@
           </UFormGroup>
         </UCard>
 
-        <UCard :ui="{ base: 'rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
+        <UCard :ui="{ base: 'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950', header: { padding: 'px-5 py-4' }, body: { padding: 'px-5 py-5' } }">
           <template #header>
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
@@ -320,7 +313,7 @@
               <div
                 v-for="device in customer.devices"
                 :key="device.id"
-                class="rounded-2xl border border-slate-200 p-3 dark:border-slate-800"
+                class="rounded-lg border border-gray-200 p-3 dark:border-gray-800"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div>
@@ -339,7 +332,7 @@
               <p v-else class="text-sm text-slate-500 dark:text-slate-400">Brak powiązanych urządzeń.</p>
             </div>
 
-            <div class="rounded-[24px] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/70">
+            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/70">
               <div>
                 <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Edytor instalacji</div>
                 <h3 class="mt-1 text-base font-semibold text-slate-900 dark:text-white">Adres instalacyjny urządzenia</h3>
