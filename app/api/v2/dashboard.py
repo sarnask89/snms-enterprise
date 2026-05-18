@@ -9,21 +9,24 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard"], dependencies=[Depend
 
 @router.get("/stats")
 def get_dashboard_stats(db: Session = Depends(get_db)):
-    n_customers = db.scalar(select(func.count()).select_from(models.Customer)) or 0
-    n_nodes = db.scalar(select(func.count()).select_from(models.NetNode)) or 0
-    n_devices = db.scalar(select(func.count()).select_from(models.NetDevice)) or 0
-    n_tickets_open = (
-        db.scalar(
+    # Optimized: Batching multiple count queries into a single SELECT statement using scalar subqueries.
+    # This reduces database round-trips and improves performance.
+    stats = db.execute(
+        select(
+            select(func.count()).select_from(models.Customer).scalar_subquery(),
+            select(func.count()).select_from(models.NetNode).scalar_subquery(),
+            select(func.count()).select_from(models.NetDevice).scalar_subquery(),
             select(func.count()).select_from(models.SupportTicket).where(
                 models.SupportTicket.status == models.TicketStatus.open
-            )
+            ).scalar_subquery(),
         )
-        or 0
-    )
+    ).one()
+
+    n_customers, n_nodes, n_devices, n_tickets_open = stats
 
     return {
-        "customers": n_customers,
-        "nodes": n_nodes,
-        "devices": n_devices,
-        "tickets": n_tickets_open,
+        "customers": n_customers or 0,
+        "nodes": n_nodes or 0,
+        "devices": n_devices or 0,
+        "tickets": n_tickets_open or 0,
     }
