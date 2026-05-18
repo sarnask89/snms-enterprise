@@ -28,8 +28,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTariffEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTariff(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj taryfę" @click="openTariffEdit(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń taryfę" @click="removeTariff(row)" />
           </div>
         </template>
       </UTable>
@@ -59,8 +59,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openInvoiceEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeInvoice(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj dokument" @click="openInvoiceEdit(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń dokument" @click="removeInvoice(row)" />
           </div>
         </template>
       </UTable>
@@ -90,7 +90,7 @@
                 <div class="text-sm text-gray-500">{{ payment.customer?.customerCode }} · {{ payment.amount.toFixed(2) }} PLN</div>
                 <div class="text-xs text-gray-400">Co {{ payment.intervalMonths }} mies. · dzień {{ payment.dayOfMonth }}</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removePayment(payment)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń płatność" @click="removePayment(payment)" />
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@
                 <div class="text-sm text-gray-500">{{ entry.customer?.customerCode }} · {{ entry.amount.toFixed(2) }} PLN</div>
                 <UBadge :color="entry.kind === 'credit' ? 'emerald' : 'yellow'" variant="soft" size="xs">{{ entry.kind }}</UBadge>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeLedgerEntry(entry)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń wpis" @click="removeLedgerEntry(entry)" />
             </div>
           </div>
         </div>
@@ -147,7 +147,7 @@
                 <div class="font-medium">{{ receipt.description }}</div>
                 <div class="text-sm text-gray-500">{{ receipt.customer?.customerCode || 'Bez klienta' }} · {{ receipt.amount.toFixed(2) }} PLN</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCashReceipt(receipt)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń paragon" @click="removeCashReceipt(receipt)" />
             </div>
           </div>
         </div>
@@ -159,12 +159,12 @@
         <template #header><h3 class="text-lg font-bold">{{ tariffForm.id ? 'Edytuj taryfę' : 'Dodaj taryfę' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveTariff">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormField label="Nazwa" required><UInput v-model="tariffForm.name" /></UFormField>
-            <UFormField label="Cena miesięczna" required><UInput v-model="tariffForm.monthlyPrice" type="number" step="0.01" /></UFormField>
+            <UFormField label="Nazwa" required><UInput v-model="tariffForm.name" placeholder="np. Internet 100 Mbps" /></UFormField>
+            <UFormField label="Cena miesięczna" required><UInput v-model="tariffForm.monthlyPrice" type="number" step="0.01" placeholder="0.00" /></UFormField>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormField label="Download (Mbps)"><UInput v-model="tariffForm.speedDownMbps" type="number" /></UFormField>
-            <UFormField label="Upload (Mbps)"><UInput v-model="tariffForm.speedUpMbps" type="number" /></UFormField>
+            <UFormField label="Download (Mbps)"><UInput v-model="tariffForm.speedDownMbps" type="number" placeholder="np. 100" /></UFormField>
+            <UFormField label="Upload (Mbps)"><UInput v-model="tariffForm.speedUpMbps" type="number" placeholder="np. 10" /></UFormField>
           </div>
           <UFormField label="Opis"><UTextarea v-model="tariffForm.description" :data="3" /></UFormField>
           <label class="flex items-center gap-3 text-sm">
@@ -184,8 +184,8 @@
         <template #header><h3 class="text-lg font-bold">{{ invoiceForm.id ? 'Edytuj dokument' : 'Dodaj dokument' }}</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveInvoice">
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormField label="Numer" required><UInput v-model="invoiceForm.number" /></UFormField>
-            <UFormField label="Kwota brutto" required><UInput v-model="invoiceForm.amount" type="number" step="0.01" /></UFormField>
+            <UFormField label="Numer" required><UInput v-model="invoiceForm.number" placeholder="np. FV/2024/001" /></UFormField>
+            <UFormField label="Kwota brutto" required><UInput v-model="invoiceForm.amount" type="number" step="0.01" placeholder="0.00" /></UFormField>
           </div>
           <div class="grid md:grid-cols-3 gap-4">
             <UFormField label="Klient"><USelect v-model="invoiceForm.customerId" :items="customerOptions" label-key="label" /></UFormField>
@@ -206,9 +206,9 @@
         <template #header><h3 class="text-lg font-bold">Dodaj płatność stałą</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="savePayment">
           <UFormField label="Klient"><USelect v-model="paymentForm.customerId" :items="customerOptions" label-key="label" /></UFormField>
-          <UFormField label="Nazwa" required><UInput v-model="paymentForm.name" /></UFormField>
+          <UFormField label="Nazwa" required><UInput v-model="paymentForm.name" placeholder="np. Abonament" /></UFormField>
           <div class="grid md:grid-cols-3 gap-4">
-            <UFormField label="Kwota"><UInput v-model="paymentForm.amount" type="number" step="0.01" /></UFormField>
+            <UFormField label="Kwota"><UInput v-model="paymentForm.amount" type="number" step="0.01" placeholder="0.00" /></UFormField>
             <UFormField label="Interwał (mies.)"><UInput v-model="paymentForm.intervalMonths" type="number" /></UFormField>
             <UFormField label="Dzień miesiąca"><UInput v-model="paymentForm.dayOfMonth" type="number" /></UFormField>
           </div>
@@ -226,9 +226,9 @@
         <template #header><h3 class="text-lg font-bold">Dodaj wpis do księgi</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveLedgerEntry">
           <UFormField label="Klient"><USelect v-model="ledgerForm.customerId" :items="customerOptions" label-key="label" /></UFormField>
-          <UFormField label="Opis" required><UInput v-model="ledgerForm.description" /></UFormField>
+          <UFormField label="Opis" required><UInput v-model="ledgerForm.description" placeholder="np. Korekta" /></UFormField>
           <div class="grid md:grid-cols-2 gap-4">
-            <UFormField label="Kwota"><UInput v-model="ledgerForm.amount" type="number" step="0.01" /></UFormField>
+            <UFormField label="Kwota"><UInput v-model="ledgerForm.amount" type="number" step="0.01" placeholder="0.00" /></UFormField>
             <UFormField label="Rodzaj"><USelect v-model="ledgerForm.kind" :items="ledgerKindOptions" label-key="label" /></UFormField>
           </div>
           <div class="flex justify-end gap-2">
@@ -244,8 +244,8 @@
         <template #header><h3 class="text-lg font-bold">Dodaj wpis kasy</h3></template>
         <form class="space-y-4 p-4" @submit.prevent="saveCashReceipt">
           <UFormField label="Klient"><USelect v-model="cashForm.customerId" :items="customerOptionsWithEmpty" label-key="label" /></UFormField>
-          <UFormField label="Opis" required><UInput v-model="cashForm.description" /></UFormField>
-          <UFormField label="Kwota"><UInput v-model="cashForm.amount" type="number" step="0.01" /></UFormField>
+          <UFormField label="Opis" required><UInput v-model="cashForm.description" placeholder="np. Wpłata gotówkowa" /></UFormField>
+          <UFormField label="Kwota"><UInput v-model="cashForm.amount" type="number" step="0.01" placeholder="0.00" /></UFormField>
           <div class="flex justify-end gap-2">
             <UButton color="gray" variant="ghost" label="Anuluj" @click="isCashModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingCash" label="Zapisz" />
