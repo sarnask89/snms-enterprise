@@ -1,0 +1,3 @@
+## 2025-02-13 - Accessibility of icon-only buttons in Polish interface
+**Learning:** The application's list and table views frequently employ icon-only buttons for primary actions like editing or deleting records. Without `aria-label` or `title` attributes, these buttons are completely inaccessible to screen reader users and provide no semantic context in the DOM. This is a recurring pattern across multiple pages (Finances, Customer Devices, etc.).
+**Action:** Proactively audit and add descriptive `aria-label` attributes (in Polish) to all `UButton` components that lack a visible `label`. Consider adding `UTooltip` once confirmed as part of the project's design system to enhance visual UX for all users.
