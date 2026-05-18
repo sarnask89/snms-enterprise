@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "lint": "eslint .",
     "preview": "nuxt preview",
-    "test": "find tests -name '*.test.mjs' | xargs node --test",
+    "test": "node --test",
     "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
