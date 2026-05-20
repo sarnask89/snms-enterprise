@@ -2,6 +2,7 @@
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+const UTooltip = resolveComponent('UTooltip')
 
 const toast = useToast()
 
@@ -505,12 +506,15 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton
-                icon="i-lucide-ellipsis-vertical"
-                color="neutral"
-                variant="ghost"
-                class="ml-auto"
-              />
+              <UTooltip text="Więcej opcji">
+                <UButton
+                  icon="i-lucide-ellipsis-vertical"
+                  color="neutral"
+                  variant="ghost"
+                  class="ml-auto"
+                  aria-label="Więcej opcji"
+                />
+              </UTooltip>
             </UDropdownMenu>
           </div>
         </template>
@@ -540,7 +544,7 @@ const confirmDelete = async () => {
               <USelectMenu v-model="form.customerId" :items="customerOptions" value-key="value" label-key="label" />
             </UFormField>
             <UFormField label="Hostname" name="hostname" required>
-              <UInput v-model="form.hostname" />
+              <UInput v-model="form.hostname" placeholder="np. cpe-klient-42" />
             </UFormField>
           </div>
 
@@ -558,10 +562,10 @@ const confirmDelete = async () => {
 
           <div class="grid gap-4 md:grid-cols-3">
             <UFormField label="IP" name="ipAddress">
-              <UInput v-model="form.ipAddress" />
+              <UInput v-model="form.ipAddress" placeholder="np. 10.0.50.100" />
             </UFormField>
             <UFormField label="MAC" name="macAddress">
-              <UInput v-model="form.macAddress" />
+              <UInput v-model="form.macAddress" placeholder="np. 00:11:22:33:44:55" />
             </UFormField>
             <UFormField label="Login" name="login">
               <UInput v-model="form.login" />
