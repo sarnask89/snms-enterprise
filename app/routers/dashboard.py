@@ -17,27 +17,32 @@ router = APIRouter(dependencies=[Depends(verify_session)])
 @router.get("/", response_class=HTMLResponse)
 def dashboard_home(request: Request, db: Session = Depends(get_db)):
     try:
-        n_customers = db.scalar(select(func.count()).select_from(models.Customer)) or 0
-        n_invoices = db.scalar(select(func.count()).select_from(models.Invoice)) or 0
-        n_tariffs = db.scalar(select(func.count()).select_from(models.Tariff)) or 0
-        n_tickets_open = (
-            db.scalar(
-                select(func.count()).select_from(models.SupportTicket).where(
-                    models.SupportTicket.status == models.TicketStatus.open
-                )
-            )
-            or 0
+        # Optimization: Batch multiple count queries into a single SELECT using scalar subqueries to reduce DB round-trips
+        stats_stmt = select(
+            select(func.count()).select_from(models.Customer).scalar_subquery(),
+            select(func.count()).select_from(models.Invoice).scalar_subquery(),
+            select(func.count()).select_from(models.Tariff).scalar_subquery(),
+            select(func.count()).select_from(models.SupportTicket).where(
+                models.SupportTicket.status == models.TicketStatus.open
+            ).scalar_subquery(),
+            select(func.count()).select_from(models.Document).scalar_subquery(),
+            select(func.count()).select_from(models.CustomerDevice).scalar_subquery(),
+            select(func.count()).select_from(models.Subscription).where(
+                models.Subscription.active == True  # noqa: E712
+            ).scalar_subquery(),
         )
-        n_documents = db.scalar(select(func.count()).select_from(models.Document)) or 0
-        n_nodes = db.scalar(select(func.count()).select_from(models.CustomerDevice)) or 0
-        n_subs = (
-            db.scalar(
-                select(func.count()).select_from(models.Subscription).where(
-                    models.Subscription.active == True  # noqa: E712
-                )
-            )
-            or 0
-        )
+        stats = db.execute(stats_stmt).one()
+        n_customers, n_invoices, n_tariffs, n_tickets_open, n_documents, n_nodes, n_subs = stats
+
+        # Ensure fallback to 0 for any None values
+        n_customers = n_customers or 0
+        n_invoices = n_invoices or 0
+        n_tariffs = n_tariffs or 0
+        n_tickets_open = n_tickets_open or 0
+        n_documents = n_documents or 0
+        n_nodes = n_nodes or 0
+        n_subs = n_subs or 0
+
         # Fetch active alarms
         active_alarms = db.scalars(
             select(models.MonitorTrigger).where(models.MonitorTrigger.last_status == "PROBLEM").order_by(models.MonitorTrigger.last_change.desc())
