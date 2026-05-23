@@ -2,6 +2,7 @@
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+const UTooltip = resolveComponent('UTooltip')
 
 const toast = useToast()
 
@@ -419,7 +420,16 @@ const confirmDelete = async () => {
         </template>
 
         <template #right>
-          <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" @click="refresh" />
+          <UTooltip text="Odśwież listę">
+            <UButton
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-refresh-cw"
+              label="Odśwież"
+              aria-label="Odśwież listę"
+              @click="refresh"
+            />
+          </UTooltip>
         </template>
       </UDashboardNavbar>
 
@@ -505,12 +515,15 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton
-                icon="i-lucide-ellipsis-vertical"
-                color="neutral"
-                variant="ghost"
-                class="ml-auto"
-              />
+              <UTooltip text="Więcej opcji">
+                <UButton
+                  icon="i-lucide-ellipsis-vertical"
+                  color="neutral"
+                  variant="ghost"
+                  class="ml-auto"
+                  aria-label="Więcej opcji"
+                />
+              </UTooltip>
             </UDropdownMenu>
           </div>
         </template>
@@ -540,7 +553,7 @@ const confirmDelete = async () => {
               <USelectMenu v-model="form.customerId" :items="customerOptions" value-key="value" label-key="label" />
             </UFormField>
             <UFormField label="Hostname" name="hostname" required>
-              <UInput v-model="form.hostname" />
+              <UInput v-model="form.hostname" placeholder="np. cpe-klient-123" />
             </UFormField>
           </div>
 
@@ -558,10 +571,10 @@ const confirmDelete = async () => {
 
           <div class="grid gap-4 md:grid-cols-3">
             <UFormField label="IP" name="ipAddress">
-              <UInput v-model="form.ipAddress" />
+              <UInput v-model="form.ipAddress" placeholder="np. 10.0.50.100" />
             </UFormField>
             <UFormField label="MAC" name="macAddress">
-              <UInput v-model="form.macAddress" />
+              <UInput v-model="form.macAddress" placeholder="np. AA:BB:CC:DD:EE:FF" />
             </UFormField>
             <UFormField label="Login" name="login">
               <UInput v-model="form.login" />
