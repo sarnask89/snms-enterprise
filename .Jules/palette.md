@@ -1,7 +1,5 @@
-## 2026-05-23 - Accessibility Enhancements for Icon-only Buttons
-**Learning:** Icon-only buttons (like ellipsis for actions) lack accessible names for screen readers and visual guidance for mouse users. The project uses Nuxt UI v4 where tooltips are implemented via a `UTooltip` component wrapping the target.
-**Action:** Always wrap icon-only `UButton` components with `UTooltip` and provide an `aria-label` in Polish (e.g., 'Więcej opcji').
-
-## 2026-05-23 - Form Guidance with Polish Placeholders
-**Learning:** Technical input fields (IP, MAC, Hostname) benefit from realistic examples to guide user input. The project follows a convention of using the "np." prefix for these examples.
-**Action:** Add `placeholder` attributes to technical `UInput` fields with realistic Polish examples (e.g., 'np. 10.0.50.100').
+## 2026-05-23 - Micro-UX and Accessibility Patterns in Nuxt UI v4
+**Learning:**
+1. **Icon-only Buttons:** Buttons using only icons (e.g., ellipsis for actions) lack accessible names for screen readers and visual guidance for mouse users. Wrapping them in `UTooltip` and providing an `aria-label` in Polish (e.g., 'Więcej opcji') significantly improves usability.
+2. **Technical Input Guidance:** Fields like IP, MAC, and Hostname are prone to entry errors. Providing realistic Polish examples prefixed with "np." as placeholders (e.g., 'np. 10.0.50.100') reduces cognitive load and guides users toward the correct format.
+**Action:** Always provide `aria-label` and `UTooltip` for icon-only components, and use descriptive, localized placeholders for technical form fields.
