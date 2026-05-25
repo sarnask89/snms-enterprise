@@ -39,9 +39,15 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openEditModal(row)" />
-            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" @click="toggleSubscription(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeSubscription(row)" />
+            <UTooltip text="Edytuj">
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj" @click="openEditModal(row)" />
+            </UTooltip>
+            <UTooltip text="Zmień status">
+              <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" aria-label="Zmień status" @click="toggleSubscription(row)" />
+            </UTooltip>
+            <UTooltip text="Usuń">
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń" @click="removeSubscription(row)" />
+            </UTooltip>
           </div>
         </template>
       </UTable>
@@ -106,6 +112,10 @@
 </template>
 
 <script setup>
+const UBadge = resolveComponent('UBadge')
+const UButton = resolveComponent('UButton')
+const UTooltip = resolveComponent('UTooltip')
+
 const columns = [
   { accessorKey: 'customer', header: 'Klient' },
   { accessorKey: 'tariff', header: 'Taryfa' },

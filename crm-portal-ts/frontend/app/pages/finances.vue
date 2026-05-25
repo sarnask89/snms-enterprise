@@ -28,8 +28,12 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTariffEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTariff(row)" />
+            <UTooltip text="Edytuj">
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj" @click="openTariffEdit(row)" />
+            </UTooltip>
+            <UTooltip text="Usuń">
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń" @click="removeTariff(row)" />
+            </UTooltip>
           </div>
         </template>
       </UTable>
@@ -59,8 +63,12 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openInvoiceEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeInvoice(row)" />
+            <UTooltip text="Edytuj">
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj" @click="openInvoiceEdit(row)" />
+            </UTooltip>
+            <UTooltip text="Usuń">
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń" @click="removeInvoice(row)" />
+            </UTooltip>
           </div>
         </template>
       </UTable>
@@ -90,7 +98,9 @@
                 <div class="text-sm text-gray-500">{{ payment.customer?.customerCode }} · {{ payment.amount.toFixed(2) }} PLN</div>
                 <div class="text-xs text-gray-400">Co {{ payment.intervalMonths }} mies. · dzień {{ payment.dayOfMonth }}</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removePayment(payment)" />
+              <UTooltip text="Usuń">
+                <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń" @click="removePayment(payment)" />
+              </UTooltip>
             </div>
           </div>
         </div>
@@ -119,7 +129,9 @@
                 <div class="text-sm text-gray-500">{{ entry.customer?.customerCode }} · {{ entry.amount.toFixed(2) }} PLN</div>
                 <UBadge :color="entry.kind === 'credit' ? 'emerald' : 'yellow'" variant="soft" size="xs">{{ entry.kind }}</UBadge>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeLedgerEntry(entry)" />
+              <UTooltip text="Usuń">
+                <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń" @click="removeLedgerEntry(entry)" />
+              </UTooltip>
             </div>
           </div>
         </div>
@@ -147,7 +159,9 @@
                 <div class="font-medium">{{ receipt.description }}</div>
                 <div class="text-sm text-gray-500">{{ receipt.customer?.customerCode || 'Bez klienta' }} · {{ receipt.amount.toFixed(2) }} PLN</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCashReceipt(receipt)" />
+              <UTooltip text="Usuń">
+                <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń" @click="removeCashReceipt(receipt)" />
+              </UTooltip>
             </div>
           </div>
         </div>
@@ -257,6 +271,9 @@
 </template>
 
 <script setup>
+const UButton = resolveComponent('UButton')
+const UTooltip = resolveComponent('UTooltip')
+
 const tariffColumns = [
   { accessorKey: 'name', header: 'Nazwa' },
   { accessorKey: 'monthlyPrice', header: 'Cena / mies.' },

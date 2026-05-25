@@ -2,6 +2,7 @@
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+const UTooltip = resolveComponent('UTooltip')
 
 const toast = useToast()
 
@@ -505,12 +506,15 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton
-                icon="i-lucide-ellipsis-vertical"
-                color="neutral"
-                variant="ghost"
-                class="ml-auto"
-              />
+              <UTooltip text="Więcej opcji">
+                <UButton
+                  icon="i-lucide-ellipsis-vertical"
+                  color="neutral"
+                  variant="ghost"
+                  class="ml-auto"
+                  aria-label="Więcej opcji"
+                />
+              </UTooltip>
             </UDropdownMenu>
           </div>
         </template>
