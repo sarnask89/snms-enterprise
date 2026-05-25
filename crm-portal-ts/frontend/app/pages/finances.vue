@@ -271,6 +271,7 @@
 </template>
 
 <script setup>
+const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UTooltip = resolveComponent('UTooltip')
 
