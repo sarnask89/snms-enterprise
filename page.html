@@ -1,0 +1,1194 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:8000...
+* Connected to 127.0.0.1 (127.0.0.1) port 8000
+> GET /customer-devices HTTP/1.1
+> Host: 127.0.0.1:8000
+> User-Agent: curl/8.5.0
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< date: Tue, 26 May 2026 01:38:20 GMT
+< server: uvicorn
+< content-length: 70227
+< content-type: text/html; charset=utf-8
+< vary: Cookie
+< set-cookie: session=eyJ1c2VyX2lkIjogIjEifQ==.ahT5jQ.r2g3skrImdEA0j28N2q_SnUBxnE; path=/; Max-Age=1209600; httponly; samesite=lax
+<
+{ [49920 bytes data]
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="pl">
+...
+<body class="min-h-screen bg-background font-sans antialiased text-foreground selection:bg-primary/10"
+      x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false', currentPath: window.location.pathname }"
+      @popstate.window="currentPath = window.location.pathname"
+      hx-on:htmx:pushedIntoHistory="currentPath = window.location.pathname"
+      hx-indicator="#global-loader">
+
+  <div id="global-loader" class="htmx-indicator"></div>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- SHADCN SIDEBAR -->
+
+<aside class="sidebar-container shrink-0 flex flex-col transition-all duration-300 border-r"
+       :class="sidebarOpen ? 'w-64' : 'w-16'">
+
+  <div class="flex h-14 items-center border-b px-4 gap-3 overflow-hidden bg-muted/10">
+    <img src="/static/images/Light/NetCoreOps_light_logo_sidebar.png?v=1.1" alt="NetCoreOps" class="h-8 w-auto shrink-0 block dark:hidden">
+    <img src="/static/images/Dark/NetCoreOps_dark_logo_sidebar.png?v=1.1" alt="NetCoreOps" class="h-8 w-auto shrink-0 hidden dark:block">
+  </div>
+
+  <div class="flex-1 overflow-y-auto no-scrollbar p-2 py-4 space-y-6">
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Start
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/"
+           hx-get="/"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/' || ('/' !== '/' && currentPath.startsWith('/'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Pulpit' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_dashboard.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_dashboard.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Pulpit</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Klienci
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/customers"
+           hx-get="/customers"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/customers'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/customers' || ('/customers' !== '/' && currentPath.startsWith('/customers'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Lista abonentów' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_users.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_users.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Lista abonentów</span>
+        </a>
+
+        <a href="/customers/new"
+           hx-get="/customers/new"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/customers/new'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/customers/new' || ('/customers/new' !== '/' && currentPath.startsWith('/customers/new'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Nowy abonent' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_users.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_users.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Nowy abonent</span>
+        </a>
+
+        <a href="/customer-groups"
+           hx-get="/customer-groups"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/customer-groups'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/customer-groups' || ('/customer-groups' !== '/' && currentPath.startsWith('/customer-groups'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Grupy abonentów' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_users.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_users.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Grupy abonentów</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Infrastruktura
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/net-nodes"
+           hx-get="/net-nodes"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/net-nodes'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/net-nodes' || ('/net-nodes' !== '/' && currentPath.startsWith('/net-nodes'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Węzły sieci' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_network.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_network.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Węzły sieci</span>
+        </a>
+
+        <a href="/net-nodes/topology"
+           hx-get="/net-nodes/topology"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/net-nodes/topology'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/net-nodes/topology' || ('/net-nodes/topology' !== '/' && currentPath.startsWith('/net-nodes/topology'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Mapa topologii' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_topology.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_topology.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Mapa topologii</span>
+        </a>
+
+        <a href="/customer-devices"
+           hx-get="/customer-devices"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/customer-devices'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/customer-devices' || ('/customer-devices' !== '/' && currentPath.startsWith('/customer-devices'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Urządzenia klientów' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_cpe.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_cpe.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Urządzenia klientów</span>
+        </a>
+
+        <a href="/net-devices"
+           hx-get="/net-devices"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/net-devices'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/net-devices' || ('/net-devices' !== '/' && currentPath.startsWith('/net-devices'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Katalog osprzętu' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_inventory.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_inventory.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Katalog osprzętu</span>
+        </a>
+
+        <a href="/device-groups"
+           hx-get="/device-groups"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/device-groups'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/device-groups' || ('/device-groups' !== '/' && currentPath.startsWith('/device-groups'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Grupy urządzeń' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Grupy urządzeń</span>
+        </a>
+
+        <a href="/admin/monitoring"
+           hx-get="/admin/monitoring"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/monitoring'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/monitoring' || ('/admin/monitoring' !== '/' && currentPath.startsWith('/admin/monitoring'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Monitorowanie' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Monitorowanie</span>
+        </a>
+
+        <a href="/admin/network-tools"
+           hx-get="/admin/network-tools"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/network-tools'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/network-tools' || ('/admin/network-tools' !== '/' && currentPath.startsWith('/admin/network-tools'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Narzędzia i Skanery' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Narzędzia i Skanery</span>
+        </a>
+
+        <a href="/admin/monitoring/gpu"
+           hx-get="/admin/monitoring/gpu"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/monitoring/gpu'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/monitoring/gpu' || ('/admin/monitoring/gpu' !== '/' && currentPath.startsWith('/admin/monitoring/gpu'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Infrastruktura AI' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Infrastruktura AI</span>
+        </a>
+
+        <a href="/admin/monitor-config"
+           hx-get="/admin/monitor-config"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/monitor-config'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/monitor-config' || ('/admin/monitor-config' !== '/' && currentPath.startsWith('/admin/monitor-config'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Szablony NMS' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_settings.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_settings.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Szablony NMS</span>
+        </a>
+
+        <a href="/diagnostics"
+           hx-get="/diagnostics"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/diagnostics'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/diagnostics' || ('/diagnostics' !== '/' && currentPath.startsWith('/diagnostics'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Diagnostyka' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Diagnostyka</span>
+        </a>
+
+        <a href="/admin/discovery"
+           hx-get="/admin/discovery"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/discovery'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/discovery' || ('/admin/discovery' !== '/' && currentPath.startsWith('/admin/discovery'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Odkrywanie Mikrotik' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_internet.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_internet.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Odkrywanie Mikrotik</span>
+        </a>
+
+        <a href="/admin/olt-discovery"
+           hx-get="/admin/olt-discovery"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/olt-discovery'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/olt-discovery' || ('/admin/olt-discovery' !== '/' && currentPath.startsWith('/admin/olt-discovery'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Odkrywanie OLT' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Odkrywanie OLT</span>
+        </a>
+
+        <a href="/admin/pit"
+           hx-get="/admin/pit"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/pit'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/pit' || ('/admin/pit' !== '/' && currentPath.startsWith('/admin/pit'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'PIT UKE' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">PIT UKE</span>
+        </a>
+
+        <a href="/admin/passport/map"
+           hx-get="/admin/passport/map"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/passport/map'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/passport/map' || ('/admin/passport/map' !== '/' && currentPath.startsWith('/admin/passport/map'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Paszportyzacja' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Paszportyzacja</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Sieci IP
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/ip-networks"
+           hx-get="/ip-networks"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/ip-networks'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/ip-networks' || ('/ip-networks' !== '/' && currentPath.startsWith('/ip-networks'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Adresacja IPv4' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_wifi.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_wifi.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Adresacja IPv4</span>
+        </a>
+
+        <a href="/ip-networks/usage"
+           hx-get="/ip-networks/usage"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/ip-networks/usage'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/ip-networks/usage' || ('/ip-networks/usage' !== '/' && currentPath.startsWith('/ip-networks/usage'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Wykorzystanie IP' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_performance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_performance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Wykorzystanie IP</span>
+        </a>
+
+        <a href="/addresses"
+           hx-get="/addresses"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/addresses'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/addresses' || ('/addresses' !== '/' && currentPath.startsWith('/addresses'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Baza adresowa' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Baza adresowa</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Finanse
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/subscriptions"
+           hx-get="/subscriptions"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/subscriptions'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/subscriptions' || ('/subscriptions' !== '/' && currentPath.startsWith('/subscriptions'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Usługi / Subskrypcje' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_services.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_services.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Usługi / Subskrypcje</span>
+        </a>
+
+        <a href="/finances/tariffs"
+           hx-get="/finances/tariffs"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/finances/tariffs'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/finances/tariffs' || ('/finances/tariffs' !== '/' && currentPath.startsWith('/finances/tariffs'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Plany taryfowe' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_tariffs.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_tariffs.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Plany taryfowe</span>
+        </a>
+
+        <a href="/finances/invoices"
+           hx-get="/finances/invoices"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/finances/invoices'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/finances/invoices' || ('/finances/invoices' !== '/' && currentPath.startsWith('/finances/invoices'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Faktury i Dokumenty' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_billing.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_billing.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Faktury i Dokumenty</span>
+        </a>
+
+        <a href="/finances/payments"
+           hx-get="/finances/payments"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/finances/payments'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/finances/payments' || ('/finances/payments' !== '/' && currentPath.startsWith('/finances/payments'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Płatności cykliczne' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Płatności cykliczne</span>
+        </a>
+
+        <a href="/finances/balance"
+           hx-get="/finances/balance"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/finances/balance'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/finances/balance' || ('/finances/balance' !== '/' && currentPath.startsWith('/finances/balance'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Księga i Bilans' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Księga i Bilans</span>
+        </a>
+
+        <a href="/finances/cash"
+           hx-get="/finances/cash"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/finances/cash'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/finances/cash' || ('/finances/cash' !== '/' && currentPath.startsWith('/finances/cash'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Kasa i Paragony' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Kasa i Paragony</span>
+        </a>
+
+        <a href="/bulk/invoicing"
+           hx-get="/bulk/invoicing"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/bulk/invoicing'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/bulk/invoicing' || ('/bulk/invoicing' !== '/' && currentPath.startsWith('/bulk/invoicing'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Masowe fakturowanie' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_billing.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_billing.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Masowe fakturowanie</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Helpdesk
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/helpdesk/tickets"
+           hx-get="/helpdesk/tickets"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/helpdesk/tickets'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/helpdesk/tickets' || ('/helpdesk/tickets' !== '/' && currentPath.startsWith('/helpdesk/tickets'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Zgłoszenia (Tickets)' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_helpdesk.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_helpdesk.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Zgłoszenia (Tickets)</span>
+        </a>
+
+        <a href="/helpdesk/queues"
+           hx-get="/helpdesk/queues"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/helpdesk/queues'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/helpdesk/queues' || ('/helpdesk/queues' !== '/' && currentPath.startsWith('/helpdesk/queues'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Kolejki helpdesk' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_helpdesk.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_helpdesk.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Kolejki helpdesk</span>
+        </a>
+
+        <a href="/helpdesk/reports"
+           hx-get="/helpdesk/reports"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/helpdesk/reports'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/helpdesk/reports' || ('/helpdesk/reports' !== '/' && currentPath.startsWith('/helpdesk/reports'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Raporty helpdesk' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_helpdesk.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_helpdesk.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Raporty helpdesk</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Dokumenty
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/documents"
+           hx-get="/documents"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/documents'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/documents' || ('/documents' !== '/' && currentPath.startsWith('/documents'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Repozytorium dokumentów' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Repozytorium dokumentów</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        TERYT / Adresy
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/teryt/browse"
+           hx-get="/teryt/browse"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/teryt/browse'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/teryt/browse' || ('/teryt/browse' !== '/' && currentPath.startsWith('/teryt/browse'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Przeglądaj TERYT' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_location.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_location.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Przeglądaj TERYT</span>
+        </a>
+
+        <a href="/teryt/cities"
+           hx-get="/teryt/cities"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/teryt/cities'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/teryt/cities' || ('/teryt/cities' !== '/' && currentPath.startsWith('/teryt/cities'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Słownik miejscowości' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_location.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_location.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Słownik miejscowości</span>
+        </a>
+
+        <a href="/admin/teryt-sync"
+           hx-get="/admin/teryt-sync"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/teryt-sync'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/teryt-sync' || ('/admin/teryt-sync' !== '/' && currentPath.startsWith('/admin/teryt-sync'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Synchronizacja GUS' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_location.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_location.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Synchronizacja GUS</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Konfiguracja
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/config/divisions"
+           hx-get="/config/divisions"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/config/divisions'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/config/divisions' || ('/config/divisions' !== '/' && currentPath.startsWith('/config/divisions'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Oddziały / Firmy' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_settings.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_settings.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Oddziały / Firmy</span>
+        </a>
+
+        <a href="/config/netdev-catalog"
+           hx-get="/config/netdev-catalog"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/config/netdev-catalog'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/config/netdev-catalog' || ('/config/netdev-catalog' !== '/' && currentPath.startsWith('/config/netdev-catalog'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Katalog osprzętu' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_settings.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_settings.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Katalog osprzętu</span>
+        </a>
+
+        <a href="/config/network-hosts"
+           hx-get="/config/network-hosts"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/config/network-hosts'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/config/network-hosts' || ('/config/network-hosts' !== '/' && currentPath.startsWith('/config/network-hosts'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Pule IP (Hosty)' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_settings.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_settings.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Pule IP (Hosty)</span>
+        </a>
+
+        <a href="/config/number-plans"
+           hx-get="/config/number-plans"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/config/number-plans'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/config/number-plans' || ('/config/number-plans' !== '/' && currentPath.startsWith('/config/number-plans'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Plany numeracji' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_settings.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_settings.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Plany numeracji</span>
+        </a>
+
+        <a href="/config/vat-rates"
+           hx-get="/config/vat-rates"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/config/vat-rates'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/config/vat-rates' || ('/config/vat-rates' !== '/' && currentPath.startsWith('/config/vat-rates'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Stawki VAT' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_settings.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_settings.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Stawki VAT</span>
+        </a>
+
+        <a href="/snms"
+           hx-get="/snms"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/snms'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/snms' || ('/snms' !== '/' && currentPath.startsWith('/snms'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Obiekty SNMS' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Obiekty SNMS</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        System
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/admin/users"
+           hx-get="/admin/users"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/users'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/users' || ('/admin/users' !== '/' && currentPath.startsWith('/admin/users'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Użytkownicy' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Użytkownicy</span>
+        </a>
+
+        <a href="/admin/menu-access"
+           hx-get="/admin/menu-access"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/menu-access'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/menu-access' || ('/admin/menu-access' !== '/' && currentPath.startsWith('/admin/menu-access'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Role i Uprawnienia' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Role i Uprawnienia</span>
+        </a>
+
+        <a href="/admin/user-groups"
+           hx-get="/admin/user-groups"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/user-groups'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/user-groups' || ('/admin/user-groups' !== '/' && currentPath.startsWith('/admin/user-groups'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Grupy personelu' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Grupy personelu</span>
+        </a>
+
+        <a href="/builder"
+           hx-get="/builder"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/builder'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/builder' || ('/builder' !== '/' && currentPath.startsWith('/builder'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Kreator Modułów' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Kreator Modułów</span>
+        </a>
+
+        <a href="/search"
+           hx-get="/search"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/search'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/search' || ('/search' !== '/' && currentPath.startsWith('/search'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Szukaj globalnie' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Szukaj globalnie</span>
+        </a>
+
+        <a href="/reports"
+           hx-get="/reports"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/reports'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/reports' || ('/reports' !== '/' && currentPath.startsWith('/reports'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Generator raportów' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Generator raportów</span>
+        </a>
+
+        <a href="/admin/audit-logs"
+           hx-get="/admin/audit-logs"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/audit-logs'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/audit-logs' || ('/admin/audit-logs' !== '/' && currentPath.startsWith('/admin/audit-logs'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Dziennik zdarzeń' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_logs.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_logs.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Dziennik zdarzeń</span>
+        </a>
+
+        <a href="/admin/backups"
+           hx-get="/admin/backups"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/backups'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/backups' || ('/admin/backups' !== '/' && currentPath.startsWith('/admin/backups'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Kopie zapasowe' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_database.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_database.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Kopie zapasowe</span>
+        </a>
+
+        <a href="/admin/reload"
+           hx-get="/admin/reload"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/admin/reload'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/admin/reload' || ('/admin/reload' !== '/' && currentPath.startsWith('/admin/reload'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Przeładowanie cache' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Przeładowanie cache</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <h4 x-show="sidebarOpen" x-transition.opacity
+          class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+        Ustawienia
+      </h4>
+      <div class="grid gap-1">
+
+        <a href="/auth/change-password"
+           hx-get="/auth/change-password"
+           hx-push-url="true"
+           hx-target="#main-area"
+           hx-swap="outerHTML show:window:top"
+           @click="currentPath = '/auth/change-password'"
+           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground group"
+           :class="(currentPath === '/auth/change-password' || ('/auth/change-password' !== '/' && currentPath.startsWith('/auth/change-password'))) ? 'bg-accent text-accent-foreground font-bold shadow-sm' : 'text-muted-foreground'"
+           :title="!sidebarOpen ? 'Zmiana hasła' : ''">
+
+
+          <div class="w-4 h-4 shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/static/images/Light/NetCoreOps_light_icon_maintenance.png?v=1.1" class="w-full h-full object-contain dark:hidden">
+            <img src="/static/images/Dark/NetCoreOps_dark_icon_maintenance.png?v=1.1" class="w-full h-full object-contain hidden dark:block">
+          </div>
+          <span class="truncate" x-show="sidebarOpen">Zmiana hasła</span>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="p-4 border-t bg-muted/5">
+    <div class="flex items-center gap-3">
+      <div class="flex-1 min-w-0" x-show="sidebarOpen">
+        <p class="text-[11px] font-bold truncate leading-none mb-1">admin</p>
+
+        <p class="text-[9px] text-muted-foreground uppercase leading-none">admin</p>
+
+      </div>
+      <button onclick="toggleTheme()" class="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent text-muted-foreground transition-colors shrink-0">
+        <i data-lucide="moon" class="dark:hidden w-3.5 h-3.5"></i>
+        <i data-lucide="sun" class="hidden dark:block w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  </div>
+</aside>
+
+
+
+
+    <!-- MAIN AREA -->
+    <div id="main-area" class="flex flex-col flex-1 min-w-0 overflow-hidden bg-background">
+
+
+<header class="flex h-14 items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-6 shrink-0 text-slate-900 dark:text-white shadow-lg z-50">
+  <div class="flex items-center gap-6">
+    <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)"
+            class="h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white transition-colors">
+      <i data-lucide="menu" class="w-4 h-4"></i>
+    </button>
+
+    <nav class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+
+
+        <a href="/" class="text-slate-500 hover:text-primary transition-colors">
+          Pulpit
+        </a>
+
+
+          <i data-lucide="chevron-right" class="w-3 h-3 opacity-20"></i>
+
+        <a href="/customer-devices" class="text-slate-500 hover:text-primary transition-colors">
+          Customer devices
+        </a>
+
+
+          <i data-lucide="chevron-right" class="w-3 h-3 opacity-20"></i>
+
+        <a href="/customer-devices" class="text-slate-900 dark:text-white">
+          Komputery / urządzenia klientów
+        </a>
+
+    </nav>
+
+    <!-- Global Search Bar -->
+    <div class="relative group max-w-md w-64 lg:w-96 ml-4" x-data="{ open: false }">
+      <div class="relative">
+        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-3.5 h-3.5 group-focus-within:text-primary transition-colors"></i>
+        <input type="text"
+               name="q"
+               placeholder="Szukaj klienta, IP, MAC..."
+               class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-9 pr-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-500"
+               hx-get="/api/search"
+               hx-trigger="keyup changed delay:500ms"
+               hx-target="#search-results"
+               @focus="open = true"
+               @click.away="open = false"
+        >
+      </div>
+      <div id="search-results" x-show="open" x-cloak></div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <!-- Notifications -->
+    <div class="relative group" x-data="{ open: false }">
+      <button @click="open = !open"
+              class="h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white transition-colors relative">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <div hx-get="/admin/stats/notifications-count" hx-trigger="load, every 60s" hx-swap="outerHTML"></div>
+      </button>
+
+      <!-- Notifications Dropdown -->
+      <div x-show="open" @click.away="open = false" x-cloak
+           class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden">
+        <div class="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+            <h5 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Powiadomienia</h5>
+            <a href="/admin/notifications" class="text-[10px] font-bold text-primary hover:underline">Wszystkie</a>
+        </div>
+        <div class="max-h-96 overflow-y-auto" hx-get="/admin/stats/notifications-list" hx-trigger="intersect once">
+            <div class="p-8 text-center">
+                <i class="fas fa-spinner fa-spin t100 70227  100 70227    0     0   570k      0 --:--:-- --:--:-- --:--:--  571k
+* Connection #0 to host 127.0.0.1 left intact
+ext-slate-500 mb-2"></i>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ładowanie...</p>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="/logout" class="inline-flex items-center justify-center rounded-md text-xs font-bold text-rose-400 hover:bg-rose-500/10 h-9 px-4 transition-colors">
+      <i data-lucide="log-out" class="mr-2 w-3.5 h-3.5"></i> Wyloguj
+    </a>
+  </div>
+</header>
+
+
+
+      <main class="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar scroll-smooth">
+...
+    </div>
+
+
+
+  </div>
+...
+</body>
+</html>
