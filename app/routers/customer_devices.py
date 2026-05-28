@@ -186,10 +186,7 @@ def node_list(
 ):
     stmt = (
         select(models.CustomerDevice)
-        .options(
-            joinedload(models.CustomerDevice.customer),
-            joinedload(models.CustomerDevice.subscriptions).joinedload(models.Subscription.tariff)
-        )
+        .options(joinedload(models.CustomerDevice.customer))
         .order_by(models.CustomerDevice.id)
     )
     if q and q.strip():
@@ -208,18 +205,23 @@ def node_list(
         if cust_ids:
             parts.append(models.CustomerDevice.customer_id.in_(cust_ids))
         stmt = stmt.where(or_(*parts))
-    
-    # Use unique() for joinedload with collections
-    rows = list(db.scalars(stmt).unique().all())
+
+    rows = list(db.scalars(stmt).all())
 
     # Build maps for template compatibility (to avoid changing template logic)
     customers = {n.customer_id: n.customer for n in rows if n.customer}
+
+    # Fetch active subscriptions for displayed nodes using a second optimized query
+    # This avoids Cartesian product issues and loading all inactive subscriptions.
+    node_ids = [n.id for n in rows]
     subs = {}
-    for n in rows:
-        # Find active subscription from preloaded collection
-        active_sub = next((s for s in n.subscriptions if s.active), None)
-        if active_sub:
-            subs[n.id] = active_sub
+    if node_ids:
+        active_subs = db.scalars(
+            select(models.Subscription)
+            .options(joinedload(models.Subscription.tariff))
+            .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active == True)  # noqa: E712
+        ).all()
+        subs = {s.device_id: s for s in active_subs}
 
     return render(
         request,
