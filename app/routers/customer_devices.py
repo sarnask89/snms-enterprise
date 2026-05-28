@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from sqlalchemy import or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -63,7 +63,7 @@ def _render_node_form(
     if device:
         active_sub = db.scalar(
             select(models.Subscription)
-            .where(models.Subscription.device_id == device.id, models.Subscription.active == True)
+            .where(models.Subscription.device_id == device.id, models.Subscription.active.is_(True))
         )
 
     groups = list(db.scalars(select(models.CustomerDeviceGroup).order_by(models.CustomerDeviceGroup.name)).all())
@@ -120,8 +120,16 @@ def node_add_alias():
 @router.get("/reports", response_class=HTMLResponse)
 def node_reports(request: Request, db: Session = Depends(get_db)):
     """Raport zbiorczy — widok do druku i eksportu."""
-    rows = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    stmt = (
+        select(models.CustomerDevice)
+        .options(joinedload(models.CustomerDevice.customer))
+        .order_by(models.CustomerDevice.hostname)
+    )
+    rows = list(db.scalars(stmt).all())
+    # Note: templates/customer_devices/reports.html uses customers.get(n.customer_id)
+    # To avoid changing the template, we still provide a dict, but built from loaded objects
+    # to avoid the redundant full-table query.
+    customers = {n.customer_id: n.customer for n in rows if n.customer}
     return render(
         request,
         "customer_devices/reports.html",
@@ -135,13 +143,17 @@ def node_reports(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/reports.csv")
 def node_reports_csv(db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    cust = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    stmt = (
+        select(models.CustomerDevice)
+        .options(joinedload(models.CustomerDevice.customer))
+        .order_by(models.CustomerDevice.hostname)
+    )
+    rows = list(db.scalars(stmt).all())
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["id", "hostname", "klient_kod", "ip", "mac", "status"])
     for n in rows:
-        c = cust.get(n.customer_id)
+        c = n.customer
         w.writerow(
             [
                 n.id,
@@ -172,7 +184,11 @@ def node_list(
     db: Session = Depends(get_db),
     q: str | None = Query(None, description="hostname, IP, MAC lub kod klienta"),
 ):
-    stmt = select(models.CustomerDevice).order_by(models.CustomerDevice.id)
+    stmt = (
+        select(models.CustomerDevice)
+        .options(joinedload(models.CustomerDevice.customer))
+        .order_by(models.CustomerDevice.id)
+    )
     if q and q.strip():
         term = f"%{q.strip()}%"
         cust_ids = [
@@ -189,16 +205,21 @@ def node_list(
         if cust_ids:
             parts.append(models.CustomerDevice.customer_id.in_(cust_ids))
         stmt = stmt.where(or_(*parts))
+
     rows = list(db.scalars(stmt).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    
-    # Pobierz aktywne subskrypcje dla wyświetlanych węzłów
+
+    # Build maps for template compatibility (to avoid changing template logic)
+    customers = {n.customer_id: n.customer for n in rows if n.customer}
+
+    # Fetch active subscriptions for displayed nodes using a second optimized query
+    # This avoids Cartesian product issues and loading all inactive subscriptions.
     node_ids = [n.id for n in rows]
     subs = {}
     if node_ids:
         active_subs = db.scalars(
             select(models.Subscription)
-            .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active == True)
+            .options(joinedload(models.Subscription.tariff))
+            .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active.is_(True))
         ).all()
         subs = {s.device_id: s for s in active_subs}
 
@@ -222,8 +243,10 @@ def node_sessions_list(request: Request, db: Session = Depends(get_db)):
             select(models.CustomerDeviceSession).order_by(models.CustomerDeviceSession.started_at.desc())
         ).all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
+    # Optimized: Fetch all nodes once and build map from that, instead of joinedload + extra fetch
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
+    nodes = {n.id: n for n in all_nodes}
+
     return render(
         request,
         "customer_devices/sessions.html",
@@ -285,8 +308,10 @@ def node_notices_list(request: Request, db: Session = Depends(get_db)):
     rows = list(
         db.scalars(select(models.CustomerDeviceNotice).order_by(models.CustomerDeviceNotice.created_at.desc())).all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
+    # Optimized: Use the all_nodes list to build the lookup map
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
+    nodes = {n.id: n for n in all_nodes}
+
     return render(
         request,
         "customer_devices/notices.html",
