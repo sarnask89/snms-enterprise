@@ -63,7 +63,7 @@ def _render_node_form(
     if device:
         active_sub = db.scalar(
             select(models.Subscription)
-            .where(models.Subscription.device_id == device.id, models.Subscription.active == True)
+            .where(models.Subscription.device_id == device.id, models.Subscription.active.is_(True))
         )
 
     groups = list(db.scalars(select(models.CustomerDeviceGroup).order_by(models.CustomerDeviceGroup.name)).all())
@@ -219,7 +219,7 @@ def node_list(
         active_subs = db.scalars(
             select(models.Subscription)
             .options(joinedload(models.Subscription.tariff))
-            .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active == True)  # noqa: E712
+            .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active.is_(True))
         ).all()
         subs = {s.device_id: s for s in active_subs}
 
@@ -238,16 +238,14 @@ def node_list(
 
 @router.get("/sessions", response_class=HTMLResponse)
 def node_sessions_list(request: Request, db: Session = Depends(get_db)):
-    stmt = (
-        select(models.CustomerDeviceSession)
-        .options(joinedload(models.CustomerDeviceSession.device))
-        .order_by(models.CustomerDeviceSession.started_at.desc())
+    rows = list(
+        db.scalars(
+            select(models.CustomerDeviceSession).order_by(models.CustomerDeviceSession.started_at.desc())
+        ).all()
     )
-    rows = list(db.scalars(stmt).all())
-
-    # Map and list for template (all_nodes used for new session select)
-    nodes = {s.device_id: s.device for s in rows if s.device}
+    # Optimized: Fetch all nodes once and build map from that, instead of joinedload + extra fetch
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
+    nodes = {n.id: n for n in all_nodes}
 
     return render(
         request,
@@ -307,15 +305,12 @@ def node_session_delete(session_id: int, db: Session = Depends(get_db)):
 
 @router.get("/notices", response_class=HTMLResponse)
 def node_notices_list(request: Request, db: Session = Depends(get_db)):
-    stmt = (
-        select(models.CustomerDeviceNotice)
-        .options(joinedload(models.CustomerDeviceNotice.device))
-        .order_by(models.CustomerDeviceNotice.created_at.desc())
+    rows = list(
+        db.scalars(select(models.CustomerDeviceNotice).order_by(models.CustomerDeviceNotice.created_at.desc())).all()
     )
-    rows = list(db.scalars(stmt).all())
-
-    nodes = {n.device_id: n.device for n in rows if n.device}
+    # Optimized: Use the all_nodes list to build the lookup map
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
+    nodes = {n.id: n for n in all_nodes}
 
     return render(
         request,
