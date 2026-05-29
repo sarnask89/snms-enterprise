@@ -5,8 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY app ./app
-COPY nuxt.config.ts ./
+COPY . .
 RUN npm run build
 
 FROM node:20-bookworm-slim AS runtime
