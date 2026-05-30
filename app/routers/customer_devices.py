@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from sqlalchemy import or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -120,28 +120,38 @@ def node_add_alias():
 @router.get("/reports", response_class=HTMLResponse)
 def node_reports(request: Request, db: Session = Depends(get_db)):
     """Raport zbiorczy — widok do druku i eksportu."""
-    rows = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    # Optimization: Use joinedload for customer to avoid O(N) redundant fetches
+    stmt = (
+        select(models.CustomerDevice)
+        .options(joinedload(models.CustomerDevice.customer))
+        .order_by(models.CustomerDevice.hostname)
+    )
+    rows = list(db.scalars(stmt).unique().all())
     return render(
         request,
         "customer_devices/reports.html",
         {
             "title": "Raporty — komputery / urządzenia klientów",
             "nodes": rows,
-            "customers": customers,
+            "customers": {},  # No longer needed, template uses n.customer
         },
     )
 
 
 @router.get("/reports.csv")
 def node_reports_csv(db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    cust = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    # Optimization: Use joinedload for customer to avoid O(N) redundant fetches
+    stmt = (
+        select(models.CustomerDevice)
+        .options(joinedload(models.CustomerDevice.customer))
+        .order_by(models.CustomerDevice.hostname)
+    )
+    rows = list(db.scalars(stmt).unique().all())
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["id", "hostname", "klient_kod", "ip", "mac", "status"])
     for n in rows:
-        c = cust.get(n.customer_id)
+        c = n.customer
         w.writerow(
             [
                 n.id,
@@ -172,7 +182,12 @@ def node_list(
     db: Session = Depends(get_db),
     q: str | None = Query(None, description="hostname, IP, MAC lub kod klienta"),
 ):
-    stmt = select(models.CustomerDevice).order_by(models.CustomerDevice.id)
+    # Optimization: Use joinedload for customer to avoid O(N) redundant fetches
+    stmt = (
+        select(models.CustomerDevice)
+        .options(joinedload(models.CustomerDevice.customer))
+        .order_by(models.CustomerDevice.id)
+    )
     if q and q.strip():
         term = f"%{q.strip()}%"
         cust_ids = [
@@ -189,17 +204,18 @@ def node_list(
         if cust_ids:
             parts.append(models.CustomerDevice.customer_id.in_(cust_ids))
         stmt = stmt.where(or_(*parts))
-    rows = list(db.scalars(stmt).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    rows = list(db.scalars(stmt).unique().all())
     
     # Pobierz aktywne subskrypcje dla wyświetlanych węzłów
     node_ids = [n.id for n in rows]
     subs = {}
     if node_ids:
+        # Optimization: Use joinedload for tariff to avoid N+1 queries in template
         active_subs = db.scalars(
             select(models.Subscription)
+            .options(joinedload(models.Subscription.tariff))
             .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active == True)
-        ).all()
+        ).unique().all()
         subs = {s.device_id: s for s in active_subs}
 
     return render(
@@ -208,7 +224,7 @@ def node_list(
         {
             "title": "Komputery / urządzenia klientów",
             "nodes": rows,
-            "customers": customers,
+            "customers": {},  # No longer needed, template uses n.customer
             "subscriptions": subs,
             "search_q": q or "",
         },
@@ -217,12 +233,14 @@ def node_list(
 
 @router.get("/sessions", response_class=HTMLResponse)
 def node_sessions_list(request: Request, db: Session = Depends(get_db)):
+    # Optimization: Use joinedload for device to avoid O(N) redundant fetches in template
     rows = list(
         db.scalars(
-            select(models.CustomerDeviceSession).order_by(models.CustomerDeviceSession.started_at.desc())
-        ).all()
+            select(models.CustomerDeviceSession)
+            .options(joinedload(models.CustomerDeviceSession.device))
+            .order_by(models.CustomerDeviceSession.started_at.desc())
+        ).unique().all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
     return render(
         request,
@@ -230,7 +248,7 @@ def node_sessions_list(request: Request, db: Session = Depends(get_db)):
         {
             "title": "Sesje — komputery / urządzenia klientów",
             "sessions": rows,
-            "nodes_map": nodes,
+            "nodes_map": {},  # No longer needed, template uses s.device
             "all_nodes": all_nodes,
         },
     )
@@ -282,10 +300,14 @@ def node_session_delete(session_id: int, db: Session = Depends(get_db)):
 
 @router.get("/notices", response_class=HTMLResponse)
 def node_notices_list(request: Request, db: Session = Depends(get_db)):
+    # Optimization: Use joinedload for device to avoid O(N) redundant fetches in template
     rows = list(
-        db.scalars(select(models.CustomerDeviceNotice).order_by(models.CustomerDeviceNotice.created_at.desc())).all()
+        db.scalars(
+            select(models.CustomerDeviceNotice)
+            .options(joinedload(models.CustomerDeviceNotice.device))
+            .order_by(models.CustomerDeviceNotice.created_at.desc())
+        ).unique().all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
     return render(
         request,
@@ -293,7 +315,7 @@ def node_notices_list(request: Request, db: Session = Depends(get_db)):
         {
             "title": "Powiadomienia — komputery",
             "notices": rows,
-            "nodes_map": nodes,
+            "nodes_map": {},  # No longer needed, template uses x.device
             "all_nodes": all_nodes,
         },
     )

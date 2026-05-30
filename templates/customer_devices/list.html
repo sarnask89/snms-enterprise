@@ -41,9 +41,10 @@
                         <td class="p-4 align-middle">
                             <div class="font-bold text-xs">{{ n.name }}</div>
                             <div class="text-[10px] text-muted-foreground">
-                                {% if n.customer %}
+                                {% set c = n.customer %}
+                                {% if c %}
                                 <a href="/customers/{{ n.customer_id }}/edit" class="hover:underline text-primary">
-                                    {{ n.customer.last_name }} {{ n.customer.first_name }}
+                                    {{ c.last_name }} {{ c.first_name }}
                                 </a>
                                 {% else %}
                                 nieprzypisany

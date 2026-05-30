@@ -9,7 +9,7 @@
   <thead><tr><th>Hostname</th><th>Klient</th><th>IP</th><th>MAC</th><th>Status</th></tr></thead>
   <tbody>
     {% for n in nodes %}
-    {% set c = customers.get(n.customer_id) %}
+    {% set c = n.customer %}
     <tr>
       <td>{{ n.hostname }}</td>
       <td>{% if c %}{{ c.customer_code }} — {{ c.last_name }}{% else %}{{ n.customer_id }}{% endif %}</td>
