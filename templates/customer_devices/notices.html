@@ -22,7 +22,7 @@
   <tbody>
     {% for x in notices %}
     <tr>
-      <td>{% set n = nodes_map.get(x.node_id) %}{{ n.hostname if n else x.node_id }}</td>
+      <td>{% set n = x.device %}{{ n.hostname if n else x.device_id }}</td>
       <td>{{ x.title }}</td>
       <td>{{ x.valid_until or "—" }}</td>
       <td>{{ "tak" if x.is_active else "nie" }}</td>

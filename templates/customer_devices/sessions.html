@@ -23,7 +23,7 @@
   <tbody>
     {% for s in sessions %}
     <tr>
-      <td>{% set n = nodes_map.get(s.node_id) %}{{ n.hostname if n else s.node_id }}</td>
+      <td>{% set n = s.device %}{{ n.hostname if n else s.device_id }}</td>
       <td>{{ s.started_at }}</td>
       <td>{{ s.ended_at or "—" }}</td>
       <td>{{ s.ip_address or "—" }}</td>
