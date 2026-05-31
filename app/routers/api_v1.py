@@ -32,11 +32,22 @@ def get_customer(customer_id: int, db: Session = Depends(get_db)):
 
 @router.get("/dashboard/stats")
 def get_dashboard_stats(db: Session = Depends(get_db)):
-    customer_count = db.scalar(select(func.count(models.Customer.id))) or 0
-    node_count = db.scalar(select(func.count(models.NetNode.id))) or 0
-    device_count = db.scalar(select(func.count(models.NetDevice.id))) or 0
-    ticket_count = db.scalar(select(func.count(models.SupportTicket.id))) or 0
-    
+    # Performance: Batch multiple count queries into a single SELECT statement using scalar subqueries.
+    # This reduces database round-trips from 4 down to 1.
+    counts_res = db.execute(
+        select(
+            select(func.count()).select_from(models.Customer).scalar_subquery(),
+            select(func.count()).select_from(models.NetNode).scalar_subquery(),
+            select(func.count()).select_from(models.NetDevice).scalar_subquery(),
+            select(func.count()).select_from(models.SupportTicket).scalar_subquery(),
+        )
+    ).fetchone()
+
+    if counts_res:
+        customer_count, node_count, device_count, ticket_count = counts_res
+    else:
+        customer_count = node_count = device_count = ticket_count = 0
+
     return {
         "customers": customer_count,
         "nodes": node_count,
