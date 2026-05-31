@@ -39,7 +39,6 @@ def dashboard_home(request: Request, db: Session = Depends(get_db)):
             n_customers, n_invoices, n_tariffs, n_tickets_open, n_documents, n_nodes, n_subs = counts_res
         else:
             n_customers = n_invoices = n_tariffs = n_tickets_open = n_documents = n_nodes = n_subs = 0
-
         # Fetch active alarms
         active_alarms = db.scalars(
             select(models.MonitorTrigger).where(models.MonitorTrigger.last_status == "PROBLEM").order_by(models.MonitorTrigger.last_change.desc())
