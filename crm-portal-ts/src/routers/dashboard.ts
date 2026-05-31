@@ -21,23 +21,13 @@ async function countOrZero<T>(entity: { new (): T }) {
 
 router.get("/stats", async (_req, res) => {
     try {
-        // Performance: Batch multiple count queries into a single database round-trip.
-        // We use a raw query here for maximum efficiency across different entity types.
-        const results = await AppDataSource.query(`
-            SELECT
-                (SELECT COUNT(*) FROM customers) as customers,
-                (SELECT COUNT(*) FROM customer_devices) as customer_devices,
-                (SELECT COUNT(*) FROM net_devices) as net_devices,
-                (SELECT COUNT(*) FROM net_nodes) as nodes,
-                (SELECT COUNT(*) FROM support_tickets) as tickets
-        `);
-
-        const stats = results[0] || {};
-        const customers = Number(stats.customers || 0);
-        const customerDevices = Number(stats.customer_devices || 0);
-        const netDevices = Number(stats.net_devices || 0);
-        const nodes = Number(stats.nodes || 0);
-        const tickets = Number(stats.tickets || 0);
+        const [customers, customerDevices, netDevices, nodes, tickets] = await Promise.all([
+            countOrZero(Customer),
+            countOrZero(CustomerDevice),
+            countOrZero(NetDevice),
+            countOrZero(NetNode),
+            countOrZero(SupportTicket),
+        ]);
 
         res.json({
             customers,
