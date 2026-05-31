@@ -171,3 +171,8 @@ def validate_local_teryt_data() -> None:
         logger.error(f"Failed to validate local TERYT data: {e}")
     finally:
         db.close()
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    init_all()
