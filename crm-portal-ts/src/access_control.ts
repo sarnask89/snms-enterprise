@@ -18,7 +18,10 @@ export type AccessPolicy = {
 };
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
-const AUTH_ENABLED = process.env.AUTH_ENABLED !== "false";
+
+function isAuthEnabled() {
+    return process.env.AUTH_ENABLED !== "false";
+}
 
 export const INTERNAL_READ_ROLES = [
     UserRole.admin,
@@ -56,7 +59,7 @@ async function resolvePortalUser(request: Request) {
 export function createAccessMiddleware(policy: AccessPolicy): RequestHandler {
     return async (request, response, next) => {
         try {
-            if (!AUTH_ENABLED) {
+            if (!isAuthEnabled()) {
                 return next();
             }
 
