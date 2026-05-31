@@ -419,7 +419,15 @@ const confirmDelete = async () => {
         </template>
 
         <template #right>
-          <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" @click="refresh" />
+          <UButton
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-refresh-cw"
+            label="Odśwież"
+            aria-label="Odśwież listę"
+            :loading="pending"
+            @click="refresh"
+          />
         </template>
       </UDashboardNavbar>
 
@@ -430,6 +438,7 @@ const confirmDelete = async () => {
             class="w-full max-w-md"
             icon="i-lucide-search"
             placeholder="Szukaj po hoście, IP, MAC lub adresie..."
+            aria-label="Szukaj urządzeń"
           />
         </template>
 
@@ -510,6 +519,7 @@ const confirmDelete = async () => {
                 color="neutral"
                 variant="ghost"
                 class="ml-auto"
+                aria-label="Opcje urządzenia"
               />
             </UDropdownMenu>
           </div>
