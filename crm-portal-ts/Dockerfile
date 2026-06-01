@@ -1,15 +1,19 @@
-FROM node:20-bookworm-slim AS builder
+FROM node:22-bookworm-slim AS builder
+
+RUN npm install -g pnpm
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN pnpm install
 
 COPY tsconfig.json ./
 COPY src ./src
-RUN npm run build
+RUN pnpm run build
 
-FROM node:20-bookworm-slim AS runtime
+FROM node:22-bookworm-slim AS runtime
+
+RUN npm install -g pnpm
 
 WORKDIR /app
 
@@ -20,7 +24,7 @@ ENV CRM_PORTAL_TS_UPLOAD_ROOT=/app/runtime/uploads
 ENV CRM_PORTAL_TS_BACKUP_ROOT=/app/runtime/backups
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN pnpm install --prod
 
 COPY --from=builder /app/dist ./dist
 
