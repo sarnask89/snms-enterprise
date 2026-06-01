@@ -425,7 +425,6 @@ const confirmDelete = async () => {
             icon="i-lucide-refresh-cw"
             label="Odśwież"
             :loading="pending"
-            aria-label="Odśwież listę"
             @click="refresh"
           />
         </template>
