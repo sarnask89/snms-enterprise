@@ -510,6 +510,7 @@ const confirmDelete = async () => {
                 color="neutral"
                 variant="ghost"
                 class="ml-auto"
+                aria-label="Opcje urządzenia"
               />
             </UDropdownMenu>
           </div>
