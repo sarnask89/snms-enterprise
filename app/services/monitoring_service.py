@@ -1,5 +1,4 @@
 import asyncio
-import subprocess
 import time
 import random
 from datetime import datetime, timezone
