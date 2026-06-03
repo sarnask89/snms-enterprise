@@ -39,9 +39,30 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openEditModal(row)" />
-            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" @click="toggleSubscription(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeSubscription(row)" />
+            <UButton
+              size="xs"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-pencil-square"
+              aria-label="Edytuj subskrypcję"
+              @click="openEditModal(row)"
+            />
+            <UButton
+              size="xs"
+              :color="row.active ? 'yellow' : 'emerald'"
+              variant="ghost"
+              icon="i-heroicons-power"
+              aria-label="Przełącz subskrypcję"
+              @click="toggleSubscription(row)"
+            />
+            <UButton
+              size="xs"
+              color="red"
+              variant="ghost"
+              icon="i-heroicons-trash"
+              aria-label="Usuń subskrypcję"
+              @click="removeSubscription(row)"
+            />
           </div>
         </template>
       </UTable>
