@@ -1,0 +1,3 @@
+## 2025-05-15 - Eager loading and template relationship paths
+**Learning:** Identified a recurring anti-pattern where full tables are fetched into dictionaries for manual lookups in routers. Additionally discovered that legacy templates often use incorrect or incomplete relationship paths (e.g., `d.producer` instead of `d.net_device_model.producer`) which relies on either missing data or accidental availability.
+**Action:** Always check the model definitions when removing manual dictionary lookups to ensure the template uses the correct relationship chain, and use `joinedload` for the entire chain.
