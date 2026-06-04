@@ -87,6 +87,26 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
     for nid, cnt in db.execute(q_dev).all():
         if nid is not None:
             n_dev[int(nid)] = int(cnt)
+    node_counts_by_id: dict[int, int] = {}
+    node_ips_v4: list[tuple[int, int | None]] = []
+    node_ips_v6: list[tuple[int, int | None]] = []
+
+    for node in nodes:
+        if node.ip_network_id is not None:
+            node_counts_by_id[node.ip_network_id] = node_counts_by_id.get(node.ip_network_id, 0) + 1
+
+        raw = (node.ip_address or "").strip().split("/")[0].strip()
+        if not raw:
+            continue
+        try:
+            ip = ipaddress.ip_address(raw)
+            if ip.version == 4:
+                node_ips_v4.append((int(ip), node.ip_network_id))
+            else:
+                node_ips_v6.append((int(ip), node.ip_network_id))
+        except ValueError:
+            continue
+
     usage_rows: list[dict[str, Any]] = []
     for net in networks:
         row: dict[str, Any] = {"network": net, "cidr_error": None, "nodes_in_net": 0, "devices": n_dev.get(net.id, 0)}
@@ -96,20 +116,17 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
             row["cidr_error"] = "niepoprawny CIDR"
             usage_rows.append(row)
             continue
-        hits = 0
-        for node in nodes:
-            if node.ip_network_id == net.id:
+
+        hits = node_counts_by_id.get(net.id, 0)
+        net_int = int(ip_net.network_address)
+        mask_int = int(ip_net.netmask)
+
+        relevant_nodes = node_ips_v4 if ip_net.version == 4 else node_ips_v6
+
+        for ip_int, node_net_id in relevant_nodes:
+            if node_net_id != net.id and (ip_int & mask_int) == net_int:
                 hits += 1
-                continue
-            raw = (node.ip_address or "").strip().split("/")[0].strip()
-            if not raw:
-                continue
-            try:
-                ip = ipaddress.ip_address(raw)
-                if ip in ip_net:
-                    hits += 1
-            except ValueError:
-                continue
+
         row["nodes_in_net"] = hits
         usage_rows.append(row)
     return render(
