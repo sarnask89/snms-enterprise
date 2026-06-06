@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS builder
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -6,10 +6,12 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY app ./app
-COPY nuxt.config.ts ./
+COPY public ./public
+COPY server ./server
+COPY nuxt.config.ts app.config.ts tsconfig.json ./
 RUN npm run build
 
-FROM node:20-bookworm-slim AS runtime
+FROM node:22-bookworm-slim AS runtime
 
 WORKDIR /app
 
