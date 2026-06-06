@@ -73,7 +73,7 @@
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle font-bold tracking-tight text-foreground">{{ x.name }}</td>
                         <td class="p-4 align-middle text-xs">
-                            {% if x.division_id %}{% set div = divisions.get(x.division_id) %}{{ div.name if div else x.division_id }}{% else %}—{% endif %}
+                            {% if x.division %}{{ x.division.name }}{% else %}—{% endif %}
                         </td>
                         <td class="p-4 align-middle text-[10px] uppercase font-bold text-muted-foreground/60">{{ x.location_type.value }}</td>
                         <td class="p-4 align-middle text-xs text-muted-foreground italic max-w-[250px] truncate">{{ x.location_detail or "—" }}</td>
