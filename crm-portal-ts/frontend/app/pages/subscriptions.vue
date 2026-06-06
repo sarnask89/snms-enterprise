@@ -59,7 +59,7 @@
               size="xs"
               :color="row.active ? 'yellow' : 'emerald'"
               variant="ghost"
-              icon="i-heroicons-power"
+              icon="i-lucide-power"
               aria-label="Przełącz subskrypcję"
               @click="toggleSubscription(row)"
             />
