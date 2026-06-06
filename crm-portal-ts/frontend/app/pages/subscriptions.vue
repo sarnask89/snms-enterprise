@@ -6,8 +6,16 @@
         <p class="text-sm text-gray-500">Powiązanie klienta, taryfy i opcjonalnego urządzenia dostępowego</p>
       </div>
       <div class="flex gap-3">
-        <UButton to="/finances" color="gray" variant="soft" icon="i-heroicons-banknotes" label="Finanse" />
-        <UButton color="primary" icon="i-heroicons-plus" label="Nowa subskrypcja" @click="openCreateModal" />
+        <UButton
+          color="gray"
+          variant="outline"
+          icon="i-lucide-refresh-cw"
+          :loading="pendingSubscriptions"
+          aria-label="Odśwież listę"
+          @click="refreshSubscriptions"
+        />
+        <UButton to="/finances" color="gray" variant="soft" icon="i-lucide-banknote" label="Finanse" />
+        <UButton color="primary" icon="i-lucide-plus" label="Nowa subskrypcja" @click="openCreateModal" />
       </div>
     </div>
 
@@ -39,9 +47,30 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openEditModal(row)" />
-            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" @click="toggleSubscription(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeSubscription(row)" />
+            <UButton
+              size="xs"
+              color="gray"
+              variant="ghost"
+              icon="i-lucide-pencil"
+              aria-label="Edytuj subskrypcję"
+              @click="openEditModal(row)"
+            />
+            <UButton
+              size="xs"
+              :color="row.active ? 'yellow' : 'emerald'"
+              variant="ghost"
+              icon="i-heroicons-power"
+              aria-label="Przełącz subskrypcję"
+              @click="toggleSubscription(row)"
+            />
+            <UButton
+              size="xs"
+              color="red"
+              variant="ghost"
+              icon="i-lucide-trash"
+              aria-label="Usuń subskrypcję"
+              @click="removeSubscription(row)"
+            />
           </div>
         </template>
       </UTable>
