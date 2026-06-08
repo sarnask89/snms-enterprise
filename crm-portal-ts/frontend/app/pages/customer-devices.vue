@@ -419,7 +419,15 @@ const confirmDelete = async () => {
         </template>
 
         <template #right>
-          <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" @click="refresh" />
+          <UButton
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-refresh-cw"
+            label="Odśwież"
+            aria-label="Odśwież listę"
+            :loading="pending"
+            @click="refresh"
+          />
         </template>
       </UDashboardNavbar>
 
