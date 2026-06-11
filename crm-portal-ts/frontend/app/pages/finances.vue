@@ -28,8 +28,22 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTariffEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTariff(row)" />
+            <UButton
+              size="xs"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-pencil-square"
+              aria-label="Edytuj taryfę"
+              @click="openTariffEdit(row)"
+            />
+            <UButton
+              size="xs"
+              color="red"
+              variant="ghost"
+              icon="i-heroicons-trash"
+              aria-label="Usuń taryfę"
+              @click="removeTariff(row)"
+            />
           </div>
         </template>
       </UTable>
@@ -59,8 +73,22 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openInvoiceEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeInvoice(row)" />
+            <UButton
+              size="xs"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-pencil-square"
+              aria-label="Edytuj dokument"
+              @click="openInvoiceEdit(row)"
+            />
+            <UButton
+              size="xs"
+              color="red"
+              variant="ghost"
+              icon="i-heroicons-trash"
+              aria-label="Usuń dokument"
+              @click="removeInvoice(row)"
+            />
           </div>
         </template>
       </UTable>
@@ -90,7 +118,14 @@
                 <div class="text-sm text-gray-500">{{ payment.customer?.customerCode }} · {{ payment.amount.toFixed(2) }} PLN</div>
                 <div class="text-xs text-gray-400">Co {{ payment.intervalMonths }} mies. · dzień {{ payment.dayOfMonth }}</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removePayment(payment)" />
+              <UButton
+                size="xs"
+                color="red"
+                variant="ghost"
+                icon="i-heroicons-trash"
+                aria-label="Usuń płatność stałą"
+                @click="removePayment(payment)"
+              />
             </div>
           </div>
         </div>
@@ -119,7 +154,14 @@
                 <div class="text-sm text-gray-500">{{ entry.customer?.customerCode }} · {{ entry.amount.toFixed(2) }} PLN</div>
                 <UBadge :color="entry.kind === 'credit' ? 'emerald' : 'yellow'" variant="soft" size="xs">{{ entry.kind }}</UBadge>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeLedgerEntry(entry)" />
+              <UButton
+                size="xs"
+                color="red"
+                variant="ghost"
+                icon="i-heroicons-trash"
+                aria-label="Usuń wpis księgi"
+                @click="removeLedgerEntry(entry)"
+              />
             </div>
           </div>
         </div>
@@ -147,7 +189,14 @@
                 <div class="font-medium">{{ receipt.description }}</div>
                 <div class="text-sm text-gray-500">{{ receipt.customer?.customerCode || 'Bez klienta' }} · {{ receipt.amount.toFixed(2) }} PLN</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCashReceipt(receipt)" />
+              <UButton
+                size="xs"
+                color="red"
+                variant="ghost"
+                icon="i-heroicons-trash"
+                aria-label="Usuń wpis kasy"
+                @click="removeCashReceipt(receipt)"
+              />
             </div>
           </div>
         </div>
