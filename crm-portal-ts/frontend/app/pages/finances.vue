@@ -5,7 +5,17 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Finanse</h1>
         <p class="text-sm text-gray-500">Aktywny baseline TS dla taryf, faktur, płatności stałych, księgi i kasy</p>
       </div>
-      <UButton to="/subscriptions" color="primary" icon="i-heroicons-arrows-right-left" label="Subskrypcje" />
+      <div class="flex gap-3">
+        <UButton
+          color="gray"
+          variant="outline"
+          icon="i-lucide-refresh-cw"
+          label="Odśwież"
+          :loading="pendingAny"
+          @click="refreshAll"
+        />
+        <UButton to="/subscriptions" color="primary" icon="i-lucide-arrow-right-left" label="Subskrypcje" />
+      </div>
     </div>
 
     <UCard>
@@ -15,7 +25,7 @@
             <h2 class="font-semibold text-lg">Taryfy</h2>
             <p class="text-sm text-gray-500">Plany usług wykorzystywane przez subskrypcje klientów</p>
           </div>
-          <UButton color="primary" icon="i-heroicons-plus" label="Dodaj taryfę" @click="isTariffModalOpen = true" />
+          <UButton color="primary" icon="i-lucide-plus" label="Dodaj taryfę" @click="isTariffModalOpen = true" />
         </div>
       </template>
 
@@ -28,8 +38,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTariffEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTariff(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj taryfę" @click="openTariffEdit(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń taryfę" @click="removeTariff(row)" />
           </div>
         </template>
       </UTable>
@@ -42,7 +52,7 @@
             <h2 class="font-semibold text-lg">Faktury i dokumenty sprzedaży</h2>
             <p class="text-sm text-gray-500">Minimalny baseline wystawiania i ewidencji dokumentów</p>
           </div>
-          <UButton color="primary" icon="i-heroicons-document-plus" label="Nowy dokument" @click="isInvoiceModalOpen = true" />
+          <UButton color="primary" icon="i-lucide-file-plus" label="Nowy dokument" @click="isInvoiceModalOpen = true" />
         </div>
       </template>
 
@@ -59,8 +69,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openInvoiceEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeInvoice(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj dokument" @click="openInvoiceEdit(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń dokument" @click="removeInvoice(row)" />
           </div>
         </template>
       </UTable>
@@ -74,7 +84,7 @@
               <h2 class="font-semibold">Płatności stałe</h2>
               <p class="text-sm text-gray-500">Cykliczne należności</p>
             </div>
-            <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" @click="isPaymentModalOpen = true" />
+            <UButton color="primary" variant="soft" size="xs" icon="i-lucide-plus" label="Dodaj" aria-label="Dodaj płatność stałą" @click="isPaymentModalOpen = true" />
           </div>
         </template>
 
@@ -90,7 +100,7 @@
                 <div class="text-sm text-gray-500">{{ payment.customer?.customerCode }} · {{ payment.amount.toFixed(2) }} PLN</div>
                 <div class="text-xs text-gray-400">Co {{ payment.intervalMonths }} mies. · dzień {{ payment.dayOfMonth }}</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removePayment(payment)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń płatność" @click="removePayment(payment)" />
             </div>
           </div>
         </div>
@@ -103,7 +113,7 @@
               <h2 class="font-semibold">Księga</h2>
               <p class="text-sm text-gray-500">Operacje debet / kredyt</p>
             </div>
-            <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" @click="isLedgerModalOpen = true" />
+            <UButton color="primary" variant="soft" size="xs" icon="i-lucide-plus" label="Dodaj" aria-label="Dodaj wpis do księgi" @click="isLedgerModalOpen = true" />
           </div>
         </template>
 
@@ -119,7 +129,7 @@
                 <div class="text-sm text-gray-500">{{ entry.customer?.customerCode }} · {{ entry.amount.toFixed(2) }} PLN</div>
                 <UBadge :color="entry.kind === 'credit' ? 'emerald' : 'yellow'" variant="soft" size="xs">{{ entry.kind }}</UBadge>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeLedgerEntry(entry)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń wpis" @click="removeLedgerEntry(entry)" />
             </div>
           </div>
         </div>
@@ -132,7 +142,7 @@
               <h2 class="font-semibold">Kasa</h2>
               <p class="text-sm text-gray-500">Wpłaty i paragony</p>
             </div>
-            <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" @click="isCashModalOpen = true" />
+            <UButton color="primary" variant="soft" size="xs" icon="i-lucide-plus" label="Dodaj" aria-label="Dodaj wpis kasy" @click="isCashModalOpen = true" />
           </div>
         </template>
 
@@ -147,7 +157,7 @@
                 <div class="font-medium">{{ receipt.description }}</div>
                 <div class="text-sm text-gray-500">{{ receipt.customer?.customerCode || 'Bez klienta' }} · {{ receipt.amount.toFixed(2) }} PLN</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCashReceipt(receipt)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń wpis" @click="removeCashReceipt(receipt)" />
             </div>
           </div>
         </div>
@@ -350,12 +360,31 @@ const cashForm = reactive({
 
 const { data: tariffs, pending: pendingTariffs, refresh: refreshTariffs } = await useFetch('/api/v1/finances/tariffs')
 const { data: invoices, pending: pendingInvoices, refresh: refreshInvoices } = await useFetch('/api/v1/finances/invoices')
-const { data: payments, refresh: refreshPayments } = await useFetch('/api/v1/finances/payments')
-const { data: ledgerEntries, refresh: refreshLedgerEntries } = await useFetch('/api/v1/finances/balance')
-const { data: cashReceipts, refresh: refreshCashReceipts } = await useFetch('/api/v1/finances/cash')
-const { data: customers } = await useFetch('/api/v1/customers', {
+const { data: payments, pending: pendingPayments, refresh: refreshPayments } = await useFetch('/api/v1/finances/payments')
+const { data: ledgerEntries, pending: pendingLedger, refresh: refreshLedgerEntries } = await useFetch('/api/v1/finances/balance')
+const { data: cashReceipts, pending: pendingCash, refresh: refreshCashReceipts } = await useFetch('/api/v1/finances/cash')
+const { data: customers, pending: pendingCustomers } = await useFetch('/api/v1/customers', {
   query: { limit: 200 }
 })
+
+const pendingAny = computed(() =>
+  pendingTariffs.value ||
+  pendingInvoices.value ||
+  pendingPayments.value ||
+  pendingLedger.value ||
+  pendingCash.value ||
+  pendingCustomers.value
+)
+
+const refreshAll = async () => {
+  await Promise.all([
+    refreshTariffs(),
+    refreshInvoices(),
+    refreshPayments(),
+    refreshLedgerEntries(),
+    refreshCashReceipts()
+  ])
+}
 
 const customerOptions = computed(() => (customers.value || []).map((customer) => ({
   label: `${customer.customerCode} · ${customer.firstName} ${customer.lastName}`,
