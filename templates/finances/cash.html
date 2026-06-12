@@ -63,7 +63,7 @@
                         <td class="p-4 align-middle font-medium text-xs">{{ r.description }}</td>
                         <td class="p-4 align-middle text-xs">
                             {% if r.customer_id %}
-                                {% set c = customers.get(r.customer_id) %}
+                                {% set c = r.customer %}
                                 <span class="font-bold">{{ c.customer_code if c else r.customer_id }}</span>
                             {% else %}
                                 <span class="text-muted-foreground italic">brak</span>

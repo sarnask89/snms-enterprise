@@ -68,7 +68,7 @@
                     {% for r in rows %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle">
-                            {% set c = customers.get(r.customer_id) %}
+                            {% set c = r.customer %}
                             <div class="font-bold text-xs">{{ c.last_name if c else '—' }}</div>
                             <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else r.customer_id }}</div>
                         </td>

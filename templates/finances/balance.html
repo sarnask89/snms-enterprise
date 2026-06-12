@@ -89,7 +89,7 @@
                             {{ r.posted_at.strftime('%Y-%m-%d %H:%M') if r.posted_at else '—' }}
                         </td>
                         <td class="p-4 align-middle font-bold text-xs">
-                            {% set c = customers.get(r.customer_id) %}
+                            {% set c = r.customer %}
                             {{ c.customer_code if c else r.customer_id }}
                         </td>
                         <td class="p-4 align-middle">

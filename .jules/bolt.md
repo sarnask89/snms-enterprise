@@ -1,0 +1,3 @@
+## 2026-06-12 - SQLAlchemy Eager Loading in Finances
+**Learning:** Found a common anti-pattern where full tables (Customers, Divisions) were fetched into Python dictionaries for manual lookup in templates. While this avoids N+1 queries, it still fetches much more data than needed and doesn't scale well. Implementing `joinedload` and using direct relationship access in templates is cleaner and more efficient.
+**Action:** When encountering dictionary lookups for related entities in templates, check if `joinedload` can be used to optimize the query and simplify the template code. Ensure all relationship fields are defined in the models.
