@@ -363,7 +363,7 @@ const { data: invoices, pending: pendingInvoices, refresh: refreshInvoices } = a
 const { data: payments, pending: pendingPayments, refresh: refreshPayments } = await useFetch('/api/v1/finances/payments')
 const { data: ledgerEntries, pending: pendingLedger, refresh: refreshLedgerEntries } = await useFetch('/api/v1/finances/balance')
 const { data: cashReceipts, pending: pendingCash, refresh: refreshCashReceipts } = await useFetch('/api/v1/finances/cash')
-const { data: customers, pending: pendingCustomers } = await useFetch('/api/v1/customers', {
+const { data: customers, pending: pendingCustomers, refresh: refreshCustomers } = await useFetch('/api/v1/customers', {
   query: { limit: 200 }
 })
 
@@ -382,7 +382,8 @@ const refreshAll = async () => {
     refreshInvoices(),
     refreshPayments(),
     refreshLedgerEntries(),
-    refreshCashReceipts()
+    refreshCashReceipts(),
+    refreshCustomers()
   ])
 }
 
