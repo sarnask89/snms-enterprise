@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.responses import Response
 from sqlalchemy import func, or_, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from app import models, schemas
 from app.audit import record_audit
@@ -59,10 +59,10 @@ def ticket_list(
     assigned: str | None = Query(None),
     q: str | None = Query(None),
 ):
-    # Optymalizacja SQLAlchemy: ładowanie relacji
+    # Optymalizacja SQLAlchemy: ładowanie relacji (eager loading)
     stmt = select(models.SupportTicket).options(
-        selectinload(models.SupportTicket.customer),
-        selectinload(models.SupportTicket.assignee)
+        joinedload(models.SupportTicket.customer),
+        joinedload(models.SupportTicket.assignee)
     ).order_by(models.SupportTicket.id.desc())
 
     me = request.state.portal_user
@@ -77,17 +77,13 @@ def ticket_list(
         ))
 
     rows = list(db.scalars(stmt).all())
-    
-    # Do mapowania w szablonie (tradycyjne)
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    users_map = {u.id: u.username for u in db.scalars(select(models.PortalUser)).all()}
 
     # HTMX partial
     if request.headers.get("HX-Request"):
         return render(
             request,
             "helpdesk/ticket_list_rows.html",
-            {"tickets": rows, "customers": customers, "users_map": users_map},
+            {"tickets": rows},
         )
 
     return render(
@@ -96,8 +92,6 @@ def ticket_list(
         {
             "title": "Helpdesk — zgłoszenia",
             "tickets": rows,
-            "customers": customers,
-            "users_map": users_map,
             "filter_assigned": assigned or "",
             "search_q": q or "",
         },
@@ -135,7 +129,7 @@ def queue_delete(queue_id: int, db: Session = Depends(get_db)):
 @router.get("/categories", response_class=HTMLResponse)
 def category_list(request: Request, db: Session = Depends(get_db)):
     queues = list(db.scalars(select(models.HelpdeskQueue).order_by(models.HelpdeskQueue.sort_order)).all())
-    rows = list(db.scalars(select(models.HelpdeskCategory).options(selectinload(models.HelpdeskCategory.queue)).order_by(models.HelpdeskCategory.queue_id)).all())
+    rows = list(db.scalars(select(models.HelpdeskCategory).options(joinedload(models.HelpdeskCategory.queue)).order_by(models.HelpdeskCategory.queue_id)).all())
     return render(request, "helpdesk/categories.html", {"title": "Helpdesk — kategorie", "categories": rows, "queues": queues})
 
 
@@ -147,7 +141,7 @@ def category_new_form(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/categories/new", dependencies=[Depends(require_helpdesk_write)])
 def category_new_submit(request: Request, db: Session = Depends(get_db), name: str = Form(...), queue_id: int = Form(...)):
-    c = models.HelpdeskCategory(name=name.strip()[:128], queue_id=queue_id, sort_order=0)
+    c = models.HelpdeskCategory(name=name.strip()[:128], queue_id=queue_id)
     db.add(c)
     db.flush()
     record_audit(db, "create", resource_type="helpdesk_category", resource_id=c.id, details=f"name: {c.name}", request=request)
@@ -173,7 +167,7 @@ def helpdesk_search(
     status: str | None = Query(None),
     queue_id: int | None = Query(None),
 ):
-    stmt = select(models.SupportTicket).options(selectinload(models.SupportTicket.customer)).order_by(models.SupportTicket.id.desc())
+    stmt = select(models.SupportTicket).options(joinedload(models.SupportTicket.customer)).order_by(models.SupportTicket.id.desc())
     if q and q.strip():
         term = f"%{q.strip()}%"
         stmt = stmt.where(or_(models.SupportTicket.title.ilike(term), models.SupportTicket.body.ilike(term)))
@@ -183,10 +177,9 @@ def helpdesk_search(
         stmt = stmt.where(models.SupportTicket.queue_id == queue_id)
     
     rows = list(db.scalars(stmt).all())
-    custs = {c.id: c for c in db.scalars(select(models.Customer)).all()}
     queues = list(db.scalars(select(models.HelpdeskQueue).order_by(models.HelpdeskQueue.sort_order)).all())
     return render(request, "helpdesk/search.html", {
-        "title": "Szukaj zgłoszeń", "tickets": rows, "customers": custs, "queues": queues,
+        "title": "Szukaj zgłoszeń", "tickets": rows, "queues": queues,
         "search_q": q or "", "search_status": status or "", "search_queue_id": queue_id
     })
 
@@ -200,7 +193,7 @@ def helpdesk_reports(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/reports.csv")
 def helpdesk_reports_csv(db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.SupportTicket).options(selectinload(models.SupportTicket.customer)).order_by(models.SupportTicket.id.desc())).all())
+    rows = list(db.scalars(select(models.SupportTicket).options(joinedload(models.SupportTicket.customer)).order_by(models.SupportTicket.id.desc())).all())
     buf = io.StringIO()
     w = csv.writer(buf, delimiter=";")
     w.writerow(["id", "tytul", "status", "klient", "data"])
@@ -262,7 +255,7 @@ def ticket_new_submit(
 def ticket_detail(ticket_id: int, request: Request, db: Session = Depends(get_db)):
     t = db.scalar(
         select(models.SupportTicket)
-        .options(selectinload(models.SupportTicket.customer))
+        .options(joinedload(models.SupportTicket.customer))
         .where(models.SupportTicket.id == ticket_id)
     )
     if not t: return RedirectResponse("/helpdesk/tickets", status_code=302)

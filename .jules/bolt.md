@@ -1,0 +1,3 @@
+## 2026-06-13 - Helpdesk Optimization & N+1 Regressions
+**Learning:** Removing manual dictionary lookups without adding SQLAlchemy eager loading (`joinedload`) causes an N+1 query regression. Also, I discovered that `HelpdeskCategory` model was missing `sort_order` field despite being used in the router, causing a crash. Finally, the `nav_access.py` was missing a prefix rule for `/helpdesk`, causing 403s on redirects.
+**Action:** Always verify eager loading (`joinedload`) is applied when removing manual maps. Double-check model fields before passing them to constructors. Ensure path prefix rules are in place for new or modified modules.
