@@ -49,9 +49,10 @@
                                 nieprzypisany
                                 {% endif %}
                             </div>
-                            {% if subscriptions.get(n.id) %}
+                            {% set active_sub = n.subscriptions | selectattr('active', 'equalto', True) | first %}
+                            {% if active_sub %}
                             <div class="mt-1 inline-flex items-center rounded-md bg-primary/10 text-primary px-1.5 py-0.5 text-[8px] font-bold uppercase border border-primary/20">
-                                <i class="fas fa-tag mr-1"></i> {{ subscriptions[n.id].tariff.name }}
+                                <i class="fas fa-tag mr-1"></i> {{ active_sub.tariff.name }}
                             </div>
                             {% endif %}
                         </td>
