@@ -5,6 +5,14 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Helpdesk</h1>
         <p class="text-sm text-gray-500">Kolejki, kategorie i zgłoszenia klientów w aktywnym baseline TS/Nuxt</p>
       </div>
+      <UButton
+        color="neutral"
+        variant="outline"
+        icon="i-lucide-refresh-cw"
+        aria-label="Odśwież listę"
+        :loading="pendingAny"
+        @click="refreshAll"
+      />
     </div>
 
     <div class="grid lg:grid-cols-2 gap-6">
@@ -15,15 +23,29 @@
               <h2 class="font-semibold text-lg">Kolejki</h2>
               <p class="text-sm text-gray-500">Kanały obsługi zgłoszeń</p>
             </div>
-            <UButton color="primary" size="sm" icon="i-heroicons-plus" label="Dodaj" @click="isQueueModalOpen = true" />
+            <UButton color="primary" size="sm" icon="i-lucide-plus" label="Dodaj" @click="isQueueModalOpen = true" />
           </div>
         </template>
 
         <UTable :data="queues || []" :columns="queueColumns" :loading="pendingQueues">
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openQueueEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeQueue(row)" />
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-pencil"
+                aria-label="Edytuj kolejkę"
+                @click="openQueueEdit(row)"
+              />
+              <UButton
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash"
+                aria-label="Usuń kolejkę"
+                @click="removeQueue(row)"
+              />
             </div>
           </template>
         </UTable>
@@ -36,7 +58,7 @@
               <h2 class="font-semibold text-lg">Kategorie</h2>
               <p class="text-sm text-gray-500">Klasyfikacja zgłoszeń</p>
             </div>
-            <UButton color="primary" size="sm" icon="i-heroicons-plus" label="Dodaj" @click="isCategoryModalOpen = true" />
+            <UButton color="primary" size="sm" icon="i-lucide-plus" label="Dodaj" @click="isCategoryModalOpen = true" />
           </div>
         </template>
 
@@ -47,8 +69,22 @@
 
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openCategoryEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCategory(row)" />
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-pencil"
+                aria-label="Edytuj kategorię"
+                @click="openCategoryEdit(row)"
+              />
+              <UButton
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash"
+                aria-label="Usuń kategorię"
+                @click="removeCategory(row)"
+              />
             </div>
           </template>
         </UTable>
@@ -65,11 +101,11 @@
           <div class="flex items-center gap-3">
             <UInput
               v-model="ticketSearch"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj po tytule lub treści..."
               class="w-72"
             />
-            <UButton color="primary" icon="i-heroicons-plus" label="Nowe zgłoszenie" @click="openTicketCreate" />
+            <UButton color="primary" icon="i-lucide-plus" label="Nowe zgłoszenie" @click="openTicketCreate" />
           </div>
         </div>
       </template>
@@ -99,9 +135,30 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTicketEdit(row)" />
-            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" @click="cycleTicketStatus(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTicket(row)" />
+            <UButton
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              icon="i-lucide-pencil"
+              aria-label="Edytuj zgłoszenie"
+              @click="openTicketEdit(row)"
+            />
+            <UButton
+              size="xs"
+              color="warning"
+              variant="ghost"
+              icon="i-lucide-refresh-cw"
+              aria-label="Przełącz status"
+              @click="cycleTicketStatus(row)"
+            />
+            <UButton
+              size="xs"
+              color="error"
+              variant="ghost"
+              icon="i-lucide-trash"
+              aria-label="Usuń zgłoszenie"
+              @click="removeTicket(row)"
+            />
           </div>
         </template>
       </UTable>
@@ -247,7 +304,16 @@ const ticketForm = reactive({
 const { data: queues, pending: pendingQueues, refresh: refreshQueues } = await useFetch('/api/v1/helpdesk/queues')
 const { data: categories, pending: pendingCategories, refresh: refreshCategories } = await useFetch('/api/v1/helpdesk/categories')
 const { data: tickets, pending: pendingTickets, refresh: refreshTickets } = await useFetch('/api/v1/helpdesk/tickets')
-const { data: reports, refresh: refreshReports } = await useFetch('/api/v1/helpdesk/reports')
+const { data: reports, pending: pendingReports, refresh: refreshReports } = await useFetch('/api/v1/helpdesk/reports')
+
+const pendingAny = computed(() => pendingQueues.value || pendingCategories.value || pendingTickets.value || pendingReports.value)
+
+const refreshAll = () => Promise.all([
+  refreshQueues(),
+  refreshCategories(),
+  refreshTickets(),
+  refreshReports()
+])
 const { data: customers } = await useFetch('/api/v1/customers', { query: { limit: 200 } })
 
 const filteredTickets = computed(() => {
