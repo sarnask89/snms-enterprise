@@ -6,8 +6,8 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
-from sqlalchemy import or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_, select
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from app import models
 from app.database import get_db
@@ -120,28 +120,34 @@ def node_add_alias():
 @router.get("/reports", response_class=HTMLResponse)
 def node_reports(request: Request, db: Session = Depends(get_db)):
     """Raport zbiorczy — widok do druku i eksportu."""
-    rows = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    # Optimization: Use joinedload to fetch customers in a single query
+    # and remove redundant full-table dictionary lookups.
+    stmt = select(models.CustomerDevice).options(
+        joinedload(models.CustomerDevice.customer)
+    ).order_by(models.CustomerDevice.hostname)
+    rows = list(db.scalars(stmt).all())
     return render(
         request,
         "customer_devices/reports.html",
         {
             "title": "Raporty — komputery / urządzenia klientów",
             "nodes": rows,
-            "customers": customers,
         },
     )
 
 
 @router.get("/reports.csv")
 def node_reports_csv(db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    cust = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    # Optimization: Use joinedload to fetch customers in a single query
+    stmt = select(models.CustomerDevice).options(
+        joinedload(models.CustomerDevice.customer)
+    ).order_by(models.CustomerDevice.hostname)
+    rows = list(db.scalars(stmt).all())
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["id", "hostname", "klient_kod", "ip", "mac", "status"])
     for n in rows:
-        c = cust.get(n.customer_id)
+        c = n.customer
         w.writerow(
             [
                 n.id,
@@ -172,7 +178,15 @@ def node_list(
     db: Session = Depends(get_db),
     q: str | None = Query(None, description="hostname, IP, MAC lub kod klienta"),
 ):
-    stmt = select(models.CustomerDevice).order_by(models.CustomerDevice.id)
+    # Optimization: Use joinedload and selectinload to fetch related data efficiently
+    # and remove redundant dictionary lookups.
+    stmt = select(models.CustomerDevice).options(
+        joinedload(models.CustomerDevice.customer),
+        selectinload(
+            models.CustomerDevice.subscriptions.and_(models.Subscription.active == True)
+        ).joinedload(models.Subscription.tariff)
+    ).order_by(models.CustomerDevice.id)
+
     if q and q.strip():
         term = f"%{q.strip()}%"
         cust_ids = [
@@ -189,18 +203,8 @@ def node_list(
         if cust_ids:
             parts.append(models.CustomerDevice.customer_id.in_(cust_ids))
         stmt = stmt.where(or_(*parts))
-    rows = list(db.scalars(stmt).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
     
-    # Pobierz aktywne subskrypcje dla wyświetlanych węzłów
-    node_ids = [n.id for n in rows]
-    subs = {}
-    if node_ids:
-        active_subs = db.scalars(
-            select(models.Subscription)
-            .where(models.Subscription.device_id.in_(node_ids), models.Subscription.active == True)
-        ).all()
-        subs = {s.device_id: s for s in active_subs}
+    rows = list(db.scalars(stmt).all())
 
     return render(
         request,
@@ -208,8 +212,6 @@ def node_list(
         {
             "title": "Komputery / urządzenia klientów",
             "nodes": rows,
-            "customers": customers,
-            "subscriptions": subs,
             "search_q": q or "",
         },
     )
@@ -217,12 +219,14 @@ def node_list(
 
 @router.get("/sessions", response_class=HTMLResponse)
 def node_sessions_list(request: Request, db: Session = Depends(get_db)):
+    # Optimization: Use joinedload for device and remove redundant full-table dictionary lookups.
     rows = list(
         db.scalars(
-            select(models.CustomerDeviceSession).order_by(models.CustomerDeviceSession.started_at.desc())
+            select(models.CustomerDeviceSession)
+            .options(joinedload(models.CustomerDeviceSession.device))
+            .order_by(models.CustomerDeviceSession.started_at.desc())
         ).all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
     return render(
         request,
@@ -230,7 +234,6 @@ def node_sessions_list(request: Request, db: Session = Depends(get_db)):
         {
             "title": "Sesje — komputery / urządzenia klientów",
             "sessions": rows,
-            "nodes_map": nodes,
             "all_nodes": all_nodes,
         },
     )
@@ -282,10 +285,14 @@ def node_session_delete(session_id: int, db: Session = Depends(get_db)):
 
 @router.get("/notices", response_class=HTMLResponse)
 def node_notices_list(request: Request, db: Session = Depends(get_db)):
+    # Optimization: Use joinedload for device and remove redundant full-table dictionary lookups.
     rows = list(
-        db.scalars(select(models.CustomerDeviceNotice).order_by(models.CustomerDeviceNotice.created_at.desc())).all()
+        db.scalars(
+            select(models.CustomerDeviceNotice)
+            .options(joinedload(models.CustomerDeviceNotice.device))
+            .order_by(models.CustomerDeviceNotice.created_at.desc())
+        ).all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
     all_nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
     return render(
         request,
@@ -293,7 +300,6 @@ def node_notices_list(request: Request, db: Session = Depends(get_db)):
         {
             "title": "Powiadomienia — komputery",
             "notices": rows,
-            "nodes_map": nodes,
             "all_nodes": all_nodes,
         },
     )
