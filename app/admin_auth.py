@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
 
 from app.database import db_manager
 from app import models
