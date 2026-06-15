@@ -1,11 +1,31 @@
 <template>
-  <div class="p-8">
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Panel Sterowania</h1>
-      <p class="text-sm text-gray-500">Witaj w systemie SNMS. Oto podsumowanie Twojej sieci.</p>
-    </div>
+  <UDashboardPanel id="dashboard">
+    <template #header>
+      <UDashboardNavbar title="Panel Sterowania">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
 
-    <!-- Stats Grid -->
+        <template #right>
+          <UButton
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-refresh-cw"
+            label="Odśwież"
+            aria-label="Odśwież dane"
+            :loading="pendingAny"
+            @click="refreshAll"
+          />
+        </template>
+      </UDashboardNavbar>
+    </template>
+
+    <template #body>
+      <div class="mb-4">
+        <p class="text-sm text-gray-500">Witaj w systemie SNMS. Oto podsumowanie Twojej sieci.</p>
+      </div>
+
+      <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <UCard v-for="(stat, key) in statsMap" :key="key">
         <div class="flex items-center gap-4">
@@ -47,14 +67,14 @@
           <h3 class="font-bold">Szybkie Akcje</h3>
         </template>
         <div class="flex flex-col gap-2">
-          <UButton icon="i-heroicons-magnifying-glass" label="Szukaj urządzenia" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-document-plus" label="Generuj raport PIT" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-bolt" label="Diagnostyka OLT" color="gray" variant="soft" block />
+          <UButton icon="i-lucide-search" label="Szukaj urządzenia" color="gray" variant="soft" block />
+          <UButton icon="i-lucide-plus" label="Generuj raport PIT" color="gray" variant="soft" block />
+          <UButton icon="i-lucide-wrench" label="Diagnostyka OLT" color="gray" variant="soft" block />
         </div>
         
         <div class="mt-6 p-4 rounded-xl bg-primary-500/5 border border-primary-500/10">
           <div class="flex items-center gap-2 text-primary-500 mb-2">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             <span class="text-xs font-bold uppercase tracking-wider">AI Insight</span>
           </div>
           <p class="text-xs text-gray-600 dark:text-gray-400 italic">
@@ -63,22 +83,32 @@
         </div>
       </UCard>
     </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup>
 const statsMap = {
-  customers: { label: 'Abonenci', icon: 'i-heroicons-users', color: 'blue' },
-  nodes: { label: 'Węzły', icon: 'i-heroicons-map-pin', color: 'emerald' },
-  devices: { label: 'Urządzenia', icon: 'i-heroicons-cpu-chip', color: 'indigo' },
-  tickets: { label: 'Zgłoszenia', icon: 'i-heroicons-ticket', color: 'orange' }
+  customers: { label: 'Abonenci', icon: 'i-lucide-users', color: 'blue' },
+  nodes: { label: 'Węzły', icon: 'i-lucide-map-pin', color: 'emerald' },
+  devices: { label: 'Urządzenia', icon: 'i-lucide-cpu', color: 'indigo' },
+  tickets: { label: 'Zgłoszenia', icon: 'i-lucide-life-buoy', color: 'orange' }
 }
 
-const { data: stats } = await useFetch('/api/v1/dashboard/stats')
+const { data: stats, pending: pendingStats, refresh: refreshStats } = await useFetch('/api/v1/dashboard/stats')
 
-const { data: recentCustomers } = await useFetch('/api/v1/customers', {
+const { data: recentCustomers, pending: pendingRecent, refresh: refreshRecent } = await useFetch('/api/v1/customers', {
   query: { limit: 5 }
 })
+
+const pendingAny = computed(() => pendingStats.value || pendingRecent.value)
+
+const refreshAll = async () => {
+  await Promise.all([
+    refreshStats(),
+    refreshRecent()
+  ])
+}
 
 const recentColumns = [
   { accessorKey: 'customer_code', header: 'Kod' },
