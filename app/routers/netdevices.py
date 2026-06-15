@@ -54,7 +54,7 @@ def netdevice_list(
                 models.NetDevice.serial_number.ilike(term),
             )
         )
-    rows = list(db.scalars(stmt).unique().all())
+    rows = db.scalars(stmt).unique().all()
 
     # Performance: Removed redundant full-table queries for networks and nodes
     return render(
@@ -84,13 +84,12 @@ def netdevice_add_alias():
 def netdevice_reports(request: Request, db: Session = Depends(get_db)):
     """Raport zbiorczy osprzętu (druk / eksport)."""
     # Performance: Added joinedload to fetch related ip_network in a single query
-    rows = list(
-        db.scalars(
-            select(models.NetDevice)
-            .options(joinedload(models.NetDevice.ip_network))
-            .order_by(models.NetDevice.name)
-        ).unique().all()
-    )
+    rows = db.scalars(
+        select(models.NetDevice)
+        .options(joinedload(models.NetDevice.ip_network))
+        .order_by(models.NetDevice.name)
+    ).unique().all()
+
     return render(
         request,
         "netdevices/reports.html",
@@ -101,13 +100,11 @@ def netdevice_reports(request: Request, db: Session = Depends(get_db)):
 @router.get("/reports.csv")
 def netdevice_reports_csv(db: Session = Depends(get_db)):
     # Performance: Added joinedload to fetch related ip_network in a single query
-    rows = list(
-        db.scalars(
-            select(models.NetDevice)
-            .options(joinedload(models.NetDevice.ip_network))
-            .order_by(models.NetDevice.name)
-        ).unique().all()
-    )
+    rows = db.scalars(
+        select(models.NetDevice)
+        .options(joinedload(models.NetDevice.ip_network))
+        .order_by(models.NetDevice.name)
+    ).unique().all()
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["id", "nazwa", "hostname", "ip_zarzadzania", "typ", "siec_ip", "status"])
