@@ -89,7 +89,7 @@ def netdevice_reports(request: Request, db: Session = Depends(get_db)):
             select(models.NetDevice)
             .options(joinedload(models.NetDevice.ip_network))
             .order_by(models.NetDevice.name)
-        ).all()
+        ).unique().all()
     )
     return render(
         request,
@@ -106,7 +106,7 @@ def netdevice_reports_csv(db: Session = Depends(get_db)):
             select(models.NetDevice)
             .options(joinedload(models.NetDevice.ip_network))
             .order_by(models.NetDevice.name)
-        ).all()
+        ).unique().all()
     )
     buf = io.StringIO()
     w = csv.writer(buf)
