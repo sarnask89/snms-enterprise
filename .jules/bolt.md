@@ -1,0 +1,3 @@
+## 2026-06-15 - Redundant Dictionary Lookups for Relationships
+**Learning:** A recurring anti-pattern in this FastAPI/SQLAlchemy codebase is fetching entire related tables into Python dictionaries to perform manual lookups in templates, instead of using eager loading (`joinedload`/`selectinload`) and direct relationship access. This causes unnecessary memory usage and N+1 query patterns.
+**Action:** Always prefer `joinedload` for many-to-one relationships and `selectinload` for one-to-many relationships in list endpoints. Remove any manual dictionary-based lookup logic from both backend routers and Jinja2 templates.
