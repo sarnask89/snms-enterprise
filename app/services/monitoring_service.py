@@ -1,5 +1,6 @@
 import asyncio
 import subprocess
+import sys
 import time
 import random
 from datetime import datetime, timezone
@@ -16,6 +17,7 @@ logger = logging.getLogger("app.monitoring")
 class MonitoringService:
     def __init__(self):
         self.db = None
+        self._lock = asyncio.Lock()
 
     async def ping_device(self, ip: str) -> float | None:
         """Pings a device and returns latency in ms or None if unreachable."""
@@ -28,17 +30,28 @@ class MonitoringService:
             return random.uniform(1.5, 15.0)
 
         try:
-            # Windows ping command: ping -n 1 -w 1000 IP
-            process = await asyncio.create_subprocess_exec(
-                "ping", "-n", "1", "-w", "1000", ip,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
+            if sys.platform == "win32":
+                # Windows ping command: ping -n 1 -w 1000 IP
+                process = await asyncio.create_subprocess_exec(
+                    "ping", "-n", "1", "-w", "1000", ip,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+                encoding = "cp852"
+            else:
+                # Linux/macOS ping command: ping -c 1 -W 1 IP
+                process = await asyncio.create_subprocess_exec(
+                    "ping", "-c", "1", "-W", "1", ip,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+                encoding = "utf-8"
+
             stdout, stderr = await process.communicate()
             
             if process.returncode == 0:
                 # Parse latency from output (e.g., "time=12ms")
-                output = stdout.decode("cp852", errors="ignore") # Polish Windows encoding
+                output = stdout.decode(encoding, errors="ignore")
                 if "time=" in output:
                     time_str = output.split("time=")[1].split("ms")[0].strip()
                     if "<" in time_str:
@@ -145,22 +158,31 @@ class MonitoringService:
             return
 
         latency = await self.ping_device(ip)
-        was_online = dev.is_online
-        dev.is_online = latency is not None
-        dev.latency_ms = int(latency) if latency is not None else None
-        dev.last_seen = datetime.now(timezone.utc)
 
-        # Status change notification
-        if was_online and not dev.is_online:
-            self.create_notification(db, "critical", f"Device DOWN: {dev.name}", f"Device {dev.name} ({ip}) is not responding to ping.", "monitoring")
-        elif not was_online and dev.is_online:
-            self.create_notification(db, "info", f"Device UP: {dev.name}", f"Device {dev.name} ({ip}) is back online. Latency: {dev.latency_ms}ms", "monitoring")
+        async with self._lock:
+            was_online = dev.is_online
+            dev.is_online = latency is not None
+            dev.latency_ms = int(latency) if latency is not None else None
+            dev.last_seen = datetime.now(timezone.utc)
+
+            # Status change notification
+            if was_online and not dev.is_online:
+                await asyncio.to_thread(
+                    self.create_notification, db, "critical", f"Device DOWN: {dev.name}", f"Device {dev.name} ({ip}) is not responding to ping.", "monitoring"
+                )
+            elif not was_online and dev.is_online:
+                await asyncio.to_thread(
+                    self.create_notification, db, "info", f"Device UP: {dev.name}", f"Device {dev.name} ({ip}) is back online. Latency: {dev.latency_ms}ms", "monitoring"
+                )
 
         # NMS FRAMEWORK: Poll dynamic items
         from app.models.monitoring import MonitorItem
-        items = db.scalars(
-            select(MonitorItem).where(MonitorItem.device_id == dev.id, MonitorItem.is_active == True)
-        ).all()
+        async with self._lock:
+            items = await asyncio.to_thread(
+                lambda: db.scalars(
+                    select(MonitorItem).where(MonitorItem.device_id == dev.id, MonitorItem.is_active == True)
+                ).all()
+            )
         
         for item in items:
             await self.poll_item(db, dev, item)
@@ -198,12 +220,13 @@ class MonitoringService:
                 final_value = final_value * item.multiplier
                 
                 # Update Persistence
-                item.last_value = float(raw_value)
-                item.last_clock = now
-                
-                # Record History
-                history = MonitorHistory(item_id=item.id, value=final_value)
-                db.add(history)
+                async with self._lock:
+                    item.last_value = float(raw_value)
+                    item.last_clock = now
+
+                    # Record History
+                    history = MonitorHistory(item_id=item.id, value=final_value)
+                    db.add(history)
                 
                 # After polling, evaluate associated triggers
                 await self.evaluate_triggers(db, item, final_value)
@@ -214,9 +237,12 @@ class MonitoringService:
     async def evaluate_triggers(self, db, item, value):
         """Simple trigger evaluation logic with persistence."""
         from app.models.monitoring import MonitorTrigger
-        triggers = db.scalars(
-            select(MonitorTrigger).where(MonitorTrigger.item_id == item.id, MonitorTrigger.is_active == True)
-        ).all()
+        async with self._lock:
+            triggers = await asyncio.to_thread(
+                lambda: db.scalars(
+                    select(MonitorTrigger).where(MonitorTrigger.item_id == item.id, MonitorTrigger.is_active == True)
+                ).all()
+            )
         
         for trig in triggers:
             # Very simple expression evaluation for demo: '{last()} > 90'
@@ -227,14 +253,18 @@ class MonitoringService:
                 new_status = "PROBLEM" if result else "OK"
                 
                 if new_status != trig.last_status:
-                    trig.last_status = new_status
-                    trig.last_change = datetime.now()
-                    trig.last_value = str(value)
-                    
-                    if new_status == "PROBLEM":
-                        self.create_notification(db, trig.severity, f"ALARM: {trig.name}", f"Próg przekroczony dla {item.name}: {value} (Warunek: {trig.expression})", "monitoring")
+                    async with self._lock:
+                        trig.last_status = new_status
+                        trig.last_change = datetime.now()
+                        trig.last_value = str(value)
+
+                        if new_status == "PROBLEM":
+                            await asyncio.to_thread(
+                                self.create_notification, db, trig.severity, f"ALARM: {trig.name}", f"Próg przekroczony dla {item.name}: {value} (Warunek: {trig.expression})", "monitoring"
+                            )
                 
-                db.commit()
+                async with self._lock:
+                    await asyncio.to_thread(db.commit)
             except Exception as e:
                 logger.error(f"Error evaluating trigger {trig.id}: {e}")
 
