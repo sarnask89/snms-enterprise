@@ -36,7 +36,8 @@ def customer_list(
 ):
     stmt = select(models.Customer).options(
         joinedload(models.Customer.city),
-        joinedload(models.Customer.street)
+        joinedload(models.Customer.street),
+        joinedload(models.Customer.district)
     ).order_by(models.Customer.id.desc())
 
     if q and q.strip():
