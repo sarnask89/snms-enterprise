@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request, Form, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 import sqlalchemy as sa
 from sqlalchemy import select, or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -15,8 +15,10 @@ router = APIRouter(prefix="/admin/addresses", dependencies=[Depends(verify_sessi
 @router.get("", response_class=HTMLResponse)
 def manage_addresses(request: Request, db: Session = Depends(get_db)):
     # Pobierz miasta oznaczone jako zarządzane
+    # Bolt: Added joinedload to eliminate N+1 queries for districts
     managed_cities = list(db.scalars(
         select(models.LocationCity)
+        .options(joinedload(models.LocationCity.district))
         .where(models.LocationCity.is_managed == True)
         .order_by(models.LocationCity.name)
     ).all())
@@ -66,7 +68,13 @@ def search_teryt_cities(
 ):
     """Wyszukiwarka miast w pełnym słowniku TERYT (lokalnym)."""
     term = f"%{q.strip()}%"
-    stmt = select(models.LocationCity).where(models.LocationCity.name.ilike(term)).limit(20)
+    # Bolt: Added joinedload for district and state to eliminate N+2 queries
+    stmt = (
+        select(models.LocationCity)
+        .options(joinedload(models.LocationCity.district).joinedload(models.LocationDistrict.state))
+        .where(models.LocationCity.name.ilike(term))
+        .limit(20)
+    )
     rows = list(db.scalars(stmt).all())
     
     return render(
