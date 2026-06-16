@@ -6,8 +6,9 @@
         <p class="text-sm text-gray-500">Powiązanie klienta, taryfy i opcjonalnego urządzenia dostępowego</p>
       </div>
       <div class="flex gap-3">
-        <UButton to="/finances" color="gray" variant="soft" icon="i-heroicons-banknotes" label="Finanse" />
-        <UButton color="primary" icon="i-heroicons-plus" label="Nowa subskrypcja" @click="openCreateModal" />
+        <UButton color="gray" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" @click="refreshSubscriptions" />
+        <UButton to="/finances" color="gray" variant="soft" icon="i-lucide-banknote" label="Finanse" />
+        <UButton color="primary" icon="i-lucide-plus" label="Nowa subskrypcja" @click="openCreateModal" />
       </div>
     </div>
 
@@ -39,9 +40,9 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openEditModal(row)" />
-            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" @click="toggleSubscription(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeSubscription(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj subskrypcję" @click="openEditModal(row)" />
+            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-lucide-power" aria-label="Przełącz subskrypcję" @click="toggleSubscription(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń subskrypcję" @click="removeSubscription(row)" />
           </div>
         </template>
       </UTable>
@@ -102,6 +103,25 @@
         </form>
       </UCard>
     </UModal>
+
+    <UModal v-model:open="isDeleteModalOpen">
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-bold text-red-600">Usuń subskrypcję</h3>
+          </template>
+          <div class="space-y-4">
+            <p v-if="subscriptionToDelete">
+              Czy na pewno chcesz usunąć subskrypcję dla klienta <strong>{{ subscriptionToDelete.customer?.customerCode || subscriptionToDelete.customerId }}</strong>?
+            </p>
+            <div class="flex justify-end gap-2">
+              <UButton color="gray" variant="outline" label="Anuluj" @click="isDeleteModalOpen = false" />
+              <UButton color="red" :loading="isDeleting" label="Usuń" @click="confirmDelete" />
+            </div>
+          </div>
+        </UCard>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -127,8 +147,11 @@ const technologyOptions = [
 ]
 
 const isModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const customerDevices = ref([])
+const subscriptionToDelete = ref(null)
 
 const form = reactive({
   id: null,
@@ -253,9 +276,21 @@ const toggleSubscription = async (row) => {
   await refreshSubscriptions()
 }
 
-const removeSubscription = async (row) => {
-  if (!confirm(`Usunąć subskrypcję klienta ${row.customer?.customerCode || row.customerId}?`)) return
-  await $fetch(`/api/v1/subscriptions/${row.id}`, { method: 'DELETE' })
-  await refreshSubscriptions()
+const removeSubscription = (row) => {
+  subscriptionToDelete.value = row
+  isDeleteModalOpen.value = true
+}
+
+const confirmDelete = async () => {
+  if (!subscriptionToDelete.value) return
+  isDeleting.value = true
+  try {
+    await $fetch(`/api/v1/subscriptions/${subscriptionToDelete.value.id}`, { method: 'DELETE' })
+    isDeleteModalOpen.value = false
+    subscriptionToDelete.value = null
+    await refreshSubscriptions()
+  } finally {
+    isDeleting.value = false
+  }
 }
 </script>
