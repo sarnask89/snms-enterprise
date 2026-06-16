@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import func, or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -20,7 +20,8 @@ def ip_network_list(
     db: Session = Depends(get_db),
     q: str | None = Query(None, description="nazwa, CIDR, brama, opis, VLAN"),
 ):
-    stmt = select(models.IpNetwork).order_by(models.IpNetwork.id)
+    # Bolt: Added joinedload to eliminate N+1 queries for managing devices
+    stmt = select(models.IpNetwork).options(joinedload(models.IpNetwork.managing_net_device)).order_by(models.IpNetwork.id)
     search_q = (q or "").strip()
     if search_q:
         term = f"%{search_q}%"
@@ -87,6 +88,21 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
     for nid, cnt in db.execute(q_dev).all():
         if nid is not None:
             n_dev[int(nid)] = int(cnt)
+
+    # Bolt: Pre-parse node IP addresses to optimize O(N*M) loop
+    # We store (ip_network_id, parsed_ip_or_None) to ensure nodes without IPs
+    # but with matching network IDs are still counted (fixing regression).
+    parsed_nodes: list[tuple[int | None, Any | None]] = []
+    for node in nodes:
+        raw = (node.ip_address or "").strip().split("/")[0].strip()
+        ip = None
+        if raw:
+            try:
+                ip = ipaddress.ip_address(raw)
+            except ValueError:
+                pass
+        parsed_nodes.append((node.ip_network_id, ip))
+
     usage_rows: list[dict[str, Any]] = []
     for net in networks:
         row: dict[str, Any] = {"network": net, "cidr_error": None, "nodes_in_net": 0, "devices": n_dev.get(net.id, 0)}
@@ -96,20 +112,15 @@ def ip_network_usage(request: Request, db: Session = Depends(get_db)):
             row["cidr_error"] = "niepoprawny CIDR"
             usage_rows.append(row)
             continue
+
         hits = 0
-        for node in nodes:
-            if node.ip_network_id == net.id:
+        for nid, ip in parsed_nodes:
+            # Bolt: Match original logic: check ID first, then CIDR membership
+            if nid == net.id:
                 hits += 1
-                continue
-            raw = (node.ip_address or "").strip().split("/")[0].strip()
-            if not raw:
-                continue
-            try:
-                ip = ipaddress.ip_address(raw)
-                if ip in ip_net:
-                    hits += 1
-            except ValueError:
-                continue
+            elif ip and ip in ip_net:
+                hits += 1
+
         row["nodes_in_net"] = hits
         usage_rows.append(row)
     return render(

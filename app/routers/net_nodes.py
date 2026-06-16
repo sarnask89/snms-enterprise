@@ -35,13 +35,9 @@ def net_nodes_list(request: Request, search_q: str = "", db: Session = Depends(g
         ))
     items = list(db.scalars(stmt.order_by(models.NetNode.name)).all())
     
-    # Mapowanie dywizji dla szybkiego dostępu w szablonie
-    divisions = {d.id: d for d in db.scalars(select(models.Division)).all()}
-    
     return render(request, "net_nodes/list.html", {
         "title": "Infrastruktura (Węzły)", 
         "items": items,
-        "divisions": divisions,
         "search_q": search_q
     })
 
