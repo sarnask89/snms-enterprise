@@ -22,8 +22,8 @@
         <UTable :data="queues || []" :columns="queueColumns" :loading="pendingQueues">
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openQueueEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeQueue(row)" />
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj kolejkę" @click="openQueueEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń kolejkę" @click="removeQueue(row)" />
             </div>
           </template>
         </UTable>
@@ -47,8 +47,8 @@
 
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openCategoryEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCategory(row)" />
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj kategorię" @click="openCategoryEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń kategorię" @click="removeCategory(row)" />
             </div>
           </template>
         </UTable>
@@ -99,9 +99,9 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTicketEdit(row)" />
-            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" @click="cycleTicketStatus(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTicket(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj zgłoszenie" @click="openTicketEdit(row)" />
+            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" aria-label="Zmień status" @click="cycleTicketStatus(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń zgłoszenie" @click="removeTicket(row)" />
           </div>
         </template>
       </UTable>
