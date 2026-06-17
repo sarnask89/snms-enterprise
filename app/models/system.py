@@ -104,6 +104,7 @@ class ConfigReloadLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     actor_id: Mapped[int | None] = mapped_column(ForeignKey("portal_users.id", ondelete="SET NULL"), nullable=True)
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    actor: Mapped["PortalUser | None"] = relationship()
 
 class NavMenuItem(Base):
     __tablename__ = "nav_menu_items"

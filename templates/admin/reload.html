@@ -13,7 +13,7 @@
     {% for r in rows %}
     <tr>
       <td>{{ r.created_at }}</td>
-      <td>{% if r.actor_id %}{{ users.get(r.actor_id).username if users.get(r.actor_id) else r.actor_id }}{% else %}—{% endif %}</td>
+      <td>{% if r.actor %}{{ r.actor.username }}{% else %}—{% endif %}</td>
       <td>{{ r.note or "—" }}</td>
     </tr>
     {% else %}

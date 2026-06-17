@@ -7,7 +7,7 @@ import sqlalchemy as sa
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from app import models, teryt_import
 from app.audit import record_audit
@@ -194,7 +194,17 @@ async def admin_user_groups_new_submit(request: Request, db: Session = Depends(g
 
 @router.get("/user-groups/{group_id}/edit", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
 def admin_user_groups_edit_form(group_id: int, request: Request, db: Session = Depends(get_db)):
-    g = db.get(models.PortalUserGroup, group_id)
+    """
+    Fetches a specific user group and eager loads its members.
+    Optimization: Uses selectinload(models.PortalUserGroup.users) to efficiently load
+    the relationship in a separate query, avoiding multiple lazy-load queries when
+    accessing g.users for ID collection.
+    """
+    g = db.scalars(
+        select(models.PortalUserGroup)
+        .options(selectinload(models.PortalUserGroup.users))
+        .where(models.PortalUserGroup.id == group_id)
+    ).first()
     if not g:
         return RedirectResponse("/admin/user-groups", status_code=303)
     users = list(db.scalars(select(models.PortalUser).order_by(models.PortalUser.username)).all())
@@ -387,9 +397,20 @@ def admin_teryt_import_ulic(request: Request, db: Session = Depends(get_db), fil
 
 @router.get("/audit-logs", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
 def admin_audit_logs(request: Request, db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.AuditLog).order_by(models.AuditLog.timestamp.desc()).limit(200)).all())
-    users = {u.id: u for u in db.scalars(select(models.PortalUser)).all()}
-    return render(request, "admin/audit_logs.html", {"title": "Dziennik zdarzeń", "rows": rows, "users": users})
+    """
+    Retrieves the last 200 audit logs with their associated actors in a single query.
+    Optimization: Uses joinedload(models.AuditLog.actor) to avoid N+1 queries and
+    removes redundant full-table scan of PortalUser.
+    """
+    rows = list(
+        db.scalars(
+            select(models.AuditLog)
+            .options(joinedload(models.AuditLog.actor))
+            .order_by(models.AuditLog.timestamp.desc())
+            .limit(200)
+        ).all()
+    )
+    return render(request, "admin/audit_logs.html", {"title": "Dziennik zdarzeń", "rows": rows})
 
 
 @router.get("/backups", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
@@ -466,9 +487,20 @@ def admin_backups_delete_file(filename: str, request: Request, db: Session = Dep
 
 @router.get("/reload", response_class=HTMLResponse, dependencies=[Depends(require_admin_or_manager)])
 def admin_reload_list(request: Request, db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.ConfigReloadLog).order_by(models.ConfigReloadLog.created_at.desc()).limit(100)).all())
-    users = {u.id: u for u in db.scalars(select(models.PortalUser)).all()}
-    return render(request, "admin/reload.html", {"title": "Przeładowanie (log)", "rows": rows, "users": users})
+    """
+    Retrieves the last 100 configuration reload logs with their associated actors.
+    Optimization: Uses joinedload(models.ConfigReloadLog.actor) to eliminate N+1 query patterns
+    and avoids loading the entire PortalUser table into memory.
+    """
+    rows = list(
+        db.scalars(
+            select(models.ConfigReloadLog)
+            .options(joinedload(models.ConfigReloadLog.actor))
+            .order_by(models.ConfigReloadLog.created_at.desc())
+            .limit(100)
+        ).all()
+    )
+    return render(request, "admin/reload.html", {"title": "Przeładowanie (log)", "rows": rows})
 
 
 @router.post("/reload", dependencies=[Depends(require_admin_or_manager)])
