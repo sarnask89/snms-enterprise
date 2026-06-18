@@ -58,7 +58,9 @@ class MonitoringService:
         db = SessionLocal()
         try:
             # 1. Check Infrastructure Devices (NetDevice)
-            devices = db.scalars(select(NetDevice).where(NetDevice.status == "active")).all()
+            devices = await asyncio.to_thread(
+                lambda: db.scalars(select(NetDevice).where(NetDevice.status == "active")).all()
+            )
             logger.info(f"Checking {len(devices)} active infrastructure devices...")
             
             infra_tasks = []
@@ -67,7 +69,9 @@ class MonitoringService:
             
             # 2. Check Customer Devices (CustomerDevice)
             from app.models.network import CustomerDevice
-            cust_devices = db.scalars(select(CustomerDevice).where(CustomerDevice.status == "active")).all()
+            cust_devices = await asyncio.to_thread(
+                lambda: db.scalars(select(CustomerDevice).where(CustomerDevice.status == "active")).all()
+            )
             logger.info(f"Checking {len(cust_devices)} active customer devices...")
             
             cust_tasks = []
