@@ -1,12 +1,10 @@
 import asyncio
-import subprocess
-import time
 import random
 from datetime import datetime, timezone
 from sqlalchemy import select, func
 from app.database import SessionLocal
 from app.models.network import NetDevice
-from app.models.monitoring import NetworkStat, SystemNotification, NvidiaGPU, NvidiaStat
+from app.models.monitoring import SystemNotification, NvidiaGPU, NvidiaStat
 from app.services.snmp_service import snmp_service
 from app.services.nvidia_service import nvidia_service
 import logging
