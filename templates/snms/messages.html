@@ -9,8 +9,8 @@
     <tr>
       <td>{{ r.subject }}</td>
       <td>{{ r.status.value }}</td>
-      <td>{% set c = customers.get(r.customer_id) %}{{ c.customer_code if c else "—" }}</td>
-      <td>{% if r.template_id %}{{ templates.get(r.template_id).name if templates.get(r.template_id) else r.template_id }}{% else %}—{% endif %}</td>
+      <td>{{ r.customer.customer_code if r.customer else "—" }}</td>
+      <td>{{ r.template.name if r.template else "—" }}</td>
       <td>{{ r.created_at }}</td>
       <td class="actions">
         {% if can_write_messages %}

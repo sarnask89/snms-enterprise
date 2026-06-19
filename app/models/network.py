@@ -213,6 +213,7 @@ class CustomerDevice(Base):
     sessions: Mapped[list["CustomerDeviceSession"]] = relationship(back_populates="device", cascade="all, delete-orphan")
     notices: Mapped[list["CustomerDeviceNotice"]] = relationship(back_populates="device", cascade="all, delete-orphan")
     subscriptions: Mapped[list["Subscription"]] = relationship(back_populates="device")
+    traffic_stats: Mapped[list["TrafficStat"]] = relationship(back_populates="device")
 
 class CustomerDeviceGroup(Base):
     __tablename__ = "node_groups"
@@ -253,3 +254,4 @@ class TrafficStat(Base):
     bytes_out: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    device: Mapped["CustomerDevice | None"] = relationship(back_populates="traffic_stats")
