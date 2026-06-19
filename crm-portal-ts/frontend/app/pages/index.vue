@@ -34,8 +34,8 @@
         
         <UTable :data="recentCustomers" :columns="recentColumns">
            <template #status-data="{ row }">
-            <UBadge :color="row.status === 'active' ? 'emerald' : 'gray'" variant="soft" size="xs">
-              {{ row.status }}
+            <UBadge :color="row.status === 'active' ? 'success' : 'neutral'" variant="soft" size="xs">
+              {{ row.status === 'active' ? 'Aktywny' : 'Nieaktywny' }}
             </UBadge>
           </template>
         </UTable>
@@ -47,14 +47,14 @@
           <h3 class="font-bold">Szybkie Akcje</h3>
         </template>
         <div class="flex flex-col gap-2">
-          <UButton icon="i-heroicons-magnifying-glass" label="Szukaj urządzenia" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-document-plus" label="Generuj raport PIT" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-bolt" label="Diagnostyka OLT" color="gray" variant="soft" block />
+          <UButton icon="i-lucide-search" label="Szukaj urządzenia" color="neutral" variant="soft" block />
+          <UButton icon="i-lucide-file-plus" label="Generuj raport PIT" color="neutral" variant="soft" block />
+          <UButton icon="i-lucide-zap" label="Diagnostyka OLT" color="neutral" variant="soft" block />
         </div>
         
         <div class="mt-6 p-4 rounded-xl bg-primary-500/5 border border-primary-500/10">
           <div class="flex items-center gap-2 text-primary-500 mb-2">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             <span class="text-xs font-bold uppercase tracking-wider">AI Insight</span>
           </div>
           <p class="text-xs text-gray-600 dark:text-gray-400 italic">
@@ -68,10 +68,10 @@
 
 <script setup>
 const statsMap = {
-  customers: { label: 'Abonenci', icon: 'i-heroicons-users', color: 'blue' },
-  nodes: { label: 'Węzły', icon: 'i-heroicons-map-pin', color: 'emerald' },
-  devices: { label: 'Urządzenia', icon: 'i-heroicons-cpu-chip', color: 'indigo' },
-  tickets: { label: 'Zgłoszenia', icon: 'i-heroicons-ticket', color: 'orange' }
+  customers: { label: 'Abonenci', icon: 'i-lucide-users', color: 'blue' },
+  nodes: { label: 'Węzły', icon: 'i-lucide-map-pin', color: 'emerald' },
+  devices: { label: 'Urządzenia', icon: 'i-lucide-cpu', color: 'indigo' },
+  tickets: { label: 'Zgłoszenia', icon: 'i-lucide-life-buoy', color: 'orange' }
 }
 
 const { data: stats } = await useFetch('/api/v1/dashboard/stats')
