@@ -51,6 +51,8 @@ class Customer(Base):
     devices: Mapped[list["CustomerDevice"]] = relationship(back_populates="customer")
     subscriptions: Mapped[list["Subscription"]] = relationship(back_populates="customer")
     invoices: Mapped[list["Invoice"]] = relationship(back_populates="customer")
+    messages: Mapped[list["OutboundMessage"]] = relationship(back_populates="customer")
+    calendar_events: Mapped[list["CalendarEvent"]] = relationship(back_populates="customer")
     tickets: Mapped[list["SupportTicket"]] = relationship(back_populates="customer")
     documents: Mapped[list["Document"]] = relationship(back_populates="customer")
     notices: Mapped[list["CustomerNotice"]] = relationship(back_populates="customer", cascade="all, delete-orphan")

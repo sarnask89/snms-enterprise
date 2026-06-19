@@ -190,7 +190,12 @@ def path_allowed_for_portal(path: str, visible_urls: list[str], visible_menu_key
         return True
     if "builder" in visible_menu_keys and _under_prefix(p, "/builder"):
         return True
-    if "snms_entities" in visible_menu_keys and _under_prefix(p, "/snms"):
+    if "snms_entities" in visible_menu_keys and (
+        _under_prefix(p, "/snms")
+        or _under_prefix(p, "/messages")
+        or _under_prefix(p, "/timetable")
+        or _under_prefix(p, "/stats")
+    ):
         return True
     return False
 

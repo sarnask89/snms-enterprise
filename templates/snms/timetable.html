@@ -9,7 +9,7 @@
       <td>{{ r.title }}</td>
       <td>{{ r.starts_at }}</td>
       <td>{{ r.ends_at }}</td>
-      <td>{% set c = customers.get(r.customer_id) %}{{ c.customer_code if c else "—" }}</td>
+      <td>{{ r.customer.customer_code if r.customer else "—" }}</td>
       <td>{{ "tak" if r.done else "nie" }}</td>
       <td class="actions">
         {% if can_write_crm %}

@@ -8,7 +8,7 @@
     {% for r in rows %}
     <tr>
       <td>{{ r.period_start }} — {{ r.period_end }}</td>
-      <td>{% if r.node_id %}{% set n = nodes_map.get(r.node_id) %}{{ n.hostname if n else r.node_id }}{% else %}—{% endif %}</td>
+      <td>{{ r.device.hostname if r.device else "—" }}</td>
       <td>{{ r.bytes_in }}</td>
       <td>{{ r.bytes_out }}</td>
       <td>{{ r.note or "—" }}</td>
