@@ -1,6 +1,5 @@
 import asyncio
 import ipaddress
-import subprocess
 from typing import List, Dict, Any
 from app.services.snmp_service import snmp_service
 from app.services.mikrotik import MikrotikService
