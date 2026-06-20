@@ -15,15 +15,15 @@
               <h2 class="font-semibold text-lg">Kolejki</h2>
               <p class="text-sm text-gray-500">Kanały obsługi zgłoszeń</p>
             </div>
-            <UButton color="primary" size="sm" icon="i-heroicons-plus" label="Dodaj" @click="isQueueModalOpen = true" />
+            <UButton color="primary" size="sm" icon="i-lucide-plus" label="Dodaj" @click="isQueueModalOpen = true" />
           </div>
         </template>
 
         <UTable :data="queues || []" :columns="queueColumns" :loading="pendingQueues">
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openQueueEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeQueue(row)" />
+              <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj kolejkę" @click="openQueueEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń kolejkę" @click="removeQueue(row)" />
             </div>
           </template>
         </UTable>
@@ -36,7 +36,7 @@
               <h2 class="font-semibold text-lg">Kategorie</h2>
               <p class="text-sm text-gray-500">Klasyfikacja zgłoszeń</p>
             </div>
-            <UButton color="primary" size="sm" icon="i-heroicons-plus" label="Dodaj" @click="isCategoryModalOpen = true" />
+            <UButton color="primary" size="sm" icon="i-lucide-plus" label="Dodaj" @click="isCategoryModalOpen = true" />
           </div>
         </template>
 
@@ -47,8 +47,8 @@
 
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openCategoryEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCategory(row)" />
+              <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj kategorię" @click="openCategoryEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń kategorię" @click="removeCategory(row)" />
             </div>
           </template>
         </UTable>
@@ -65,11 +65,11 @@
           <div class="flex items-center gap-3">
             <UInput
               v-model="ticketSearch"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj po tytule lub treści..."
               class="w-72"
             />
-            <UButton color="primary" icon="i-heroicons-plus" label="Nowe zgłoszenie" @click="openTicketCreate" />
+            <UButton color="primary" icon="i-lucide-plus" label="Nowe zgłoszenie" @click="openTicketCreate" />
           </div>
         </div>
       </template>
@@ -99,9 +99,9 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTicketEdit(row)" />
-            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" @click="cycleTicketStatus(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTicket(row)" />
+            <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj zgłoszenie" @click="openTicketEdit(row)" />
+            <UButton size="xs" color="yellow" variant="ghost" icon="i-lucide-refresh-cw" aria-label="Zmień status zgłoszenia" @click="cycleTicketStatus(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash" aria-label="Usuń zgłoszenie" @click="removeTicket(row)" />
           </div>
         </template>
       </UTable>
