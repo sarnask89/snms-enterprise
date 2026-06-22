@@ -27,6 +27,9 @@ class OutboundMessage(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     sent_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
+    template: Mapped["MessageTemplate | None"] = relationship()
+    customer: Mapped["Customer | None"] = relationship()
+
 class CalendarEvent(Base):
     __tablename__ = "calendar_events"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -37,3 +40,5 @@ class CalendarEvent(Base):
     customer_id: Mapped[int | None] = mapped_column(ForeignKey("customers.id"), nullable=True)
     done: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    customer: Mapped["Customer | None"] = relationship()
