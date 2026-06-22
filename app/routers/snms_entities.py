@@ -8,7 +8,7 @@ from decimal import Decimal
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.audit import record_audit
@@ -57,14 +57,19 @@ def _merge_message_from_template(
 @router.get("/messages", response_class=HTMLResponse)
 def messages_list(request: Request, db: Session = Depends(get_db)):
     rows = list(
-        db.scalars(select(models.OutboundMessage).order_by(models.OutboundMessage.id.desc())).all()
+        db.scalars(
+            select(models.OutboundMessage)
+            .options(
+                joinedload(models.OutboundMessage.customer),
+                joinedload(models.OutboundMessage.template)
+            )
+            .order_by(models.OutboundMessage.id.desc())
+        ).all()
     )
-    cust = _customers_map(db)
-    tmpl = {t.id: t for t in db.scalars(select(models.MessageTemplate)).all()}
     return render(
         request,
         "snms/messages.html",
-        {"title": "Wiadomości", "rows": rows, "customers": cust, "templates": tmpl},
+        {"title": "Wiadomości", "rows": rows},
     )
 
 
@@ -277,13 +282,16 @@ def messages_delete(row_id: int, request: Request, db: Session = Depends(get_db)
 @router.get("/timetable", response_class=HTMLResponse)
 def timetable_list(request: Request, db: Session = Depends(get_db)):
     rows = list(
-        db.scalars(select(models.CalendarEvent).order_by(models.CalendarEvent.starts_at.desc())).all()
+        db.scalars(
+            select(models.CalendarEvent)
+            .options(joinedload(models.CalendarEvent.customer))
+            .order_by(models.CalendarEvent.starts_at.desc())
+        ).all()
     )
-    cust = _customers_map(db)
     return render(
         request,
         "snms/timetable.html",
-        {"title": "Terminarz", "rows": rows, "customers": cust},
+        {"title": "Terminarz", "rows": rows},
     )
 
 
@@ -400,13 +408,16 @@ def _fmt_dt_local(dt: datetime) -> str:
 @router.get("/stats", response_class=HTMLResponse)
 def stats_list(request: Request, db: Session = Depends(get_db)):
     rows = list(
-        db.scalars(select(models.TrafficStat).order_by(models.TrafficStat.period_start.desc())).all()
+        db.scalars(
+            select(models.TrafficStat)
+            .options(joinedload(models.TrafficStat.device))
+            .order_by(models.TrafficStat.period_start.desc())
+        ).all()
     )
-    nodes = {n.id: n for n in db.scalars(select(models.CustomerDevice)).all()}
     return render(
         request,
         "snms/stats.html",
-        {"title": "Statystyki ruchu", "rows": rows, "nodes_map": nodes},
+        {"title": "Statystyki ruchu", "rows": rows},
     )
 
 
