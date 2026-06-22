@@ -6,8 +6,8 @@
         <p class="text-sm text-gray-500">Powiązanie klienta, taryfy i opcjonalnego urządzenia dostępowego</p>
       </div>
       <div class="flex gap-3">
-        <UButton to="/finances" color="gray" variant="soft" icon="i-heroicons-banknotes" label="Finanse" />
-        <UButton color="primary" icon="i-heroicons-plus" label="Nowa subskrypcja" @click="openCreateModal" />
+        <UButton to="/finances" color="neutral" variant="soft" icon="i-lucide-banknote" label="Finanse" />
+        <UButton color="primary" icon="i-lucide-plus" label="Nowa subskrypcja" @click="openCreateModal" />
       </div>
     </div>
 
@@ -32,16 +32,16 @@
         </template>
 
         <template #active-data="{ row }">
-          <UBadge :color="row.active ? 'emerald' : 'gray'" variant="soft">
+          <UBadge :color="row.active ? 'success' : 'neutral'" variant="soft">
             {{ row.active ? 'Aktywna' : 'Wyłączona' }}
           </UBadge>
         </template>
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openEditModal(row)" />
-            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" @click="toggleSubscription(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeSubscription(row)" />
+            <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj subskrypcję" @click="openEditModal(row)" />
+            <UButton size="xs" :color="row.active ? 'warning' : 'success'" variant="ghost" icon="i-lucide-power" aria-label="Przełącz status subskrypcji" @click="toggleSubscription(row)" />
+            <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Usuń subskrypcję" @click="removeSubscription(row)" />
           </div>
         </template>
       </UTable>
@@ -90,13 +90,10 @@
             </UFormField>
           </div>
 
-          <label class="flex items-center gap-3 text-sm">
-            <input v-model="form.active" type="checkbox" class="rounded border-gray-300">
-            <span>Subskrypcja aktywna</span>
-          </label>
+          <UCheckbox v-model="form.active" label="Subskrypcja aktywna" />
 
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSaving" label="Zapisz" />
           </div>
         </form>
@@ -106,6 +103,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const columns = [
   { accessorKey: 'customer', header: 'Klient' },
   { accessorKey: 'tariff', header: 'Taryfa' },
@@ -239,6 +238,10 @@ const saveSubscription = async () => {
       await $fetch('/api/v1/subscriptions', { method: 'POST', body: payload })
     }
 
+    toast.add({
+      title: 'Zmiany zapisane',
+      description: 'Subskrypcja została zapisana pomyślnie.'
+    })
     isModalOpen.value = false
     resetForm()
     customerDevices.value = []
@@ -250,12 +253,20 @@ const saveSubscription = async () => {
 
 const toggleSubscription = async (row) => {
   await $fetch(`/api/v1/subscriptions/${row.id}/toggle`, { method: 'POST' })
+  toast.add({
+    title: 'Status zmieniony',
+    description: 'Status subskrypcji został pomyślnie zaktualizowany.'
+  })
   await refreshSubscriptions()
 }
 
 const removeSubscription = async (row) => {
   if (!confirm(`Usunąć subskrypcję klienta ${row.customer?.customerCode || row.customerId}?`)) return
   await $fetch(`/api/v1/subscriptions/${row.id}`, { method: 'DELETE' })
+  toast.add({
+    title: 'Subskrypcja usunięta',
+    description: 'Subskrypcja została pomyślnie usunięta.'
+  })
   await refreshSubscriptions()
 }
 </script>
