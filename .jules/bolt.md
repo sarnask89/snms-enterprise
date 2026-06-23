@@ -1,0 +1,3 @@
+## 2026-06-25 - [SQLAlchemy Eager Loading vs Manual Dictionary Lookups]
+**Learning:** In several routers (e.g., subscriptions, finances, helpdesk), a recurring anti-pattern was observed: fetching full related tables (like all customers or all tariffs) into Python dictionaries to perform manual ID-to-object lookups in Jinja2 templates. This consumes excessive memory, increases CPU overhead, and causes redundant database scans.
+**Action:** Use SQLAlchemy `joinedload` (for one-to-one/many-to-one) or `selectinload` (for one-to-many) to eager-load relationships directly in the primary query. Refactor templates to use direct relationship access (e.g., `item.customer.name`) instead of dictionary-based lookups.
