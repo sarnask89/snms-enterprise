@@ -37,7 +37,9 @@
         </template>
 
         <template #docType-data="{ row }">
-          <UBadge color="primary" variant="soft">{{ row.docType }}</UBadge>
+          <UBadge color="primary" variant="soft">
+            {{ docTypeOptions.find(opt => opt.value === row.docType)?.label || row.docType }}
+          </UBadge>
         </template>
 
         <template #file-data="{ row }">
@@ -138,11 +140,11 @@ const columns = [
 ]
 
 const docTypeOptions = [
-  { label: 'Contract', value: 'contract' },
-  { label: 'Invoice', value: 'invoice' },
-  { label: 'Protocol', value: 'protocol' },
-  { label: 'Attachment', value: 'attachment' },
-  { label: 'Other', value: 'other' }
+  { label: 'Umowa', value: 'contract' },
+  { label: 'Faktura', value: 'invoice' },
+  { label: 'Protokół', value: 'protocol' },
+  { label: 'Załącznik', value: 'attachment' },
+  { label: 'Inny', value: 'other' }
 ]
 
 const search = ref('')
