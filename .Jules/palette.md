@@ -1,0 +1,3 @@
+## 2025-06-24 - [Semantic Colors & Lucide Icons on Dashboard]
+**Learning:** Modernizing the dashboard required mapping legacy tailwind colors (emerald, blue, indigo, orange) to the project's new semantic tokens (success, primary, warning). This ensures visual consistency with already refactored pages like subscriptions and finances. Adding Polish ARIA labels (e.g., 'Zobacz wszystkich abonentów') significantly improves accessibility for screen reader users in the local context.
+**Action:** Always prefer semantic tokens (`primary`, `success`, `neutral`, `warning`, `error`) over literal tailwind colors when updating Nuxt UI v4 components. Ensure all icon-only or generic-label buttons have descriptive `aria-label` attributes in the application's primary language (Polish).
