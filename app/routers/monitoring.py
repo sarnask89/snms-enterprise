@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import json
@@ -77,19 +77,30 @@ def get_device_stats_json(
     
     if item_ids:
         ids = [int(i) for i in item_ids.split(",") if i.strip().isdigit()]
+        # Optimized: Fetch all items and their history in fewer queries
         items = db.scalars(select(models.MonitorItem).where(models.MonitorItem.id.in_(ids))).all()
+        item_map = {item.id: item for item in items}
         
+        history_records = db.scalars(
+            select(models.MonitorHistory)
+            .where(models.MonitorHistory.item_id.in_(ids))
+            .where(models.MonitorHistory.timestamp >= since)
+            .order_by(models.MonitorHistory.timestamp.asc())
+        ).all()
+        
+        # Group history by item_id
+        grouped_history = {iid: [] for iid in ids}
+        for h in history_records:
+            grouped_history[h.item_id].append(h)
+
         result = {"labels": [], "datasets": []}
-        
-        for item in items:
-            history = db.scalars(
-                select(models.MonitorHistory)
-                .where(models.MonitorHistory.item_id == item.id)
-                .where(models.MonitorHistory.timestamp >= since)
-                .order_by(models.MonitorHistory.timestamp.asc())
-            ).all()
+        for iid in ids:
+            if iid not in item_map:
+                continue
+            item = item_map[iid]
+            history = grouped_history[iid]
             
-            if not result["labels"]:
+            if not result["labels"] and history:
                 result["labels"] = [h.timestamp.strftime("%H:%M") for h in history]
             
             result["datasets"].append({
@@ -170,27 +181,44 @@ def get_customer_device_stats(
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
     ip = device.ip_address
     
-    # Fetch NetFlow aggregates related to this device's IP
-    flows = db.scalars(
-        select(models.NetFlowAggregate)
+    # Optimized: Use database-side aggregation to avoid fetching thousands of rows
+    if db.bind.dialect.name == "sqlite":
+        hour_label = func.strftime("%Y-%m-%d %H:00", models.NetFlowAggregate.timestamp)
+    elif db.bind.dialect.name == "postgresql":
+        hour_label = func.date_trunc('hour', models.NetFlowAggregate.timestamp)
+    else:
+        hour_label = models.NetFlowAggregate.timestamp
+
+    stmt = (
+        select(
+            hour_label.label("hour"),
+            func.sum(case((models.NetFlowAggregate.dst_ip == ip, models.NetFlowAggregate.bytes), else_=0)).label("in_bytes"),
+            func.sum(case((models.NetFlowAggregate.src_ip == ip, models.NetFlowAggregate.bytes), else_=0)).label("out_bytes")
+        )
         .where(
             (models.NetFlowAggregate.timestamp >= since) & 
             ((models.NetFlowAggregate.src_ip == ip) | (models.NetFlowAggregate.dst_ip == ip))
         )
-        .order_by(models.NetFlowAggregate.timestamp.asc())
-    ).all()
+        .group_by("hour")
+        .order_by("hour")
+    )
+
+    results = db.execute(stmt).all()
     
     # Group by hour
     buckets = {}
-    for f in flows:
-        hour_str = f.timestamp.strftime("%Y-%m-%d %H:00")
+    for row in results:
+        # Normalize hour_str from whatever the DB returned
+        if isinstance(row.hour, datetime):
+            hour_str = row.hour.strftime("%Y-%m-%d %H:00")
+        else:
+            hour_str = str(row.hour)
+
         if hour_str not in buckets:
             buckets[hour_str] = {"in_bytes": 0, "out_bytes": 0}
         
-        if f.dst_ip == ip:
-            buckets[hour_str]["in_bytes"] += f.bytes
-        if f.src_ip == ip:
-            buckets[hour_str]["out_bytes"] += f.bytes
+        buckets[hour_str]["in_bytes"] += (row.in_bytes or 0)
+        buckets[hour_str]["out_bytes"] += (row.out_bytes or 0)
             
     # Generate continuous labels
     labels = []
@@ -229,21 +257,35 @@ def get_global_stats(
 ):
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
 
-    # Fetch all NetFlow aggregates in timeframe
-    flows = db.scalars(
-        select(models.NetFlowAggregate)
+    # Optimized: Use database-side aggregation to avoid fetching thousands of rows
+    if db.bind.dialect.name == "sqlite":
+        hour_label = func.strftime("%Y-%m-%d %H:00", models.NetFlowAggregate.timestamp)
+    elif db.bind.dialect.name == "postgresql":
+        hour_label = func.date_trunc('hour', models.NetFlowAggregate.timestamp)
+    else:
+        hour_label = models.NetFlowAggregate.timestamp
+
+    stmt = (
+        select(hour_label.label("hour"), func.sum(models.NetFlowAggregate.bytes).label("total_bytes"))
         .where(models.NetFlowAggregate.timestamp >= since)
-        .order_by(models.NetFlowAggregate.timestamp.asc())
-    ).all()
+        .group_by("hour")
+        .order_by("hour")
+    )
+
+    results = db.execute(stmt).all()
 
     # Group by hour for a global view
     buckets = {}
-    for f in flows:
-        hour_str = f.timestamp.strftime("%Y-%m-%d %H:00")
+    for row in results:
+        if isinstance(row.hour, datetime):
+            hour_str = row.hour.strftime("%Y-%m-%d %H:00")
+        else:
+            hour_str = str(row.hour)
+
         if hour_str not in buckets:
             buckets[hour_str] = {"total_bytes": 0}
 
-        buckets[hour_str]["total_bytes"] += f.bytes
+        buckets[hour_str]["total_bytes"] += (row.total_bytes or 0)
 
     labels = []
     total_mbps = []
