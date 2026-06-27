@@ -54,6 +54,9 @@ class Customer(Base):
     tickets: Mapped[list["SupportTicket"]] = relationship(back_populates="customer")
     documents: Mapped[list["Document"]] = relationship(back_populates="customer")
     notices: Mapped[list["CustomerNotice"]] = relationship(back_populates="customer", cascade="all, delete-orphan")
+    recurring_payments: Mapped[list["RecurringPayment"]] = relationship(back_populates="customer")
+    ledger_entries: Mapped[list["LedgerEntry"]] = relationship(back_populates="customer")
+    cash_receipts: Mapped[list["CashReceipt"]] = relationship(back_populates="customer")
     owned_net_devices: Mapped[list["NetDevice"]] = relationship(
         back_populates="owner_customer", foreign_keys="NetDevice.customer_id"
     )

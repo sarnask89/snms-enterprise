@@ -38,7 +38,7 @@
             <div class="space-y-2 lg:col-span-1">
                 {{ label("Abonent", for="customer_id") }}
                 {% set cust_opts = [] %}
-                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
+                {% for c in customers %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
                 {{ select("customer_id", cust_opts, id="customer_id", required=True) }}
             </div>
             <div class="space-y-2 lg:col-span-1">
@@ -89,7 +89,7 @@
                             {{ r.posted_at.strftime('%Y-%m-%d %H:%M') if r.posted_at else '—' }}
                         </td>
                         <td class="p-4 align-middle font-bold text-xs">
-                            {% set c = customers.get(r.customer_id) %}
+                            {% set c = r.customer %}
                             {{ c.customer_code if c else r.customer_id }}
                         </td>
                         <td class="p-4 align-middle">

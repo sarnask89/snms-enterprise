@@ -80,6 +80,8 @@ class RecurringPayment(Base):
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     next_run: Mapped[date | None] = mapped_column(Date, nullable=True)
 
+    customer: Mapped["Customer"] = relationship(back_populates="recurring_payments")
+
 class LedgerEntry(Base):
     __tablename__ = "ledger_entries"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -92,6 +94,8 @@ class LedgerEntry(Base):
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     posted_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
+    customer: Mapped["Customer"] = relationship(back_populates="ledger_entries")
+
 class CashReceipt(Base):
     __tablename__ = "cash_receipts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -99,3 +103,5 @@ class CashReceipt(Base):
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     issued_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    customer: Mapped["Customer | None"] = relationship(back_populates="cash_receipts")
