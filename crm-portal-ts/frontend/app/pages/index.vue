@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <UCard v-for="(stat, key) in statsMap" :key="key">
         <div class="flex items-center gap-4">
-          <div :class="`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-500`">
+          <div :class="['p-3 rounded-xl', stat.bg, stat.text]">
             <UIcon :name="stat.icon" class="w-6 h-6" />
           </div>
           <div>
@@ -28,13 +28,20 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="font-bold">Ostatnio dodani abonenci</h3>
-            <UButton to="/customers" label="Zobacz wszystkich" variant="ghost" size="xs" />
+            <UButton
+              to="/customers"
+              label="Zobacz wszystkich"
+              variant="ghost"
+              size="xs"
+              color="neutral"
+              aria-label="Zobacz wszystkich abonentów"
+            />
           </div>
         </template>
         
         <UTable :data="recentCustomers" :columns="recentColumns">
            <template #status-data="{ row }">
-            <UBadge :color="row.status === 'active' ? 'emerald' : 'gray'" variant="soft" size="xs">
+            <UBadge :color="row.status === 'active' ? 'success' : 'neutral'" variant="soft" size="xs">
               {{ row.status }}
             </UBadge>
           </template>
@@ -47,14 +54,35 @@
           <h3 class="font-bold">Szybkie Akcje</h3>
         </template>
         <div class="flex flex-col gap-2">
-          <UButton icon="i-heroicons-magnifying-glass" label="Szukaj urządzenia" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-document-plus" label="Generuj raport PIT" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-bolt" label="Diagnostyka OLT" color="gray" variant="soft" block />
+          <UButton
+            icon="i-lucide-search"
+            label="Szukaj urządzenia"
+            color="neutral"
+            variant="soft"
+            block
+            aria-label="Otwórz wyszukiwarkę urządzeń"
+          />
+          <UButton
+            icon="i-lucide-file-plus"
+            label="Generuj raport PIT"
+            color="neutral"
+            variant="soft"
+            block
+            aria-label="Przejdź do generatora raportów PIT"
+          />
+          <UButton
+            icon="i-lucide-zap"
+            label="Diagnostyka OLT"
+            color="neutral"
+            variant="soft"
+            block
+            aria-label="Uruchom diagnostykę OLT"
+          />
         </div>
         
-        <div class="mt-6 p-4 rounded-xl bg-primary-500/5 border border-primary-500/10">
-          <div class="flex items-center gap-2 text-primary-500 mb-2">
-            <UIcon name="i-heroicons-sparkles" />
+        <div class="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10">
+          <div class="flex items-center gap-2 text-primary mb-2">
+            <UIcon name="i-lucide-sparkles" />
             <span class="text-xs font-bold uppercase tracking-wider">AI Insight</span>
           </div>
           <p class="text-xs text-gray-600 dark:text-gray-400 italic">
@@ -68,11 +96,19 @@
 
 <script setup>
 const statsMap = {
-  customers: { label: 'Abonenci', icon: 'i-heroicons-users', color: 'blue' },
-  nodes: { label: 'Węzły', icon: 'i-heroicons-map-pin', color: 'emerald' },
-  devices: { label: 'Urządzenia', icon: 'i-heroicons-cpu-chip', color: 'indigo' },
-  tickets: { label: 'Zgłoszenia', icon: 'i-heroicons-ticket', color: 'orange' }
+  customers: { label: 'Abonenci', icon: 'i-lucide-users', bg: 'bg-info/10', text: 'text-info' },
+  nodes: { label: 'Węzły', icon: 'i-lucide-map-pin', bg: 'bg-success/10', text: 'text-success' },
+  devices: { label: 'Urządzenia', icon: 'i-lucide-cpu', bg: 'bg-primary/10', text: 'text-primary' },
+  tickets: { label: 'Zgłoszenia', icon: 'i-lucide-ticket', bg: 'bg-warning/10', text: 'text-warning' }
 }
+
+// Ensure Tailwind JIT picks up these classes
+const _jit = [
+  'bg-info/10', 'text-info',
+  'bg-success/10', 'text-success',
+  'bg-primary/10', 'text-primary',
+  'bg-warning/10', 'text-warning'
+]
 
 const { data: stats } = await useFetch('/api/v1/dashboard/stats')
 
