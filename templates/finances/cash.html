@@ -16,7 +16,7 @@
             <div class="space-y-2">
                 {{ label("Abonent (opcj.)", for="customer_id") }}
                 {% set cust_opts = [("", "—")] %}
-                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
+                {% for c in customers %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
                 {{ select("customer_id", cust_opts, id="customer_id") }}
             </div>
             <div class="space-y-2 lg:col-span-2">
@@ -62,8 +62,8 @@
                         </td>
                         <td class="p-4 align-middle font-medium text-xs">{{ r.description }}</td>
                         <td class="p-4 align-middle text-xs">
-                            {% if r.customer_id %}
-                                {% set c = customers.get(r.customer_id) %}
+                            {% if r.customer %}
+                                {% set c = r.customer %}
                                 <span class="font-bold">{{ c.customer_code if c else r.customer_id }}</span>
                             {% else %}
                                 <span class="text-muted-foreground italic">brak</span>
