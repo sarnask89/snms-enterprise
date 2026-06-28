@@ -59,11 +59,17 @@ def ticket_list(
     assigned: str | None = Query(None),
     q: str | None = Query(None),
 ):
-    # Optymalizacja SQLAlchemy: ładowanie relacji
-    stmt = select(models.SupportTicket).options(
-        selectinload(models.SupportTicket.customer),
-        selectinload(models.SupportTicket.assignee)
-    ).order_by(models.SupportTicket.id.desc())
+    # Bolt Optimization: Eager load relationships to avoid N+1 queries in templates.
+    # We remove the manual full-table lookups for 'customers' and 'users_map'
+    # which used to fetch every record in the database on every page load.
+    stmt = (
+        select(models.SupportTicket)
+        .options(
+            selectinload(models.SupportTicket.customer),
+            selectinload(models.SupportTicket.assignee),
+        )
+        .order_by(models.SupportTicket.id.desc())
+    )
 
     me = request.state.portal_user
     if assigned == "me" and me.role == models.UserRole.service:
@@ -77,17 +83,13 @@ def ticket_list(
         ))
 
     rows = list(db.scalars(stmt).all())
-    
-    # Do mapowania w szablonie (tradycyjne)
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    users_map = {u.id: u.username for u in db.scalars(select(models.PortalUser)).all()}
 
     # HTMX partial
     if request.headers.get("HX-Request"):
         return render(
             request,
             "helpdesk/ticket_list_rows.html",
-            {"tickets": rows, "customers": customers, "users_map": users_map},
+            {"tickets": rows},
         )
 
     return render(
@@ -96,8 +98,6 @@ def ticket_list(
         {
             "title": "Helpdesk — zgłoszenia",
             "tickets": rows,
-            "customers": customers,
-            "users_map": users_map,
             "filter_assigned": assigned or "",
             "search_q": q or "",
         },
@@ -173,22 +173,47 @@ def helpdesk_search(
     status: str | None = Query(None),
     queue_id: int | None = Query(None),
 ):
-    stmt = select(models.SupportTicket).options(selectinload(models.SupportTicket.customer)).order_by(models.SupportTicket.id.desc())
+    # Bolt Optimization: Eager load relationships and remove redundant full-table scans.
+    stmt = (
+        select(models.SupportTicket)
+        .options(
+            selectinload(models.SupportTicket.customer),
+            selectinload(models.SupportTicket.queue_ref),
+            selectinload(models.SupportTicket.assignee),
+        )
+        .order_by(models.SupportTicket.id.desc())
+    )
     if q and q.strip():
         term = f"%{q.strip()}%"
-        stmt = stmt.where(or_(models.SupportTicket.title.ilike(term), models.SupportTicket.body.ilike(term)))
+        stmt = stmt.where(
+            or_(
+                models.SupportTicket.title.ilike(term),
+                models.SupportTicket.body.ilike(term),
+            )
+        )
     if status and status in [s.value for s in models.TicketStatus]:
         stmt = stmt.where(models.SupportTicket.status == models.TicketStatus(status))
     if queue_id:
         stmt = stmt.where(models.SupportTicket.queue_id == queue_id)
-    
+
     rows = list(db.scalars(stmt).all())
-    custs = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    queues = list(db.scalars(select(models.HelpdeskQueue).order_by(models.HelpdeskQueue.sort_order)).all())
-    return render(request, "helpdesk/search.html", {
-        "title": "Szukaj zgłoszeń", "tickets": rows, "customers": custs, "queues": queues,
-        "search_q": q or "", "search_status": status or "", "search_queue_id": queue_id
-    })
+    queues = list(
+        db.scalars(
+            select(models.HelpdeskQueue).order_by(models.HelpdeskQueue.sort_order)
+        ).all()
+    )
+    return render(
+        request,
+        "helpdesk/search.html",
+        {
+            "title": "Szukaj zgłoszeń",
+            "tickets": rows,
+            "queues": queues,
+            "search_q": q or "",
+            "search_status": status or "",
+            "search_queue_id": queue_id,
+        },
+    )
 
 
 @router.get("/reports", response_class=HTMLResponse)
