@@ -74,13 +74,15 @@ def ticket_list(
     me = request.state.portal_user
     if assigned == "me" and me.role == models.UserRole.service:
         stmt = stmt.where(models.SupportTicket.assignee_id == me.id)
-    
+
     if q and q.strip():
         term = f"%{q.strip()}%"
-        stmt = stmt.where(or_(
-            models.SupportTicket.title.ilike(term),
-            models.SupportTicket.body.ilike(term)
-        ))
+        stmt = stmt.where(
+            or_(
+                models.SupportTicket.title.ilike(term),
+                models.SupportTicket.body.ilike(term),
+            )
+        )
 
     rows = list(db.scalars(stmt).all())
 
@@ -147,7 +149,7 @@ def category_new_form(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/categories/new", dependencies=[Depends(require_helpdesk_write)])
 def category_new_submit(request: Request, db: Session = Depends(get_db), name: str = Form(...), queue_id: int = Form(...)):
-    c = models.HelpdeskCategory(name=name.strip()[:128], queue_id=queue_id, sort_order=0)
+    c = models.HelpdeskCategory(name=name.strip()[:128], queue_id=queue_id)
     db.add(c)
     db.flush()
     record_audit(db, "create", resource_type="helpdesk_category", resource_id=c.id, details=f"name: {c.name}", request=request)
