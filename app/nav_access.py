@@ -192,6 +192,8 @@ def path_allowed_for_portal(path: str, visible_urls: list[str], visible_menu_key
         return True
     if "snms_entities" in visible_menu_keys and _under_prefix(p, "/snms"):
         return True
+    if "helpdesk_tickets" in visible_menu_keys and _under_prefix(p, "/helpdesk"):
+        return True
     return False
 
 
