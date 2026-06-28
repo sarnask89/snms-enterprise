@@ -22,8 +22,8 @@
         <UTable :data="queues || []" :columns="queueColumns" :loading="pendingQueues">
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openQueueEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeQueue(row)" />
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj kolejkę" @click="openQueueEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń kolejkę" @click="removeQueue(row)" />
             </div>
           </template>
         </UTable>
@@ -47,8 +47,8 @@
 
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openCategoryEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCategory(row)" />
+              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj kategorię" @click="openCategoryEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń kategorię" @click="removeCategory(row)" />
             </div>
           </template>
         </UTable>
@@ -99,9 +99,9 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTicketEdit(row)" />
-            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" @click="cycleTicketStatus(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTicket(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" aria-label="Edytuj zgłoszenie" @click="openTicketEdit(row)" />
+            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" aria-label="Zmień status zgłoszenia" @click="cycleTicketStatus(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" aria-label="Usuń zgłoszenie" @click="removeTicket(row)" />
           </div>
         </template>
       </UTable>
@@ -181,6 +181,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const queueColumns = [
   { accessorKey: 'name', header: 'Nazwa' },
   { accessorKey: 'description', header: 'Opis' },
@@ -364,6 +366,10 @@ const saveQueue = async () => {
       await $fetch('/api/v1/helpdesk/queues', { method: 'POST', body: payload })
     }
     isQueueModalOpen.value = false
+    toast.add({
+      title: queueForm.id ? 'Kolejka zaktualizowana' : 'Kolejka dodana',
+      description: `Kolejka "${queueForm.name}" została pomyślnie zapisana.`
+    })
     resetQueueForm()
     await Promise.all([refreshQueues(), refreshReports()])
   } finally {
@@ -385,6 +391,10 @@ const saveCategory = async () => {
       await $fetch('/api/v1/helpdesk/categories', { method: 'POST', body: payload })
     }
     isCategoryModalOpen.value = false
+    toast.add({
+      title: categoryForm.id ? 'Kategoria zaktualizowana' : 'Kategoria dodana',
+      description: `Kategoria "${categoryForm.name}" została pomyślnie zapisana.`
+    })
     resetCategoryForm()
     await Promise.all([refreshCategories(), refreshQueues()])
   } finally {
@@ -410,6 +420,10 @@ const saveTicket = async () => {
       await $fetch('/api/v1/helpdesk/tickets', { method: 'POST', body: payload })
     }
     isTicketModalOpen.value = false
+    toast.add({
+      title: ticketForm.id ? 'Zgłoszenie zaktualizowane' : 'Zgłoszenie dodane',
+      description: `Zgłoszenie "${ticketForm.title}" zostało pomyślnie zapisane.`
+    })
     resetTicketForm()
     await Promise.all([refreshTickets(), refreshQueues(), refreshCategories(), refreshReports()])
   } finally {
@@ -423,24 +437,40 @@ const cycleTicketStatus = async (row) => {
     method: 'POST',
     body: { status: next }
   })
+  toast.add({
+    title: 'Status zmieniony',
+    description: `Status zgłoszenia "${row.title}" został zmieniony na ${next}.`
+  })
   await Promise.all([refreshTickets(), refreshReports()])
 }
 
 const removeQueue = async (row) => {
   if (!confirm(`Usunąć kolejkę "${row.name}"?`)) return
   await $fetch(`/api/v1/helpdesk/queues/${row.id}`, { method: 'DELETE' })
+  toast.add({
+    title: 'Kolejka usunięta',
+    description: `Kolejka "${row.name}" została usunięta.`
+  })
   await Promise.all([refreshQueues(), refreshCategories(), refreshTickets(), refreshReports()])
 }
 
 const removeCategory = async (row) => {
   if (!confirm(`Usunąć kategorię "${row.name}"?`)) return
   await $fetch(`/api/v1/helpdesk/categories/${row.id}`, { method: 'DELETE' })
+  toast.add({
+    title: 'Kategoria usunięta',
+    description: `Kategoria "${row.name}" została usunięta.`
+  })
   await Promise.all([refreshCategories(), refreshTickets()])
 }
 
 const removeTicket = async (row) => {
   if (!confirm(`Usunąć zgłoszenie "${row.title}"?`)) return
   await $fetch(`/api/v1/helpdesk/tickets/${row.id}`, { method: 'DELETE' })
+  toast.add({
+    title: 'Zgłoszenie usunięte',
+    description: `Zgłoszenie "${row.title}" zostało usunięte.`
+  })
   await Promise.all([refreshTickets(), refreshQueues(), refreshCategories(), refreshReports()])
 }
 </script>
