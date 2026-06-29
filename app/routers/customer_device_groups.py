@@ -31,11 +31,11 @@ def node_group_add_alias():
 
 @router.get("/new", response_class=HTMLResponse)
 def node_group_new_form(request: Request, db: Session = Depends(get_db)):
-    nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
+    # Optimization: removed fetching all nodes as they are not used in the template
     return render(
         request,
         "customer_device_groups/form.html",
-        {"title": "Nowa grupa komputerów", "group": None, "all_nodes": nodes, "selected_ids": set()},
+        {"title": "Nowa grupa komputerów", "group": None},
     )
 
 
@@ -60,16 +60,13 @@ def node_group_edit_form(group_id: int, request: Request, db: Session = Depends(
     g = db.get(models.CustomerDeviceGroup, group_id)
     if not g:
         return RedirectResponse("/device-groups", status_code=302)
-    nodes = list(db.scalars(select(models.CustomerDevice).order_by(models.CustomerDevice.hostname)).all())
-    selected = {n.id for n in g.devices}
+    # Optimization: removed fetching all nodes as they are not used in the template
     return render(
         request,
         "customer_device_groups/form.html",
         {
             "title": f"Grupa: {g.name}",
             "group": g,
-            "all_nodes": nodes,
-            "selected_ids": selected,
         },
     )
 
@@ -106,5 +103,9 @@ def _sync_group_nodes(db: Session, group: models.CustomerDeviceGroup, raw_ids: l
             ids.add(int(x))
         except (TypeError, ValueError):
             continue
-    chosen = [db.get(models.CustomerDevice, i) for i in ids]
-    group.devices = [n for n in chosen if n is not None]
+    # Optimization: using IN clause to fetch all devices in one go instead of N+1 db.get calls
+    if ids:
+        chosen = db.scalars(select(models.CustomerDevice).where(models.CustomerDevice.id.in_(ids))).all()
+        group.devices = list(chosen)
+    else:
+        group.devices = []

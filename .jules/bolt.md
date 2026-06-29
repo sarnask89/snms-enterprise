@@ -1,0 +1,3 @@
+## 2026-06-29 - [Legacy vs. Modern UI Data Redundancy]
+**Learning:** This codebase features both legacy Jinja2 templates and a modern Nuxt frontend. Routers serving legacy HTML (e.g., `customer_groups.py`) often contain expensive data fetching (like `db.scalars(select(models.Customer)).all()`) that was intended for membership selection but is no longer utilized by the simplified Jinja2 templates. Modern UI functionality is handled by Nuxt components calling separate API endpoints.
+**Action:** Always verify Jinja2 templates (`.html`) before assuming context variables are required; removing unused full-table scans in GET routes is a safe and effective performance win in this hybrid architecture.
