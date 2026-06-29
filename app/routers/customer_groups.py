@@ -56,16 +56,13 @@ def group_edit_form(group_id: int, request: Request, db: Session = Depends(get_d
     g = db.get(models.CustomerGroup, group_id)
     if not g:
         return RedirectResponse("/customer-groups", status_code=302)
-    custs = list(db.scalars(select(models.Customer).order_by(models.Customer.last_name)).all())
-    selected = {c.id for c in g.customers}
+    # Optimization: removed fetching all customers as they are not used in the template
     return render(
         request,
         "customer_groups/form.html",
         {
             "title": f"Grupa: {g.name}",
             "group": g,
-            "customers": custs,
-            "selected_ids": selected,
         },
     )
 
@@ -93,11 +90,11 @@ async def group_edit_submit(
         except (TypeError, ValueError):
             pass
 
+    # Optimization: using IN clause to fetch all members in one go instead of N+1 db.get calls
     g.customers.clear()
-    for cid in member_ids:
-        c = db.get(models.Customer, cid)
-        if c:
-            g.customers.append(c)
+    if member_ids:
+        members = db.scalars(select(models.Customer).where(models.Customer.id.in_(member_ids))).all()
+        g.customers.extend(members)
     db.commit()
     return RedirectResponse("/customer-groups", status_code=303)
 
