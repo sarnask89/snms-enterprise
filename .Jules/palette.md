@@ -1,0 +1,3 @@
+## 2025-05-15 - Modernization of Finance Management Views
+**Learning:** Standardizing finance views with Lucide icons, semantic color tokens (`neutral`, `error`, `success`, `warning`), and `useToast` feedback significantly improves interface consistency and accessibility compared to legacy Heroicons and raw HTML inputs. Polish ARIA labels like 'Edytuj taryfę' or 'Usuń dokument' are essential for accessibility in icon-only buttons.
+**Action:** Always replace `i-heroicons-*` with `i-lucide-*`, use semantic color tokens for `UBadge` and `UButton`, and ensure every destructive or async action has a corresponding `toast.add` notification. Replace raw checkboxes with `UCheckbox` for better focus management.
