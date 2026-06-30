@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Finanse</h1>
         <p class="text-sm text-gray-500">Aktywny baseline TS dla taryf, faktur, płatności stałych, księgi i kasy</p>
       </div>
-      <UButton to="/subscriptions" color="primary" icon="i-heroicons-arrows-right-left" label="Subskrypcje" />
+      <UButton to="/subscriptions" color="primary" icon="i-lucide-arrow-left-right" label="Subskrypcje" />
     </div>
 
     <UCard>
@@ -15,21 +15,21 @@
             <h2 class="font-semibold text-lg">Taryfy</h2>
             <p class="text-sm text-gray-500">Plany usług wykorzystywane przez subskrypcje klientów</p>
           </div>
-          <UButton color="primary" icon="i-heroicons-plus" label="Dodaj taryfę" @click="isTariffModalOpen = true" />
+          <UButton color="primary" icon="i-lucide-plus" label="Dodaj taryfę" @click="isTariffModalOpen = true" />
         </div>
       </template>
 
       <UTable :data="tariffs || []" :columns="tariffColumns" :loading="pendingTariffs">
         <template #active-data="{ row }">
-          <UBadge :color="row.active ? 'emerald' : 'gray'" variant="soft">
+          <UBadge :color="row.active ? 'success' : 'neutral'" variant="soft">
             {{ row.active ? 'Aktywna' : 'Wyłączona' }}
           </UBadge>
         </template>
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTariffEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTariff(row)" />
+            <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj taryfę" @click="openTariffEdit(row)" />
+            <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Usuń taryfę" @click="removeTariff(row)" />
           </div>
         </template>
       </UTable>
@@ -42,7 +42,7 @@
             <h2 class="font-semibold text-lg">Faktury i dokumenty sprzedaży</h2>
             <p class="text-sm text-gray-500">Minimalny baseline wystawiania i ewidencji dokumentów</p>
           </div>
-          <UButton color="primary" icon="i-heroicons-document-plus" label="Nowy dokument" @click="isInvoiceModalOpen = true" />
+          <UButton color="primary" icon="i-lucide-file-plus" label="Nowy dokument" @click="isInvoiceModalOpen = true" />
         </div>
       </template>
 
@@ -59,8 +59,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openInvoiceEdit(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeInvoice(row)" />
+            <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" aria-label="Edytuj dokument" @click="openInvoiceEdit(row)" />
+            <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Usuń dokument" @click="removeInvoice(row)" />
           </div>
         </template>
       </UTable>
@@ -74,7 +74,7 @@
               <h2 class="font-semibold">Płatności stałe</h2>
               <p class="text-sm text-gray-500">Cykliczne należności</p>
             </div>
-            <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" @click="isPaymentModalOpen = true" />
+            <UButton color="primary" variant="soft" size="xs" icon="i-lucide-plus" aria-label="Dodaj płatność stałą" @click="isPaymentModalOpen = true" />
           </div>
         </template>
 
@@ -90,7 +90,7 @@
                 <div class="text-sm text-gray-500">{{ payment.customer?.customerCode }} · {{ payment.amount.toFixed(2) }} PLN</div>
                 <div class="text-xs text-gray-400">Co {{ payment.intervalMonths }} mies. · dzień {{ payment.dayOfMonth }}</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removePayment(payment)" />
+              <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Usuń płatność" @click="removePayment(payment)" />
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@
               <h2 class="font-semibold">Księga</h2>
               <p class="text-sm text-gray-500">Operacje debet / kredyt</p>
             </div>
-            <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" @click="isLedgerModalOpen = true" />
+            <UButton color="primary" variant="soft" size="xs" icon="i-lucide-plus" aria-label="Dodaj wpis do księgi" @click="isLedgerModalOpen = true" />
           </div>
         </template>
 
@@ -117,9 +117,9 @@
               <div>
                 <div class="font-medium">{{ entry.description }}</div>
                 <div class="text-sm text-gray-500">{{ entry.customer?.customerCode }} · {{ entry.amount.toFixed(2) }} PLN</div>
-                <UBadge :color="entry.kind === 'credit' ? 'emerald' : 'yellow'" variant="soft" size="xs">{{ entry.kind }}</UBadge>
+                <UBadge :color="entry.kind === 'credit' ? 'success' : 'warning'" variant="soft" size="xs">{{ entry.kind }}</UBadge>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeLedgerEntry(entry)" />
+              <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Usuń wpis" @click="removeLedgerEntry(entry)" />
             </div>
           </div>
         </div>
@@ -132,7 +132,7 @@
               <h2 class="font-semibold">Kasa</h2>
               <p class="text-sm text-gray-500">Wpłaty i paragony</p>
             </div>
-            <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" @click="isCashModalOpen = true" />
+            <UButton color="primary" variant="soft" size="xs" icon="i-lucide-plus" aria-label="Dodaj wpis kasy" @click="isCashModalOpen = true" />
           </div>
         </template>
 
@@ -147,7 +147,7 @@
                 <div class="font-medium">{{ receipt.description }}</div>
                 <div class="text-sm text-gray-500">{{ receipt.customer?.customerCode || 'Bez klienta' }} · {{ receipt.amount.toFixed(2) }} PLN</div>
               </div>
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCashReceipt(receipt)" />
+              <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" aria-label="Usuń wpis" @click="removeCashReceipt(receipt)" />
             </div>
           </div>
         </div>
@@ -167,12 +167,9 @@
             <UFormField label="Upload (Mbps)"><UInput v-model="tariffForm.speedUpMbps" type="number" /></UFormField>
           </div>
           <UFormField label="Opis"><UTextarea v-model="tariffForm.description" :data="3" /></UFormField>
-          <label class="flex items-center gap-3 text-sm">
-            <input v-model="tariffForm.active" type="checkbox" class="rounded border-gray-300">
-            <span>Taryfa aktywna</span>
-          </label>
+          <UCheckbox v-model="tariffForm.active" label="Taryfa aktywna" />
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isTariffModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isTariffModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingTariff" label="Zapisz" />
           </div>
         </form>
@@ -194,7 +191,7 @@
           </div>
           <UFormField label="Data wystawienia"><UInput v-model="invoiceForm.issueDate" type="date" /></UFormField>
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isInvoiceModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isInvoiceModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingInvoice" label="Zapisz" />
           </div>
         </form>
@@ -214,7 +211,7 @@
           </div>
           <UFormField label="Następne uruchomienie"><UInput v-model="paymentForm.nextRun" type="date" /></UFormField>
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isPaymentModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isPaymentModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingPayment" label="Zapisz" />
           </div>
         </form>
@@ -232,7 +229,7 @@
             <UFormField label="Rodzaj"><USelect v-model="ledgerForm.kind" :items="ledgerKindOptions" label-key="label" /></UFormField>
           </div>
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isLedgerModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isLedgerModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingLedger" label="Zapisz" />
           </div>
         </form>
@@ -247,7 +244,7 @@
           <UFormField label="Opis" required><UInput v-model="cashForm.description" /></UFormField>
           <UFormField label="Kwota"><UInput v-model="cashForm.amount" type="number" step="0.01" /></UFormField>
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isCashModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isCashModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isSavingCash" label="Zapisz" />
           </div>
         </form>
@@ -257,6 +254,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const tariffColumns = [
   { accessorKey: 'name', header: 'Nazwa' },
   { accessorKey: 'monthlyPrice', header: 'Cena / mies.' },
@@ -369,10 +368,10 @@ const customerOptionsWithEmpty = computed(() => [
 
 const invoiceStatusColor = (status) => {
   switch (status) {
-    case 'paid': return 'emerald'
-    case 'issued': return 'blue'
-    case 'draft': return 'yellow'
-    default: return 'gray'
+    case 'paid': return 'success'
+    case 'issued': return 'info'
+    case 'draft': return 'warning'
+    default: return 'neutral'
   }
 }
 
@@ -465,6 +464,7 @@ const saveTariff = async () => {
     isTariffModalOpen.value = false
     resetTariffForm()
     await refreshTariffs()
+    toast.add({ title: 'Taryfa zapisana', color: 'success' })
   } finally {
     isSavingTariff.value = false
   }
@@ -491,6 +491,7 @@ const saveInvoice = async () => {
     isInvoiceModalOpen.value = false
     resetInvoiceForm()
     await refreshInvoices()
+    toast.add({ title: 'Dokument zapisany', color: 'success' })
   } finally {
     isSavingInvoice.value = false
   }
@@ -514,6 +515,7 @@ const savePayment = async () => {
     isPaymentModalOpen.value = false
     resetPaymentForm()
     await refreshPayments()
+    toast.add({ title: 'Płatność dodana', color: 'success' })
   } finally {
     isSavingPayment.value = false
   }
@@ -534,6 +536,7 @@ const saveLedgerEntry = async () => {
     isLedgerModalOpen.value = false
     resetLedgerForm()
     await refreshLedgerEntries()
+    toast.add({ title: 'Wpis dodany', color: 'success' })
   } finally {
     isSavingLedger.value = false
   }
@@ -553,6 +556,7 @@ const saveCashReceipt = async () => {
     isCashModalOpen.value = false
     resetCashForm()
     await refreshCashReceipts()
+    toast.add({ title: 'Wpis kasy dodany', color: 'success' })
   } finally {
     isSavingCash.value = false
   }
@@ -562,29 +566,34 @@ const removeTariff = async (row) => {
   if (!confirm(`Usunąć taryfę "${row.name}"?`)) return
   await $fetch(`/api/v1/finances/tariffs/${row.id}`, { method: 'DELETE' })
   await refreshTariffs()
+  toast.add({ title: 'Taryfa usunięta', color: 'success' })
 }
 
 const removeInvoice = async (row) => {
   if (!confirm(`Usunąć dokument "${row.number}"?`)) return
   await $fetch(`/api/v1/finances/invoices/${row.id}`, { method: 'DELETE' })
   await refreshInvoices()
+  toast.add({ title: 'Dokument usunięty', color: 'success' })
 }
 
 const removePayment = async (row) => {
   if (!confirm(`Usunąć płatność "${row.name}"?`)) return
   await $fetch(`/api/v1/finances/payments/${row.id}`, { method: 'DELETE' })
   await refreshPayments()
+  toast.add({ title: 'Płatność usunięta', color: 'success' })
 }
 
 const removeLedgerEntry = async (row) => {
   if (!confirm(`Usunąć wpis "${row.description}"?`)) return
   await $fetch(`/api/v1/finances/balance/${row.id}`, { method: 'DELETE' })
   await refreshLedgerEntries()
+  toast.add({ title: 'Wpis usunięty', color: 'success' })
 }
 
 const removeCashReceipt = async (row) => {
   if (!confirm(`Usunąć wpis "${row.description}"?`)) return
   await $fetch(`/api/v1/finances/cash/${row.id}`, { method: 'DELETE' })
   await refreshCashReceipts()
+  toast.add({ title: 'Wpis kasy usunięty', color: 'success' })
 }
 </script>
