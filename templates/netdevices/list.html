@@ -88,7 +88,7 @@
                             </div>
                         </td>
                         <td class="p-4 align-middle">
-                            <div class="font-bold text-xs">{{ d.producer.name if d.producer else '—' }}</div>
+                            <div class="font-bold text-xs">{{ d.net_device_model.producer.name if d.net_device_model and d.net_device_model.producer else '—' }}</div>
                             <div class="text-[10px] text-primary font-semibold uppercase">{{ d.net_device_model.name if d.net_device_model else '—' }}</div>
                         </td>
                         <td class="p-4 align-middle">
