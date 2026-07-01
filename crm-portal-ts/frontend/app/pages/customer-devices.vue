@@ -302,6 +302,12 @@ const resetForm = () => {
   })
 }
 
+const openAddModal = () => {
+  resetForm()
+  installationAddress.clearSuggestions()
+  isEditorOpen.value = true
+}
+
 const openEditor = async (id) => {
   const device = await $fetch(`/api/v1/customer-devices/${id}`)
   Object.assign(form, {
@@ -340,8 +346,11 @@ const openEditor = async (id) => {
 const saveDevice = async () => {
   isSaving.value = true
   try {
-    await $fetch(`/api/v1/customer-devices/${form.id}`, {
-      method: 'PUT',
+    const url = form.id ? `/api/v1/customer-devices/${form.id}` : '/api/v1/customer-devices'
+    const method = form.id ? 'PUT' : 'POST'
+
+    await $fetch(url, {
+      method,
       body: {
         customerId: form.customerId,
         name: form.name || null,
@@ -419,7 +428,10 @@ const confirmDelete = async () => {
         </template>
 
         <template #right>
-          <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" @click="refresh" />
+          <div class="flex items-center gap-2">
+            <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" aria-label="Odśwież listę urządzeń" @click="refresh" />
+            <UButton color="primary" icon="i-lucide-plus" label="Dodaj urządzenie" @click="openAddModal" />
+          </div>
         </template>
       </UDashboardNavbar>
 
@@ -510,6 +522,7 @@ const confirmDelete = async () => {
                 color="neutral"
                 variant="ghost"
                 class="ml-auto"
+                aria-label="Opcje urządzenia"
               />
             </UDropdownMenu>
           </div>
@@ -529,7 +542,9 @@ const confirmDelete = async () => {
       <UCard>
         <template #header>
           <div>
-            <h3 class="text-lg font-semibold text-highlighted">Edytuj urządzenie klienta</h3>
+            <h3 class="text-lg font-semibold text-highlighted">
+              {{ form.id ? 'Edytuj urządzenie klienta' : 'Dodaj nowe urządzenie' }}
+            </h3>
             <p class="text-sm text-muted">Dane techniczne, powiązania discovery i adres instalacyjny.</p>
           </div>
         </template>
