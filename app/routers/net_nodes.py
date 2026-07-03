@@ -26,6 +26,8 @@ def _opt_int(raw: str | None) -> int | None:
 
 @router.get("", response_class=HTMLResponse)
 def net_nodes_list(request: Request, search_q: str = "", db: Session = Depends(get_db)):
+    # Performance Optimization: Using joinedload here ensures all related Division data
+    # is fetched in a single JOIN query, avoiding N+1 problems in the template.
     stmt = select(models.NetNode).options(joinedload(models.NetNode.division))
     if search_q:
         term = f"%{search_q}%"
@@ -33,15 +35,14 @@ def net_nodes_list(request: Request, search_q: str = "", db: Session = Depends(g
             models.NetNode.name.ilike(term),
             models.NetNode.location_detail.ilike(term)
         ))
-    items = list(db.scalars(stmt.order_by(models.NetNode.name)).all())
     
-    # Mapowanie dywizji dla szybkiego dostępu w szablonie
-    divisions = {d.id: d for d in db.scalars(select(models.Division)).all()}
+    # Executing the optimized query. Replaced redundant second query that fetched
+    # all divisions into a dictionary for manual lookup.
+    items = list(db.scalars(stmt.order_by(models.NetNode.name)).all())
     
     return render(request, "net_nodes/list.html", {
         "title": "Infrastruktura (Węzły)", 
         "items": items,
-        "divisions": divisions,
         "search_q": search_q
     })
 
