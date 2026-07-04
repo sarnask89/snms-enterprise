@@ -149,14 +149,26 @@ def gpu_monitoring(request: Request, db: Session = Depends(get_db)):
     from app.models.monitoring import NvidiaGPU, NvidiaStat
     gpus = db.scalars(select(NvidiaGPU).where(NvidiaGPU.is_active == True)).all()
     
-    for gpu in gpus:
-        latest = db.scalar(
+    # Optimization: Batch fetch latest stats to avoid N+1 queries
+    gpu_ids = [gpu.id for gpu in gpus]
+    if gpu_ids:
+        subq = (
+            select(func.max(NvidiaStat.id))
+            .where(NvidiaStat.gpu_id.in_(gpu_ids))
+            .group_by(NvidiaStat.gpu_id)
+        ).scalar_subquery()
+
+        latest_stats = db.scalars(
             select(NvidiaStat)
-            .where(NvidiaStat.gpu_id == gpu.id)
-            .order_by(NvidiaStat.timestamp.desc())
-            .limit(1)
-        )
-        gpu.latest_stat = latest
+            .where(NvidiaStat.id.in_(subq))
+        ).all()
+
+        stat_map = {s.gpu_id: s for s in latest_stats}
+        for gpu in gpus:
+            gpu.latest_stat = stat_map.get(gpu.id)
+    else:
+        for gpu in gpus:
+            gpu.latest_stat = None
         
     return render(request, "admin/monitoring_gpu.html", {
         "title": "Infrastruktura AI / GPU",
