@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Administracja</h1>
         <p class="text-sm text-gray-500">Info runtime, backupy, reload oraz log audytowy dla aktywnego baseline TS/Nuxt</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" label="Odśwież" @click="refreshAll" />
     </div>
 
     <div class="grid md:grid-cols-4 gap-4">
@@ -35,7 +35,7 @@
               <h2 class="font-semibold text-lg">Backupy</h2>
               <p class="text-sm text-gray-500">Tworzenie, pobieranie i usuwanie kopii SQLite</p>
             </div>
-            <UButton color="primary" icon="i-heroicons-circle-stack" label="Utwórz backup" :loading="isCreatingBackup" @click="createBackup" />
+            <UButton color="primary" icon="i-lucide-database" label="Utwórz backup" :loading="isCreatingBackup" @click="createBackup" />
           </div>
         </template>
 
@@ -50,8 +50,22 @@
 
           <template #actions-data="{ row }">
             <div class="flex items-center gap-2">
-              <UButton size="xs" color="primary" variant="ghost" icon="i-heroicons-arrow-down-tray" @click="downloadBackup(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeBackup(row)" />
+              <UButton
+                size="xs"
+                color="primary"
+                variant="ghost"
+                icon="i-lucide-download"
+                aria-label="Pobierz backup"
+                @click="downloadBackup(row)"
+              />
+              <UButton
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash-2"
+                aria-label="Usuń backup"
+                @click="removeBackup(row)"
+              />
             </div>
           </template>
         </UTable>
@@ -64,7 +78,7 @@
               <h2 class="font-semibold text-lg">Reload konfiguracji</h2>
               <p class="text-sm text-gray-500">Log kontrolnych przeładowań i notatek operatorskich</p>
             </div>
-            <UButton color="primary" icon="i-heroicons-bolt" label="Dodaj reload" :loading="isCreatingReload" @click="isReloadModalOpen = true" />
+            <UButton color="primary" icon="i-lucide-zap" label="Dodaj reload" :loading="isCreatingReload" @click="isReloadModalOpen = true" />
           </div>
         </template>
 
@@ -89,7 +103,7 @@
           </div>
           <UInput
             v-model="auditSearch"
-            icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
             placeholder="Filtruj po akcji lub szczegółach..."
             class="w-full md:w-80"
           />
@@ -118,7 +132,7 @@
             <UTextarea v-model="reloadForm.note" :data="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
           </UFormField>
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isReloadModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isReloadModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isCreatingReload" label="Zapisz" />
           </div>
         </form>
@@ -128,6 +142,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const backupColumns = [
   { accessorKey: 'filename', header: 'Plik' },
   { accessorKey: 'createdAt', header: 'Utworzono' },
@@ -214,6 +230,9 @@ const createBackup = async () => {
   try {
     await $fetch('/api/v1/admin/backups/create', { method: 'POST' })
     await Promise.all([refreshBackups(), refreshAuditLogs()])
+    toast.add({ title: 'Sukces', description: 'Utworzono nowy backup', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się utworzyć backupu', color: 'error' })
   } finally {
     isCreatingBackup.value = false
   }
@@ -228,8 +247,13 @@ const removeBackup = async (row) => {
     return
   }
 
-  await $fetch(`/api/v1/admin/backups/${encodeURIComponent(row.filename)}`, { method: 'DELETE' })
-  await Promise.all([refreshBackups(), refreshAuditLogs()])
+  try {
+    await $fetch(`/api/v1/admin/backups/${encodeURIComponent(row.filename)}`, { method: 'DELETE' })
+    await Promise.all([refreshBackups(), refreshAuditLogs()])
+    toast.add({ title: 'Sukces', description: 'Usunięto backup', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się usunąć backupu', color: 'error' })
+  }
 }
 
 const createReload = async () => {
@@ -242,6 +266,9 @@ const createReload = async () => {
     reloadForm.note = ''
     isReloadModalOpen.value = false
     await Promise.all([refreshReloadLogs(), refreshAuditLogs()])
+    toast.add({ title: 'Sukces', description: 'Dodano wpis reload', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się dodać wpisu reload', color: 'error' })
   } finally {
     isCreatingReload.value = false
   }
