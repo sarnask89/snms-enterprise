@@ -141,16 +141,25 @@ def get_device_netflow_json(device_id: int, hours: int = Query(4), db: Session =
 @router.get("/gpu", response_class=HTMLResponse)
 def gpu_monitoring(request: Request, db: Session = Depends(get_db)):
     from app.models.monitoring import NvidiaGPU, NvidiaStat
-    gpus = db.scalars(select(NvidiaGPU).where(NvidiaGPU.is_active == True)).all()
+    gpus = list(db.scalars(select(NvidiaGPU).where(NvidiaGPU.is_active == True)).all())
     
-    for gpu in gpus:
-        latest = db.scalar(
-            select(NvidiaStat)
-            .where(NvidiaStat.gpu_id == gpu.id)
-            .order_by(NvidiaStat.timestamp.desc())
-            .limit(1)
+    # Optimized: Fetch latest stats for all active GPUs in a single query (avoid N+1)
+    if gpus:
+        gpu_ids = [g.id for g in gpus]
+        subq = (
+            select(NvidiaStat.gpu_id, func.max(NvidiaStat.timestamp).label("max_ts"))
+            .where(NvidiaStat.gpu_id.in_(gpu_ids))
+            .group_by(NvidiaStat.gpu_id)
+            .subquery()
         )
-        gpu.latest_stat = latest
+        latest_stats = db.scalars(
+            select(NvidiaStat)
+            .join(subq, (NvidiaStat.gpu_id == subq.c.gpu_id) & (NvidiaStat.timestamp == subq.c.max_ts))
+        ).all()
+
+        stats_map = {s.gpu_id: s for s in latest_stats}
+        for gpu in gpus:
+            gpu.latest_stat = stats_map.get(gpu.id)
         
     return render(request, "admin/monitoring_gpu.html", {
         "title": "Infrastruktura AI / GPU",
