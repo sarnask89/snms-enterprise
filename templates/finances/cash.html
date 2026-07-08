@@ -13,11 +13,14 @@
                 {{ label("Kwota", for="amount") }}
                 {{ input("amount", id="amount", required=True, placeholder="0.00") }}
             </div>
-            <div class="space-y-2">
+            <div class="space-y-2 lg:col-span-2" x-data="{ customers: [] }" x-init="fetch('/api/v1/customers?limit=1000').then(r => r.json()).then(d => customers = d)">
                 {{ label("Abonent (opcj.)", for="customer_id") }}
-                {% set cust_opts = [("", "—")] %}
-                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code)) %}{% endfor %}
-                {{ select("customer_id", cust_opts, id="customer_id") }}
+                <select name="customer_id" id="customer_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="">— BRAK —</option>
+                    <template x-for="c in customers" :key="c.id">
+                        <option :value="c.id" x-text="c.customer_code + ' — ' + c.last_name"></option>
+                    </template>
+                </select>
             </div>
             <div class="space-y-2 lg:col-span-2">
                 {{ label("Opis / Tytuł", for="description") }}
@@ -62,9 +65,11 @@
                         </td>
                         <td class="p-4 align-middle font-medium text-xs">{{ r.description }}</td>
                         <td class="p-4 align-middle text-xs">
-                            {% if r.customer_id %}
-                                {% set c = customers.get(r.customer_id) %}
-                                <span class="font-bold">{{ c.customer_code if c else r.customer_id }}</span>
+                            {% set c = r.customer %}
+                            {% if c %}
+                                <span class="font-bold">{{ c.customer_code }}</span>
+                            {% elif r.customer_id %}
+                                <span class="font-bold">{{ r.customer_id }}</span>
                             {% else %}
                                 <span class="text-muted-foreground italic">brak</span>
                             {% endif %}
