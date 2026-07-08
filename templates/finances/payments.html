@@ -9,11 +9,13 @@
     {% call card(title="Nowa płatność cykliczna", subtitle="Automatyczne naliczanie zobowiązań") %}
     <form method="post" action="/finances/payments/new">
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="space-y-2 lg:col-span-2">
+            <div class="space-y-2 lg:col-span-2" x-data="{ customers: [] }" x-init="fetch('/api/v1/customers?limit=1000').then(r => r.json()).then(d => customers = d)">
                 {{ label("Abonent", for="customer_id") }}
-                {% set cust_opts = [] %}
-                {% for c in customers.values() %}{% do cust_opts.append((c.id, c.customer_code ~ " — " ~ c.last_name)) %}{% endfor %}
-                {{ select("customer_id", cust_opts, id="customer_id", required=True) }}
+                <select name="customer_id" id="customer_id" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <template x-for="c in customers" :key="c.id">
+                        <option :value="c.id" x-text="c.customer_code + ' — ' + c.last_name"></option>
+                    </template>
+                </select>
             </div>
             <div class="space-y-2 lg:col-span-2">
                 {{ label("Nazwa usługi / Opis", for="name") }}
@@ -68,7 +70,7 @@
                     {% for r in rows %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle">
-                            {% set c = customers.get(r.customer_id) %}
+                            {% set c = r.customer %}
                             <div class="font-bold text-xs">{{ c.last_name if c else '—' }}</div>
                             <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else r.customer_id }}</div>
                         </td>

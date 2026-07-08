@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.audit import record_audit
@@ -42,14 +42,17 @@ def _vat_net_amounts(gross: Decimal, vid: int | None, db: Session) -> tuple[floa
 
 @router.get("/payments", response_class=HTMLResponse)
 def finances_payments_list(request: Request, db: Session = Depends(get_db)):
-    rows = list(
-        db.scalars(select(models.RecurringPayment).order_by(models.RecurringPayment.id.desc())).all()
+    # Bolt Optimization: Use joinedload for customer to avoid N+1 queries
+    stmt = (
+        select(models.RecurringPayment)
+        .options(joinedload(models.RecurringPayment.customer))
+        .order_by(models.RecurringPayment.id.desc())
     )
-    cust = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    rows = list(db.scalars(stmt).all())
     return render(
         request,
         "finances/payments.html",
-        {"title": "Płatności stałe", "rows": rows, "customers": cust},
+        {"title": "Płatności stałe", "rows": rows},
     )
 
 
@@ -105,17 +108,19 @@ def finances_payment_delete(pay_id: int, request: Request, db: Session = Depends
 
 @router.get("/balance", response_class=HTMLResponse)
 def finances_balance_list(request: Request, db: Session = Depends(get_db)):
-    rows = list(
-        db.scalars(select(models.LedgerEntry).order_by(models.LedgerEntry.posted_at.desc())).all()
+    # Bolt Optimization: Use joinedload for customer to avoid N+1 queries
+    stmt = (
+        select(models.LedgerEntry)
+        .options(joinedload(models.LedgerEntry.customer))
+        .order_by(models.LedgerEntry.posted_at.desc())
     )
-    cust = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    rows = list(db.scalars(stmt).all())
     return render(
         request,
         "finances/balance.html",
         {
             "title": "Bilans / operacje (księga)",
             "rows": rows,
-            "customers": cust,
             "kinds": list(models.LedgerEntryKind),
         },
     )
@@ -173,14 +178,17 @@ def finances_ledger_delete(entry_id: int, request: Request, db: Session = Depend
 
 @router.get("/cash", response_class=HTMLResponse)
 def finances_cash_list(request: Request, db: Session = Depends(get_db)):
-    rows = list(
-        db.scalars(select(models.CashReceipt).order_by(models.CashReceipt.issued_at.desc())).all()
+    # Bolt Optimization: Use joinedload for customer to avoid N+1 queries
+    stmt = (
+        select(models.CashReceipt)
+        .options(joinedload(models.CashReceipt.customer))
+        .order_by(models.CashReceipt.issued_at.desc())
     )
-    cust = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    rows = list(db.scalars(stmt).all())
     return render(
         request,
         "finances/cash.html",
-        {"title": "Kasa (paragony)", "rows": rows, "customers": cust},
+        {"title": "Kasa (paragony)", "rows": rows},
     )
 
 
@@ -371,7 +379,15 @@ def invoice_list(
     date_from: str | None = Query(None),
     date_to: str | None = Query(None),
 ):
-    stmt = select(models.Invoice).order_by(models.Invoice.id.desc())
+    # Bolt Optimization: Use joinedload for customer and division to avoid N+1 queries
+    stmt = (
+        select(models.Invoice)
+        .options(
+            joinedload(models.Invoice.customer),
+            joinedload(models.Invoice.division)
+        )
+        .order_by(models.Invoice.id.desc())
+    )
     if q and q.strip():
         term = f"%{q.strip()}%"
         stmt = stmt.where(models.Invoice.number.ilike(term))
@@ -393,16 +409,12 @@ def invoice_list(
             pass
 
     rows = list(db.scalars(stmt).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    divisions = {d.id: d for d in db.scalars(select(models.Division)).all()}
     return render(
         request,
         "finances/invoices.html",
         {
             "title": "Dokumenty sprzedaży",
             "invoices": rows,
-            "customers": customers,
-            "divisions": divisions,
             "search_q": q or "",
             "search_status": status or "",
             "search_kind": kind or "",

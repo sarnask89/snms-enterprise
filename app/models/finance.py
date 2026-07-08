@@ -73,6 +73,7 @@ class RecurringPayment(Base):
     __tablename__ = "recurring_payments"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id", ondelete="CASCADE"), nullable=False)
+    customer: Mapped["Customer"] = relationship(back_populates="recurring_payments")
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     interval_months: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
@@ -84,6 +85,7 @@ class LedgerEntry(Base):
     __tablename__ = "ledger_entries"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id", ondelete="CASCADE"), nullable=False)
+    customer: Mapped["Customer"] = relationship(back_populates="ledger_entries")
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     kind: Mapped[LedgerEntryKind] = mapped_column(
         Enum(LedgerEntryKind, values_callable=lambda x: [e.value for e in x]),
@@ -96,6 +98,7 @@ class CashReceipt(Base):
     __tablename__ = "cash_receipts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     customer_id: Mapped[int | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), nullable=True)
+    customer: Mapped["Customer | None"] = relationship(back_populates="cash_receipts")
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     issued_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)

@@ -21,7 +21,7 @@ def subscription_list(request: Request, db: Session = Depends(get_db)):
         select(models.Subscription)
         .options(
             joinedload(models.Subscription.customer),
-            joinedload(models.Subscription.tariff),
+            joinedload(models.Subscription.tariff).joinedload(models.Tariff.vat_rate),
             joinedload(models.Subscription.device),
         )
         .order_by(models.Subscription.id.desc())
