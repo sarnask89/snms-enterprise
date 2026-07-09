@@ -6,8 +6,8 @@
         <p class="text-sm text-gray-500">Standardowy widok roboczy dla discovery, importu i zdalnych testów Mikrotik API oraz Dasan SSH.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
-        <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT GML" @click="downloadPitExport" />
+        <UButton color="gray" variant="ghost" icon="i-lucide-refresh-cw" label="Odśwież" @click="refreshAll" />
+        <UButton color="primary" icon="i-lucide-download" label="Pobierz PIT GML" @click="downloadPitExport" />
       </div>
     </div>
 
@@ -111,7 +111,7 @@
                 size="xs"
                 color="gray"
                 variant="soft"
-                icon="i-heroicons-bolt"
+                icon="i-lucide-zap"
                 :loading="activeProfileTestId === row.id"
                 label="Test połączenia"
                 @click="runProfileTest(row.id)"
@@ -161,7 +161,7 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-bolt"
+                icon="i-lucide-zap"
                 :disabled="!row.readyForDiscovery"
                 :loading="activeScanDeviceId === row.id"
                 label="Skanuj"
@@ -198,7 +198,7 @@
                 size="xs"
                 color="gray"
                 variant="soft"
-                icon="i-heroicons-eye"
+                icon="i-lucide-eye"
                 :loading="activeSessionId === row.id && isLoadingSessionRecords"
                 label="Rekordy"
                 @click="loadSessionRecords(row.id)"
@@ -207,7 +207,7 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-arrow-down-tray"
+                icon="i-lucide-download"
                 :loading="autoImportingSessionId === row.id"
                 label="Auto-import"
                 @click="runAutoImport(row.id)"
@@ -262,7 +262,7 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-arrow-down-circle"
+                icon="i-lucide-download"
                 label="Wybierz"
                 @click="selectRecord(row)"
               />
@@ -322,7 +322,7 @@
               <h2 class="font-semibold text-lg">Zaimportowane urządzenia</h2>
               <p class="text-sm text-gray-500">Customer-devices po imporcie discovery</p>
             </div>
-            <UInput v-model="leaseSearch" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Szukaj IP, MAC, serial..." class="w-72" />
+            <UInput v-model="leaseSearch" icon="i-lucide-search" placeholder="Szukaj IP, MAC, serial..." class="w-72" aria-label="Szukaj leasingów" />
           </div>
         </template>
 
@@ -344,8 +344,8 @@
               <p class="text-sm text-gray-500">Readiness, sync lease i live test z urządzenia dostępowego</p>
             </div>
             <div class="flex flex-wrap gap-2">
-              <UButton color="gray" variant="soft" icon="i-heroicons-bolt" label="Readiness" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
-              <UButton color="primary" variant="soft" icon="i-heroicons-signal" label="Test zdalny" :loading="isRunningRemoteTest" @click="runRemoteTest" />
+              <UButton color="gray" variant="soft" icon="i-lucide-zap" label="Readiness" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
+              <UButton color="primary" variant="soft" icon="i-lucide-signal" label="Test zdalny" :loading="isRunningRemoteTest" @click="runRemoteTest" />
             </div>
           </div>
         </template>
@@ -363,7 +363,7 @@
             <UButton
               color="primary"
               variant="soft"
-              icon="i-heroicons-arrow-path-rounded-square"
+              icon="i-lucide-refresh-cw"
               label="Sync lease"
               :loading="isSyncingLease"
               @click="syncLease"
@@ -495,6 +495,7 @@
 
 <script setup>
 const route = useRoute()
+const toast = useToast()
 const leaseSearch = ref('')
 const diagnosticsDeviceId = ref('')
 const diagnosticsResult = ref(null)
@@ -749,6 +750,9 @@ const saveAccessProfile = async () => {
       refreshDiscoveryDevices(),
       refreshAccessProfiles()
     ])
+    toast.add({ title: 'Profil zapisany', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd zapisu profilu', color: 'error' })
   } finally {
     isSavingProfile.value = false
   }
@@ -767,6 +771,9 @@ const runScan = async (deviceId) => {
       refreshDiscoverySessions(),
       refreshImportedLeases()
     ])
+    toast.add({ title: 'Skanowanie zakończone', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd skanowania', color: 'error' })
   } finally {
     activeScanDeviceId.value = null
   }
@@ -778,6 +785,9 @@ const runProfileTest = async (profileId) => {
     profileTestResult.value = await $fetch(`/api/v1/network-discovery/access-profiles/${profileId}/test`, {
       method: 'POST'
     })
+    toast.add({ title: profileTestResult.value.result.ok ? 'Test połączenia udany' : 'Test połączenia nieudany', color: profileTestResult.value.result.ok ? 'success' : 'warning' })
+  } catch {
+    toast.add({ title: 'Błąd podczas testu połączenia', color: 'error' })
   } finally {
     activeProfileTestId.value = null
   }
@@ -813,6 +823,9 @@ const runAutoImport = async (sessionId) => {
       refreshImportedLeases(),
       refreshDiscoverySessions()
     ])
+    toast.add({ title: 'Auto-import zakończony', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd auto-importu', color: 'error' })
   } finally {
     autoImportingSessionId.value = null
   }
@@ -857,6 +870,9 @@ const importSelectedRecord = async () => {
       refreshImportedLeases(),
       refreshPitSync()
     ])
+    toast.add({ title: 'Rekord zaimportowany', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd importu rekordu', color: 'error' })
   } finally {
     isImportingRecord.value = false
   }
@@ -895,6 +911,9 @@ const importLease = async () => {
       refreshImportedLeases(),
       refreshPitSync()
     ])
+    toast.add({ title: 'Lease zaimportowany', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd importu lease', color: 'error' })
   } finally {
     isImportingLease.value = false
   }
@@ -924,6 +943,9 @@ const importNetwork = async () => {
       comment: ''
     })
     await refreshPitSync()
+    toast.add({ title: 'Sieć zaimportowana', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd importu sieci', color: 'error' })
   } finally {
     isImportingNetwork.value = false
   }
@@ -941,6 +963,9 @@ const runDiagnostics = async () => {
     diagnosticsResult.value = await $fetch(`/api/v1/diagnostics/check/${diagnosticsDeviceId.value}`, {
       method: 'POST'
     })
+    toast.add({ title: 'Diagnostyka gotowa', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd diagnostyki', color: 'error' })
   } finally {
     isCheckingDiagnostics.value = false
   }
@@ -956,6 +981,9 @@ const runRemoteTest = async () => {
     remoteTestResult.value = await $fetch(`/api/v1/diagnostics/remote-test/${diagnosticsDeviceId.value}`, {
       method: 'POST'
     })
+    toast.add({ title: 'Test zdalny zakończony', color: remoteTestResult.value.remoteDiagnostics.ok ? 'success' : 'warning' })
+  } catch {
+    toast.add({ title: 'Błąd testu zdalnego', color: 'error' })
   } finally {
     isRunningRemoteTest.value = false
   }
@@ -972,6 +1000,9 @@ const syncLease = async () => {
       method: 'POST'
     })
     await refreshImportedLeases()
+    toast.add({ title: leaseSyncResult.value.synced ? 'Zsynchronizowano' : 'Brak zmian', color: 'success' })
+  } catch {
+    toast.add({ title: 'Błąd synchronizacji lease', color: 'error' })
   } finally {
     isSyncingLease.value = false
   }
