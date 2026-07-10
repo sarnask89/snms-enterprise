@@ -1,0 +1,3 @@
+## 2026-07-10 - Modernization of Finance Page UX
+**Learning:** Icon-only action buttons in the CRM portal (e.g., Edit/Delete in tables) lack accessibility. Adding Polish ARIA labels ('Edytuj...', 'Usuń...') and providing immediate visual feedback via `useToast` significantly improves the professional feel and usability of data-heavy pages. Replacing legacy Heroicons with Lucide equivalents maintains visual consistency across the modernized portal.
+**Action:** When touching any list or form view, ensure all icon-only `UButton` components have `aria-label` and all destructive or save actions trigger a `toast.add()` call with appropriate semantic colors.
