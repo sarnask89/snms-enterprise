@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
+import sqlalchemy as sa
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
@@ -79,17 +80,27 @@ def get_device_stats_json(
         ids = [int(i) for i in item_ids.split(",") if i.strip().isdigit()]
         items = db.scalars(select(models.MonitorItem).where(models.MonitorItem.id.in_(ids))).all()
         
+        # Batch fetch all history for all items in one query to avoid N+1
+        all_history = db.scalars(
+            select(models.MonitorHistory)
+            .where(models.MonitorHistory.item_id.in_(ids))
+            .where(models.MonitorHistory.timestamp >= since)
+            .order_by(models.MonitorHistory.timestamp.asc())
+        ).all()
+
+        # Group history by item_id
+        hist_by_item = {}
+        for h in all_history:
+            if h.item_id not in hist_by_item:
+                hist_by_item[h.item_id] = []
+            hist_by_item[h.item_id].append(h)
+
         result = {"labels": [], "datasets": []}
         
         for item in items:
-            history = db.scalars(
-                select(models.MonitorHistory)
-                .where(models.MonitorHistory.item_id == item.id)
-                .where(models.MonitorHistory.timestamp >= since)
-                .order_by(models.MonitorHistory.timestamp.asc())
-            ).all()
+            history = hist_by_item.get(item.id, [])
             
-            if not result["labels"]:
+            if not result["labels"] and history:
                 result["labels"] = [h.timestamp.strftime("%H:%M") for h in history]
             
             result["datasets"].append({
@@ -143,14 +154,21 @@ def gpu_monitoring(request: Request, db: Session = Depends(get_db)):
     from app.models.monitoring import NvidiaGPU, NvidiaStat
     gpus = db.scalars(select(NvidiaGPU).where(NvidiaGPU.is_active == True)).all()
     
+    # Use a subquery to fetch the latest stat for all active GPUs in one go (avoids N+1)
+    subq = (
+        select(NvidiaStat.gpu_id, func.max(NvidiaStat.timestamp).label("max_ts"))
+        .group_by(NvidiaStat.gpu_id)
+        .subquery()
+    )
+
+    latest_stats_list = db.scalars(
+        select(NvidiaStat)
+        .join(subq, (NvidiaStat.gpu_id == subq.c.gpu_id) & (NvidiaStat.timestamp == subq.c.max_ts))
+    ).all()
+
+    latest_map = {s.gpu_id: s for s in latest_stats_list}
     for gpu in gpus:
-        latest = db.scalar(
-            select(NvidiaStat)
-            .where(NvidiaStat.gpu_id == gpu.id)
-            .order_by(NvidiaStat.timestamp.desc())
-            .limit(1)
-        )
-        gpu.latest_stat = latest
+        gpu.latest_stat = latest_map.get(gpu.id)
         
     return render(request, "admin/monitoring_gpu.html", {
         "title": "Infrastruktura AI / GPU",
@@ -170,27 +188,26 @@ def get_customer_device_stats(
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
     ip = device.ip_address
     
-    # Fetch NetFlow aggregates related to this device's IP
-    flows = db.scalars(
-        select(models.NetFlowAggregate)
-        .where(
-            (models.NetFlowAggregate.timestamp >= since) & 
-            ((models.NetFlowAggregate.src_ip == ip) | (models.NetFlowAggregate.dst_ip == ip))
+    # Use database-side aggregation for efficiency
+    # Group by hour using dialect-aware formatting
+    dialect = db.bind.dialect.name
+    date_fmt = func.strftime("%Y-%m-%d %H:00", models.NetFlowAggregate.timestamp) if dialect == "sqlite" \
+               else func.to_char(models.NetFlowAggregate.timestamp, "YYYY-MM-DD HH24:00")
+
+    stmt = (
+        select(
+            date_fmt.label("hour_str"),
+            func.sum(sa.case((models.NetFlowAggregate.dst_ip == ip, models.NetFlowAggregate.bytes), else_=0)).label("in_bytes"),
+            func.sum(sa.case((models.NetFlowAggregate.src_ip == ip, models.NetFlowAggregate.bytes), else_=0)).label("out_bytes")
         )
-        .order_by(models.NetFlowAggregate.timestamp.asc())
-    ).all()
+        .where(models.NetFlowAggregate.timestamp >= since)
+        .where((models.NetFlowAggregate.src_ip == ip) | (models.NetFlowAggregate.dst_ip == ip))
+        .group_by("hour_str")
+        .order_by("hour_str")
+    )
     
-    # Group by hour
-    buckets = {}
-    for f in flows:
-        hour_str = f.timestamp.strftime("%Y-%m-%d %H:00")
-        if hour_str not in buckets:
-            buckets[hour_str] = {"in_bytes": 0, "out_bytes": 0}
-        
-        if f.dst_ip == ip:
-            buckets[hour_str]["in_bytes"] += f.bytes
-        if f.src_ip == ip:
-            buckets[hour_str]["out_bytes"] += f.bytes
+    results = db.execute(stmt).all()
+    buckets = {r.hour_str: {"in_bytes": r.in_bytes, "out_bytes": r.out_bytes} for r in results}
             
     # Generate continuous labels
     labels = []
@@ -229,21 +246,23 @@ def get_global_stats(
 ):
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
 
-    # Fetch all NetFlow aggregates in timeframe
-    flows = db.scalars(
-        select(models.NetFlowAggregate)
+    # Use database-side aggregation for efficiency
+    dialect = db.bind.dialect.name
+    date_fmt = func.strftime("%Y-%m-%d %H:00", models.NetFlowAggregate.timestamp) if dialect == "sqlite" \
+               else func.to_char(models.NetFlowAggregate.timestamp, "YYYY-MM-DD HH24:00")
+
+    stmt = (
+        select(
+            date_fmt.label("hour_str"),
+            func.sum(models.NetFlowAggregate.bytes).label("total_bytes")
+        )
         .where(models.NetFlowAggregate.timestamp >= since)
-        .order_by(models.NetFlowAggregate.timestamp.asc())
-    ).all()
+        .group_by("hour_str")
+        .order_by("hour_str")
+    )
 
-    # Group by hour for a global view
-    buckets = {}
-    for f in flows:
-        hour_str = f.timestamp.strftime("%Y-%m-%d %H:00")
-        if hour_str not in buckets:
-            buckets[hour_str] = {"total_bytes": 0}
-
-        buckets[hour_str]["total_bytes"] += f.bytes
+    results = db.execute(stmt).all()
+    buckets = {r.hour_str: {"total_bytes": r.total_bytes} for r in results}
 
     labels = []
     total_mbps = []
