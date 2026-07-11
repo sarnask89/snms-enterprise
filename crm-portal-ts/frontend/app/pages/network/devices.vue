@@ -350,6 +350,7 @@ const confirmDelete = async () => {
             class="w-full max-w-md"
             icon="i-lucide-search"
             placeholder="Szukaj po nazwie, IP, typie, driverze lub serialu..."
+            aria-label="Szukaj urządzeń"
           />
         </template>
 
@@ -429,7 +430,13 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" class="ml-auto" />
+              <UButton
+                icon="i-lucide-ellipsis-vertical"
+                color="neutral"
+                variant="ghost"
+                class="ml-auto"
+                aria-label="Opcje urządzenia"
+              />
             </UDropdownMenu>
           </div>
         </template>
