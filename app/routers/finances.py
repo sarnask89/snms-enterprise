@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.audit import record_audit
@@ -392,17 +392,19 @@ def invoice_list(
         except ValueError:
             pass
 
+    # Performance: Use joinedload for customer and division to avoid N+1 and redundant full-table scans
+    stmt = stmt.options(
+        joinedload(models.Invoice.customer),
+        joinedload(models.Invoice.division)
+    )
     rows = list(db.scalars(stmt).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    divisions = {d.id: d for d in db.scalars(select(models.Division)).all()}
+
     return render(
         request,
         "finances/invoices.html",
         {
             "title": "Dokumenty sprzedaży",
             "invoices": rows,
-            "customers": customers,
-            "divisions": divisions,
             "search_q": q or "",
             "search_status": status or "",
             "search_kind": kind or "",
