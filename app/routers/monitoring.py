@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import json
@@ -170,27 +170,28 @@ def get_customer_device_stats(
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
     ip = device.ip_address
     
-    # Fetch NetFlow aggregates related to this device's IP
-    flows = db.scalars(
-        select(models.NetFlowAggregate)
+    # Use database-side aggregation for performance
+    dialect = db.bind.dialect.name
+    if dialect == "postgresql":
+        time_format = func.to_char(models.NetFlowAggregate.timestamp, "YYYY-MM-DD HH24:00")
+    else:
+        time_format = func.strftime("%Y-%m-%d %H:00", models.NetFlowAggregate.timestamp)
+
+    stmt = (
+        select(
+            time_format.label("hour"),
+            func.sum(case((models.NetFlowAggregate.dst_ip == ip, models.NetFlowAggregate.bytes), else_=0)).label("in_bytes"),
+            func.sum(case((models.NetFlowAggregate.src_ip == ip, models.NetFlowAggregate.bytes), else_=0)).label("out_bytes")
+        )
         .where(
             (models.NetFlowAggregate.timestamp >= since) & 
             ((models.NetFlowAggregate.src_ip == ip) | (models.NetFlowAggregate.dst_ip == ip))
         )
-        .order_by(models.NetFlowAggregate.timestamp.asc())
-    ).all()
+        .group_by(time_format)
+    )
     
-    # Group by hour
-    buckets = {}
-    for f in flows:
-        hour_str = f.timestamp.strftime("%Y-%m-%d %H:00")
-        if hour_str not in buckets:
-            buckets[hour_str] = {"in_bytes": 0, "out_bytes": 0}
-        
-        if f.dst_ip == ip:
-            buckets[hour_str]["in_bytes"] += f.bytes
-        if f.src_ip == ip:
-            buckets[hour_str]["out_bytes"] += f.bytes
+    results = db.execute(stmt).all()
+    buckets = {r.hour: {"in_bytes": r.in_bytes or 0, "out_bytes": r.out_bytes or 0} for r in results}
             
     # Generate continuous labels
     labels = []
@@ -229,21 +230,24 @@ def get_global_stats(
 ):
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
 
-    # Fetch all NetFlow aggregates in timeframe
-    flows = db.scalars(
-        select(models.NetFlowAggregate)
+    # Use database-side aggregation for performance
+    dialect = db.bind.dialect.name
+    if dialect == "postgresql":
+        time_format = func.to_char(models.NetFlowAggregate.timestamp, "YYYY-MM-DD HH24:00")
+    else:
+        time_format = func.strftime("%Y-%m-%d %H:00", models.NetFlowAggregate.timestamp)
+
+    stmt = (
+        select(
+            time_format.label("hour"),
+            func.sum(models.NetFlowAggregate.bytes).label("total_bytes")
+        )
         .where(models.NetFlowAggregate.timestamp >= since)
-        .order_by(models.NetFlowAggregate.timestamp.asc())
-    ).all()
+        .group_by(time_format)
+    )
 
-    # Group by hour for a global view
-    buckets = {}
-    for f in flows:
-        hour_str = f.timestamp.strftime("%Y-%m-%d %H:00")
-        if hour_str not in buckets:
-            buckets[hour_str] = {"total_bytes": 0}
-
-        buckets[hour_str]["total_bytes"] += f.bytes
+    results = db.execute(stmt).all()
+    buckets = {r.hour: {"total_bytes": r.total_bytes or 0} for r in results}
 
     labels = []
     total_mbps = []
