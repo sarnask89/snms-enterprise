@@ -4,7 +4,7 @@ import logging
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from sqlalchemy import or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -32,7 +32,17 @@ def netdevice_list(
     db: Session = Depends(get_db),
     q: str | None = Query(None, description="nazwa, hostname, IP, typ"),
 ):
-    stmt = select(models.NetDevice).order_by(models.NetDevice.name)
+    # Performance boost: Eager load relationships to prevent N+1 queries.
+    # We join net_node and net_device_model with its producer to avoid multiple DB round-trips in the template.
+    stmt = (
+        select(models.NetDevice)
+        .options(
+            joinedload(models.NetDevice.net_node),
+            joinedload(models.NetDevice.net_device_model).joinedload(models.NetDeviceModel.producer),
+            joinedload(models.NetDevice.ip_network),
+        )
+        .order_by(models.NetDevice.name)
+    )
     search_q = (q or "").strip()
     if search_q:
         term = f"%{search_q}%"
@@ -46,16 +56,15 @@ def netdevice_list(
             )
         )
     rows = list(db.scalars(stmt).all())
-    nets = {n.id: n for n in db.scalars(select(models.IpNetwork)).all()}
-    net_nodes = {n.id: n for n in db.scalars(select(models.NetNode)).all()}
+
+    # Removed redundant full-table fetches for 'nets' and 'net_nodes' dictionaries
+    # as they are not needed by the template anymore (or should use direct relationships).
     return render(
         request,
         "netdevices/list.html",
         {
             "title": "Urządzenia sieciowe",
             "devices": rows,
-            "networks": nets,
-            "net_nodes": net_nodes,
             "search_q": search_q,
         },
     )
@@ -76,24 +85,26 @@ def netdevice_add_alias():
 @router.get("/reports", response_class=HTMLResponse)
 def netdevice_reports(request: Request, db: Session = Depends(get_db)):
     """Raport zbiorczy osprzętu (druk / eksport)."""
-    rows = list(db.scalars(select(models.NetDevice).order_by(models.NetDevice.name)).all())
-    nets = {n.id: n for n in db.scalars(select(models.IpNetwork)).all()}
+    # Performance boost: Eager load ip_network to prevent N+1 queries during template rendering.
+    stmt = select(models.NetDevice).options(joinedload(models.NetDevice.ip_network)).order_by(models.NetDevice.name)
+    rows = list(db.scalars(stmt).all())
     return render(
         request,
         "netdevices/reports.html",
-        {"title": "Raporty — osprzęt sieciowy", "devices": rows, "networks": nets},
+        {"title": "Raporty — osprzęt sieciowy", "devices": rows},
     )
 
 
 @router.get("/reports.csv")
 def netdevice_reports_csv(db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.NetDevice).order_by(models.NetDevice.name)).all())
-    nets = {n.id: n for n in db.scalars(select(models.IpNetwork)).all()}
+    # Performance boost: Eager load ip_network to prevent N+1 queries.
+    stmt = select(models.NetDevice).options(joinedload(models.NetDevice.ip_network)).order_by(models.NetDevice.name)
+    rows = list(db.scalars(stmt).all())
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["id", "nazwa", "hostname", "ip_zarzadzania", "typ", "siec_ip", "status"])
     for d in rows:
-        net = nets.get(d.ip_network_id)
+        net_name = d.ip_network.name if d.ip_network else ""
         w.writerow(
             [
                 d.id,
@@ -101,7 +112,7 @@ def netdevice_reports_csv(db: Session = Depends(get_db)):
                 d.hostname or "",
                 d.management_ip or "",
                 d.device_type,
-                net.name if net else "",
+                net_name,
                 d.status.value,
             ]
         )
