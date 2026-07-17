@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">TERYT i adresy</h1>
         <p class="text-sm text-gray-500">Import XML, domyślne obszary i słowniki adresowe do autosugestii formularzy.</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" label="Odśwież" aria-label="Odśwież rejestr TERYT" @click="refreshAll" />
     </div>
 
     <div class="grid lg:grid-cols-3 gap-6">
@@ -77,8 +77,9 @@
             </div>
             <UInput
               v-model="communeSearch"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj gminy..."
+              aria-label="Szukaj gminy"
               class="w-full lg:w-80"
             />
           </div>
@@ -107,19 +108,21 @@
             <div class="flex items-center gap-2">
               <UButton
                 size="xs"
-                color="gray"
+                color="neutral"
                 variant="ghost"
-                :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
+                :icon="row.isManaged ? 'i-lucide-minus-circle' : 'i-lucide-check-circle'"
                 :label="row.isManaged ? 'Zdejmij managed' : 'Oznacz managed'"
+                :aria-label="row.isManaged ? 'Zdejmij status managed dla gminy' : 'Oznacz gmine jako managed'"
                 @click="toggleManagedCommune(row)"
               />
               <UButton
                 size="xs"
                 color="primary"
                 variant="ghost"
-                icon="i-heroicons-star"
+                icon="i-lucide-star"
                 label="Ustaw domyślną"
                 :disabled="row.isDefault"
+                aria-label="Ustaw gmine jako domyślną"
                 @click="setDefaultCommune(row)"
               />
             </div>
@@ -139,8 +142,9 @@
           <div class="flex flex-col md:flex-row gap-3">
             <UInput
               v-model="search"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj miasta po nazwie lub TERYT..."
+              aria-label="Szukaj miasta po nazwie lub TERYT"
               class="w-full md:w-80"
             />
             <USelect
@@ -177,27 +181,30 @@
           <div class="flex items-center gap-2">
             <UButton
               size="xs"
-              color="gray"
+              color="neutral"
               variant="ghost"
-              :icon="row.isManaged ? 'i-heroicons-minus-circle' : 'i-heroicons-check-circle'"
+              :icon="row.isManaged ? 'i-lucide-minus-circle' : 'i-lucide-check-circle'"
               :label="row.isManaged ? 'Zdejmij managed' : 'Oznacz managed'"
+              :aria-label="row.isManaged ? 'Zdejmij status managed dla miasta' : 'Oznacz miasto jako managed'"
               @click="toggleManagedCity(row)"
             />
             <UButton
               size="xs"
               color="primary"
               variant="ghost"
-              icon="i-heroicons-star"
+              icon="i-lucide-star"
               label="Ustaw domyślne"
               :disabled="row.isDefault"
+              aria-label="Ustaw miasto jako domyślne"
               @click="setDefaultCity(row)"
             />
             <UButton
               size="xs"
-              color="yellow"
+              color="warning"
               variant="ghost"
-              icon="i-heroicons-arrow-path"
+              icon="i-lucide-refresh-cw"
               label="Synchronizuj"
+              aria-label="Synchronizuj miasto z Geoportalem"
               @click="scheduleSync(row)"
             />
           </div>
@@ -215,7 +222,7 @@
         </template>
 
         <div class="space-y-4">
-          <UInput v-model="search" icon="i-heroicons-map-pin" placeholder="np. Ożarów" />
+          <UInput v-model="search" icon="i-lucide-map-pin" placeholder="np. Ożarów" aria-label="Wyszukiwanie TERYT po nazwie" />
           <div class="space-y-2">
             <div
               v-for="city in addressSearchRows"
@@ -263,6 +270,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const importJobs = [
   { accessorKey: 'terc', title: 'Import TERC', description: 'Województwa, powiaty i gminy' },
   { accessorKey: 'simc', title: 'Import SIMC', description: 'Miejscowości i powiązania z gminami' },
@@ -401,13 +410,26 @@ watch(selectedCityId, async () => {
 })
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshCities(),
-    refreshCommunes(),
-    refreshDefaultArea(),
-    refreshAddressSearch(),
-    refreshStreets()
-  ])
+  try {
+    await Promise.all([
+      refreshCities(),
+      refreshCommunes(),
+      refreshDefaultArea(),
+      refreshAddressSearch(),
+      refreshStreets()
+    ])
+    toast.add({
+      title: 'Odświeżono dane',
+      description: 'Pomyślnie zaktualizowano widok rejestru TERYT',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: 'Nie udało się pobrać aktualnych danych TERYT',
+      color: 'error'
+    })
+  }
 }
 
 const onFileSelected = async (kind, event) => {
@@ -437,35 +459,111 @@ const submitImport = async (kind) => {
       refreshDefaultArea(),
       refreshAddressSearch()
     ])
+    toast.add({
+      title: 'Import zakończony',
+      description: `Pomyślnie zaimportowano plik dla ${kind.toUpperCase()}`,
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd importu',
+      description: error.message || 'Wystąpił nieoczekiwany błąd podczas importu XML',
+      color: 'error'
+    })
   } finally {
     loadingImports[kind] = false
   }
 }
 
 const toggleManagedCity = async (row) => {
-  await $fetch(`/api/v1/addresses/cities/${row.id}/toggle-managed`, { method: 'POST' })
-  await Promise.all([refreshCities(), refreshDefaultArea()])
+  try {
+    await $fetch(`/api/v1/addresses/cities/${row.id}/toggle-managed`, { method: 'POST' })
+    await Promise.all([refreshCities(), refreshDefaultArea()])
+    toast.add({
+      title: 'Zaktualizowano miasto',
+      description: `Zmieniono status managed dla miasta ${row.name}`,
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd aktualizacji',
+      description: error.message || 'Nie udało się zmienić statusu managed',
+      color: 'error'
+    })
+  }
 }
 
 const setDefaultCity = async (row) => {
-  await $fetch(`/api/v1/addresses/cities/${row.id}/set-default`, { method: 'POST' })
-  await Promise.all([refreshCities(), refreshCommunes(), refreshDefaultArea()])
+  try {
+    await $fetch(`/api/v1/addresses/cities/${row.id}/set-default`, { method: 'POST' })
+    await Promise.all([refreshCities(), refreshCommunes(), refreshDefaultArea()])
+    toast.add({
+      title: 'Ustawiono domyślne miasto',
+      description: `Miasto ${row.name} zostało ustawione jako domyślne`,
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd',
+      description: error.message || 'Nie udało się ustawić domyślnego miasta',
+      color: 'error'
+    })
+  }
 }
 
 const toggleManagedCommune = async (row) => {
-  await $fetch(`/api/v1/addresses/communes/${row.id}/toggle-managed`, { method: 'POST' })
-  await Promise.all([refreshCommunes(), refreshDefaultArea()])
+  try {
+    await $fetch(`/api/v1/addresses/communes/${row.id}/toggle-managed`, { method: 'POST' })
+    await Promise.all([refreshCommunes(), refreshDefaultArea()])
+    toast.add({
+      title: 'Zaktualizowano gminę',
+      description: `Zmieniono status managed dla gminy ${row.name}`,
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd aktualizacji',
+      description: error.message || 'Nie udało się zmienić statusu managed dla gminy',
+      color: 'error'
+    })
+  }
 }
 
 const setDefaultCommune = async (row) => {
-  await $fetch(`/api/v1/addresses/communes/${row.id}/set-default`, { method: 'POST' })
-  await Promise.all([refreshCities(), refreshCommunes(), refreshDefaultArea()])
+  try {
+    await $fetch(`/api/v1/addresses/communes/${row.id}/set-default`, { method: 'POST' })
+    await Promise.all([refreshCities(), refreshCommunes(), refreshDefaultArea()])
+    toast.add({
+      title: 'Ustawiono domyślną gminę',
+      description: `Gmina ${row.name} została ustawiona jako domyślna`,
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd',
+      description: error.message || 'Nie udało się ustawić domyślnej gminy',
+      color: 'error'
+    })
+  }
 }
 
 const scheduleSync = async (row) => {
-  await $fetch('/api/v1/teryt/sync-geoportal', {
-    method: 'POST',
-    body: { cityId: row.id }
-  })
+  try {
+    await $fetch('/api/v1/teryt/sync-geoportal', {
+      method: 'POST',
+      body: { cityId: row.id }
+    })
+    toast.add({
+      title: 'Synchronizacja uruchomiona',
+      description: `Rozpoczęto synchronizację Geoportalu dla miasta ${row.name}`,
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd synchronizacji',
+      description: error.message || 'Nie udało się rozpocząć synchronizacji z Geoportalem',
+      color: 'error'
+    })
+  }
 }
 </script>
