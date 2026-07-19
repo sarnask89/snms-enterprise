@@ -1,0 +1,3 @@
+## 2026-07-19 - Dashboard Stats Accessibility and Navigation
+**Learning:** Wrapping complex UI elements or cards in an interactive element like `<NuxtLink>` or `<button>` with a generic `aria-label` triggers the WAI-ARIA Accessible Name Calculation rules, causing screen readers to completely discard any nested text content (silencing critical values like counters).
+**Action:** Ensure that if an interactive wrapping container needs an `aria-label`, the label dynamically computes and includes both the section name AND its current reactive value (e.g. `aria-label="Przejdź do sekcji: Abonenci. Obecna wartość: 125"`).

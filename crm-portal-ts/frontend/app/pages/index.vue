@@ -7,19 +7,21 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <UCard v-for="(stat, key) in statsMap" :key="key">
-        <div class="flex items-center gap-4">
-          <div :class="`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-500`">
-            <UIcon :name="stat.icon" class="w-6 h-6" />
+      <NuxtLink v-for="(stat, key) in statsMap" :key="key" :to="stat.to" class="block transition-transform hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl outline-none" :aria-label="`Przejdź do sekcji: ${stat.label}. Obecna wartość: ${stats ? stats[key] : 'wczytywanie'}`">
+        <UCard>
+          <div class="flex items-center gap-4">
+            <div :class="`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-500`">
+              <UIcon :name="stat.icon" class="w-6 h-6" />
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">{{ stat.label }}</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                {{ stats ? stats[key] : '...' }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-sm text-gray-500 font-medium">{{ stat.label }}</p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
-              {{ stats ? stats[key] : '...' }}
-            </p>
-          </div>
-        </div>
-      </UCard>
+        </UCard>
+      </NuxtLink>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -47,14 +49,14 @@
           <h3 class="font-bold">Szybkie Akcje</h3>
         </template>
         <div class="flex flex-col gap-2">
-          <UButton icon="i-heroicons-magnifying-glass" label="Szukaj urządzenia" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-document-plus" label="Generuj raport PIT" color="gray" variant="soft" block />
-          <UButton icon="i-heroicons-bolt" label="Diagnostyka OLT" color="gray" variant="soft" block />
+          <UButton icon="i-lucide-search" label="Szukaj urządzenia" color="gray" variant="soft" block to="/customer-devices" />
+          <UButton icon="i-lucide-file-plus" label="Generuj raport PIT" color="gray" variant="soft" block to="/analytics" />
+          <UButton icon="i-lucide-zap" label="Diagnostyka OLT" color="gray" variant="soft" block to="/operations" />
         </div>
         
         <div class="mt-6 p-4 rounded-xl bg-primary-500/5 border border-primary-500/10">
           <div class="flex items-center gap-2 text-primary-500 mb-2">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             <span class="text-xs font-bold uppercase tracking-wider">AI Insight</span>
           </div>
           <p class="text-xs text-gray-600 dark:text-gray-400 italic">
@@ -68,10 +70,10 @@
 
 <script setup>
 const statsMap = {
-  customers: { label: 'Abonenci', icon: 'i-heroicons-users', color: 'blue' },
-  nodes: { label: 'Węzły', icon: 'i-heroicons-map-pin', color: 'emerald' },
-  devices: { label: 'Urządzenia', icon: 'i-heroicons-cpu-chip', color: 'indigo' },
-  tickets: { label: 'Zgłoszenia', icon: 'i-heroicons-ticket', color: 'orange' }
+  customers: { label: 'Abonenci', icon: 'i-lucide-users', color: 'blue', to: '/customers' },
+  nodes: { label: 'Węzły', icon: 'i-lucide-map-pin', color: 'emerald', to: '/network/nodes' },
+  devices: { label: 'Urządzenia', icon: 'i-lucide-cpu', color: 'indigo', to: '/customer-devices' },
+  tickets: { label: 'Zgłoszenia', icon: 'i-lucide-ticket', color: 'orange', to: '/helpdesk' }
 }
 
 const { data: stats } = await useFetch('/api/v1/dashboard/stats')
