@@ -2,7 +2,7 @@ import pytest
 from app import models
 
 def test_helpdesk_list(admin_client):
-    resp = admin_client.get("/helpdesk")
+    resp = admin_client.get("/helpdesk/tickets")
     assert resp.status_code == 200
     assert "Zgłoszenia" in resp.text
 

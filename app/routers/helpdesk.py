@@ -77,17 +77,13 @@ def ticket_list(
         ))
 
     rows = list(db.scalars(stmt).all())
-    
-    # Do mapowania w szablonie (tradycyjne)
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    users_map = {u.id: u.username for u in db.scalars(select(models.PortalUser)).all()}
 
     # HTMX partial
     if request.headers.get("HX-Request"):
         return render(
             request,
             "helpdesk/ticket_list_rows.html",
-            {"tickets": rows, "customers": customers, "users_map": users_map},
+            {"tickets": rows},
         )
 
     return render(
@@ -96,8 +92,6 @@ def ticket_list(
         {
             "title": "Helpdesk — zgłoszenia",
             "tickets": rows,
-            "customers": customers,
-            "users_map": users_map,
             "filter_assigned": assigned or "",
             "search_q": q or "",
         },
@@ -147,7 +141,7 @@ def category_new_form(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/categories/new", dependencies=[Depends(require_helpdesk_write)])
 def category_new_submit(request: Request, db: Session = Depends(get_db), name: str = Form(...), queue_id: int = Form(...)):
-    c = models.HelpdeskCategory(name=name.strip()[:128], queue_id=queue_id, sort_order=0)
+    c = models.HelpdeskCategory(name=name.strip()[:128], queue_id=queue_id)
     db.add(c)
     db.flush()
     record_audit(db, "create", resource_type="helpdesk_category", resource_id=c.id, details=f"name: {c.name}", request=request)
@@ -183,10 +177,9 @@ def helpdesk_search(
         stmt = stmt.where(models.SupportTicket.queue_id == queue_id)
     
     rows = list(db.scalars(stmt).all())
-    custs = {c.id: c for c in db.scalars(select(models.Customer)).all()}
     queues = list(db.scalars(select(models.HelpdeskQueue).order_by(models.HelpdeskQueue.sort_order)).all())
     return render(request, "helpdesk/search.html", {
-        "title": "Szukaj zgłoszeń", "tickets": rows, "customers": custs, "queues": queues,
+        "title": "Szukaj zgłoszeń", "tickets": rows, "queues": queues,
         "search_q": q or "", "search_status": status or "", "search_queue_id": queue_id
     })
 
