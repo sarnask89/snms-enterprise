@@ -1,0 +1,3 @@
+## 2025-07-20 - [Modernizing SNMS Entities Workspace]
+**Learning:** Legacy Heroicons (e.g., `i-heroicons-arrow-path`) and incorrect template parameters (like `:data` on `UTextarea`) were silently causing UX inconsistencies and styling regressions in complex pages like `snms.vue`. Incorporating Polish `aria-label` attributes across all interactive elements, correcting input properties, and integrating `useToast` notifications directly elevates user satisfaction and screen-reader accessibility.
+**Action:** Always verify `UTextarea` attributes (`:rows` vs `:data`) during migrations/audits, swap legacy icons to Lucide, and ensure any complex asynchronous form flows are paired with descriptive Polish success/error toast notifications.
