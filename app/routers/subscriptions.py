@@ -3,7 +3,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -15,17 +15,20 @@ router = APIRouter(prefix="/subscriptions", dependencies=[Depends(verify_session
 
 @router.get("", response_class=HTMLResponse)
 def subscription_list(request: Request, db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.Subscription).order_by(models.Subscription.id.desc())).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    tariffs = {t.id: t for t in db.scalars(select(models.Tariff)).all()}
+    # Optimize by using joinedload to eager load customer and tariff records in a single query
+    # rather than loading all customer and tariff tables in separate massive lookups.
+    stmt = (
+        select(models.Subscription)
+        .options(joinedload(models.Subscription.customer), joinedload(models.Subscription.tariff))
+        .order_by(models.Subscription.id.desc())
+    )
+    rows = list(db.scalars(stmt).all())
     return render(
         request,
         "subscriptions/list.html",
         {
             "title": "Subskrypcje (taryfy u klientów)",
             "subscriptions": rows,
-            "customers": customers,
-            "tariffs": tariffs,
         },
     )
 

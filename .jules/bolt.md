@@ -1,0 +1,3 @@
+## 2026-07-21 - [Subscription List Database Query Optimization]
+**Learning:** In the subscription list page (`/subscriptions`), the backend was performing an N+1/full-table loading anti-pattern by loading the entire Customer and Tariff tables into Python dictionary structures to map them. This leads to massive memory usage and CPU waste when database sizes grow.
+**Action:** Replace full-table lookups with SQLAlchemy `joinedload` on relationships, and directly reference properties like `s.customer` and `s.tariff` inside the template. Also, use `s.device_id` inside template since models have been refactored from `node` to `device`.

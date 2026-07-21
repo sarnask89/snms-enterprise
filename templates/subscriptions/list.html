@@ -29,17 +29,17 @@
                     {% for s in subscriptions %}
                     <tr class="border-b transition-colors hover:bg-muted/50">
                         <td class="p-4 align-middle">
-                            {% set c = customers.get(s.customer_id) %}
+                            {% set c = s.customer %}
                             <div class="font-bold text-xs">{{ c.last_name if c else '—' }}</div>
                             <div class="text-[10px] text-muted-foreground">{{ c.customer_code if c else s.customer_id }}</div>
-                            {% if s.node_id %}
+                            {% if s.device_id %}
                                 <div class="mt-1 flex items-center text-[9px] text-blue-600 font-bold uppercase">
-                                    <i class="fas fa-microchip mr-1"></i> URZĄDZENIE: {{ s.device.hostname if s.device else s.node_id }}
+                                    <i class="fas fa-microchip mr-1"></i> URZĄDZENIE: {{ s.device.hostname if s.device else s.device_id }}
                                 </div>
                             {% endif %}
                         </td>
                         <td class="p-4 align-middle">
-                            {% set t = tariffs.get(s.tariff_id) %}
+                            {% set t = s.tariff %}
                             <div class="font-semibold text-xs text-primary">{{ t.name if t else s.tariff_id }}</div>
                             <div class="text-[9px] text-muted-foreground font-mono uppercase">
                                 {{ "%.2f"|format(t.monthly_price|float) if t else '0.00' }} NET / 
