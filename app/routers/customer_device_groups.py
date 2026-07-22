@@ -106,5 +106,13 @@ def _sync_group_nodes(db: Session, group: models.CustomerDeviceGroup, raw_ids: l
             ids.add(int(x))
         except (TypeError, ValueError):
             continue
-    chosen = [db.get(models.CustomerDevice, i) for i in ids]
-    group.devices = [n for n in chosen if n is not None]
+    # Performance optimization: Fetch all selected customer devices in a single batched query
+    # to eliminate O(N) sequential db.get() calls. Expected performance: reduces database
+    # roundtrips from N+1 to 1.
+    if ids:
+        chosen = db.scalars(
+            select(models.CustomerDevice).where(models.CustomerDevice.id.in_(ids))
+        ).all()
+        group.devices = list(chosen)
+    else:
+        group.devices = []
