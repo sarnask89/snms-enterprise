@@ -5,7 +5,14 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Administracja</h1>
         <p class="text-sm text-gray-500">Info runtime, backupy, reload oraz log audytowy dla aktywnego baseline TS/Nuxt</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton
+        color="neutral"
+        variant="outline"
+        icon="i-lucide-refresh-cw"
+        label="Odśwież"
+        aria-label="Odśwież panel administracyjny"
+        @click="refreshAll"
+      />
     </div>
 
     <div class="grid md:grid-cols-4 gap-4">
@@ -35,7 +42,14 @@
               <h2 class="font-semibold text-lg">Backupy</h2>
               <p class="text-sm text-gray-500">Tworzenie, pobieranie i usuwanie kopii SQLite</p>
             </div>
-            <UButton color="primary" icon="i-heroicons-circle-stack" label="Utwórz backup" :loading="isCreatingBackup" @click="createBackup" />
+            <UButton
+              color="primary"
+              icon="i-lucide-database"
+              label="Utwórz backup"
+              aria-label="Utwórz nowy backup bazy danych"
+              :loading="isCreatingBackup"
+              @click="createBackup"
+            />
           </div>
         </template>
 
@@ -50,8 +64,22 @@
 
           <template #actions-data="{ row }">
             <div class="flex items-center gap-2">
-              <UButton size="xs" color="primary" variant="ghost" icon="i-heroicons-arrow-down-tray" @click="downloadBackup(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeBackup(row)" />
+              <UButton
+                size="xs"
+                color="primary"
+                variant="ghost"
+                icon="i-lucide-download"
+                aria-label="Pobierz backup"
+                @click="downloadBackup(row)"
+              />
+              <UButton
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash-2"
+                aria-label="Usuń backup"
+                @click="removeBackup(row)"
+              />
             </div>
           </template>
         </UTable>
@@ -64,7 +92,14 @@
               <h2 class="font-semibold text-lg">Reload konfiguracji</h2>
               <p class="text-sm text-gray-500">Log kontrolnych przeładowań i notatek operatorskich</p>
             </div>
-            <UButton color="primary" icon="i-heroicons-bolt" label="Dodaj reload" :loading="isCreatingReload" @click="isReloadModalOpen = true" />
+            <UButton
+              color="primary"
+              icon="i-lucide-bolt"
+              label="Dodaj reload"
+              aria-label="Zarejestruj przeładowanie konfiguracji"
+              :loading="isCreatingReload"
+              @click="isReloadModalOpen = true"
+            />
           </div>
         </template>
 
@@ -89,8 +124,9 @@
           </div>
           <UInput
             v-model="auditSearch"
-            icon="i-heroicons-magnifying-glass-20-solid"
+            icon="i-lucide-search"
             placeholder="Filtruj po akcji lub szczegółach..."
+            aria-label="Filtruj dziennik audytowy"
             class="w-full md:w-80"
           />
         </div>
@@ -107,22 +143,24 @@
       </UTable>
     </UCard>
 
-    <UModal v-model="isReloadModalOpen">
-      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-        <template #header>
-          <h3 class="text-lg font-bold">Dodaj wpis reload</h3>
-        </template>
+    <UModal v-model:open="isReloadModalOpen">
+      <template #content>
+        <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <template #header>
+            <h3 class="text-lg font-bold">Dodaj wpis reload</h3>
+          </template>
 
-        <form class="space-y-4 p-4" @submit.prevent="createReload">
-          <UFormField label="Notatka">
-            <UTextarea v-model="reloadForm.note" :data="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
-          </UFormField>
-          <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isReloadModalOpen = false" />
-            <UButton type="submit" color="primary" :loading="isCreatingReload" label="Zapisz" />
-          </div>
-        </form>
-      </UCard>
+          <form class="space-y-4 p-4" @submit.prevent="createReload">
+            <UFormField label="Notatka">
+              <UTextarea v-model="reloadForm.note" :rows="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
+            </UFormField>
+            <div class="flex justify-end gap-2">
+              <UButton color="neutral" variant="outline" label="Anuluj" @click="isReloadModalOpen = false" />
+              <UButton type="submit" color="primary" :loading="isCreatingReload" label="Zapisz" />
+            </div>
+          </form>
+        </UCard>
+      </template>
     </UModal>
   </div>
 </template>
@@ -147,6 +185,7 @@ const auditColumns = [
   { accessorKey: 'details', header: 'Szczegóły' }
 ]
 
+const toast = useToast()
 const auditSearch = ref('')
 const isCreatingBackup = ref(false)
 const isCreatingReload = ref(false)
@@ -201,12 +240,25 @@ const formatBytes = (bytes) => {
 }
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshInfo(),
-    refreshBackups(),
-    refreshReloadLogs(),
-    refreshAuditLogs()
-  ])
+  try {
+    await Promise.all([
+      refreshInfo(),
+      refreshBackups(),
+      refreshReloadLogs(),
+      refreshAuditLogs()
+    ])
+    toast.add({
+      title: 'Odświeżono dane',
+      description: 'Z powodzeniem pobrano aktualny stan administracyjny.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: 'Nie udało się pobrać danych administracyjnych.',
+      color: 'error'
+    })
+  }
 }
 
 const createBackup = async () => {
@@ -214,13 +266,37 @@ const createBackup = async () => {
   try {
     await $fetch('/api/v1/admin/backups/create', { method: 'POST' })
     await Promise.all([refreshBackups(), refreshAuditLogs()])
+    toast.add({
+      title: 'Backup utworzony',
+      description: 'Nowa kopia bazy danych SQLite została poprawnie zapisana.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd tworzenia backupu',
+      description: 'Wystąpił problem podczas zapisu kopii bazy danych.',
+      color: 'error'
+    })
   } finally {
     isCreatingBackup.value = false
   }
 }
 
 const downloadBackup = (row) => {
-  window.open(row.downloadUrl, '_blank', 'noopener')
+  try {
+    window.open(row.downloadUrl, '_blank', 'noopener')
+    toast.add({
+      title: 'Pobieranie rozpoczęte',
+      description: `Rozpoczęto pobieranie pliku backupu: ${row.filename}`,
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd pobierania',
+      description: 'Nie udało się otworzyć pliku backupu.',
+      color: 'error'
+    })
+  }
 }
 
 const removeBackup = async (row) => {
@@ -228,8 +304,21 @@ const removeBackup = async (row) => {
     return
   }
 
-  await $fetch(`/api/v1/admin/backups/${encodeURIComponent(row.filename)}`, { method: 'DELETE' })
-  await Promise.all([refreshBackups(), refreshAuditLogs()])
+  try {
+    await $fetch(`/api/v1/admin/backups/${encodeURIComponent(row.filename)}`, { method: 'DELETE' })
+    await Promise.all([refreshBackups(), refreshAuditLogs()])
+    toast.add({
+      title: 'Backup usunięty',
+      description: `Pomyślnie usunięto plik backupu: ${row.filename}`,
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd usuwania',
+      description: 'Wystąpił problem przy próbie skasowania backupu.',
+      color: 'error'
+    })
+  }
 }
 
 const createReload = async () => {
@@ -239,9 +328,21 @@ const createReload = async () => {
       method: 'POST',
       body: { note: reloadForm.note || null }
     })
+    const savedNote = reloadForm.note
     reloadForm.note = ''
     isReloadModalOpen.value = false
     await Promise.all([refreshReloadLogs(), refreshAuditLogs()])
+    toast.add({
+      title: 'Zapisano reload',
+      description: savedNote ? `Dodano notatkę: "${savedNote}"` : 'Zarejestrowano puste przeładowanie.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd zapisu',
+      description: 'Nie udało się dodać wpisu reload.',
+      color: 'error'
+    })
   } finally {
     isCreatingReload.value = false
   }

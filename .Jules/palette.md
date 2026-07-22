@@ -1,0 +1,3 @@
+## 2026-03-05 - Modernizing the Administration Page with Nuxt UI v4 Tokens and Toast Feedback
+**Learning:** Found that pages migrated to Nuxt UI v4 can contain legacy Heroicons, incorrect modal syntax structure, and older `UTextarea` props (e.g. `:data` instead of `:rows`). Additionally, ensuring we use standard `v-model:open` on `<UModal>` ensures perfect compatibility with the v4 template.
+**Action:** When working with Nuxt UI v4, always replace `i-heroicons` with `i-lucide-`, use standard semantic color/variant tokens (such as `neutral` or `error` instead of hardcoded raw string values like `gray` or `red`), use `v-model:open` on modals with the `#content` template structure, and use `:rows` instead of `:data` on textareas.
