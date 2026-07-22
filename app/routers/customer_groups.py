@@ -94,10 +94,14 @@ async def group_edit_submit(
             pass
 
     g.customers.clear()
-    for cid in member_ids:
-        c = db.get(models.Customer, cid)
-        if c:
-            g.customers.append(c)
+    # Performance optimization: Fetch all selected customers in a single batched query
+    # to eliminate O(N) sequential db.get() calls. Expected performance: reduces database
+    # roundtrips from N+1 to 1.
+    if member_ids:
+        chosen = db.scalars(
+            select(models.Customer).where(models.Customer.id.in_(member_ids))
+        ).all()
+        g.customers = list(chosen)
     db.commit()
     return RedirectResponse("/customer-groups", status_code=303)
 
