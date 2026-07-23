@@ -8,8 +8,8 @@ def test_get_customer_nodes_htmx(admin_client, session):
     session.add(c)
     session.flush()
     
-    n1 = models.Node(customer_id=c.id, hostname="node-1", status=models.NodeStatus.active)
-    n2 = models.Node(customer_id=c.id, hostname="node-2", status=models.NodeStatus.active)
+    n1 = models.CustomerDevice(customer_id=c.id, hostname="node-1", name="node-1", status=models.CustomerDeviceStatus.active)
+    n2 = models.CustomerDevice(customer_id=c.id, hostname="node-2", name="node-2", status=models.CustomerDeviceStatus.active)
     session.add_all([n1, n2])
     session.commit()
     
@@ -22,13 +22,13 @@ def test_get_customer_nodes_htmx(admin_client, session):
     assert f'value="{n2.id}"' in resp.text
 
 def test_subscription_links_to_node(admin_client, session):
-    """Verify that a subscription correctly links to a specific node."""
+    """Verify that a subscription correctly links to a specific node/device."""
     # 1. Setup data
     c = models.Customer(first_name="Sub", last_name="Tester", customer_code="S-02")
     session.add(c)
     session.flush()
     
-    n = models.Node(customer_id=c.id, hostname="specific-node", status=models.NodeStatus.active)
+    n = models.CustomerDevice(customer_id=c.id, hostname="specific-node", name="specific-node", status=models.CustomerDeviceStatus.active)
     session.add(n)
     session.flush()
     
@@ -36,12 +36,12 @@ def test_subscription_links_to_node(admin_client, session):
     session.add(t)
     session.commit()
     
-    # 2. Create subscription linked to node
+    # 2. Create subscription linked to device
     resp = admin_client.post(
         "/subscriptions/new",
         data={
             "customer_id": c.id,
-            "node_id": n.id,
+            "device_id": n.id,
             "tariff_id": t.id,
             "start_date": "2026-01-01",
             "active": "on",
@@ -54,5 +54,5 @@ def test_subscription_links_to_node(admin_client, session):
     # 3. Verify in DB
     sub = session.query(models.Subscription).filter_by(customer_id=c.id).first()
     assert sub is not None
-    assert sub.node_id == n.id
-    assert sub.node.hostname == "specific-node"
+    assert sub.device_id == n.id
+    assert sub.device.hostname == "specific-node"
