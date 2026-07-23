@@ -1,3 +1,0 @@
-## 2026-07-23 - Database full-table load during subscription list rendering
-**Learning:** Rendering the subscriptions list loaded all rows of the `Customer` and `Tariff` tables into in-memory Python dictionaries to perform ID-to-object mapping within the Jinja2 template. In databases with thousands of customers or tariffs, this full-table scan pattern severely impacts CPU and memory consumption. By leveraging SQLAlchemy's eager-loading `joinedload` on relationships, we fetch and link only the relevant records from the database in a single query pass.
-**Action:** Replace in-memory mapping dictionaries from full-table scans with eager-loaded database relationships (`joinedload`) and direct template properties.
