@@ -2,7 +2,7 @@
   <div class="p-8 max-w-5xl mx-auto">
     <div class="flex items-center gap-4 mb-8">
       <div class="p-3 rounded-2xl bg-primary-500/10 text-primary-500">
-        <UIcon name="i-heroicons-sparkles" class="w-8 h-8" />
+        <UIcon name="i-lucide-sparkles" class="w-8 h-8" />
       </div>
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">AI Architekt Modułów</h1>
@@ -16,7 +16,14 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="font-bold">Czat z Architektem</h3>
-            <UButton icon="i-heroicons-trash" color="gray" variant="ghost" size="xs" @click="clearChat" />
+            <UButton
+              icon="i-lucide-trash-2"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              aria-label="Wyczyść historię czatu"
+              @click="clearChat"
+            />
           </div>
         </template>
 
@@ -44,7 +51,13 @@
             class="flex-1"
             :disabled="isLoading"
           />
-          <UButton type="submit" icon="i-heroicons-paper-airplane" :loading="isLoading" />
+          <UButton
+            type="submit"
+            icon="i-lucide-send"
+            color="primary"
+            :loading="isLoading"
+            aria-label="Wyślij wiadomość"
+          />
         </form>
       </UCard>
 
@@ -56,9 +69,9 @@
               <h3 class="font-bold">Wygenerowana Specyfikacja</h3>
               <UButton 
                 v-if="lastSpec" 
-                icon="i-heroicons-cpu-chip" 
+                icon="i-lucide-cpu"
                 label="Wdróż Moduł" 
-                color="green" 
+                color="success"
                 :loading="isImplementing"
                 @click="implementModule" 
               />
@@ -69,13 +82,13 @@
              <pre class="text-[10px] bg-gray-900 text-green-400 p-4 rounded-lg"><code>{{ lastSpec }}</code></pre>
           </div>
           <div v-else class="flex flex-col items-center justify-center h-64 text-gray-400">
-            <UIcon name="i-heroicons-document-magnifying-glass" class="w-12 h-12 mb-2" />
+            <UIcon name="i-lucide-search" class="w-12 h-12 mb-2" />
             <p>Jeszcze nie wygenerowano specyfikacji</p>
           </div>
         </UCard>
 
         <UAlert
-          icon="i-heroicons-information-circle"
+          icon="i-lucide-info"
           color="primary"
           variant="soft"
           title="Uwaga dotycząca bezpieczeństwa"
@@ -88,6 +101,7 @@
 
 <script setup>
 const config = useRuntimeConfig()
+const toast = useToast()
 const input = ref('')
 const isLoading = ref(false)
 const isImplementing = ref(false)
@@ -166,9 +180,17 @@ const implementModule = async () => {
       method: 'POST',
       body: { spec: lastSpec.value }
     })
-    alert(`Wdrożono pomyślnie! Utworzono pliki:\n` + res.files.join('\n'))
+    toast.add({
+      title: 'Wdrożono pomyślnie',
+      description: `Utworzono pliki:\n${res.files.join(', ')}`,
+      color: 'success'
+    })
   } catch (error) {
-    alert(`Błąd wdrażania: ${error.data?.message || error.message}`)
+    toast.add({
+      title: 'Błąd wdrażania',
+      description: error.data?.message || error.message,
+      color: 'error'
+    })
   } finally {
     isImplementing.value = false
   }

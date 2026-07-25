@@ -1,0 +1,3 @@
+## 2025-07-25 - [Consistent Polish ARIA Labels and Non-blocking Feedback in Nuxt UI 4]
+**Learning:** Icon-only control actions in highly interactive or AI-driven dashboard pages (like the Module Architect) often lack screen-reader accessibility, creating silent barriers. Furthermore, traditional blocking methods like `alert()` disrupt async workflows and break keyboard focus rings.
+**Action:** Standardize on consistent Polish ARIA labels (`aria-label`) on all `<UButton>` components that utilize only icons, use semantic colors (`neutral`, `success`), and completely replace legacy browser alerts with the reactive `useToast` hook to provide contextual non-blocking feedback.
