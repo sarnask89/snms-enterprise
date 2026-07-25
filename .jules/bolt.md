@@ -1,0 +1,3 @@
+## 2026-07-25 - [O(1) Batched MAC Pre-fetching for Mikrotik Discovery Leases]
+**Learning:** During network discovery, the lease count retrieved from an active router can scale to hundreds or thousands of leases. Querying the CRM database sequentially (`db.scalar(...)`) inside the lease processing loop to verify the existence of each MAC address causes a severe N+1 query bottleneck. Performing a single batch query with the SQLAlchemy `.in_()` operator and performing fast in-memory set lookups eliminates database overhead completely.
+**Action:** Always batch query and pre-fetch list/lease metadata before iterating over external device states or active loop connections.

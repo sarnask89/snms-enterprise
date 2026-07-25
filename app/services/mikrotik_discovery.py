@@ -37,6 +37,18 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
     raw_leases = await mt.get_leases()
     discovered = []
 
+    # OPTIMIZATION: Batch query existing MAC addresses to resolve N+1 queries.
+    # Instead of running `db.scalar(select(models.CustomerDevice)...)` inside the loop (which
+    # results in N queries for N leases), we pre-fetch all unique lease MACs in a single query.
+    # This reduces database round-trips from O(N) to exactly O(1).
+    macs_to_check = {lease.get('mac-address') for lease in raw_leases if lease.get('mac-address')}
+    existing_macs = set()
+    if macs_to_check:
+        existing_macs = set(db.scalars(
+            select(models.CustomerDevice.mac_address)
+            .where(models.CustomerDevice.mac_address.in_(macs_to_check))
+        ).all())
+
     for lease in raw_leases:
         mac = lease.get('mac-address')
         ip_str = lease.get('address')
@@ -52,8 +64,8 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
             continue
 
         # 3. Czy ten MAC już istnieje w CRM?
-        existing_device_record = db.scalar(select(models.CustomerDevice).where(models.CustomerDevice.mac_address == mac))
-        if existing_device_record:
+        # OPTIMIZED: Use fast in-memory set lookup instead of database lookup.
+        if mac in existing_macs:
             continue
 
         # 4. Parsowanie komentarza i próba dopasowania

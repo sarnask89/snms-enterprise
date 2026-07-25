@@ -24,6 +24,12 @@ SUFFIX_MAP = {
 
 }
 
+# OPTIMIZATION: Compile regex at the module level to avoid recompiling it on every invocation.
+_COMMENT_PATTERN = re.compile(
+    r"(\d+)\s+([A-Za-zÀ-ÿ\-]+)\s+(?:(?:M/|m\.\s*|m)(\d+)\s+)?([A-Za-z]+)\s*(\d+[A-Za-z]?)",
+    re.IGNORECASE
+)
+
 def parse_mikrotik_comment(comment: str):
     """
     Parsuje komentarz w formacie np.: "1825 Krupka M/33 Mic25" lub "1825 Kowalski Mic25"
@@ -34,13 +40,8 @@ def parse_mikrotik_comment(comment: str):
         
     comment = comment.strip()
     
-    # Bardziej liberalny pattern:
-    # 1. (\d+) - ID
-    # 2. ([A-Za-zÀ-ÿ\-]+) - Nazwisko
-    # 3. (?:(?:M/|m\.\s*|m)(\d+)\s+)? - Opcjonalny numer lokalu
-    # 4. ([A-Za-z]+)\s*(\d+[A-Za-z]?) - Skrót ulicy i numer budynku
-    pattern = r"(\d+)\s+([A-Za-zÀ-ÿ\-]+)\s+(?:(?:M/|m\.\s*|m)(\d+)\s+)?([A-Za-z]+)\s*(\d+[A-Za-z]?)"
-    match = re.search(pattern, comment, re.IGNORECASE)
+    # OPTIMIZED: Use pre-compiled regex pattern instead of inline re.search with string pattern.
+    match = _COMMENT_PATTERN.search(comment)
     
     if not match:
         return None
