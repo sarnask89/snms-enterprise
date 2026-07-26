@@ -1,0 +1,3 @@
+## 2026-07-26 - Pre-compiling generic patterns for dynamic regexes
+**Learning:** In loops where regexes are constructed using dynamic f-strings (e.g. `fr"{port_id}/(\d+)\s+(-?\d+\.\d+\s*dBm)"`), we can pre-compile a generic regex pattern (e.g. `([^/\s]+)/(\d+)\s+(-?\d+\.\d+\s*dBm)`) at the module level and perform a post-match string comparison in Python. This achieves identical behavior while completely eliminating dynamic compilation overhead inside loops.
+**Action:** Always pre-compile a generic pattern and perform basic post-match attribute checks when faced with dynamic regex interpolation inside processing loops.
