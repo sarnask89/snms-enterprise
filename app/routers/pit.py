@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.database import get_db
@@ -43,11 +43,18 @@ async def sync_pit_coordinates_task():
     service = GugikGeocodingService()
     
     try:
-        # 1. Fetch NetNodes missing coords but having TERYT info
+        # 1. Fetch NetNodes missing coords but having TERYT info.
         # We need SIMC, ULIC and house number.
         # NetNode has location_city_id (SIMC), location_street_id (ULIC), and street_number.
+        # Use joinedload to eager-load related location_city and location_street records.
+        # This optimizes performance by reducing database round-trips from N+1 to 1.
         nodes = list(db.scalars(
-            select(models.NetNode).where(models.NetNode.x_1992 == None)
+            select(models.NetNode)
+            .where(models.NetNode.x_1992 == None)
+            .options(
+                joinedload(models.NetNode.location_city),
+                joinedload(models.NetNode.location_street)
+            )
         ).all())
         
         updated_count = 0
