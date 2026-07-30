@@ -24,6 +24,16 @@ SUFFIX_MAP = {
 
 }
 
+# Precompiled regex pattern at module level to avoid recompilation on every function call
+# 1. (\d+) - ID
+# 2. ([A-Za-zÀ-ÿ\-]+) - Nazwisko
+# 3. (?:(?:M/|m\.\s*|m)(\d+)\s+)? - Opcjonalny numer lokalu
+# 4. ([A-Za-z]+)\s*(\d+[A-Za-z]?) - Skrót ulicy i numer budynku
+COMMENT_PATTERN = re.compile(
+    r"(\d+)\s+([A-Za-zÀ-ÿ\-]+)\s+(?:(?:M/|m\.\s*|m)(\d+)\s+)?([A-Za-z]+)\s*(\d+[A-Za-z]?)",
+    re.IGNORECASE
+)
+
 def parse_mikrotik_comment(comment: str):
     """
     Parsuje komentarz w formacie np.: "1825 Krupka M/33 Mic25" lub "1825 Kowalski Mic25"
@@ -34,13 +44,7 @@ def parse_mikrotik_comment(comment: str):
         
     comment = comment.strip()
     
-    # Bardziej liberalny pattern:
-    # 1. (\d+) - ID
-    # 2. ([A-Za-zÀ-ÿ\-]+) - Nazwisko
-    # 3. (?:(?:M/|m\.\s*|m)(\d+)\s+)? - Opcjonalny numer lokalu
-    # 4. ([A-Za-z]+)\s*(\d+[A-Za-z]?) - Skrót ulicy i numer budynku
-    pattern = r"(\d+)\s+([A-Za-zÀ-ÿ\-]+)\s+(?:(?:M/|m\.\s*|m)(\d+)\s+)?([A-Za-z]+)\s*(\d+[A-Za-z]?)"
-    match = re.search(pattern, comment, re.IGNORECASE)
+    match = COMMENT_PATTERN.search(comment)
     
     if not match:
         return None

@@ -4,10 +4,17 @@ from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.deps import verify_session
+import re
 from app.templating import render
 from app import models
 
 router = APIRouter(prefix="/api/search", dependencies=[Depends(verify_session)])
+
+# Precompiled regex patterns at module level to avoid recompilation on every query
+MAC_SEP_PATTERN = re.compile(r'^[0-9a-f]{2}[:.-]')
+MAC_HEX_PATTERN = re.compile(r'^[0-9a-f]{4,12}$')
+IP_DOTS_PATTERN = re.compile(r'^\d{1,3}\.')
+HAS_DIGIT_PATTERN = re.compile(r'\d')
 
 @router.get("", response_class=HTMLResponse)
 def global_search(request: Request, q: str = Query(""), db: Session = Depends(get_db)):
@@ -46,15 +53,14 @@ def global_search(request: Request, q: str = Query(""), db: Session = Depends(ge
         .limit(10)
     ).all()
     
-    import re
     search_type = "name"
     if q:
         clean_q = q.lower().strip()
         # Look for MAC-like: hex pairs with separators or long hex strings
-        if re.search(r'^[0-9a-f]{2}[:.-]', clean_q) or re.search(r'^[0-9a-f]{4,12}$', clean_q) or ":" in clean_q:
+        if MAC_SEP_PATTERN.search(clean_q) or MAC_HEX_PATTERN.search(clean_q) or ":" in clean_q:
             search_type = "mac"
         # Look for IP-like: digits followed by dots
-        elif re.search(r'^\d{1,3}\.', clean_q) or (re.search(r'\d', clean_q) and "." in clean_q):
+        elif IP_DOTS_PATTERN.search(clean_q) or (HAS_DIGIT_PATTERN.search(clean_q) and "." in clean_q):
             search_type = "ip"
 
     return render(request, "components/search_results.html", {

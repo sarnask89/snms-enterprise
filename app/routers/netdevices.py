@@ -1,6 +1,7 @@
 import csv
 import io
 import logging
+import re
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from sqlalchemy import or_, select
@@ -15,6 +16,9 @@ from app.security_utils import encrypt_password
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/net-devices", dependencies=[Depends(verify_session)])
+
+# Precompiled regex patterns for PON port view to avoid compile-on-the-fly and loop recompilation
+OLT_PORT_MAC_RE = re.compile(r"^\s*\d+\s*\|\s*\d+\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)")
 
 
 def _opt_int(raw: str | None) -> int | None:
@@ -245,11 +249,10 @@ def netdevice_pon_port_view(dev_id: int, port_id: str, request: Request, db: Ses
         if "Password" in enable_resp or "password" in enable_resp:
             ds._send_cmd(chan, ds.password)
 
-        import re
         macs_out = ds._send_cmd(chan, f"show olt mac {port_id}", max_wait=5)
         onu_mac_map = {}
         for line in macs_out.splitlines():
-            match = re.search(r"^\s*\d+\s*\|\s*\d+\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)", line)
+            match = OLT_PORT_MAC_RE.match(line)
             if match:
                 o_id = match.group(1)
                 mac = match.group(2)
@@ -261,10 +264,11 @@ def netdevice_pon_port_view(dev_id: int, port_id: str, request: Request, db: Ses
                 else:
                     onu_mac_map[o_id]['client_macs'].append(mac)
 
+        rx_pattern = re.compile(fr"{re.escape(port_id)}/(\d+)\s+(-?\d+\.\d+\s*dBm)")
         rx_out = ds._send_cmd(chan, f"show olt rx-power {port_id}", max_wait=5)
         rx_map = {}
         for line in rx_out.splitlines():
-            p_match = re.search(fr"{port_id}/(\d+)\s+(-?\d+\.\d+\s*dBm)", line)
+            p_match = rx_pattern.search(line)
             if p_match:
                 rx_map[p_match.group(1)] = p_match.group(2)
 
