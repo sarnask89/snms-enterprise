@@ -248,8 +248,10 @@ def netdevice_pon_port_view(dev_id: int, port_id: str, request: Request, db: Ses
         import re
         macs_out = ds._send_cmd(chan, f"show olt mac {port_id}", max_wait=5)
         onu_mac_map = {}
+        # Pre-compile the regex pattern once outside the loop to avoid compilation overhead inside the loop
+        mac_pattern = re.compile(r"^\s*\d+\s*\|\s*\d+\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)")
         for line in macs_out.splitlines():
-            match = re.search(r"^\s*\d+\s*\|\s*\d+\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)", line)
+            match = mac_pattern.search(line)
             if match:
                 o_id = match.group(1)
                 mac = match.group(2)
@@ -263,8 +265,11 @@ def netdevice_pon_port_view(dev_id: int, port_id: str, request: Request, db: Ses
 
         rx_out = ds._send_cmd(chan, f"show olt rx-power {port_id}", max_wait=5)
         rx_map = {}
+        # Pre-compile the dynamic pattern exactly once outside the line-by-line processing loop
+        # to maximize performance and ensure matching correctness without dynamic re-compilation overhead.
+        rx_pattern = re.compile(fr"{re.escape(port_id)}/(\d+)\s+(-?\d+\.\d+\s*dBm)")
         for line in rx_out.splitlines():
-            p_match = re.search(fr"{port_id}/(\d+)\s+(-?\d+\.\d+\s*dBm)", line)
+            p_match = rx_pattern.search(line)
             if p_match:
                 rx_map[p_match.group(1)] = p_match.group(2)
 
