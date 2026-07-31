@@ -6,8 +6,21 @@
         <p class="text-sm text-gray-500">Standardowy widok roboczy dla discovery, importu i zdalnych testów Mikrotik API oraz Dasan SSH.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
-        <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT GML" @click="downloadPitExport" />
+        <UButton
+          color="gray"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          label="Odśwież"
+          aria-label="Odśwież wszystkie dane operacji sieciowych"
+          @click="refreshAll"
+        />
+        <UButton
+          color="primary"
+          icon="i-lucide-download"
+          label="Pobierz PIT GML"
+          aria-label="Pobierz eksport PIT GML dla węzłów sieciowych"
+          @click="downloadPitExport"
+        />
       </div>
     </div>
 
@@ -46,42 +59,42 @@
         <form class="space-y-4" @submit.prevent="saveAccessProfile">
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Urządzenie" required>
-              <USelect v-model="accessProfileForm.netDeviceId" :items="deviceOptions" label-key="label" />
+              <USelect v-model="accessProfileForm.netDeviceId" :items="deviceOptions" label-key="label" aria-label="Wybierz urządzenie sieciowe" />
             </UFormField>
             <UFormField label="Driver" required>
-              <USelect v-model="accessProfileForm.driver" :items="driverOptions" label-key="label" />
+              <USelect v-model="accessProfileForm.driver" :items="driverOptions" label-key="label" aria-label="Wybierz driver połączenia" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Host" required>
-              <UInput v-model="accessProfileForm.host" placeholder="10.0.222.x" />
+              <UInput v-model="accessProfileForm.host" placeholder="10.0.222.x" aria-label="Adres hosta urządzenia" />
             </UFormField>
             <UFormField label="Port">
-              <UInput v-model="accessProfileForm.port" type="number" />
+              <UInput v-model="accessProfileForm.port" type="number" aria-label="Port połączenia" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Login" required>
-              <UInput v-model="accessProfileForm.username" />
+              <UInput v-model="accessProfileForm.username" aria-label="Nazwa użytkownika logowania" />
             </UFormField>
             <UFormField label="Hasło" required>
-              <UInput v-model="accessProfileForm.password" type="password" />
+              <UInput v-model="accessProfileForm.password" type="password" aria-label="Hasło użytkownika logowania" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Enable password">
-              <UInput v-model="accessProfileForm.enablePassword" type="password" />
+              <UInput v-model="accessProfileForm.enablePassword" type="password" aria-label="Hasło trybu uprzywilejowanego" />
             </UFormField>
             <UFormField label="Mikrotik TLS">
-              <USelect v-model="accessProfileForm.useTls" :items="booleanOptions" label-key="label" />
+              <USelect v-model="accessProfileForm.useTls" :items="booleanOptions" label-key="label" aria-label="Użyj połączenia TLS Mikrotik" />
             </UFormField>
           </div>
 
           <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isSavingProfile" label="Zapisz profil" />
+            <UButton type="submit" color="primary" :loading="isSavingProfile" label="Zapisz profil" aria-label="Zapisz nowy profil dostępu" />
           </div>
         </form>
       </UCard>
@@ -111,9 +124,10 @@
                 size="xs"
                 color="gray"
                 variant="soft"
-                icon="i-heroicons-bolt"
+                icon="i-lucide-zap"
                 :loading="activeProfileTestId === row.id"
                 label="Test połączenia"
+                :aria-label="'Przetestuj połączenie dla profilu #' + row.id"
                 @click="runProfileTest(row.id)"
               />
             </div>
@@ -161,10 +175,11 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-bolt"
+                icon="i-lucide-zap"
                 :disabled="!row.readyForDiscovery"
                 :loading="activeScanDeviceId === row.id"
                 label="Skanuj"
+                :aria-label="'Uruchom skanowanie dla urządzenia ' + row.name"
                 @click="runScan(row.id)"
               />
             </div>
@@ -182,6 +197,7 @@
             <UCheckbox
               v-model="autoImportOptions.importTariffsAndSubscriptions"
               label="Auto-import ma tworzyć też taryfy i subskrypcje z rate-limit DHCP"
+              aria-label="Automatyczne tworzenie taryf i subskrypcji podczas auto-importu"
             />
           </div>
         </template>
@@ -198,18 +214,20 @@
                 size="xs"
                 color="gray"
                 variant="soft"
-                icon="i-heroicons-eye"
+                icon="i-lucide-eye"
                 :loading="activeSessionId === row.id && isLoadingSessionRecords"
                 label="Rekordy"
+                :aria-label="'Pokaż rekordy dla sesji discovery #' + row.id"
                 @click="loadSessionRecords(row.id)"
               />
               <UButton
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-arrow-down-tray"
+                icon="i-lucide-download"
                 :loading="autoImportingSessionId === row.id"
                 label="Auto-import"
+                :aria-label="'Uruchom automatyczny import dla sesji #' + row.id"
                 @click="runAutoImport(row.id)"
               />
             </div>
@@ -262,8 +280,9 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-arrow-down-circle"
+                icon="i-lucide-arrow-down-circle"
                 label="Wybierz"
+                :aria-label="'Wybierz rekord ' + (row.hostname || row.macAddress)"
                 @click="selectRecord(row)"
               />
             </div>
@@ -286,19 +305,19 @@
         <form class="space-y-4" @submit.prevent="importSelectedRecord">
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Klient">
-              <USelectMenu v-model="recordImportForm.customerId" :items="customerOptions" value-key="value" label-key="label" searchable />
+              <USelectMenu v-model="recordImportForm.customerId" :items="customerOptions" value-key="value" label-key="label" searchable aria-label="Przypisz klienta do rekordu" />
             </UFormField>
             <UFormField label="Sieć IP">
-              <USelectMenu v-model="recordImportForm.ipNetworkId" :items="ipNetworkOptions" value-key="value" label-key="label" searchable />
+              <USelectMenu v-model="recordImportForm.ipNetworkId" :items="ipNetworkOptions" value-key="value" label-key="label" searchable aria-label="Wybierz sieć IP dla rekordu" />
             </UFormField>
           </div>
 
           <UFormField label="Nazwa / hostname override">
-            <UInput v-model="recordImportForm.name" />
+            <UInput v-model="recordImportForm.name" aria-label="Nazwa lub hostname override" />
           </UFormField>
 
           <UFormField label="Komentarz">
-            <UTextarea v-model="recordImportForm.comment" :data="2" />
+            <UTextarea v-model="recordImportForm.comment" :rows="2" aria-label="Dodatkowy komentarz do importu rekordu" />
           </UFormField>
 
           <div class="flex justify-end">
@@ -308,6 +327,7 @@
               :disabled="!selectedRecord"
               :loading="isImportingRecord"
               label="Importuj rekord"
+              aria-label="Wykonaj import wybranego rekordu"
             />
           </div>
         </form>
@@ -322,7 +342,13 @@
               <h2 class="font-semibold text-lg">Zaimportowane urządzenia</h2>
               <p class="text-sm text-gray-500">Customer-devices po imporcie discovery</p>
             </div>
-            <UInput v-model="leaseSearch" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Szukaj IP, MAC, serial..." class="w-72" />
+            <UInput
+              v-model="leaseSearch"
+              icon="i-lucide-search"
+              placeholder="Szukaj IP, MAC, serial..."
+              class="w-72"
+              aria-label="Wyszukaj zaimportowane urządzenia po adresie IP, MAC lub numerze seryjnym"
+            />
           </div>
         </template>
 
@@ -344,14 +370,30 @@
               <p class="text-sm text-gray-500">Readiness, sync lease i live test z urządzenia dostępowego</p>
             </div>
             <div class="flex flex-wrap gap-2">
-              <UButton color="gray" variant="soft" icon="i-heroicons-bolt" label="Readiness" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
-              <UButton color="primary" variant="soft" icon="i-heroicons-signal" label="Test zdalny" :loading="isRunningRemoteTest" @click="runRemoteTest" />
+              <UButton
+                color="gray"
+                variant="soft"
+                icon="i-lucide-zap"
+                label="Readiness"
+                :loading="isCheckingDiagnostics"
+                aria-label="Uruchom diagnostykę lokalną readiness"
+                @click="runDiagnostics"
+              />
+              <UButton
+                color="primary"
+                variant="soft"
+                icon="i-lucide-signal"
+                label="Test zdalny"
+                :loading="isRunningRemoteTest"
+                aria-label="Uruchom test zdalny na urządzeniu klienta"
+                @click="runRemoteTest"
+              />
             </div>
           </div>
         </template>
 
         <UFormField label="Urządzenie klienta">
-          <USelectMenu v-model="diagnosticsDeviceId" :items="customerDeviceOptions" value-key="value" label-key="label" searchable />
+          <USelectMenu v-model="diagnosticsDeviceId" :items="customerDeviceOptions" value-key="value" label-key="label" searchable aria-label="Wybierz urządzenie klienta do diagnostyki" />
         </UFormField>
 
         <div v-if="diagnosticsResult" class="mt-4 space-y-3">
@@ -363,9 +405,10 @@
             <UButton
               color="primary"
               variant="soft"
-              icon="i-heroicons-arrow-path-rounded-square"
+              icon="i-lucide-refresh-cw"
               label="Sync lease"
               :loading="isSyncingLease"
+              aria-label="Zsynchronizuj lease urządzenia z serwerem DHCP"
               @click="syncLease"
             />
           </div>
@@ -415,37 +458,37 @@
         <form class="space-y-4" @submit.prevent="importLease">
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Klient" required>
-              <USelectMenu v-model="leaseForm.customerId" :items="customerOptions" value-key="value" label-key="label" searchable />
+              <USelectMenu v-model="leaseForm.customerId" :items="customerOptions" value-key="value" label-key="label" searchable aria-label="Wybierz klienta do ręcznego przypisania" />
             </UFormField>
             <UFormField label="Urządzenie sieciowe">
-              <USelectMenu v-model="leaseForm.netDeviceId" :items="deviceOptions" value-key="value" label-key="label" searchable />
+              <USelectMenu v-model="leaseForm.netDeviceId" :items="deviceOptions" value-key="value" label-key="label" searchable aria-label="Wybierz powiązane urządzenie sieciowe" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Sieć IP">
-              <USelectMenu v-model="leaseForm.ipNetworkId" :items="ipNetworkOptions" value-key="value" label-key="label" searchable />
+              <USelectMenu v-model="leaseForm.ipNetworkId" :items="ipNetworkOptions" value-key="value" label-key="label" searchable aria-label="Wybierz podsieć IP" />
             </UFormField>
             <UFormField label="Hostname" required>
-              <UInput v-model="leaseForm.hostname" />
+              <UInput v-model="leaseForm.hostname" aria-label="Wpisz hostname urządzenia" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Adres IP">
-              <UInput v-model="leaseForm.ipAddress" />
+              <UInput v-model="leaseForm.ipAddress" aria-label="Wpisz adres IP urządzenia" />
             </UFormField>
             <UFormField label="MAC">
-              <UInput v-model="leaseForm.macAddress" />
+              <UInput v-model="leaseForm.macAddress" aria-label="Wpisz adres fizyczny MAC urządzenia" />
             </UFormField>
           </div>
 
           <UFormField label="Komentarz">
-            <UTextarea v-model="leaseForm.comment" :data="2" />
+            <UTextarea v-model="leaseForm.comment" :rows="2" aria-label="Dodatkowy komentarz dla ręcznego wpisu" />
           </UFormField>
 
           <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" />
+            <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" aria-label="Wykonaj ręczny import lease" />
           </div>
         </form>
       </UCard>
@@ -461,31 +504,31 @@
         <form class="space-y-4" @submit.prevent="importNetwork">
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Nazwa">
-              <UInput v-model="networkForm.name" />
+              <UInput v-model="networkForm.name" aria-label="Nazwa podsieci IP" />
             </UFormField>
             <UFormField label="CIDR" required>
-              <UInput v-model="networkForm.cidr" placeholder="10.10.200.0/24" />
+              <UInput v-model="networkForm.cidr" placeholder="10.10.200.0/24" aria-label="Zakres CIDR podsieci" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-3 gap-4">
             <UFormField label="Gateway">
-              <UInput v-model="networkForm.gateway" />
+              <UInput v-model="networkForm.gateway" aria-label="Adres bramy domyślnej podsieci" />
             </UFormField>
             <UFormField label="VLAN">
-              <UInput v-model="networkForm.vlanId" type="number" />
+              <UInput v-model="networkForm.vlanId" type="number" aria-label="Identyfikator VLAN podsieci" />
             </UFormField>
             <UFormField label="Źródłowe urządzenie">
-              <USelectMenu v-model="networkForm.deviceId" :items="deviceOptions" value-key="value" label-key="label" searchable />
+              <USelectMenu v-model="networkForm.deviceId" :items="deviceOptions" value-key="value" label-key="label" searchable aria-label="Wybierz urządzenie źródłowe dla podsieci" />
             </UFormField>
           </div>
 
           <UFormField label="Komentarz">
-            <UTextarea v-model="networkForm.comment" :data="2" />
+            <UTextarea v-model="networkForm.comment" :rows="2" aria-label="Komentarz dla ręcznej sieci" />
           </UFormField>
 
           <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" />
+            <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" aria-label="Wykonaj ręczny import sieci" />
           </div>
         </form>
       </UCard>
@@ -495,6 +538,8 @@
 
 <script setup>
 const route = useRoute()
+const toast = useToast()
+
 const leaseSearch = ref('')
 const diagnosticsDeviceId = ref('')
 const diagnosticsResult = ref(null)
@@ -708,13 +753,26 @@ const asNumberOrNull = (value) => {
 }
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshDiscoveryDevices(),
-    refreshAccessProfiles(),
-    refreshDiscoverySessions(),
-    refreshPitSync(),
-    refreshImportedLeases()
-  ])
+  try {
+    await Promise.all([
+      refreshDiscoveryDevices(),
+      refreshAccessProfiles(),
+      refreshDiscoverySessions(),
+      refreshPitSync(),
+      refreshImportedLeases()
+    ])
+    toast.add({
+      title: 'Odświeżono dane',
+      description: 'Pomyślnie zsynchronizowano i odświeżono informacje o operacjach sieciowych.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: err.message || 'Wystąpił problem podczas odświeżania danych.',
+      color: 'error'
+    })
+  }
 }
 
 const saveAccessProfile = async () => {
@@ -734,6 +792,12 @@ const saveAccessProfile = async () => {
       }
     })
 
+    toast.add({
+      title: 'Zapisano profil',
+      description: `Profil dostępu dla urządzenia na hoście ${accessProfileForm.host} został zapisany.`,
+      color: 'success'
+    })
+
     Object.assign(accessProfileForm, {
       netDeviceId: null,
       driver: 'mikrotik_api',
@@ -749,6 +813,12 @@ const saveAccessProfile = async () => {
       refreshDiscoveryDevices(),
       refreshAccessProfiles()
     ])
+  } catch (err) {
+    toast.add({
+      title: 'Błąd zapisu',
+      description: err.data?.message || err.message || 'Nie udało się zapisać profilu dostępu.',
+      color: 'error'
+    })
   } finally {
     isSavingProfile.value = false
   }
@@ -756,6 +826,7 @@ const saveAccessProfile = async () => {
 
 const runScan = async (deviceId) => {
   activeScanDeviceId.value = deviceId
+  const deviceName = (discoveryDevices.value || []).find((d) => d.id === deviceId)?.name || `#${deviceId}`
   try {
     const result = await $fetch(`/api/v1/network-discovery/scan/${deviceId}`, {
       method: 'POST'
@@ -763,10 +834,23 @@ const runScan = async (deviceId) => {
     activeSessionId.value = result.session.id
     sessionRecords.value = result.records
     selectedRecord.value = null
+
+    toast.add({
+      title: 'Skanowanie zakończone',
+      description: `Skanowanie urządzenia ${deviceName} zakończyło się sukcesem. Sesja: #${result.session.id}.`,
+      color: 'success'
+    })
+
     await Promise.all([
       refreshDiscoverySessions(),
       refreshImportedLeases()
     ])
+  } catch (err) {
+    toast.add({
+      title: 'Błąd skanowania',
+      description: err.data?.message || err.message || 'Nie udało się ukończyć skanowania live.',
+      color: 'error'
+    })
   } finally {
     activeScanDeviceId.value = null
   }
@@ -775,8 +859,29 @@ const runScan = async (deviceId) => {
 const runProfileTest = async (profileId) => {
   activeProfileTestId.value = profileId
   try {
-    profileTestResult.value = await $fetch(`/api/v1/network-discovery/access-profiles/${profileId}/test`, {
+    const result = await $fetch(`/api/v1/network-discovery/access-profiles/${profileId}/test`, {
       method: 'POST'
+    })
+    profileTestResult.value = result
+
+    if (result.result?.ok) {
+      toast.add({
+        title: 'Test połączenia udany',
+        description: `Profil #${profileId} pomyślnie połączył się z urządzeniem.`,
+        color: 'success'
+      })
+    } else {
+      toast.add({
+        title: 'Test połączenia nieudany',
+        description: `Brak połączenia dla profilu #${profileId}.`,
+        color: 'warning'
+      })
+    }
+  } catch (err) {
+    toast.add({
+      title: 'Błąd testu połączenia',
+      description: err.data?.message || err.message || 'Wystąpił nieoczekiwany błąd podczas testu połączenia.',
+      color: 'error'
     })
   } finally {
     activeProfileTestId.value = null
@@ -787,8 +892,21 @@ const loadSessionRecords = async (sessionId) => {
   activeSessionId.value = sessionId
   isLoadingSessionRecords.value = true
   try {
-    sessionRecords.value = await $fetch(`/api/v1/network-discovery/sessions/${sessionId}/records`)
+    const records = await $fetch(`/api/v1/network-discovery/sessions/${sessionId}/records`)
+    sessionRecords.value = records
     selectedRecord.value = null
+
+    toast.add({
+      title: 'Rekordy sesji wczytane',
+      description: `Wczytano ${records.length} rekordów dla sesji #${sessionId}.`,
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd wczytywania rekordów',
+      description: err.data?.message || err.message || 'Nie udało się pobrać rekordów sesji.',
+      color: 'error'
+    })
   } finally {
     isLoadingSessionRecords.value = false
   }
@@ -808,11 +926,24 @@ const runAutoImport = async (sessionId) => {
       sessionId,
       summary: result.summary
     }
+
+    toast.add({
+      title: 'Auto-import zakończony',
+      description: `Zaimportowano pomyślnie ${result.summary.importedCustomerDevices} urządzeń oraz ${result.summary.createdCustomers} klientów.`,
+      color: 'success'
+    })
+
     await loadSessionRecords(sessionId)
     await Promise.all([
       refreshImportedLeases(),
       refreshDiscoverySessions()
     ])
+  } catch (err) {
+    toast.add({
+      title: 'Błąd auto-importu',
+      description: err.data?.message || err.message || 'Automatyczny import sesji zakończył się niepowodzeniem.',
+      color: 'error'
+    })
   } finally {
     autoImportingSessionId.value = null
   }
@@ -821,6 +952,11 @@ const runAutoImport = async (sessionId) => {
 const selectRecord = (record) => {
   selectedRecord.value = record
   recordImportForm.name = record.hostname || ''
+  toast.add({
+    title: 'Wybrano rekord',
+    description: `Rekord ${record.recordKind} z hostem ${record.hostname || 'n/a'} jest gotowy do importu.`,
+    color: 'neutral'
+  })
 }
 
 const importSelectedRecord = async () => {
@@ -846,6 +982,12 @@ const importSelectedRecord = async () => {
       remoteTestResult.value = null
     }
 
+    toast.add({
+      title: 'Rekord zaimportowany',
+      description: `Pomyślnie zaimportowano rekord jako ${recordImportForm.name || 'nowe urządzenie'}.`,
+      color: 'success'
+    })
+
     Object.assign(recordImportForm, {
       customerId: '',
       ipNetworkId: '',
@@ -857,6 +999,12 @@ const importSelectedRecord = async () => {
       refreshImportedLeases(),
       refreshPitSync()
     ])
+  } catch (err) {
+    toast.add({
+      title: 'Błąd importu rekordu',
+      description: err.data?.message || err.message || 'Nie udało się zaimportować wybranego rekordu.',
+      color: 'error'
+    })
   } finally {
     isImportingRecord.value = false
   }
@@ -864,6 +1012,7 @@ const importSelectedRecord = async () => {
 
 const importLease = async () => {
   isImportingLease.value = true
+  const leaseHost = leaseForm.hostname
   try {
     const result = await $fetch('/api/v1/network-discovery/import-lease', {
       method: 'POST',
@@ -882,6 +1031,13 @@ const importLease = async () => {
     diagnosticsResult.value = result.diagnostics
     leaseSyncResult.value = null
     remoteTestResult.value = null
+
+    toast.add({
+      title: 'Zaimportowano lease',
+      description: `Ręczny lease dla ${leaseHost} został pomyślnie zaimportowany.`,
+      color: 'success'
+    })
+
     Object.assign(leaseForm, {
       customerId: '',
       netDeviceId: '',
@@ -895,6 +1051,12 @@ const importLease = async () => {
       refreshImportedLeases(),
       refreshPitSync()
     ])
+  } catch (err) {
+    toast.add({
+      title: 'Błąd importu lease',
+      description: err.data?.message || err.message || 'Ręczny import lease zakończył się niepowodzeniem.',
+      color: 'error'
+    })
   } finally {
     isImportingLease.value = false
   }
@@ -902,6 +1064,7 @@ const importLease = async () => {
 
 const importNetwork = async () => {
   isImportingNetwork.value = true
+  const cidr = networkForm.cidr
   try {
     await $fetch('/api/v1/network-discovery/import-network', {
       method: 'POST',
@@ -915,6 +1078,12 @@ const importNetwork = async () => {
       }
     })
 
+    toast.add({
+      title: 'Sieć zaimportowana',
+      description: `Sieć ${cidr} została pomyślnie zapisana.`,
+      color: 'success'
+    })
+
     Object.assign(networkForm, {
       deviceId: '',
       name: '',
@@ -924,6 +1093,12 @@ const importNetwork = async () => {
       comment: ''
     })
     await refreshPitSync()
+  } catch (err) {
+    toast.add({
+      title: 'Błąd importu sieci',
+      description: err.data?.message || err.message || 'Ręczny import sieci nie powiódł się.',
+      color: 'error'
+    })
   } finally {
     isImportingNetwork.value = false
   }
@@ -938,8 +1113,21 @@ const runDiagnostics = async () => {
   try {
     leaseSyncResult.value = null
     remoteTestResult.value = null
-    diagnosticsResult.value = await $fetch(`/api/v1/diagnostics/check/${diagnosticsDeviceId.value}`, {
+    const result = await $fetch(`/api/v1/diagnostics/check/${diagnosticsDeviceId.value}`, {
       method: 'POST'
+    })
+    diagnosticsResult.value = result
+
+    toast.add({
+      title: 'Diagnostyka zakończona',
+      description: result.ready ? 'Urządzenie jest gotowe i zweryfikowane lokalnie.' : 'Wykryto brakujące dane w diagnostyce lokalnej.',
+      color: result.ready ? 'success' : 'warning'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd diagnostyki',
+      description: err.data?.message || err.message || 'Nie udało się przeprowadzić testu readiness.',
+      color: 'error'
     })
   } finally {
     isCheckingDiagnostics.value = false
@@ -953,8 +1141,29 @@ const runRemoteTest = async () => {
 
   isRunningRemoteTest.value = true
   try {
-    remoteTestResult.value = await $fetch(`/api/v1/diagnostics/remote-test/${diagnosticsDeviceId.value}`, {
+    const result = await $fetch(`/api/v1/diagnostics/remote-test/${diagnosticsDeviceId.value}`, {
       method: 'POST'
+    })
+    remoteTestResult.value = result
+
+    if (result.remoteDiagnostics?.ok) {
+      toast.add({
+        title: 'Test zdalny OK',
+        description: 'Urządzenie pomyślnie przeszło wszystkie testy zdalne.',
+        color: 'success'
+      })
+    } else {
+      toast.add({
+        title: 'Test zdalny nieudany',
+        description: 'Wykryto problemy podczas komunikacji lub konfiguracji urządzenia.',
+        color: 'warning'
+      })
+    }
+  } catch (err) {
+    toast.add({
+      title: 'Błąd testu zdalnego',
+      description: err.data?.message || err.message || 'Wystąpił problem podczas zdalnego testowania.',
+      color: 'error'
     })
   } finally {
     isRunningRemoteTest.value = false
@@ -968,23 +1177,51 @@ const syncLease = async () => {
 
   isSyncingLease.value = true
   try {
-    leaseSyncResult.value = await $fetch(`/api/v1/diagnostics/sync-lease/${diagnosticsDeviceId.value}`, {
+    const result = await $fetch(`/api/v1/diagnostics/sync-lease/${diagnosticsDeviceId.value}`, {
       method: 'POST'
     })
+    leaseSyncResult.value = result
+
+    toast.add({
+      title: result.synced ? 'Zsynchronizowano lease' : 'Brak zmian lease',
+      description: result.synced ? 'Pomyślnie zsynchronizowano dzierżawę z serwerem DHCP.' : (result.reason || 'Dane dzierżawy DHCP są aktualne.'),
+      color: result.synced ? 'success' : 'neutral'
+    })
+
     await refreshImportedLeases()
+  } catch (err) {
+    toast.add({
+      title: 'Błąd synchronizacji lease',
+      description: err.data?.message || err.message || 'Nie udało się zsynchronizować dzierżawy.',
+      color: 'error'
+    })
   } finally {
     isSyncingLease.value = false
   }
 }
 
 const downloadPitExport = async () => {
-  const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'pit-net-nodes.gml'
-  link.click()
-  URL.revokeObjectURL(url)
+  try {
+    const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'pit-net-nodes.gml'
+    link.click()
+    URL.revokeObjectURL(url)
+
+    toast.add({
+      title: 'Pobieranie rozpoczęte',
+      description: 'Plik eksportu PIT GML (pit-net-nodes.gml) został pomyślnie pobrany.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd pobierania',
+      description: err.message || 'Nie udało się wygenerować ani pobrać pliku eksportu GML.',
+      color: 'error'
+    })
+  }
 }
 
 const applyRoutePrefill = () => {
