@@ -1,5 +1,4 @@
 import logging
-import os
 from app import config
 
 logger = logging.getLogger("app.config_validation")
