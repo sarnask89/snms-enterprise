@@ -9,6 +9,7 @@ from app.models.network import NetDevice
 from app.models.monitoring import NetworkStat, SystemNotification, NvidiaGPU, NvidiaStat
 from app.services.snmp_service import snmp_service
 from app.services.nvidia_service import nvidia_service
+from app.utils.parsing import safe_eval
 import logging
 
 logger = logging.getLogger("app.monitoring")
@@ -222,8 +223,8 @@ class MonitoringService:
             # Very simple expression evaluation for demo: '{last()} > 90'
             expr = trig.expression.replace("{last()}", str(value))
             try:
-                # Security warning: eval() is used here for simplicity in demo
-                result = eval(expr, {"__builtins__": {}}, {})
+                # Use safe_eval instead of eval() to prevent arbitrary code execution
+                result = safe_eval(expr)
                 new_status = "PROBLEM" if result else "OK"
                 
                 if new_status != trig.last_status:
