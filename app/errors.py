@@ -1,6 +1,6 @@
 import logging
 from fastapi import Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from sqlalchemy.exc import SQLAlchemyError
 from app.templating import render
 
