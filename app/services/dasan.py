@@ -6,6 +6,17 @@ from typing import Dict, Any, List
 
 logger = logging.getLogger(__name__)
 
+# Pre-compiled static regexes at module level to eliminate compilation overhead in DasanService operations
+RE_ONU_ACTIVE_PORT = re.compile(r"^\s*(\d+)\s*\|\s*(\d+)\s*\|")
+RE_GPON_MAC_LINE = re.compile(r"^\s*\d+\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)")
+RE_ONU_ACTIVE_STATE = re.compile(r"\|\s*(\d+)\s*\|\s*(\w+)\s*\|")
+RE_BRIDGE_SEARCH = re.compile(r"^\s*(\d+)\s+([a-zA-Z0-9/]+)\s+([0-9a-fA-F:]+)")
+RE_ONU_ROW = re.compile(r"^\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\w+)\s*\|\s*\w+\s*\|\s*(\w+)")
+RE_BRIDGE_PARSING = re.compile(r"^\s*(\d+)\s+(eth\d+)\s+([0-9a-fA-F:]{17})")
+RE_GPON_MAC_PARSING = re.compile(r"^\s*\d+\s*\|\s*\d+\s*\|\s*\d+\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\w+)")
+RE_ONU_DETAILS = re.compile(r"\|\s*\d+\s*\|\s*(\w+)\s*\|\s*\w+\s*\|\s*(\w+)\s*\|[^\|]+\|\s*([0-9:]+)")
+RE_SIGNAL_RX = re.compile(r"(-?\d+\.\d+\s*dBm)")
+
 class DasanService:
     def __init__(self, host: str, user: str, password: str, port: int = 22502):
         self.host = host
@@ -74,7 +85,7 @@ class DasanService:
             
             for line in onu_active_raw.splitlines():
                 # Szukamy linii: OLT | ONU | STATUS ... np. " 1 | 5 | Active"
-                match = re.search(r"^\s*(\d+)\s*\|\s*(\d+)\s*\|", line)
+                match = RE_ONU_ACTIVE_PORT.search(line)
                 if match:
                     active_olt_ports.add(match.group(1))
 
@@ -88,7 +99,7 @@ class DasanService:
                         logger.error(f"DASAN: Found in OLT {olt_port} MAC table: {line.strip()}")
                         # Format: no. | OLT | ONU | MAC ADDRESS | GEM ID | VID | Status
                         # Przykład: 1 | 1 | 1 | 54:db:a2:11:e7:31 | 208 | 100 | dynamic
-                        match = re.search(r"^\s*\d+\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)", line)
+                        match = RE_GPON_MAC_LINE.search(line)
                         if match:
                             found_olt_port = match.group(1)
                             onu_id = match.group(2)
@@ -99,7 +110,7 @@ class DasanService:
                             onu_detail_raw = self._send_cmd(chan, f"show onu active {found_olt_port}")
                             for s_line in onu_detail_raw.splitlines():
                                 if f"| {onu_id} |" in s_line:
-                                    s_match = re.search(r"\|\s*(\d+)\s*\|\s*(\w+)\s*\|", s_line)
+                                    s_match = RE_ONU_ACTIVE_STATE.search(s_line)
                                     if s_match:
                                         status = s_match.group(2)
                                         break
@@ -122,7 +133,7 @@ class DasanService:
                 if mac_formatted in line.lower():
                     logger.error(f"DASAN: Found in Bridge Table: {line.strip()}")
                     # Format: 100 eth04 9c:65:ee:92:ef:a1
-                    match_data = re.search(r"^\s*(\d+)\s+([a-zA-Z0-9/]+)\s+([0-9a-fA-F:]+)", line)
+                    match_data = RE_BRIDGE_SEARCH.search(line)
                     if match_data:
                         return {
                             "port": match_data.group(2),
@@ -184,7 +195,7 @@ class DasanService:
         # Szukamy linii typu: 1 | 1 | Active | manual | DSNW...
         lines = raw.splitlines()
         for line in lines:
-            match = re.search(r"^\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\w+)\s*\|\s*\w+\s*\|\s*(\w+)", line)
+            match = RE_ONU_ROW.search(line)
             if match:
                 onus.append({
                     "olt": match.group(1),
@@ -200,7 +211,7 @@ class DasanService:
         lines = raw.splitlines()
         for line in lines:
             # Format 1 (show mac): 100 eth01 54:db:a2:12:25:f9 OK dynamic 6.89
-            match1 = re.search(r"^\s*(\d+)\s+(eth\d+)\s+([0-9a-fA-F:]{17})", line)
+            match1 = RE_BRIDGE_PARSING.search(line)
             if match1:
                 macs.append({
                     "vid": match1.group(1),
@@ -211,7 +222,7 @@ class DasanService:
                 continue
                 
             # Format 2 (show olt mac): 1 | 5 | 14 | 00:0a:e4:cd:84:30 | 130 | 120 | dynamic
-            match2 = re.search(r"^\s*\d+\s*\|\s*\d+\s*\|\s*\d+\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\w+)", line)
+            match2 = RE_GPON_MAC_PARSING.search(line)
             if match2:
                 macs.append({
                     "mac": match2.group(1),
@@ -241,7 +252,7 @@ class DasanService:
             out_active = self._send_cmd(chan, f"show onu active {olt_port}", max_wait=3)
             for line in out_active.splitlines():
                 if f"| {onu_id} |" in line:
-                    match = re.search(r"\|\s*\d+\s*\|\s*(\w+)\s*\|\s*\w+\s*\|\s*(\w+)\s*\|[^\|]+\|\s*([0-9:]+)", line)
+                    match = RE_ONU_DETAILS.search(line)
                     if match:
                         details["status"] = match.group(1)
                         details["serial"] = match.group(2)
@@ -253,7 +264,7 @@ class DasanService:
             for line in out_power.splitlines():
                 # Format: 1/1   -20.10 dBm
                 if f"{olt_port}/{onu_id}" in line:
-                    p_match = re.search(r"(-?\d+\.\d+\s*dBm)", line)
+                    p_match = RE_SIGNAL_RX.search(line)
                     if p_match:
                         details["signal_rx"] = p_match.group(1)
                     break
