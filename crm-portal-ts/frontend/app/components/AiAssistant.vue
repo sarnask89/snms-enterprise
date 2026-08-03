@@ -2,14 +2,16 @@
   <ClientOnly>
     <div>
       <!-- The Floating Button -->
-      <UButton
-        v-if="!isOpen"
-        icon="i-heroicons-chat-bubble-left-ellipsis-solid"
-        size="xl"
-        color="primary"
-        class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
-        @click="isOpen = true"
-      />
+      <UTooltip v-if="!isOpen" text="Open CRM Assistant" :popper="{ placement: 'left' }">
+        <UButton
+          icon="i-heroicons-chat-bubble-left-ellipsis-solid"
+          size="xl"
+          color="primary"
+          class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
+          aria-label="Open CRM Assistant"
+          @click="isOpen = true"
+        />
+      </UTooltip>
 
       <!-- The Draggable Chat Window -->
       <div
@@ -28,26 +30,35 @@
             CRM Assistant
           </div>
           <div class="flex items-center gap-1">
-             <UButton
-              :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
-              :color="systemContext ? 'green' : 'white'"
-              variant="ghost"
-              size="xs"
-              label="API Doc"
-              @click="promptForContext"
-            />
-            <UButton
-              icon="i-heroicons-x-mark"
-              color="white"
-              variant="ghost"
-              size="xs"
-              @click="isOpen = false"
-            />
+            <UTooltip :text="systemContext ? 'API documentation loaded' : 'Add API documentation as context'">
+              <UButton
+                :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
+                :color="systemContext ? 'green' : 'white'"
+                variant="ghost"
+                size="xs"
+                label="API Doc"
+                aria-label="Configure API documentation for the assistant"
+                @click="promptForContext"
+              />
+            </UTooltip>
+            <UTooltip text="Close Assistant">
+              <UButton
+                icon="i-heroicons-x-mark"
+                color="white"
+                variant="ghost"
+                size="xs"
+                aria-label="Close Assistant"
+                @click="isOpen = false"
+              />
+            </UTooltip>
           </div>
         </div>
 
         <!-- Chat Feed -->
-        <div class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
+        <div
+          ref="chatFeed"
+          class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950 scroll-smooth"
+        >
           <div
             v-for="(msg, index) in messages"
             :key="index"
@@ -70,13 +81,17 @@
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
+              aria-label="Message to Assistant"
             />
-            <UButton 
-              type="submit" 
-              icon="i-heroicons-paper-airplane" 
-              color="primary" 
-              :loading="isLoading"
-            />
+            <UTooltip text="Send message">
+              <UButton
+                type="submit"
+                icon="i-heroicons-paper-airplane"
+                color="primary"
+                :loading="isLoading"
+                aria-label="Send message"
+              />
+            </UTooltip>
           </form>
         </div>
       </div>
@@ -86,12 +101,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const isOpen = ref(false)
+const chatFeed = ref(null)
 const isLoading = ref(false)
 const isContextModalOpen = ref(false)
 const input = ref('')
@@ -109,9 +125,33 @@ const { width, height } = useWindowSize()
 const x = ref(0)
 const y = ref(0)
 
+const scrollToBottom = async () => {
+  await nextTick()
+  if (chatFeed.value) {
+    chatFeed.value.scrollTop = chatFeed.value.scrollHeight
+  }
+}
+
+// Watch messages to auto scroll
+watch(
+  () => messages.value,
+  () => {
+    scrollToBottom()
+  },
+  { deep: true }
+)
+
+// Also scroll when assistant window is opened
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    scrollToBottom()
+  }
+})
+
 onMounted(() => {
   x.value = width.value - 450
   y.value = height.value - 600
+  scrollToBottom()
 })
 
 useDraggable(chatWindow, { handle: chatHandle, onMove: (pos) => { x.value = pos.x; y.value = pos.y } })
