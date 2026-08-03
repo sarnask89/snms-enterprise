@@ -1,0 +1,3 @@
+## 2025-02-14 - [Floating Chat Widgets and Dynamic Feeds accessibility and UX]
+**Learning:** Floating chat widgets can suffer from poor keyboard accessibility and screen reader silencing if context-specific aria-label attributes and Tooltips are omitted. Furthermore, dynamic streaming or paginated message feeds in chat interfaces cause cognitive friction and navigation issues unless automatically scrolled to the latest content upon updates.
+**Action:** Always wrap floating action buttons, toggle buttons, and form inputs inside chat feeds with descriptive aria-label properties and accessible tooltips. Implement automatic reactive container scrolling using nextTick to anchor the viewport at the bottom of the feed when messages load or change.
