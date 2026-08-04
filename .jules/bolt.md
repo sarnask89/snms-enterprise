@@ -1,0 +1,5 @@
+# Bolt's Daily Optimization Journal
+
+## 2026-08-04 - Cached Street Name Matching (Eliminating Discovery N+1 Bottleneck)
+**Learning:** During bulk Mikrotik DHCP lease discovery processing, the system was performing inline database queries to match parsed street names to `LocationStreet` records. For hundreds of leases, this resulted in an O(N) database query bottleneck. Furthermore, the `smart_parse_comment` endpoint called `match_street_name`, which was completely missing from `app/services/mikrotik_parser.py`, causing a runtime `ImportError`. By pre-loading all streets into an in-memory dictionary cache on the first call, we can reduce database queries to exactly 1 query to initialize, and perform all subsequent matches in memory. Storing only raw `int` IDs instead of model objects prevents detached SQLAlchemy session errors.
+**Action:** Always pre-load static or bounded lookup datasets (like street names or zip codes) in a bulk select query before starting processing loops, and cache normalized string lookups safely using integer IDs rather than full SQLAlchemy model instances.

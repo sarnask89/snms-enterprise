@@ -1,4 +1,9 @@
 import re
+import logging
+from sqlalchemy import select
+from app import models
+
+logger = logging.getLogger(__name__)
 
 # Mapowanie skrótów ulic na pełne nazwy w systemie CRM
 SUFFIX_MAP = {
@@ -21,8 +26,60 @@ SUFFIX_MAP = {
     "zam": "Zamkowa",
     "obr": "Obrońców",
     "zol": "Żółkiewskiego",
-
 }
+
+# Cache dictionary to store street_name.lower() -> street_id
+_STREET_CACHE = {}
+
+def clear_street_cache():
+    """Clears the cached street names. Useful for testing."""
+    _STREET_CACHE.clear()
+
+def match_street_name(db, street_name: str) -> int | None:
+    """
+    Optimized and cached street name lookup to completely eliminate N+1 database queries.
+    Saves street ID (int) instead of model objects to prevent DetachedInstanceErrors.
+    """
+    if not street_name:
+        return None
+
+    normalized_name = street_name.strip().lower()
+    if normalized_name in _STREET_CACHE:
+        return _STREET_CACHE[normalized_name]
+
+    # If cache is empty, preload all streets in one single batch query
+    if not _STREET_CACHE:
+        try:
+            streets = db.scalars(select(models.LocationStreet)).all()
+            for street in streets:
+                _STREET_CACHE[street.name.strip().lower()] = street.id
+        except Exception as e:
+            logger.error(f"Error preloading streets to cache: {e}")
+
+    # Try exact match first
+    street_id = _STREET_CACHE.get(normalized_name)
+    if street_id is not None:
+        return street_id
+
+    # Try substring match
+    for name, s_id in _STREET_CACHE.items():
+        if normalized_name in name or name in normalized_name:
+            _STREET_CACHE[normalized_name] = s_id
+            return s_id
+
+    # Try database fallback with ILIKE as a last resort
+    try:
+        street = db.scalar(
+            select(models.LocationStreet)
+            .where(models.LocationStreet.name.ilike(f"%{street_name}%"))
+        )
+        if street:
+            _STREET_CACHE[normalized_name] = street.id
+            return street.id
+    except Exception as e:
+        logger.error(f"Error matching street name in db fallback: {e}")
+
+    return None
 
 def parse_mikrotik_comment(comment: str):
     """
