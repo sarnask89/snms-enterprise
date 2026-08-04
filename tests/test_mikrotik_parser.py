@@ -37,3 +37,37 @@ def test_parse_mikrotik_comment_invalid():
     assert parse_mikrotik_comment("") is None
     assert parse_mikrotik_comment("Invalid format") is None
     assert parse_mikrotik_comment("1234 OnlyName") is None
+
+
+def test_match_street_name(db):
+    from app.services.mikrotik_parser import match_street_name, clear_street_cache
+    from app import models
+
+    # Ensure cache is fresh
+    clear_street_cache()
+
+    # 1. Test None or empty street name
+    assert match_street_name(db, None) is None
+    assert match_street_name(db, "") is None
+
+    # 2. Test exact match
+    street_id = match_street_name(db, "Test-Rynek")
+    assert street_id is not None
+
+    # Check if it was cached
+    from app.services.mikrotik_parser import _STREET_CACHE
+    assert "test-rynek" in _STREET_CACHE
+    assert _STREET_CACHE["test-rynek"] == street_id
+
+    # 3. Test case-insensitive match
+    assert match_street_name(db, "test-rynek") == street_id
+
+    # 4. Test substring match
+    assert match_street_name(db, "Rynek") == street_id
+
+    # 5. Test nonexistent street
+    assert match_street_name(db, "NonExistentStreet123") is None
+
+    # 6. Test clear cache
+    clear_street_cache()
+    assert len(_STREET_CACHE) == 0

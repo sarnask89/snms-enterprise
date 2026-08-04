@@ -4,7 +4,7 @@ from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 from app import models
 from app.services.mikrotik import MikrotikService
-from app.services.mikrotik_parser import parse_mikrotik_comment
+from app.services.mikrotik_parser import parse_mikrotik_comment, match_street_name
 from app.security_utils import decrypt_password
 
 logger = logging.getLogger(__name__)
@@ -80,12 +80,9 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
 
         if parsed:
             # Próba dopasowania ulicy
-            street = db.scalar(
-                select(models.LocationStreet)
-                .where(models.LocationStreet.name.ilike(f"%{parsed['street_name']}%"))
-            )
-            if street:
-                match_info["street_id"] = street.id
+            street_id = match_street_name(db, parsed['street_name'])
+            if street_id:
+                match_info["street_id"] = street_id
                 
                 # Próba dopasowania klienta
                 customer = db.scalar(
@@ -93,7 +90,7 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
                     .where(
                         models.Customer.last_name.ilike(parsed["last_name"]),
                         models.Customer.apartment_number == parsed["apartment_number"],
-                        models.Customer.location_street_id == street.id
+                        models.Customer.location_street_id == street_id
                     )
                 )
                 if customer:
