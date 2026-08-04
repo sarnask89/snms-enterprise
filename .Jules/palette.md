@@ -1,0 +1,3 @@
+## 2025-02-18 - Dashboard and Action Component Accessibility
+**Learning:** Standard dashboard statistics cards and table row controls are often built with static layouts or icon-only buttons without proper ARIA descriptors. This silences screen readers and makes keyboard navigation impossible. Converting cards to semantic interactive links with focus-visible ring styles and dynamic descriptive Polish ARIA labels ensures complete accessibility and visual delight.
+**Action:** Always wrap key metrics in interactive, focused `<NuxtLink>` components with `aria-label` describing the name and dynamic value. Use focus-visible utility classes for unified design system compliance.

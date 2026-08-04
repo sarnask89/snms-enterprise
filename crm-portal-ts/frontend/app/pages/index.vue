@@ -7,19 +7,27 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <UCard v-for="(stat, key) in statsMap" :key="key">
-        <div class="flex items-center gap-4">
-          <div :class="`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-500`">
-            <UIcon :name="stat.icon" class="w-6 h-6" />
+      <NuxtLink
+        v-for="(stat, key) in statsMap"
+        :key="key"
+        :to="stat.to"
+        class="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 transition-all duration-200 hover:scale-[1.02] hover:shadow-sm"
+        :aria-label="`Przejdź do sekcji: ${stat.label}. Obecna wartość: ${stats ? stats[key] : 'pobieranie'}`"
+      >
+        <UCard :ui="{ body: 'p-6 hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition-colors duration-200' }">
+          <div class="flex items-center gap-4">
+            <div :class="`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-500`">
+              <UIcon :name="stat.icon" class="w-6 h-6" />
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">{{ stat.label }}</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                {{ stats ? stats[key] : '...' }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-sm text-gray-500 font-medium">{{ stat.label }}</p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
-              {{ stats ? stats[key] : '...' }}
-            </p>
-          </div>
-        </div>
-      </UCard>
+        </UCard>
+      </NuxtLink>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -68,10 +76,10 @@
 
 <script setup>
 const statsMap = {
-  customers: { label: 'Abonenci', icon: 'i-heroicons-users', color: 'blue' },
-  nodes: { label: 'Węzły', icon: 'i-heroicons-map-pin', color: 'emerald' },
-  devices: { label: 'Urządzenia', icon: 'i-heroicons-cpu-chip', color: 'indigo' },
-  tickets: { label: 'Zgłoszenia', icon: 'i-heroicons-ticket', color: 'orange' }
+  customers: { label: 'Abonenci', icon: 'i-lucide-users', color: 'blue', to: '/customers' },
+  nodes: { label: 'Węzły', icon: 'i-lucide-map-pin', color: 'emerald', to: '/network/nodes' },
+  devices: { label: 'Urządzenia', icon: 'i-lucide-cpu', color: 'indigo', to: '/network/devices' },
+  tickets: { label: 'Zgłoszenia', icon: 'i-lucide-ticket', color: 'orange', to: '/helpdesk' }
 }
 
 const { data: stats } = await useFetch('/api/v1/dashboard/stats')
