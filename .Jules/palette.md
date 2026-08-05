@@ -1,0 +1,3 @@
+## 2025-02-21 - Accessible Dynamic Dashboard Statistics Link Cards
+**Learning:** For dashboard statistics cards, screen readers can often be silenced or misinformed if static card structures do not represent actual navigation. Converting them to interactive `NuxtLink` elements while appending dynamic values in Polish ARIA labels (e.g. `Przejdź do sekcji: {label}. Obecna wartość: {value}`) provides clear and intuitive navigation paths, prevent screen reader silencing, and provides keyboard focus visible ring styles.
+**Action:** When modernizing dashboard or status indicators, always prefer wrapping them in keyboard-navigable interactive links with explicit focus states and detailed, translation-friendly ARIA descriptions of their active counts.
