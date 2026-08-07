@@ -279,7 +279,7 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" class="ml-auto" />
+              <UButton icon="i-lucide-ellipsis-vertical" :aria-label="'Więcej akcji dla węzła ' + (row.name || '')" color="neutral" variant="ghost" class="ml-auto" />
             </UDropdownMenu>
           </div>
         </template>

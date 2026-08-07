@@ -507,6 +507,7 @@ const confirmDelete = async () => {
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
               <UButton
                 icon="i-lucide-ellipsis-vertical"
+                :aria-label="'Więcej akcji dla urządzenia ' + (row.hostname || '')"
                 color="neutral"
                 variant="ghost"
                 class="ml-auto"
