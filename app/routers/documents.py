@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.config import UPLOAD_ROOT
@@ -15,15 +15,21 @@ router = APIRouter(prefix="/documents", dependencies=[Depends(verify_session)])
 
 @router.get("", response_class=HTMLResponse)
 def document_list(request: Request, db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(models.Document).order_by(models.Document.id.desc())).all())
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
+    # Performance Optimization: Use SQLAlchemy joinedload to eager load related Customer objects
+    # to avoid N+1 query overhead and prevent loading the entire Customer table in memory.
+    rows = list(
+        db.scalars(
+            select(models.Document)
+            .options(joinedload(models.Document.customer))
+            .order_by(models.Document.id.desc())
+        ).all()
+    )
     return render(
         request,
         "documents/list.html",
         {
             "title": "Dokumenty",
             "documents": rows,
-            "customers": customers,
         },
     )
 
