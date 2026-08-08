@@ -1,6 +1,6 @@
 import logging
 import ipaddress
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, func
 from sqlalchemy.orm import Session
 from app import models
 from app.services.mikrotik import MikrotikService
@@ -13,6 +13,7 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
     """
     Pobiera dzierżawy z Mikrotika i przygotowuje je do wyświetlenia w UI Discovery.
     Funkcja jest TYLKO DO ODCZYTU - nie tworzy żadnych rekordów w bazie.
+    Optimized to use batched queries (O(1) database queries instead of O(N) loops).
     """
     logger.info(f"Rozpoczęcie procesu odkrywania dla urządzenia {device.name} ({device.management_ip})")
     
@@ -35,15 +36,16 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
         logger.warning(f"Brak przypisanych sieci w CRM dla urządzenia {device.name}. Lista dzierżaw będzie pusta.")
 
     raw_leases = await mt.get_leases()
-    discovered = []
 
+    # Filter leases by IP network matching to build candidate list
+    candidate_leases = []
+    macs_to_check = []
     for lease in raw_leases:
         mac = lease.get('mac-address')
         ip_str = lease.get('address')
         if not mac or not ip_str: 
             continue
 
-        # 2. Weryfikacja czy IP należy do sieci przypisanych do tego urządzenia
         try:
             ip_obj = ipaddress.ip_address(ip_str)
             if not any(ip_obj in n for n in net_objs):
@@ -51,12 +53,34 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
         except ValueError:
             continue
 
-        # 3. Czy ten MAC już istnieje w CRM?
-        existing_device_record = db.scalar(select(models.CustomerDevice).where(models.CustomerDevice.mac_address == mac))
-        if existing_device_record:
+        candidate_leases.append(lease)
+        macs_to_check.append(mac)
+
+    if not candidate_leases:
+        logger.info(f"Brak dopasowanych dzierżaw po filtrowaniu sieci.")
+        return []
+
+    # Batch check if MAC addresses exist in CRM
+    existing_macs = set()
+    if macs_to_check:
+        existing_macs = set(
+            db.scalars(
+                select(models.CustomerDevice.mac_address)
+                .where(models.CustomerDevice.mac_address.in_(macs_to_check))
+            ).all()
+        )
+
+    # Pre-fetch all streets once to avoid N+1 queries during loop
+    all_streets = list(db.scalars(select(models.LocationStreet)).all())
+
+    # Parse comments and collect last names for customer batch lookup
+    leases_to_process = []
+    candidate_last_names = set()
+    for lease in candidate_leases:
+        mac = lease.get('mac-address')
+        if mac in existing_macs:
             continue
 
-        # 4. Parsowanie komentarza i próba dopasowania
         comment = lease.get('comment', '')
         parsed = parse_mikrotik_comment(comment)
         
@@ -66,7 +90,7 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
 
         match_info = {
             "mac": mac,
-            "ip": ip_str,
+            "ip": lease.get('address'),
             "comment": comment,
             "rate_limit": lease.get('rate-limit'),
             "parsed": parsed,
@@ -78,29 +102,50 @@ async def get_discoverable_leases(db: Session, device: models.NetDevice):
             "dhcp_interface": lease.get('interface', ''),
         }
 
+        leases_to_process.append((match_info, parsed))
+        if parsed and parsed.get("last_name"):
+            candidate_last_names.add(parsed["last_name"])
+
+    # Pre-fetch customers that match any of the candidate last names (case-insensitive)
+    matching_customers = []
+    if candidate_last_names:
+        matching_customers = list(
+            db.scalars(
+                select(models.Customer)
+                .where(func.lower(models.Customer.last_name).in_([n.lower() for n in candidate_last_names]))
+            ).all()
+        )
+
+    # Perform matching of streets and customers entirely in-memory
+    discovered = []
+    for match_info, parsed in leases_to_process:
         if parsed:
-            # Próba dopasowania ulicy
-            street = db.scalar(
-                select(models.LocationStreet)
-                .where(models.LocationStreet.name.ilike(f"%{parsed['street_name']}%"))
-            )
+            # Match street in-memory (simulates name.ilike("%street_name%"))
+            street_name_lower = parsed['street_name'].lower()
+            street = None
+            for s in all_streets:
+                if s.name and street_name_lower in s.name.lower():
+                    street = s
+                    break
+
             if street:
                 match_info["street_id"] = street.id
                 
-                # Próba dopasowania klienta
-                customer = db.scalar(
-                    select(models.Customer)
-                    .where(
-                        models.Customer.last_name.ilike(parsed["last_name"]),
-                        models.Customer.apartment_number == parsed["apartment_number"],
-                        models.Customer.location_street_id == street.id
-                    )
-                )
+                # Match customer in-memory (simulates exact/ilike match)
+                customer = None
+                last_name_lower = parsed["last_name"].lower()
+                apt_num = parsed["apartment_number"] or ""
+                for c in matching_customers:
+                    if (c.last_name and c.last_name.lower() == last_name_lower and
+                        c.location_street_id == street.id and
+                        (c.apartment_number or "") == apt_num):
+                        customer = c
+                        break
+
                 if customer:
                     match_info["customer_id"] = customer.id
                     match_info["can_auto_import"] = True
                 else:
-                    # Jeśli mamy sparsowane dane ale brak klienta, to też możemy "auto-importować" tworząc nowego klienta
                     match_info["can_auto_import"] = True
 
         discovered.append(match_info)
@@ -195,6 +240,7 @@ async def sync_device_config(db: Session, device: models.NetDevice):
 async def get_discoverable_networks(db: Session, device: models.NetDevice):
     """
     Pobiera podsieci z serwera DHCP Mikrotika i przygotowuje je do importu jako IpNetwork do CRM.
+    Optimized to use batched queries (O(1) database queries instead of O(N) loops).
     """
     logger.info(f"Rozpoczęcie odkrywania podsieci DHCP dla urządzenia {device.name}")
     
@@ -205,26 +251,35 @@ async def get_discoverable_networks(db: Session, device: models.NetDevice):
     await sync_device_config(db, device)
     
     raw_networks = await mt.get_dhcp_networks()
-    discovered_nets = []
 
+    # Collect CIDRs to batch query
+    cidrs_to_check = []
+    for net in raw_networks:
+        address_cidr = net.get('address')
+        if address_cidr and '/' in address_cidr:
+            cidrs_to_check.append(address_cidr)
+
+    existing_cidrs = set()
+    if cidrs_to_check:
+        existing_cidrs = set(
+            db.scalars(
+                select(models.IpNetwork.cidr)
+                .where(models.IpNetwork.cidr.in_(cidrs_to_check), models.IpNetwork.net_device_id == device.id)
+            ).all()
+        )
+
+    discovered_nets = []
     for net in raw_networks:
         address_cidr = net.get('address')
         if not address_cidr or '/' not in address_cidr: 
             continue
 
+        if address_cidr in existing_cidrs:
+            continue
+
         gateway = net.get('gateway', '')
         comment = net.get('comment', '')
         
-        # Opcjonalnie dns-server, ntp-server...
-
-        # Check if CIDR already exists in CRM FOR THIS DEVICE
-        existing_net = db.scalar(
-            select(models.IpNetwork)
-            .where(models.IpNetwork.cidr == address_cidr, models.IpNetwork.net_device_id == device.id)
-        )
-        if existing_net:
-            continue
-
         net_info = {
             "cidr": address_cidr,
             "gateway": gateway,
