@@ -2,14 +2,16 @@
   <ClientOnly>
     <div>
       <!-- The Floating Button -->
-      <UButton
-        v-if="!isOpen"
-        icon="i-heroicons-chat-bubble-left-ellipsis-solid"
-        size="xl"
-        color="primary"
-        class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
-        @click="isOpen = true"
-      />
+      <UTooltip v-if="!isOpen" text="Otwórz asystenta AI" :popper="{ placement: 'left' }">
+        <UButton
+          icon="i-lucide-message-square"
+          size="xl"
+          color="primary"
+          aria-label="Open AI Assistant"
+          class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
+          @click="isOpen = true"
+        />
+      </UTooltip>
 
       <!-- The Draggable Chat Window -->
       <div
@@ -24,30 +26,35 @@
           class="bg-primary-500 text-white p-3 flex justify-between items-center cursor-move select-none"
         >
           <div class="flex items-center gap-2 font-bold">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             CRM Assistant
           </div>
           <div class="flex items-center gap-1">
-             <UButton
-              :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
-              :color="systemContext ? 'green' : 'white'"
-              variant="ghost"
-              size="xs"
-              label="API Doc"
-              @click="promptForContext"
-            />
-            <UButton
-              icon="i-heroicons-x-mark"
-              color="white"
-              variant="ghost"
-              size="xs"
-              @click="isOpen = false"
-            />
+            <UTooltip :text="systemContext ? 'Zmień dokumentację API' : 'Dodaj dokumentację API'" :popper="{ placement: 'left' }">
+              <UButton
+                :icon="systemContext ? 'i-lucide-file-check-2' : 'i-lucide-file-plus-2'"
+                :color="systemContext ? 'success' : 'neutral'"
+                variant="ghost"
+                size="xs"
+                aria-label="API Documentation Context"
+                @click="promptForContext"
+              />
+            </UTooltip>
+            <UTooltip text="Zamknij czat" :popper="{ placement: 'left' }">
+              <UButton
+                icon="i-lucide-x"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                aria-label="Close Chat"
+                @click="isOpen = false"
+              />
+            </UTooltip>
           </div>
         </div>
 
         <!-- Chat Feed -->
-        <div class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
+        <div ref="chatFeed" class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
           <div
             v-for="(msg, index) in messages"
             :key="index"
@@ -66,27 +73,30 @@
           <form @submit.prevent="sendMessage" class="flex gap-2">
             <UInput
               v-model="input"
-              placeholder="Type command or ask AI..."
+              placeholder="Wpisz polecenie lub zapytaj AI..."
+              aria-label="Ask AI or type a command"
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
             />
-            <UButton 
-              type="submit" 
-              icon="i-heroicons-paper-airplane" 
-              color="primary" 
-              :loading="isLoading"
-            />
+            <UTooltip text="Wyślij wiadomość" :popper="{ placement: 'left' }">
+              <UButton
+                type="submit"
+                icon="i-lucide-send"
+                color="primary"
+                aria-label="Send Message"
+                :loading="isLoading"
+              />
+            </UTooltip>
           </form>
         </div>
       </div>
-
-         </div>
+    </div>
   </ClientOnly>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
@@ -115,6 +125,24 @@ onMounted(() => {
 })
 
 useDraggable(chatWindow, { handle: chatHandle, onMove: (pos) => { x.value = pos.x; y.value = pos.y } })
+
+// Chat Feed scroll-to-bottom mechanics
+const chatFeed = ref(null)
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (chatFeed.value) {
+      chatFeed.value.scrollTop = chatFeed.value.scrollHeight
+    }
+  })
+}
+
+watch(() => messages.value, scrollToBottom, { deep: true })
+watch(isOpen, (value) => {
+  if (value) {
+    scrollToBottom()
+  }
+})
 
 const promptForContext = () => {
   tempContext.value = systemContext.value
@@ -180,7 +208,7 @@ const sendMessage = async () => {
     }
   }
 
-  // 2. Send to Ollama for Generation/Chat
+  // 3. Send to Ollama for Generation/Chat
   isLoading.value = true
   const config = useRuntimeConfig()
   const ollamaUrl = config.public.ollamaUrl || 'http://localhost:11434'
