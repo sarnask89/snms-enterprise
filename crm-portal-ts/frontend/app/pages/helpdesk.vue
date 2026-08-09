@@ -15,15 +15,15 @@
               <h2 class="font-semibold text-lg">Kolejki</h2>
               <p class="text-sm text-gray-500">Kanały obsługi zgłoszeń</p>
             </div>
-            <UButton color="primary" size="sm" icon="i-heroicons-plus" label="Dodaj" @click="isQueueModalOpen = true" />
+            <UButton color="primary" size="sm" icon="i-lucide-plus" label="Dodaj" @click="isQueueModalOpen = true" />
           </div>
         </template>
 
         <UTable :data="queues || []" :columns="queueColumns" :loading="pendingQueues">
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openQueueEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeQueue(row)" />
+              <UButton size="xs" color="gray" variant="ghost" icon="i-lucide-pencil" :aria-label="`Edytuj kolejkę ${row.name}`" @click="openQueueEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" :aria-label="`Usuń kolejkę ${row.name}`" @click="removeQueue(row)" />
             </div>
           </template>
         </UTable>
@@ -36,7 +36,7 @@
               <h2 class="font-semibold text-lg">Kategorie</h2>
               <p class="text-sm text-gray-500">Klasyfikacja zgłoszeń</p>
             </div>
-            <UButton color="primary" size="sm" icon="i-heroicons-plus" label="Dodaj" @click="isCategoryModalOpen = true" />
+            <UButton color="primary" size="sm" icon="i-lucide-plus" label="Dodaj" @click="isCategoryModalOpen = true" />
           </div>
         </template>
 
@@ -47,8 +47,8 @@
 
           <template #actions-data="{ row }">
             <div class="flex gap-2">
-              <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openCategoryEdit(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeCategory(row)" />
+              <UButton size="xs" color="gray" variant="ghost" icon="i-lucide-pencil" :aria-label="`Edytuj kategorię ${row.name}`" @click="openCategoryEdit(row)" />
+              <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" :aria-label="`Usuń kategorię ${row.name}`" @click="removeCategory(row)" />
             </div>
           </template>
         </UTable>
@@ -65,11 +65,11 @@
           <div class="flex items-center gap-3">
             <UInput
               v-model="ticketSearch"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj po tytule lub treści..."
               class="w-72"
             />
-            <UButton color="primary" icon="i-heroicons-plus" label="Nowe zgłoszenie" @click="openTicketCreate" />
+            <UButton color="primary" icon="i-lucide-plus" label="Nowe zgłoszenie" @click="openTicketCreate" />
           </div>
         </div>
       </template>
@@ -99,9 +99,9 @@
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openTicketEdit(row)" />
-            <UButton size="xs" color="yellow" variant="ghost" icon="i-heroicons-arrow-path" @click="cycleTicketStatus(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeTicket(row)" />
+            <UButton size="xs" color="gray" variant="ghost" icon="i-lucide-pencil" :aria-label="`Edytuj zgłoszenie ${row.title}`" @click="openTicketEdit(row)" />
+            <UButton size="xs" color="yellow" variant="ghost" icon="i-lucide-refresh-cw" :aria-label="`Zmień status zgłoszenia ${row.title}`" @click="cycleTicketStatus(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" :aria-label="`Usuń zgłoszenie ${row.title}`" @click="removeTicket(row)" />
           </div>
         </template>
       </UTable>
@@ -181,6 +181,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const queueColumns = [
   { accessorKey: 'name', header: 'Nazwa' },
   { accessorKey: 'description', header: 'Opis' },
@@ -360,12 +362,16 @@ const saveQueue = async () => {
     const payload = { name: queueForm.name, description: queueForm.description || null }
     if (queueForm.id) {
       await $fetch(`/api/v1/helpdesk/queues/${queueForm.id}`, { method: 'PUT', body: payload })
+      toast.add({ title: 'Kolejka zaktualizowana', description: `Zaktualizowano kolejkę "${queueForm.name}"`, color: 'success' })
     } else {
       await $fetch('/api/v1/helpdesk/queues', { method: 'POST', body: payload })
+      toast.add({ title: 'Kolejka utworzona', description: `Utworzono nową kolejkę "${queueForm.name}"`, color: 'success' })
     }
     isQueueModalOpen.value = false
     resetQueueForm()
     await Promise.all([refreshQueues(), refreshReports()])
+  } catch {
+    toast.add({ title: 'Błąd zapisu', description: 'Nie udało się zapisać kolejki', color: 'error' })
   } finally {
     isSavingQueue.value = false
   }
@@ -381,12 +387,16 @@ const saveCategory = async () => {
     }
     if (categoryForm.id) {
       await $fetch(`/api/v1/helpdesk/categories/${categoryForm.id}`, { method: 'PUT', body: payload })
+      toast.add({ title: 'Kategoria zaktualizowana', description: `Zaktualizowano kategorię "${categoryForm.name}"`, color: 'success' })
     } else {
       await $fetch('/api/v1/helpdesk/categories', { method: 'POST', body: payload })
+      toast.add({ title: 'Kategoria utworzona', description: `Utworzono nową kategorię "${categoryForm.name}"`, color: 'success' })
     }
     isCategoryModalOpen.value = false
     resetCategoryForm()
     await Promise.all([refreshCategories(), refreshQueues()])
+  } catch {
+    toast.add({ title: 'Błąd zapisu', description: 'Nie udało się zapisać kategorii', color: 'error' })
   } finally {
     isSavingCategory.value = false
   }
@@ -406,12 +416,16 @@ const saveTicket = async () => {
     }
     if (ticketForm.id) {
       await $fetch(`/api/v1/helpdesk/tickets/${ticketForm.id}`, { method: 'PUT', body: payload })
+      toast.add({ title: 'Zgłoszenie zaktualizowane', description: `Zaktualizowano zgłoszenie "${ticketForm.title}"`, color: 'success' })
     } else {
       await $fetch('/api/v1/helpdesk/tickets', { method: 'POST', body: payload })
+      toast.add({ title: 'Zgłoszenie utworzone', description: `Utworzono nowe zgłoszenie "${ticketForm.title}"`, color: 'success' })
     }
     isTicketModalOpen.value = false
     resetTicketForm()
     await Promise.all([refreshTickets(), refreshQueues(), refreshCategories(), refreshReports()])
+  } catch {
+    toast.add({ title: 'Błąd zapisu', description: 'Nie udało się zapisać zgłoszenia', color: 'error' })
   } finally {
     isSavingTicket.value = false
   }
@@ -419,28 +433,48 @@ const saveTicket = async () => {
 
 const cycleTicketStatus = async (row) => {
   const next = row.status === 'open' ? 'pending' : row.status === 'pending' ? 'closed' : 'open'
-  await $fetch(`/api/v1/helpdesk/tickets/${row.id}/status`, {
-    method: 'POST',
-    body: { status: next }
-  })
-  await Promise.all([refreshTickets(), refreshReports()])
+  try {
+    await $fetch(`/api/v1/helpdesk/tickets/${row.id}/status`, {
+      method: 'POST',
+      body: { status: next }
+    })
+    toast.add({ title: 'Status zmieniony', description: `Zmieniono status zgłoszenia "${row.title}" na: ${next}`, color: 'success' })
+    await Promise.all([refreshTickets(), refreshReports()])
+  } catch {
+    toast.add({ title: 'Błąd zmiany statusu', description: 'Nie udało się zmienić statusu zgłoszenia', color: 'error' })
+  }
 }
 
 const removeQueue = async (row) => {
   if (!confirm(`Usunąć kolejkę "${row.name}"?`)) return
-  await $fetch(`/api/v1/helpdesk/queues/${row.id}`, { method: 'DELETE' })
-  await Promise.all([refreshQueues(), refreshCategories(), refreshTickets(), refreshReports()])
+  try {
+    await $fetch(`/api/v1/helpdesk/queues/${row.id}`, { method: 'DELETE' })
+    toast.add({ title: 'Kolejka usunięta', description: `Usunięto kolejkę "${row.name}"`, color: 'success' })
+    await Promise.all([refreshQueues(), refreshCategories(), refreshTickets(), refreshReports()])
+  } catch {
+    toast.add({ title: 'Błąd usuwania', description: 'Nie udało się usunąć kolejki', color: 'error' })
+  }
 }
 
 const removeCategory = async (row) => {
   if (!confirm(`Usunąć kategorię "${row.name}"?`)) return
-  await $fetch(`/api/v1/helpdesk/categories/${row.id}`, { method: 'DELETE' })
-  await Promise.all([refreshCategories(), refreshTickets()])
+  try {
+    await $fetch(`/api/v1/helpdesk/categories/${row.id}`, { method: 'DELETE' })
+    toast.add({ title: 'Kategoria usunięta', description: `Usunięto kategorię "${row.name}"`, color: 'success' })
+    await Promise.all([refreshCategories(), refreshTickets()])
+  } catch {
+    toast.add({ title: 'Błąd usuwania', description: 'Nie udało się usunąć kategorii', color: 'error' })
+  }
 }
 
 const removeTicket = async (row) => {
   if (!confirm(`Usunąć zgłoszenie "${row.title}"?`)) return
-  await $fetch(`/api/v1/helpdesk/tickets/${row.id}`, { method: 'DELETE' })
-  await Promise.all([refreshTickets(), refreshQueues(), refreshCategories(), refreshReports()])
+  try {
+    await $fetch(`/api/v1/helpdesk/tickets/${row.id}`, { method: 'DELETE' })
+    toast.add({ title: 'Zgłoszenie usunięte', description: `Usunięto zgłoszenie "${row.title}"`, color: 'success' })
+    await Promise.all([refreshTickets(), refreshQueues(), refreshCategories(), refreshReports()])
+  } catch {
+    toast.add({ title: 'Błąd usuwania', description: 'Nie udało się usunąć zgłoszenia', color: 'error' })
+  }
 }
 </script>
