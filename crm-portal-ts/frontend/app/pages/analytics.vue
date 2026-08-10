@@ -6,9 +6,34 @@
         <p class="text-sm text-gray-500">Statystyki runtime TS, globalne wyszukiwanie oraz eksporty raportowe.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
-        <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT CSV" @click="downloadPitCsv" />
-        <UButton color="primary" variant="soft" icon="i-heroicons-map" label="Pobierz PIT GML" @click="downloadPitGml" />
+        <UButton
+          color="gray"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          label="Odśwież"
+          aria-label="Odśwież raporty i statystyki"
+          :loading="isRefreshing"
+          @click="refreshAll"
+        />
+        <UButton
+          color="primary"
+          icon="i-lucide-download"
+          label="Pobierz PIT CSV"
+          aria-label="Pobierz raport PIT w formacie CSV"
+          :loading="isDownloadingCsv"
+          :disabled="isDownloadingGml"
+          @click="downloadPitCsv"
+        />
+        <UButton
+          color="primary"
+          variant="soft"
+          icon="i-lucide-map"
+          label="Pobierz PIT GML"
+          aria-label="Pobierz raport PIT w formacie GML"
+          :loading="isDownloadingGml"
+          :disabled="isDownloadingCsv"
+          @click="downloadPitGml"
+        />
       </div>
     </div>
 
@@ -41,8 +66,21 @@
         </template>
 
         <div class="flex gap-3">
-          <UInput v-model="searchQuery" class="flex-1" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Minimum 3 znaki..." />
-          <UButton color="primary" :loading="isSearching" label="Szukaj" @click="runSearch" />
+          <UInput
+            v-model="searchQuery"
+            class="flex-1"
+            icon="i-lucide-search"
+            placeholder="Minimum 3 znaki..."
+            aria-label="Wyszukiwanie w bazie"
+            @keyup.enter="runSearch"
+          />
+          <UButton
+            color="primary"
+            :loading="isSearching"
+            label="Szukaj"
+            aria-label="Wyszukiwanie w bazie"
+            @click="runSearch"
+          />
         </div>
 
         <div v-if="searchResults" class="mt-4 space-y-4">
@@ -96,6 +134,11 @@
 const searchQuery = ref('')
 const searchResults = ref(null)
 const isSearching = ref(false)
+const isRefreshing = ref(false)
+const isDownloadingCsv = ref(false)
+const isDownloadingGml = ref(false)
+
+const toast = useToast()
 
 const customerColumns = [
   { accessorKey: 'customerCode', header: 'Kod' },
@@ -119,14 +162,30 @@ const { data: pitSummary, refresh: refreshPitSummary } = await useFetch('/api/v1
 const { data: passportNodes, refresh: refreshPassportNodes } = await useFetch('/api/v1/reports/passport/map')
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshNetworkHealth(),
-    refreshInventorySummary(),
-    refreshFinancialSummary(),
-    refreshCustomerGrowth(),
-    refreshPitSummary(),
-    refreshPassportNodes()
-  ])
+  isRefreshing.value = true
+  try {
+    await Promise.all([
+      refreshNetworkHealth(),
+      refreshInventorySummary(),
+      refreshFinancialSummary(),
+      refreshCustomerGrowth(),
+      refreshPitSummary(),
+      refreshPassportNodes()
+    ])
+    toast.add({
+      title: 'Raporty odświeżone',
+      description: 'Wszystkie statystyki i raporty zostały zaktualizowane.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: 'Nie udało się zaktualizować statystyk i raportów.',
+      color: 'error'
+    })
+  } finally {
+    isRefreshing.value = false
+  }
 }
 
 const runSearch = async () => {
@@ -136,6 +195,11 @@ const runSearch = async () => {
       customers: [],
       devices: []
     }
+    toast.add({
+      title: 'Wyszukiwanie',
+      description: 'Wpisz co najmniej 3 znaki, aby rozpocząć wyszukiwanie.',
+      color: 'warning'
+    })
     return
   }
 
@@ -143,6 +207,17 @@ const runSearch = async () => {
   try {
     searchResults.value = await $fetch('/api/v1/search', {
       query: { q: searchQuery.value.trim() }
+    })
+    toast.add({
+      title: 'Wyszukiwanie zakończone',
+      description: `Znaleziono ${searchResults.value.customers.length} klientów oraz ${searchResults.value.devices.length} urządzeń.`,
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd wyszukiwania',
+      description: 'Wystąpił problem podczas wyszukiwania w bazie.',
+      color: 'error'
     })
   } finally {
     isSearching.value = false
@@ -159,12 +234,44 @@ const downloadBlob = (blob, filename) => {
 }
 
 const downloadPitCsv = async () => {
-  const blob = await $fetch('/api/v1/reports/pit-uke/export', { responseType: 'blob' })
-  downloadBlob(blob, 'pit_uke_export.csv')
+  isDownloadingCsv.value = true
+  try {
+    const blob = await $fetch('/api/v1/reports/pit-uke/export', { responseType: 'blob' })
+    downloadBlob(blob, 'pit_uke_export.csv')
+    toast.add({
+      title: 'Pobieranie zakończone',
+      description: 'Raport PIT UKE w formacie CSV został pobrany pomyślnie.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd pobierania',
+      description: 'Nie udało się wyeksportować raportu PIT UKE CSV.',
+      color: 'error'
+    })
+  } finally {
+    isDownloadingCsv.value = false
+  }
 }
 
 const downloadPitGml = async () => {
-  const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
-  downloadBlob(blob, 'pit-net-nodes.gml')
+  isDownloadingGml.value = true
+  try {
+    const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
+    downloadBlob(blob, 'pit-net-nodes.gml')
+    toast.add({
+      title: 'Pobieranie zakończone',
+      description: 'Raport PIT GML został pobrany pomyślnie.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd pobierania',
+      description: 'Nie udało się wyeksportować raportu PIT GML.',
+      color: 'error'
+    })
+  } finally {
+    isDownloadingGml.value = false
+  }
 }
 </script>
