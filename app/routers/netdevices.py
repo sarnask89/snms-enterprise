@@ -1,6 +1,7 @@
 import csv
 import io
 import logging
+import re
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from sqlalchemy import or_, select
@@ -15,6 +16,9 @@ from app.security_utils import encrypt_password
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/net-devices", dependencies=[Depends(verify_session)])
+
+# Pre-compiled regular expression at the module level to avoid re-compilation in loop iterations.
+RE_OLT_MAC_LINE = re.compile(r"^\s*\d+\s*\|\s*\d+\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)")
 
 
 def _opt_int(raw: str | None) -> int | None:
@@ -245,11 +249,11 @@ def netdevice_pon_port_view(dev_id: int, port_id: str, request: Request, db: Ses
         if "Password" in enable_resp or "password" in enable_resp:
             ds._send_cmd(chan, ds.password)
 
-        import re
         macs_out = ds._send_cmd(chan, f"show olt mac {port_id}", max_wait=5)
         onu_mac_map = {}
         for line in macs_out.splitlines():
-            match = re.search(r"^\s*\d+\s*\|\s*\d+\s*\|\s*(\d+)\s*\|\s*([0-9a-fA-F:]{17})\s*\|\s*\d+\s*\|\s*(\d+)", line)
+            # Use pre-compiled regex for static OLT MAC table matching
+            match = RE_OLT_MAC_LINE.search(line)
             if match:
                 o_id = match.group(1)
                 mac = match.group(2)
@@ -263,8 +267,10 @@ def netdevice_pon_port_view(dev_id: int, port_id: str, request: Request, db: Ses
 
         rx_out = ds._send_cmd(chan, f"show olt rx-power {port_id}", max_wait=5)
         rx_map = {}
+        # Pre-compile the dynamic regular expression pattern exactly once outside of the loop.
+        rx_pattern = re.compile(fr"{re.escape(port_id)}/(\d+)\s+(-?\d+\.\d+\s*dBm)")
         for line in rx_out.splitlines():
-            p_match = re.search(fr"{port_id}/(\d+)\s+(-?\d+\.\d+\s*dBm)", line)
+            p_match = rx_pattern.search(line)
             if p_match:
                 rx_map[p_match.group(1)] = p_match.group(2)
 

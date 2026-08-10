@@ -1,5 +1,12 @@
 import re
 
+# Pre-compiled regular expression pattern for Mikrotik comments parsing.
+# Compiling at the module level avoids pattern compilation overhead on every invocation.
+RE_COMMENT = re.compile(
+    r"(\d+)\s+([A-Za-zÀ-ÿ\-]+)\s+(?:(?:M/|m\.\s*|m)(\d+)\s+)?([A-Za-z]+)\s*(\d+[A-Za-z]?)",
+    re.IGNORECASE
+)
+
 # Mapowanie skrótów ulic na pełne nazwy w systemie CRM
 SUFFIX_MAP = {
     "kos": "Romana Koseły",
@@ -34,13 +41,8 @@ def parse_mikrotik_comment(comment: str):
         
     comment = comment.strip()
     
-    # Bardziej liberalny pattern:
-    # 1. (\d+) - ID
-    # 2. ([A-Za-zÀ-ÿ\-]+) - Nazwisko
-    # 3. (?:(?:M/|m\.\s*|m)(\d+)\s+)? - Opcjonalny numer lokalu
-    # 4. ([A-Za-z]+)\s*(\d+[A-Za-z]?) - Skrót ulicy i numer budynku
-    pattern = r"(\d+)\s+([A-Za-zÀ-ÿ\-]+)\s+(?:(?:M/|m\.\s*|m)(\d+)\s+)?([A-Za-z]+)\s*(\d+[A-Za-z]?)"
-    match = re.search(pattern, comment, re.IGNORECASE)
+    # Match comment using pre-compiled regex pattern
+    match = RE_COMMENT.search(comment)
     
     if not match:
         return None
