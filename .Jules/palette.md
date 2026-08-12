@@ -1,0 +1,3 @@
+## 2026-08-12 - TERYT Registry Page Modernization
+**Learning:** Standardizing icon libraries to Lucide (`i-lucide-*`) across the application simplifies styling and guarantees compatibility, but visual actions must be accompanied by explicit Polish ARIA labels (e.g., `aria-label="Odśwież rejestr TERYT"`) to prevent screen-readers from silencing icon-only inputs.
+**Action:** When updating form search inputs or refresh triggers, always pair Lucide icons with localized Polish ARIA labels and bind a `useToast` notification helper to asynchronous fetch triggers to ensure screen-reader clarity and real-time state feedback.

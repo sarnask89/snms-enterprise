@@ -5,7 +5,14 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">TERYT i adresy</h1>
         <p class="text-sm text-gray-500">Import XML, domyślne obszary i słowniki adresowe do autosugestii formularzy.</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton
+        color="gray"
+        variant="ghost"
+        icon="i-lucide-refresh-cw"
+        label="Odśwież"
+        aria-label="Odśwież rejestr TERYT"
+        @click="refreshAll"
+      />
     </div>
 
     <div class="grid lg:grid-cols-3 gap-6">
@@ -77,8 +84,9 @@
             </div>
             <UInput
               v-model="communeSearch"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj gminy..."
+              aria-label="Wyszukaj gminę"
               class="w-full lg:w-80"
             />
           </div>
@@ -139,8 +147,9 @@
           <div class="flex flex-col md:flex-row gap-3">
             <UInput
               v-model="search"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj miasta po nazwie lub TERYT..."
+              aria-label="Szukaj miasta po nazwie lub TERYT"
               class="w-full md:w-80"
             />
             <USelect
@@ -215,7 +224,12 @@
         </template>
 
         <div class="space-y-4">
-          <UInput v-model="search" icon="i-heroicons-map-pin" placeholder="np. Ożarów" />
+          <UInput
+            v-model="search"
+            icon="i-lucide-map-pin"
+            placeholder="np. Ożarów"
+            aria-label="Wyszukiwanie TERYT po nazwie"
+          />
           <div class="space-y-2">
             <div
               v-for="city in addressSearchRows"
@@ -263,6 +277,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const importJobs = [
   { accessorKey: 'terc', title: 'Import TERC', description: 'Województwa, powiaty i gminy' },
   { accessorKey: 'simc', title: 'Import SIMC', description: 'Miejscowości i powiązania z gminami' },
@@ -401,13 +417,26 @@ watch(selectedCityId, async () => {
 })
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshCities(),
-    refreshCommunes(),
-    refreshDefaultArea(),
-    refreshAddressSearch(),
-    refreshStreets()
-  ])
+  try {
+    await Promise.all([
+      refreshCities(),
+      refreshCommunes(),
+      refreshDefaultArea(),
+      refreshAddressSearch(),
+      refreshStreets()
+    ])
+    toast.add({
+      title: 'Rejestr TERYT zaktualizowany',
+      description: 'Pomyślnie pobrano najnowsze dane i słowniki adresowe.',
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: error?.message || 'Nie udało się odświeżyć słowników TERYT.',
+      color: 'error'
+    })
+  }
 }
 
 const onFileSelected = async (kind, event) => {
