@@ -1,0 +1,3 @@
+## 2026-08-13 - Modernized Dashboard Control Panel (index.vue)
+**Learning:** Legacy design patterns often contain static statistics cards and old Heroicons. Replacing them with modern interactive dashboard paths (via NuxtLink) and Lucide icons improves usability, accessibility, and visual polish immediately. Additionally, implementing descriptive, context-rich Polish ARIA labels (e.g., matching 'Przejdź do sekcji: [Nazwa]. Obecna wartość: [Wartość]') prevents screen readers from silencing critical reactive state information while keyboard focusing.
+**Action:** Always replace legacy static lists/grid representations with standard accessible elements, modern semantic icons, keyboard outline/hover ring states, and explicit ARIA descriptors.
