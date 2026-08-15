@@ -77,7 +77,7 @@ def ticket_list(
         ))
 
     rows = list(db.scalars(stmt).all())
-    
+
     # Do mapowania w szablonie (tradycyjne)
     customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
     users_map = {u.id: u.username for u in db.scalars(select(models.PortalUser)).all()}
