@@ -77,17 +77,13 @@ def ticket_list(
         ))
 
     rows = list(db.scalars(stmt).all())
-    
-    # Do mapowania w szablonie (tradycyjne)
-    customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}
-    users_map = {u.id: u.username for u in db.scalars(select(models.PortalUser)).all()}
 
     # HTMX partial
     if request.headers.get("HX-Request"):
         return render(
             request,
             "helpdesk/ticket_list_rows.html",
-            {"tickets": rows, "customers": customers, "users_map": users_map},
+            {"tickets": rows},
         )
 
     return render(
@@ -96,8 +92,6 @@ def ticket_list(
         {
             "title": "Helpdesk — zgłoszenia",
             "tickets": rows,
-            "customers": customers,
-            "users_map": users_map,
             "filter_assigned": assigned or "",
             "search_q": q or "",
         },
@@ -173,7 +167,14 @@ def helpdesk_search(
     status: str | None = Query(None),
     queue_id: int | None = Query(None),
 ):
-    stmt = select(models.SupportTicket).options(selectinload(models.SupportTicket.customer)).order_by(models.SupportTicket.id.desc())
+    stmt = (
+        select(models.SupportTicket)
+        .options(
+            selectinload(models.SupportTicket.customer),
+            selectinload(models.SupportTicket.assignee),
+        )
+        .order_by(models.SupportTicket.id.desc())
+    )
     if q and q.strip():
         term = f"%{q.strip()}%"
         stmt = stmt.where(or_(models.SupportTicket.title.ilike(term), models.SupportTicket.body.ilike(term)))
@@ -183,10 +184,9 @@ def helpdesk_search(
         stmt = stmt.where(models.SupportTicket.queue_id == queue_id)
     
     rows = list(db.scalars(stmt).all())
-    custs = {c.id: c for c in db.scalars(select(models.Customer)).all()}
     queues = list(db.scalars(select(models.HelpdeskQueue).order_by(models.HelpdeskQueue.sort_order)).all())
     return render(request, "helpdesk/search.html", {
-        "title": "Szukaj zgłoszeń", "tickets": rows, "customers": custs, "queues": queues,
+        "title": "Szukaj zgłoszeń", "tickets": rows, "queues": queues,
         "search_q": q or "", "search_status": status or "", "search_queue_id": queue_id
     })
 

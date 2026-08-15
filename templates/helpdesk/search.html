@@ -28,7 +28,7 @@
       <td><a href="/helpdesk/tickets/{{ t.id }}">{{ t.id }}</a></td>
       <td><a href="/helpdesk/tickets/{{ t.id }}">{{ t.title }}</a></td>
       <td>{{ t.queue }}</td>
-      <td>{% if t.customer_id %}{{ customers.get(t.customer_id).customer_code if customers.get(t.customer_id) else t.customer_id }}{% else %}—{% endif %}</td>
+      <td>{% if t.customer %}{{ t.customer.customer_code }}{% elif t.customer_id %}{{ t.customer_id }}{% else %}—{% endif %}</td>
       <td>{{ t.status.value }}</td>
     </tr>
     {% else %}
