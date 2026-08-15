@@ -4,9 +4,10 @@
       <!-- The Floating Button -->
       <UButton
         v-if="!isOpen"
-        icon="i-heroicons-chat-bubble-left-ellipsis-solid"
+        icon="i-lucide-message-square-more"
         size="xl"
         color="primary"
+        aria-label="Otwórz Asystenta CRM"
         class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
         @click="isOpen = true"
       />
@@ -24,30 +25,35 @@
           class="bg-primary-500 text-white p-3 flex justify-between items-center cursor-move select-none"
         >
           <div class="flex items-center gap-2 font-bold">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             CRM Assistant
           </div>
           <div class="flex items-center gap-1">
-             <UButton
-              :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
+            <UButton
+              :icon="systemContext ? 'i-lucide-file-check' : 'i-lucide-file-plus'"
               :color="systemContext ? 'green' : 'white'"
               variant="ghost"
               size="xs"
               label="API Doc"
+              aria-label="Dokumentacja API"
               @click="promptForContext"
             />
             <UButton
-              icon="i-heroicons-x-mark"
+              icon="i-lucide-x"
               color="white"
               variant="ghost"
               size="xs"
+              aria-label="Zamknij Asystenta CRM"
               @click="isOpen = false"
             />
           </div>
         </div>
 
         <!-- Chat Feed -->
-        <div class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
+        <div
+          ref="chatFeed"
+          class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950"
+        >
           <div
             v-for="(msg, index) in messages"
             :key="index"
@@ -67,26 +73,27 @@
             <UInput
               v-model="input"
               placeholder="Type command or ask AI..."
+              aria-label="Wiadomość do Asystenta CRM"
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
             />
-            <UButton 
-              type="submit" 
-              icon="i-heroicons-paper-airplane" 
-              color="primary" 
+            <UButton
+              type="submit"
+              icon="i-lucide-send"
+              color="primary"
+              aria-label="Wyślij wiadomość"
               :loading="isLoading"
             />
           </form>
         </div>
       </div>
-
-         </div>
+    </div>
   </ClientOnly>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
@@ -97,10 +104,28 @@ const isContextModalOpen = ref(false)
 const input = ref('')
 const systemContext = ref('')
 const tempContext = ref('')
+const chatFeed = ref(null)
 
 const messages = ref([
   { role: 'assistant', content: 'Hi! I am your CRM Architect. Paste some API documentation (using the button above) or ask me to build a module.' }
 ])
+
+const scrollToBottom = async () => {
+  await nextTick()
+  if (chatFeed.value) {
+    chatFeed.value.scrollTo({ top: chatFeed.value.scrollHeight, behavior: 'smooth' })
+  }
+}
+
+watch(messages, () => {
+  scrollToBottom()
+}, { deep: true })
+
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    scrollToBottom()
+  }
+})
 
 // Dragging logic
 const chatWindow = ref(null)
