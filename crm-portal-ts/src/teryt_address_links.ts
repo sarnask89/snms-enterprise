@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import {
     LocationCity,
@@ -48,81 +49,88 @@ export type TerytIdInput = {
     streetId?: number;
 };
 
-async function loadState(id?: number) {
-    return id ? await stateRepo.findOneBy({ id }) : null;
-}
+/**
+ * ⚡ Bolt Performance Optimization:
+ * Batch resolves TERYT addresses for an array of input IDs using TypeORM In() queries.
+ * Reduces database queries from 5*N per list payload down to a maximum of 5 batched queries,
+ * eliminating N+1 performance bottlenecks during customer and device list serialization.
+ */
+export async function batchResolveTerytAddresses(inputs: TerytIdInput[]): Promise<ResolvedTerytAddress[]> {
+    if (inputs.length === 0) {
+        return [];
+    }
 
-async function loadDistrict(id?: number) {
-    return id ? await districtRepo.findOne({
-        where: { id },
-        relations: { state: true },
-    }) : null;
-}
+    const streetIds = Array.from(new Set(inputs.map((i) => i.streetId).filter((id): id is number => typeof id === "number")));
+    const cityIds = Array.from(new Set(inputs.map((i) => i.cityId).filter((id): id is number => typeof id === "number")));
+    const communeIds = Array.from(new Set(inputs.map((i) => i.communeId).filter((id): id is number => typeof id === "number")));
+    const districtIds = Array.from(new Set(inputs.map((i) => i.districtId).filter((id): id is number => typeof id === "number")));
+    const stateIds = Array.from(new Set(inputs.map((i) => i.stateId).filter((id): id is number => typeof id === "number")));
 
-async function loadCommune(id?: number) {
-    return id ? await communeRepo.findOne({
-        where: { id },
-        relations: {
-            district: {
-                state: true,
-            },
-        },
-    }) : null;
-}
-
-async function loadCity(id?: number) {
-    return id ? await cityRepo.findOne({
-        where: { id },
-        relations: {
-            district: {
-                state: true,
-            },
-            commune: {
-                district: {
-                    state: true,
-                },
-            },
-        },
-    }) : null;
-}
-
-async function loadStreet(id?: number) {
-    return id ? await streetRepo.findOne({
-        where: { id },
-        relations: {
-            city: {
-                district: {
-                    state: true,
-                },
-                commune: {
-                    district: {
-                        state: true,
+    const [streets, cities, communes, districts, states] = await Promise.all([
+        streetIds.length > 0
+            ? streetRepo.find({
+                where: { id: In(streetIds) },
+                relations: {
+                    city: {
+                        district: { state: true },
+                        commune: { district: { state: true } },
                     },
+                    commune: { district: { state: true } },
                 },
-            },
-            commune: {
-                district: {
-                    state: true,
+            })
+            : Promise.resolve([]),
+        cityIds.length > 0
+            ? cityRepo.find({
+                where: { id: In(cityIds) },
+                relations: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
                 },
-            },
-        },
-    }) : null;
+            })
+            : Promise.resolve([]),
+        communeIds.length > 0
+            ? communeRepo.find({
+                where: { id: In(communeIds) },
+                relations: { district: { state: true } },
+            })
+            : Promise.resolve([]),
+        districtIds.length > 0
+            ? districtRepo.find({
+                where: { id: In(districtIds) },
+                relations: { state: true },
+            })
+            : Promise.resolve([]),
+        stateIds.length > 0
+            ? stateRepo.find({ where: { id: In(stateIds) } })
+            : Promise.resolve([]),
+    ]);
+
+    const streetMap = new Map(streets.map((s) => [s.id, s]));
+    const cityMap = new Map(cities.map((c) => [c.id, c]));
+    const communeMap = new Map(communes.map((c) => [c.id, c]));
+    const districtMap = new Map(districts.map((d) => [d.id, d]));
+    const stateMap = new Map(states.map((s) => [s.id, s]));
+
+    return inputs.map((input) => {
+        const street = input.streetId ? (streetMap.get(input.streetId) ?? null) : null;
+        const city = street?.city ?? (input.cityId ? (cityMap.get(input.cityId) ?? null) : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? (communeMap.get(input.communeId) ?? null) : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? (districtMap.get(input.districtId) ?? null) : null);
+        const state = district?.state ?? (input.stateId ? (stateMap.get(input.stateId) ?? null) : null);
+
+        return {
+            state: state ?? null,
+            district: district ?? null,
+            commune: commune ?? null,
+            city: city ?? null,
+            street: street ?? null,
+        };
+    });
 }
 
 export async function resolveTerytAddress(input: TerytIdInput): Promise<ResolvedTerytAddress> {
-    const street = await loadStreet(input.streetId);
-    const city = street?.city ?? await loadCity(input.cityId);
-    const commune = street?.commune ?? city?.commune ?? await loadCommune(input.communeId);
-    const district = commune?.district ?? city?.district ?? await loadDistrict(input.districtId);
-    const state = district?.state ?? await loadState(input.stateId);
-
-    return {
-        state: state ?? null,
-        district: district ?? null,
-        commune: commune ?? null,
-        city: city ?? null,
-        street: street ?? null,
-    };
+    const [resolved] = await batchResolveTerytAddresses([input]);
+    return resolved;
 }
 
 export async function resolveParsedStreetWithinDefaultArea(streetName: string | null | undefined): Promise<ResolvedTerytAddress | null> {

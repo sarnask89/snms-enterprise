@@ -3,7 +3,7 @@ import { ILike } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
-import { resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
+import { batchResolveTerytAddresses, resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
 export const router = Router();
 const deviceRepo = AppDataSource.getRepository(CustomerDevice);
 function parseOptionalString(value) {
@@ -21,7 +21,7 @@ function parseStatus(value, fallback = CustomerDeviceStatus.active) {
     const candidate = String(value ?? "").trim();
     return Object.values(CustomerDeviceStatus).includes(candidate) ? candidate : fallback;
 }
-async function buildInstallationAddress(device) {
+function getInstallationAddressInput(device) {
     const hasTerytIds = [
         device.installationStateId,
         device.installationDistrictId,
@@ -32,16 +32,22 @@ async function buildInstallationAddress(device) {
     if (!hasTerytIds) {
         return null;
     }
-    return await resolveTerytAddress({
+    return {
         stateId: device.installationStateId,
         districtId: device.installationDistrictId,
         communeId: device.installationCommuneId,
         cityId: device.installationCityId,
         streetId: device.installationStreetId,
-    });
+    };
 }
-async function serializeDevice(device) {
-    const installationAddress = await buildInstallationAddress(device);
+async function buildInstallationAddress(device) {
+    const input = getInstallationAddressInput(device);
+    if (!input) {
+        return null;
+    }
+    return await resolveTerytAddress(input);
+}
+function formatDeviceWithAddress(device, installationAddress) {
     return {
         id: device.id,
         customerId: device.customerId,
@@ -91,6 +97,19 @@ async function serializeDevice(device) {
             }
             : null,
     };
+}
+async function serializeDevice(device) {
+    const installationAddress = await buildInstallationAddress(device);
+    return formatDeviceWithAddress(device, installationAddress);
+}
+async function serializeDeviceList(devices) {
+    const inputs = devices.map((d) => getInstallationAddressInput(d));
+    const validInputs = inputs.map((input) => input ?? {});
+    const resolvedAddresses = await batchResolveTerytAddresses(validInputs);
+    return devices.map((device, index) => {
+        const address = inputs[index] ? resolvedAddresses[index] : null;
+        return formatDeviceWithAddress(device, address);
+    });
 }
 function hasAnyTerytAddressInput(payload) {
     return [
@@ -267,7 +286,7 @@ router.get("/", async (req, res) => {
             order: { hostname: "ASC" },
         });
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        res.json(await serializeDeviceList(items));
     }
     catch (error) {
         console.error("Error fetching customer devices:", error);
