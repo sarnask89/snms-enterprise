@@ -4,6 +4,7 @@ import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
@@ -31,7 +32,7 @@ function parseStatus(value: unknown, fallback = CustomerDeviceStatus.active) {
     return Object.values(CustomerDeviceStatus).includes(candidate) ? candidate : fallback;
 }
 
-async function buildInstallationAddress(device: CustomerDevice) {
+function getInstallationAddressInput(device: CustomerDevice) {
     const hasTerytIds = [
         device.installationStateId,
         device.installationDistrictId,
@@ -44,18 +45,25 @@ async function buildInstallationAddress(device: CustomerDevice) {
         return null;
     }
 
-    return await resolveTerytAddress({
+    return {
         stateId: device.installationStateId,
         districtId: device.installationDistrictId,
         communeId: device.installationCommuneId,
         cityId: device.installationCityId,
         streetId: device.installationStreetId,
-    });
+    };
 }
 
-async function serializeDevice(device: CustomerDevice) {
-    const installationAddress = await buildInstallationAddress(device);
+async function buildInstallationAddress(device: CustomerDevice) {
+    const input = getInstallationAddressInput(device);
+    if (!input) {
+        return null;
+    }
 
+    return await resolveTerytAddress(input);
+}
+
+function formatDeviceWithAddress(device: CustomerDevice, installationAddress: ResolvedTerytAddress | null) {
     return {
         id: device.id,
         customerId: device.customerId,
@@ -105,6 +113,22 @@ async function serializeDevice(device: CustomerDevice) {
             }
             : null,
     };
+}
+
+async function serializeDevice(device: CustomerDevice) {
+    const installationAddress = await buildInstallationAddress(device);
+    return formatDeviceWithAddress(device, installationAddress);
+}
+
+async function serializeDeviceList(devices: CustomerDevice[]) {
+    const inputs = devices.map((d) => getInstallationAddressInput(d));
+    const validInputs = inputs.map((input) => input ?? {});
+    const resolvedAddresses = await batchResolveTerytAddresses(validInputs);
+
+    return devices.map((device, index) => {
+        const address = inputs[index] ? resolvedAddresses[index] : null;
+        return formatDeviceWithAddress(device, address);
+    });
 }
 
 function hasAnyTerytAddressInput(payload: Record<string, unknown>) {
@@ -295,7 +319,7 @@ router.get("/", async (req, res) => {
         });
 
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        res.json(await serializeDeviceList(items));
     } catch (error) {
         console.error("Error fetching customer devices:", error);
         res.status(500).json({ message: "Internal server error" });

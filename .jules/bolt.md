@@ -1,0 +1,3 @@
+## 2026-08-16 - Batching TERYT Address Resolution in Express/TypeORM API
+**Learning:** In `crm-portal-ts`, GET list endpoints (`/api/v1/customers` and `/api/v1/customer-devices`) were executing up to 5 individual TypeORM queries per record during serialization to resolve linked TERYT location entities (street, city, commune, district, state). Batching input IDs with `In()` operator across distinct entity repos reduces total query overhead from `5*N` down to 5 batched queries for the entire list payload.
+**Action:** When serializing lists of entities with optional FK or TERYT links, accumulate all input ID sets first and batch-resolve them via `batchResolveTerytAddresses` rather than calling single-entity resolver functions within loop callbacks.
