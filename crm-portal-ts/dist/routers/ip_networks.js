@@ -35,10 +35,8 @@ function serializeNetwork(network, includeDetails = false) {
         vlanId: network.vlanId ?? null,
         description: network.description ?? null,
         active: network.active,
-        // Bolt performance optimization: Prefer mapped relation counts if available from query builder
-        // to avoid loading full child entity objects and causing Cartesian product joins during list fetches.
-        deviceCount: network.deviceCount ?? netDevices.length,
-        customerDeviceCount: network.customerDeviceCount ?? customerDevices.length,
+        deviceCount: netDevices.length,
+        customerDeviceCount: customerDevices.length,
         devices: includeDetails
             ? netDevices.map((device) => ({
                 id: device.id,
@@ -53,13 +51,10 @@ function serializeNetwork(network, includeDetails = false) {
 router.get("/", async (req, res) => {
     try {
         const search = String(req.query.q ?? "").trim();
-        // Bolt performance optimization: Use loadRelationCountAndMap instead of leftJoinAndSelect on both
-        // netDevices and customerDevices. Joining multiple 1-to-N relations generates a Cartesian product
-        // and instantiates unnecessary entity instances in memory when only item counts are needed for list view.
         const query = networkRepo
             .createQueryBuilder("network")
-            .loadRelationCountAndMap("network.deviceCount", "network.netDevices")
-            .loadRelationCountAndMap("network.customerDeviceCount", "network.customerDevices")
+            .leftJoinAndSelect("network.netDevices", "netDevice")
+            .leftJoinAndSelect("network.customerDevices", "customerDevice")
             .orderBy("network.id", "ASC");
         if (search) {
             query.andWhere(new Brackets((qb) => {
