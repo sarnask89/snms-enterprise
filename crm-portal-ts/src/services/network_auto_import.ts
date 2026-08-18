@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { Repository } from "typeorm";
+import { Raw, type Repository } from "typeorm";
 import { AccessTechnology, CustomerDeviceStatus, CustomerStatus, CustomerType } from "../models/common.js";
 import { Customer } from "../models/customer.js";
 import { Subscription, Tariff } from "../models/finance.js";
@@ -147,6 +147,8 @@ function parseRateLimit(rateLimit: string | null | undefined) {
     };
 }
 
+// Optimization: Use targeted database findOne query with Raw TRIM(LOWER(...)) OR conditions matching serial, IP, or MAC
+// to preserve 100% exact JS normalization (trimming + lowercasing) without full-table scanning all devices.
 async function findExistingCustomerDevice(
     customerDeviceRepo: Repository<CustomerDevice>,
     record: NetworkDiscoveryRecord,
@@ -155,23 +157,38 @@ async function findExistingCustomerDevice(
     const byMac = normalizeMac(record.macAddress);
     const bySerial = normalizeText(record.serialNumber);
 
-    const rows = await customerDeviceRepo.find({
-        where: { netDeviceId: record.netDeviceId },
+    if (!byIp && !byMac && !bySerial) {
+        return null;
+    }
+
+    const conditions: Array<Record<string, unknown>> = [];
+    if (bySerial) {
+        conditions.push({
+            netDeviceId: record.netDeviceId,
+            remoteSerialNumber: Raw((alias) => `LOWER(TRIM(${alias})) = :serialVal`, { serialVal: bySerial.toLowerCase() }),
+        });
+    }
+    if (byIp) {
+        conditions.push({
+            netDeviceId: record.netDeviceId,
+            ipAddress: Raw((alias) => `LOWER(TRIM(${alias})) = :ipVal`, { ipVal: byIp.toLowerCase() }),
+        });
+    }
+    if (byMac) {
+        // Strip common MAC address delimiters (colons, hyphens, dots) in SQL to ensure matching against normalized MACs
+        conditions.push({
+            netDeviceId: record.netDeviceId,
+            macAddress: Raw(
+                (alias) => `REPLACE(REPLACE(REPLACE(LOWER(TRIM(${alias})), ':', ''), '-', ''), '.', '') = :macVal`,
+                { macVal: byMac.replace(/[:\-.]/g, "").toLowerCase() },
+            ),
+        });
+    }
+
+    return await customerDeviceRepo.findOne({
+        where: conditions,
         order: { id: "ASC" },
     });
-
-    return rows.find((device) => {
-        if (bySerial && normalizeText(device.remoteSerialNumber) === bySerial) {
-            return true;
-        }
-        if (byIp && normalizeText(device.ipAddress) === byIp) {
-            return true;
-        }
-        if (byMac && normalizeMac(device.macAddress) === byMac) {
-            return true;
-        }
-        return false;
-    }) ?? null;
 }
 
 async function findOrCreateParsedCustomer(
@@ -340,6 +357,8 @@ async function findOrCreateDeviceForRecord(
     };
 }
 
+// Optimization: Perform targeted findOne database query by speed or name without
+// fetching all tariffs or eagerly loading unused subscription relations.
 async function findOrCreateTariffFromRateLimit(
     tariffRepo: Repository<Tariff>,
     rateLimit: string | null | undefined,
@@ -349,18 +368,24 @@ async function findOrCreateTariffFromRateLimit(
         return null;
     }
 
-    const rows = await tariffRepo.find({
-        order: { id: "ASC" },
-        relations: { subscriptions: true },
-    });
-
-    const existing = rows.find((tariff) => {
-        if (parsed.speedDownMbps !== null && parsed.speedUpMbps !== null) {
-            return tariff.speedDownMbps === parsed.speedDownMbps && tariff.speedUpMbps === parsed.speedUpMbps;
-        }
-
-        return normalizeText(tariff.name) === `AUTO ${parsed.normalized}`;
-    }) ?? null;
+    let existing: Tariff | null = null;
+    if (parsed.speedDownMbps !== null && parsed.speedUpMbps !== null) {
+        existing = await tariffRepo.findOne({
+            where: {
+                speedDownMbps: parsed.speedDownMbps,
+                speedUpMbps: parsed.speedUpMbps,
+            },
+            order: { id: "ASC" },
+        });
+    } else {
+        const expectedName = `AUTO ${parsed.normalized}`.toLowerCase();
+        existing = await tariffRepo.findOne({
+            where: {
+                name: Raw((alias) => `LOWER(TRIM(${alias})) = :nameVal`, { nameVal: expectedName }),
+            },
+            order: { id: "ASC" },
+        });
+    }
 
     if (existing) {
         return {

@@ -1,0 +1,3 @@
+## 2026-08-18 - TypeORM SQL-level Normalization for Device and Tariff Lookups
+**Learning:** When refactoring TypeORM in-memory array scans (`find().find()`) into direct database `findOne()` queries, SQL-level normalization (`Raw()` with `REPLACE`, `LOWER`, and `TRIM`) must be used for MAC addresses, IP addresses, and names to prevent query misses on delimiter variations (e.g. `:` vs `-` vs no delimiter in MACs). Additionally, removing unneeded relation eager loads (`relations: { subscriptions: true }`) during tariff lookups dramatically speeds up discovery auto-imports.
+**Action:** When converting full-table JS filters into TypeORM `findOne` queries, use `Raw` parameter bindings to replicate normalization logic directly in SQL.
