@@ -5,7 +5,15 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Administracja</h1>
         <p class="text-sm text-gray-500">Info runtime, backupy, reload oraz log audytowy dla aktywnego baseline TS/Nuxt</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-refresh-cw"
+        label="Odśwież"
+        aria-label="Odśwież panel administracyjny"
+        :loading="isRefreshing"
+        @click="refreshAll"
+      />
     </div>
 
     <div class="grid md:grid-cols-4 gap-4">
@@ -35,7 +43,7 @@
               <h2 class="font-semibold text-lg">Backupy</h2>
               <p class="text-sm text-gray-500">Tworzenie, pobieranie i usuwanie kopii SQLite</p>
             </div>
-            <UButton color="primary" icon="i-heroicons-circle-stack" label="Utwórz backup" :loading="isCreatingBackup" @click="createBackup" />
+            <UButton color="primary" icon="i-lucide-database" label="Utwórz backup" :loading="isCreatingBackup" @click="createBackup" />
           </div>
         </template>
 
@@ -50,8 +58,22 @@
 
           <template #actions-data="{ row }">
             <div class="flex items-center gap-2">
-              <UButton size="xs" color="primary" variant="ghost" icon="i-heroicons-arrow-down-tray" @click="downloadBackup(row)" />
-              <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeBackup(row)" />
+              <UButton
+                size="xs"
+                color="primary"
+                variant="ghost"
+                icon="i-lucide-download"
+                :aria-label="'Pobierz backup ' + row.filename"
+                @click="downloadBackup(row)"
+              />
+              <UButton
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash-2"
+                :aria-label="'Usuń backup ' + row.filename"
+                @click="removeBackup(row)"
+              />
             </div>
           </template>
         </UTable>
@@ -64,7 +86,7 @@
               <h2 class="font-semibold text-lg">Reload konfiguracji</h2>
               <p class="text-sm text-gray-500">Log kontrolnych przeładowań i notatek operatorskich</p>
             </div>
-            <UButton color="primary" icon="i-heroicons-bolt" label="Dodaj reload" :loading="isCreatingReload" @click="isReloadModalOpen = true" />
+            <UButton color="primary" icon="i-lucide-zap" label="Dodaj reload" :loading="isCreatingReload" @click="isReloadModalOpen = true" />
           </div>
         </template>
 
@@ -89,8 +111,9 @@
           </div>
           <UInput
             v-model="auditSearch"
-            icon="i-heroicons-magnifying-glass-20-solid"
+            icon="i-lucide-search"
             placeholder="Filtruj po akcji lub szczegółach..."
+            aria-label="Szukaj w dzienniku audytowym"
             class="w-full md:w-80"
           />
         </div>
@@ -115,10 +138,10 @@
 
         <form class="space-y-4 p-4" @submit.prevent="createReload">
           <UFormField label="Notatka">
-            <UTextarea v-model="reloadForm.note" :data="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
+            <UTextarea v-model="reloadForm.note" :rows="4" placeholder="np. ręczne przeładowanie po zmianie konfiguracji" />
           </UFormField>
           <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isReloadModalOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" @click="isReloadModalOpen = false" />
             <UButton type="submit" color="primary" :loading="isCreatingReload" label="Zapisz" />
           </div>
         </form>
@@ -147,7 +170,10 @@ const auditColumns = [
   { accessorKey: 'details', header: 'Szczegóły' }
 ]
 
+const toast = useToast()
+
 const auditSearch = ref('')
+const isRefreshing = ref(false)
 const isCreatingBackup = ref(false)
 const isCreatingReload = ref(false)
 const isReloadModalOpen = ref(false)
@@ -201,12 +227,28 @@ const formatBytes = (bytes) => {
 }
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshInfo(),
-    refreshBackups(),
-    refreshReloadLogs(),
-    refreshAuditLogs()
-  ])
+  isRefreshing.value = true
+  try {
+    await Promise.all([
+      refreshInfo(),
+      refreshBackups(),
+      refreshReloadLogs(),
+      refreshAuditLogs()
+    ])
+    toast.add({
+      title: 'Odświeżono',
+      description: 'Dane administracyjne zostały pomyślnie zaktualizowane.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: err?.message || 'Wystąpił błąd podczas odświeżania danych.',
+      color: 'error'
+    })
+  } finally {
+    isRefreshing.value = false
+  }
 }
 
 const createBackup = async () => {
@@ -214,6 +256,17 @@ const createBackup = async () => {
   try {
     await $fetch('/api/v1/admin/backups/create', { method: 'POST' })
     await Promise.all([refreshBackups(), refreshAuditLogs()])
+    toast.add({
+      title: 'Utworzono backup',
+      description: 'Kopia zapasowa bazy danych została utworzona.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd tworzenia backupu',
+      description: err?.message || 'Nie udało się utworzyć kopii zapasowej.',
+      color: 'error'
+    })
   } finally {
     isCreatingBackup.value = false
   }
@@ -221,6 +274,11 @@ const createBackup = async () => {
 
 const downloadBackup = (row) => {
   window.open(row.downloadUrl, '_blank', 'noopener')
+  toast.add({
+    title: 'Pobieranie',
+    description: `Rozpoczęto pobieranie pliku ${row.filename}.`,
+    color: 'info'
+  })
 }
 
 const removeBackup = async (row) => {
@@ -228,8 +286,21 @@ const removeBackup = async (row) => {
     return
   }
 
-  await $fetch(`/api/v1/admin/backups/${encodeURIComponent(row.filename)}`, { method: 'DELETE' })
-  await Promise.all([refreshBackups(), refreshAuditLogs()])
+  try {
+    await $fetch(`/api/v1/admin/backups/${encodeURIComponent(row.filename)}`, { method: 'DELETE' })
+    await Promise.all([refreshBackups(), refreshAuditLogs()])
+    toast.add({
+      title: 'Usunięto backup',
+      description: `Kopia zapasowa ${row.filename} została usunięta.`,
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd usuwania',
+      description: err?.message || 'Nie udało się usunąć kopii zapasowej.',
+      color: 'error'
+    })
+  }
 }
 
 const createReload = async () => {
@@ -242,6 +313,17 @@ const createReload = async () => {
     reloadForm.note = ''
     isReloadModalOpen.value = false
     await Promise.all([refreshReloadLogs(), refreshAuditLogs()])
+    toast.add({
+      title: 'Zapisano reload',
+      description: 'Wpis przeładowania konfiguracji został pomyślnie dodany.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd reloaded',
+      description: err?.message || 'Nie udało się dodać wpisu przeładowania.',
+      color: 'error'
+    })
   } finally {
     isCreatingReload.value = false
   }
