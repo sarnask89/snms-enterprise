@@ -1,0 +1,3 @@
+## 2026-08-20 - Nuxt UI v4 ARIA Labels and Toast Notifications in Settings
+**Learning:** Icon-only and action-specific buttons in settings and management modules require explicit Polish `aria-label` attributes to ensure screen reader users understand the target entity (e.g., `Edytuj oddział [nazwa]`). In addition, replaces native alerts with `useToast()` to avoid blocking execution threads while providing instant visual status feedback.
+**Action:** When modernizing management pages in Nuxt UI, map standard Lucide icons (`i-lucide-pencil`, `i-lucide-trash-2`, `i-lucide-refresh-cw`), supply contextual Polish `aria-label` strings, and trigger toast alerts for user feedback on all async operations.

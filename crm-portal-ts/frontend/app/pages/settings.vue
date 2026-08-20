@@ -5,22 +5,29 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Ustawienia Systemu</h1>
         <p class="text-sm text-gray-500">Oddziały, stawki VAT i plany numeracji dla runtime TS.</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-refresh-cw"
+        label="Odśwież"
+        aria-label="Odśwież wszystkie ustawienia"
+        @click="refreshAll"
+      />
     </div>
 
     <UAlert
       v-if="route.query.reason === 'auth'"
-      color="amber"
+      color="warning"
       variant="soft"
-      icon="i-heroicons-lock-closed"
+      icon="i-lucide-lock"
       title="Ta sekcja wymaga zalogowanej sesji."
     />
 
     <UAlert
       v-else-if="route.query.reason === 'forbidden'"
-      color="red"
+      color="error"
       variant="soft"
-      icon="i-heroicons-shield-exclamation"
+      icon="i-lucide-shield-alert"
       title="Bieżąca rola nie ma dostępu do wskazanego modułu."
     />
 
@@ -48,7 +55,7 @@
             <UCheckbox v-model="divisionForm.isDefault" label="Domyślny" />
           </div>
           <div class="flex justify-end gap-3">
-            <UButton v-if="editingDivisionId" color="gray" variant="soft" label="Anuluj" @click="resetDivisionForm" />
+            <UButton v-if="editingDivisionId" color="neutral" variant="soft" label="Anuluj" @click="resetDivisionForm" />
             <UButton color="primary" :loading="isSavingDivision" :label="editingDivisionId ? 'Zapisz oddział' : 'Dodaj oddział'" @click="saveDivision" />
           </div>
 
@@ -67,13 +74,27 @@
                   <div class="text-xs text-gray-400 mt-1">{{ division.address || 'brak adresu' }}</div>
                 </div>
                 <div class="flex gap-2">
-                  <UBadge :color="division.active ? 'green' : 'gray'" variant="soft">{{ division.active ? 'active' : 'inactive' }}</UBadge>
+                  <UBadge :color="division.active ? 'success' : 'neutral'" variant="soft">{{ division.active ? 'active' : 'inactive' }}</UBadge>
                   <UBadge v-if="division.isDefault" color="primary" variant="soft">default</UBadge>
                 </div>
               </div>
               <div class="flex justify-end gap-3">
-                <UButton color="gray" variant="ghost" label="Edytuj" @click="editDivision(division)" />
-                <UButton color="red" variant="ghost" label="Usuń" @click="deleteDivision(division.id)" />
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-lucide-pencil"
+                  label="Edytuj"
+                  :aria-label="`Edytuj oddział ${division.name}`"
+                  @click="editDivision(division)"
+                />
+                <UButton
+                  color="error"
+                  variant="ghost"
+                  icon="i-lucide-trash-2"
+                  label="Usuń"
+                  :aria-label="`Usuń oddział ${division.name}`"
+                  @click="deleteDivision(division.id)"
+                />
               </div>
             </div>
           </div>
@@ -98,7 +119,7 @@
             <UCheckbox v-model="vatForm.isDefault" label="Domyślna" />
           </div>
           <div class="flex justify-end gap-3">
-            <UButton v-if="editingVatId" color="gray" variant="soft" label="Anuluj" @click="resetVatForm" />
+            <UButton v-if="editingVatId" color="neutral" variant="soft" label="Anuluj" @click="resetVatForm" />
             <UButton color="primary" :loading="isSavingVat" :label="editingVatId ? 'Zapisz stawkę' : 'Dodaj stawkę'" @click="saveVatRate" />
           </div>
 
@@ -114,8 +135,22 @@
               </div>
               <div class="flex items-center gap-2">
                 <UBadge v-if="vatRate.isDefault" color="primary" variant="soft">default</UBadge>
-                <UButton color="gray" variant="ghost" label="Edytuj" @click="editVatRate(vatRate)" />
-                <UButton color="red" variant="ghost" label="Usuń" @click="deleteVatRate(vatRate.id)" />
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-lucide-pencil"
+                  label="Edytuj"
+                  :aria-label="`Edytuj stawkę VAT ${vatRate.label}`"
+                  @click="editVatRate(vatRate)"
+                />
+                <UButton
+                  color="error"
+                  variant="ghost"
+                  icon="i-lucide-trash-2"
+                  label="Usuń"
+                  :aria-label="`Usuń stawkę VAT ${vatRate.label}`"
+                  @click="deleteVatRate(vatRate.id)"
+                />
               </div>
             </div>
           </div>
@@ -156,7 +191,7 @@
             <UCheckbox v-model="numberPlanForm.isDefault" label="Domyślny dla typu" />
           </div>
           <div class="flex justify-end gap-3">
-            <UButton v-if="editingNumberPlanId" color="gray" variant="soft" label="Anuluj" @click="resetNumberPlanForm" />
+            <UButton v-if="editingNumberPlanId" color="neutral" variant="soft" label="Anuluj" @click="resetNumberPlanForm" />
             <UButton color="primary" :loading="isSavingNumberPlan" :label="editingNumberPlanId ? 'Zapisz plan' : 'Dodaj plan'" @click="saveNumberPlan" />
           </div>
 
@@ -177,13 +212,27 @@
                   </div>
                 </div>
                 <div class="flex gap-2">
-                  <UBadge :color="numberPlan.active ? 'green' : 'gray'" variant="soft">{{ numberPlan.active ? 'active' : 'inactive' }}</UBadge>
+                  <UBadge :color="numberPlan.active ? 'success' : 'neutral'" variant="soft">{{ numberPlan.active ? 'active' : 'inactive' }}</UBadge>
                   <UBadge v-if="numberPlan.isDefault" color="primary" variant="soft">default</UBadge>
                 </div>
               </div>
               <div class="flex justify-end gap-3">
-                <UButton color="gray" variant="ghost" label="Edytuj" @click="editNumberPlan(numberPlan)" />
-                <UButton color="red" variant="ghost" label="Usuń" @click="deleteNumberPlan(numberPlan.id)" />
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-lucide-pencil"
+                  label="Edytuj"
+                  :aria-label="`Edytuj plan numeracji ${numberPlan.name}`"
+                  @click="editNumberPlan(numberPlan)"
+                />
+                <UButton
+                  color="error"
+                  variant="ghost"
+                  icon="i-lucide-trash-2"
+                  label="Usuń"
+                  :aria-label="`Usuń plan numeracji ${numberPlan.name}`"
+                  @click="deleteNumberPlan(numberPlan.id)"
+                />
               </div>
             </div>
           </div>
@@ -237,7 +286,7 @@
             <div v-if="authSession?.user" class="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
               <div class="font-medium">{{ authSession.user.username }}</div>
               <div class="text-sm text-gray-500">{{ authSession.user.role }}</div>
-              <UButton color="gray" variant="soft" :loading="isLoggingOut" label="Wyloguj" @click="logout" />
+              <UButton color="neutral" variant="soft" :loading="isLoggingOut" label="Wyloguj" @click="logout" />
             </div>
 
             <div v-else class="space-y-3">
@@ -257,7 +306,7 @@
               v-if="authMessage"
               color="primary"
               variant="soft"
-              icon="i-heroicons-information-circle"
+              icon="i-lucide-info"
               :title="authMessage"
             />
           </section>
@@ -270,6 +319,7 @@
 <script setup>
 const config = useRuntimeConfig()
 const route = useRoute()
+const toast = useToast()
 const { session: authSession, loadSession, login: loginWithSession, logout: logoutSession, changePassword: changeSessionPassword } = usePortalAuth()
 
 const defaultDivisionForm = () => ({
@@ -356,6 +406,12 @@ const refreshAll = async () => {
   await loadAuthSession()
 
   if (!isAdmin.value) {
+    toast.add({
+      title: 'Ustawienia odświeżone',
+      description: 'Zaktualizowano sesję użytkownika.',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
     return
   }
 
@@ -364,6 +420,13 @@ const refreshAll = async () => {
     refreshVatRates(),
     refreshNumberPlans()
   ])
+
+  toast.add({
+    title: 'Ustawienia odświeżone',
+    description: 'Pomyślnie załadowano aktualną konfigurację systemu.',
+    color: 'success',
+    icon: 'i-lucide-check-circle'
+  })
 }
 
 const resetDivisionForm = () => {
@@ -422,67 +485,142 @@ const editNumberPlan = (numberPlan) => {
 const saveDivision = async () => {
   isSavingDivision.value = true
   try {
-    await $fetch(editingDivisionId.value ? `/api/v1/config/divisions/${editingDivisionId.value}` : '/api/v1/config/divisions', {
-      method: editingDivisionId.value ? 'PUT' : 'POST',
+    const isEdit = !!editingDivisionId.value
+    await $fetch(isEdit ? `/api/v1/config/divisions/${editingDivisionId.value}` : '/api/v1/config/divisions', {
+      method: isEdit ? 'PUT' : 'POST',
       body: { ...divisionForm }
+    })
+    toast.add({
+      title: isEdit ? 'Zaktualizowano oddział' : 'Dodano oddział',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
     })
     resetDivisionForm()
     await refreshDivisions()
+  } catch {
+    toast.add({
+      title: 'Błąd zapisu oddziału',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   } finally {
     isSavingDivision.value = false
   }
 }
 
 const deleteDivision = async (id) => {
-  await $fetch(`/api/v1/config/divisions/${id}`, { method: 'DELETE' })
-  if (editingDivisionId.value === id) {
-    resetDivisionForm()
+  try {
+    await $fetch(`/api/v1/config/divisions/${id}`, { method: 'DELETE' })
+    toast.add({
+      title: 'Usunięto oddział',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
+    if (editingDivisionId.value === id) {
+      resetDivisionForm()
+    }
+    await refreshDivisions()
+  } catch {
+    toast.add({
+      title: 'Błąd podczas usuwania oddziału',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   }
-  await refreshDivisions()
 }
 
 const saveVatRate = async () => {
   isSavingVat.value = true
   try {
-    await $fetch(editingVatId.value ? `/api/v1/config/vat-rates/${editingVatId.value}` : '/api/v1/config/vat-rates', {
-      method: editingVatId.value ? 'PUT' : 'POST',
+    const isEdit = !!editingVatId.value
+    await $fetch(isEdit ? `/api/v1/config/vat-rates/${editingVatId.value}` : '/api/v1/config/vat-rates', {
+      method: isEdit ? 'PUT' : 'POST',
       body: { ...vatForm }
+    })
+    toast.add({
+      title: isEdit ? 'Zaktualizowano stawkę VAT' : 'Dodano stawkę VAT',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
     })
     resetVatForm()
     await refreshVatRates()
+  } catch {
+    toast.add({
+      title: 'Błąd zapisu stawki VAT',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   } finally {
     isSavingVat.value = false
   }
 }
 
 const deleteVatRate = async (id) => {
-  await $fetch(`/api/v1/config/vat-rates/${id}`, { method: 'DELETE' })
-  if (editingVatId.value === id) {
-    resetVatForm()
+  try {
+    await $fetch(`/api/v1/config/vat-rates/${id}`, { method: 'DELETE' })
+    toast.add({
+      title: 'Usunięto stawkę VAT',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
+    if (editingVatId.value === id) {
+      resetVatForm()
+    }
+    await refreshVatRates()
+  } catch {
+    toast.add({
+      title: 'Błąd podczas usuwania stawki VAT',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   }
-  await refreshVatRates()
 }
 
 const saveNumberPlan = async () => {
   isSavingNumberPlan.value = true
   try {
-    await $fetch(editingNumberPlanId.value ? `/api/v1/config/number-plans/${editingNumberPlanId.value}` : '/api/v1/config/number-plans', {
-      method: editingNumberPlanId.value ? 'PUT' : 'POST',
+    const isEdit = !!editingNumberPlanId.value
+    await $fetch(isEdit ? `/api/v1/config/number-plans/${editingNumberPlanId.value}` : '/api/v1/config/number-plans', {
+      method: isEdit ? 'PUT' : 'POST',
       body: { ...numberPlanForm }
+    })
+    toast.add({
+      title: isEdit ? 'Zaktualizowano plan numeracji' : 'Dodano plan numeracji',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
     })
     resetNumberPlanForm()
     await refreshNumberPlans()
+  } catch {
+    toast.add({
+      title: 'Błąd zapisu planu numeracji',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   } finally {
     isSavingNumberPlan.value = false
   }
 }
 
 const deleteNumberPlan = async (id) => {
-  await $fetch(`/api/v1/config/number-plans/${id}`, { method: 'DELETE' })
-  if (editingNumberPlanId.value === id) {
-    resetNumberPlanForm()
+  try {
+    await $fetch(`/api/v1/config/number-plans/${id}`, { method: 'DELETE' })
+    toast.add({
+      title: 'Usunięto plan numeracji',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
+    if (editingNumberPlanId.value === id) {
+      resetNumberPlanForm()
+    }
+    await refreshNumberPlans()
+  } catch {
+    toast.add({
+      title: 'Błąd podczas usuwania planu numeracji',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   }
-  await refreshNumberPlans()
 }
 
 const loadAuthSession = async () => {
@@ -504,6 +642,11 @@ const login = async () => {
     await loginWithSession({ ...loginForm })
     Object.assign(loginForm, { username: '', password: '' })
     authMessage.value = 'Sesja została utworzona.'
+    toast.add({
+      title: 'Zalogowano pomyślnie',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
     await loadAuthSession()
 
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
@@ -512,6 +655,12 @@ const login = async () => {
     }
   } catch {
     authMessage.value = 'Logowanie nie powiodło się.'
+    toast.add({
+      title: 'Błąd logowania',
+      description: 'Nieprawidłowy login lub hasło.',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   } finally {
     isLoggingIn.value = false
   }
@@ -523,6 +672,11 @@ const logout = async () => {
   try {
     await logoutSession()
     authMessage.value = 'Sesja została zamknięta.'
+    toast.add({
+      title: 'Wylogowano',
+      color: 'neutral',
+      icon: 'i-lucide-check-circle'
+    })
   } finally {
     isLoggingOut.value = false
   }
@@ -535,8 +689,18 @@ const changePassword = async () => {
     await changeSessionPassword({ ...passwordForm })
     Object.assign(passwordForm, { currentPassword: '', newPassword: '', newPassword2: '' })
     authMessage.value = 'Hasło zostało zmienione.'
+    toast.add({
+      title: 'Hasło zostało zmienione',
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
   } catch {
     authMessage.value = 'Zmiana hasła nie powiodła się.'
+    toast.add({
+      title: 'Błąd zmiany hasła',
+      color: 'error',
+      icon: 'i-lucide-alert-circle'
+    })
   } finally {
     isChangingPassword.value = false
   }
