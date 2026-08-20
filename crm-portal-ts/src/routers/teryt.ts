@@ -22,6 +22,7 @@ type CityWithRelations = LocationCity & {
     district?: LocationDistrict;
     commune?: LocationCommune | null;
     streets?: LocationStreet[];
+    streetCount?: number;
 };
 
 type CommuneWithRelations = LocationCommune & {
@@ -91,7 +92,7 @@ function serializeCity(city: CityWithRelations) {
         isManaged: city.isManaged,
         isDefault: city.isDefault,
         isActive: city.isActive,
-        streetCount: city.streets?.length ?? 0,
+        streetCount: city.streetCount ?? city.streets?.length ?? 0,
         district: district
             ? {
                 id: district.id,
@@ -197,11 +198,13 @@ router.get("/cities", async (req, res) => {
         const districtId = Number.parseInt(String(req.query.districtId ?? ""), 10);
         const communeId = Number.parseInt(String(req.query.communeId ?? ""), 10);
 
+        // Optimization: Use loadRelationCountAndMap instead of leftJoinAndSelect on streets
+        // to avoid loading thousands of street entity objects into memory when listing cities.
         const qb = cityRepo
             .createQueryBuilder("city")
             .leftJoinAndSelect("city.district", "district")
             .leftJoinAndSelect("city.commune", "commune")
-            .leftJoinAndSelect("city.streets", "street")
+            .loadRelationCountAndMap("city.streetCount", "city.streets")
             .orderBy("city.name", "ASC");
 
         if (Number.isFinite(communeId)) {

@@ -45,7 +45,7 @@ function serializeNode(node, includeDetails = false) {
         hasPower: node.hasPower,
         hasEnvControl: node.hasEnvControl,
         info: node.info ?? null,
-        deviceCount: devices.length,
+        deviceCount: node.deviceCount ?? devices.length,
         devices: includeDetails
             ? devices.map((device) => ({
                 id: device.id,
@@ -60,9 +60,11 @@ function serializeNode(node, includeDetails = false) {
 router.get("/", async (req, res) => {
     try {
         const search = String(req.query.q ?? "").trim();
+        // Optimization: Use loadRelationCountAndMap instead of leftJoinAndSelect on devices
+        // to avoid loading unnecessary child entity objects when listing nodes.
         const nodes = await nodeRepo
             .createQueryBuilder("node")
-            .leftJoinAndSelect("node.devices", "device")
+            .loadRelationCountAndMap("node.deviceCount", "node.devices")
             .where(search
             ? new Brackets((qb) => {
                 qb.where("node.name LIKE :search", { search: `%${search}%` })
