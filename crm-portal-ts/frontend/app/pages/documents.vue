@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dokumenty</h1>
         <p class="text-sm text-gray-500">Upload, pobieranie i usuwanie dokumentów w aktywnym baseline TS/Nuxt</p>
       </div>
-      <UButton color="primary" icon="i-heroicons-plus" label="Dodaj dokument" @click="openCreateModal" />
+      <UButton color="primary" icon="i-lucide-plus" label="Dodaj dokument" @click="openCreateModal" />
     </div>
 
     <UCard>
@@ -14,18 +14,20 @@
           <div class="flex flex-1 gap-3">
             <UInput
               v-model="search"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj po tytule, typie, notatkach lub nazwie pliku..."
+              aria-label="Szukaj dokumentów"
               class="flex-1"
             />
             <USelect
               v-model="customerFilter"
               :items="customerOptionsWithEmpty"
               label-key="label"
+              aria-label="Filtruj według klienta"
               class="w-full md:w-72"
             />
           </div>
-          <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshDocuments" />
+          <UButton color="gray" variant="ghost" icon="i-lucide-refresh-cw" label="Odśwież" aria-label="Odśwież listę" @click="refreshDocuments" />
         </div>
       </template>
 
@@ -53,8 +55,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex items-center gap-2">
-            <UButton size="xs" color="primary" variant="ghost" icon="i-heroicons-arrow-down-tray" @click="downloadDocument(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeDocument(row)" />
+            <UButton size="xs" color="primary" variant="ghost" icon="i-lucide-download" :aria-label="`Pobierz dokument ${row.title}`" @click="downloadDocument(row)" />
+            <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" :aria-label="`Usuń dokument ${row.title}`" @click="removeDocument(row)" />
           </div>
         </template>
       </UTable>
@@ -93,7 +95,7 @@
           </div>
 
           <UFormField label="Notatki">
-            <UTextarea v-model="form.notes" :data="4" />
+            <UTextarea v-model="form.notes" :rows="4" />
           </UFormField>
 
           <div v-if="selectedFileName" class="rounded-lg border border-gray-200 dark:border-gray-800 p-3 text-sm text-gray-600 dark:text-gray-300">
@@ -112,6 +114,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const columns = [
   { accessorKey: 'title', header: 'Tytuł' },
   { accessorKey: 'customer', header: 'Klient' },
@@ -257,6 +261,7 @@ const saveDocument = async () => {
 
   isSaving.value = true
   try {
+    const savedTitle = form.title
     await $fetch('/api/v1/documents', {
       method: 'POST',
       body: {
@@ -272,6 +277,11 @@ const saveDocument = async () => {
     isModalOpen.value = false
     resetForm()
     await refreshDocuments()
+    toast.add({
+      title: 'Dokument dodany',
+      description: `Pomyślnie zapisano dokument "${savedTitle}".`,
+      color: 'success'
+    })
   } finally {
     isSaving.value = false
   }
@@ -288,5 +298,10 @@ const removeDocument = async (row) => {
 
   await $fetch(`/api/v1/documents/${row.id}`, { method: 'DELETE' })
   await refreshDocuments()
+  toast.add({
+    title: 'Dokument usunięty',
+    description: `Usunięto dokument "${row.title}".`,
+    color: 'success'
+  })
 }
 </script>
