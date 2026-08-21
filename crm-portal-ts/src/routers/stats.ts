@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../database.js";
+import { NetDeviceStatus } from "../models/common.js";
 import { Customer } from "../models/customer.js";
 import { Invoice, LedgerEntry, Subscription } from "../models/finance.js";
 import { NetDevice } from "../models/network.js";
@@ -45,9 +47,11 @@ function buildRecentMonths(count: number) {
 
 router.get("/network-health", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
-        const totalDevices = devices.length;
-        const onlineNow = devices.filter((device) => device.status === "active").length;
+        // Bolt performance optimization: use COUNT queries instead of instantiating all device entities in memory
+        const [totalDevices, onlineNow] = await Promise.all([
+            netDeviceRepo.count(),
+            netDeviceRepo.countBy({ status: NetDeviceStatus.active }),
+        ]);
 
         const history = Array.from({ length: 24 }, (_, index) => {
             const offset = 23 - index;
@@ -116,12 +120,21 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 
 router.get("/financial-summary", async (_req, res) => {
     try {
+        const months = buildRecentMonths(12);
+        // Bolt performance optimization: filter by 12-month date window and select only necessary columns to avoid loading entire tables
+        const earliestDateStr = `${months[0].key}-01`;
+
         const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
+            invoiceRepo.find({
+                where: { issueDate: MoreThanOrEqual(earliestDateStr) },
+                select: { amount: true, issueDate: true },
+            }),
+            ledgerRepo.find({
+                where: { postedAt: MoreThanOrEqual(earliestDateStr) },
+                select: { amount: true, kind: true, postedAt: true },
+            }),
         ]);
 
-        const months = buildRecentMonths(12);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
 
         for (const invoice of invoices) {
@@ -165,7 +178,10 @@ router.get("/financial-summary", async (_req, res) => {
 
 router.get("/inventory-summary", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
+        // Bolt performance optimization: select only deviceType to avoid loading all device fields into memory
+        const devices = await netDeviceRepo.find({
+            select: { deviceType: true },
+        });
         const counts = new Map<string, number>();
 
         for (const device of devices) {
@@ -187,8 +203,14 @@ router.get("/inventory-summary", async (_req, res) => {
 
 router.get("/customer-growth", async (_req, res) => {
     try {
-        const customers = await customerRepo.find();
         const months = buildRecentMonths(6);
+        // Bolt performance optimization: filter customers within 6-month window and select creationDate column only
+        const earliestDateStr = `${months[0].key}-01`;
+
+        const customers = await customerRepo.find({
+            where: { creationDate: MoreThanOrEqual(earliestDateStr) },
+            select: { creationDate: true },
+        });
         const monthCounts = new Map(months.map((month) => [month.key, 0]));
 
         for (const customer of customers) {

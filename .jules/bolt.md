@@ -1,0 +1,3 @@
+## 2026-08-21 - TypeORM Query Optimization for Dashboard Statistics
+**Learning:** Calling `Repository.find()` without column selection or date range constraints forces TypeORM to fetch every column of every row in the table, instantiating full JavaScript model objects in Node.js memory. For aggregated dashboard stats, replacing `find()` with targeted SQL `count()`, `countBy()`, column selection (`select: { field: true }`), and windowed date filters (`where: { dateField: MoreThanOrEqual(...) }`) significantly reduces memory allocation and query execution time.
+**Action:** Always project required columns and apply date bounds when computing time-series stats or totals in express/typeorm routes instead of fetching full entity lists.
