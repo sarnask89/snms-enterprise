@@ -471,22 +471,39 @@ router.delete("/tickets/:id", async (req, res) => {
 
 router.get("/reports", async (_req, res) => {
     try {
-        const tickets = await ticketRepo.find();
-        const byStatus = tickets.reduce<Record<string, number>>((acc, ticket) => {
-            acc[ticket.status] = (acc[ticket.status] ?? 0) + 1;
+        // OPTIMIZATION: Replaced full table entity fetching (`ticketRepo.find()`) and in-memory JS reduction
+        // with SQL aggregations (`count()` and `GROUP BY`).
+        // This eliminates O(N) object allocation overhead and significantly reduces database payload & execution time.
+        const totalTickets = await ticketRepo.count();
+
+        const byStatusRows = await ticketRepo
+            .createQueryBuilder("ticket")
+            .select("ticket.status", "status")
+            .addSelect("COUNT(ticket.id)", "count")
+            .groupBy("ticket.status")
+            .getRawMany<{ status: string; count: string | number }>();
+
+        const byStatus = byStatusRows.reduce<Record<string, number>>((acc, row) => {
+            acc[row.status] = Number.parseInt(String(row.count), 10) || 0;
             return acc;
         }, {});
 
-        const byQueueMap = tickets.reduce<Map<number | null, number>>((acc, ticket) => {
-            const key = ticket.queueId ?? null;
-            acc.set(key, (acc.get(key) ?? 0) + 1);
-            return acc;
-        }, new Map<number | null, number>());
+        const byQueueRows = await ticketRepo
+            .createQueryBuilder("ticket")
+            .select("ticket.queueId", "queueId")
+            .addSelect("COUNT(ticket.id)", "count")
+            .groupBy("ticket.queueId")
+            .getRawMany<{ queueId: number | string | null; count: string | number }>();
+
+        const byQueue = byQueueRows.map((row) => ({
+            queueId: row.queueId !== null && row.queueId !== undefined ? Number.parseInt(String(row.queueId), 10) : null,
+            count: Number.parseInt(String(row.count), 10) || 0,
+        }));
 
         res.json({
-            totalTickets: tickets.length,
+            totalTickets,
             byStatus,
-            byQueue: [...byQueueMap.entries()].map(([queueId, count]) => ({ queueId, count })),
+            byQueue,
         });
     } catch (error) {
         console.error("Error generating helpdesk reports:", error);

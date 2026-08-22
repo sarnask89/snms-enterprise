@@ -1,0 +1,3 @@
+## 2026-08-22 - SQL Aggregation for Helpdesk Reports & TypeScript Build Sync
+**Learning:** Replaced in-memory entity fetching (`ticketRepo.find()`) in `GET /reports` with TypeORM `count()` and `createQueryBuilder` SQL `GROUP BY` aggregations, avoiding O(N) entity instantiation overhead. Additionally, when modifying TypeScript backend files in `crm-portal-ts`, `npm run build` must be executed to ensure the `dist/` build artifacts stay perfectly synchronized with `src/`.
+**Action:** Use SQL `COUNT` and `GROUP BY` aggregations for summary report endpoints, and always rebuild TypeScript artifacts using `npm run build` after editing `src/`.
