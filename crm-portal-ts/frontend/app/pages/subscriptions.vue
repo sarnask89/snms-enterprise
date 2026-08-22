@@ -6,42 +6,24 @@
         <p class="text-sm text-gray-500">Powiązanie klienta, taryfy i opcjonalnego urządzenia dostępowego</p>
       </div>
       <div class="flex gap-3">
-        <UButton to="/finances" color="gray" variant="soft" icon="i-heroicons-banknotes" label="Finanse" />
-        <UButton color="primary" icon="i-heroicons-plus" label="Nowa subskrypcja" @click="openCreateModal" />
+        <UButton to="/finances" color="neutral" variant="soft" icon="i-lucide-banknote" label="Finanse" aria-label="Przejdź do finansów" />
+        <UButton color="primary" icon="i-lucide-plus" label="Nowa subskrypcja" aria-label="Dodaj nową subskrypcję" @click="openCreateModal" />
       </div>
     </div>
 
     <UCard>
       <UTable :data="subscriptions || []" :columns="columns" :loading="pendingSubscriptions">
-        <template #customer-data="{ row }">
-          <div class="text-sm text-gray-600 dark:text-gray-300">
-            {{ row.customer ? `${row.customer.customerCode} · ${row.customer.firstName} ${row.customer.lastName}` : 'Brak klienta' }}
-          </div>
-        </template>
-
-        <template #tariff-data="{ row }">
-          <div class="text-sm text-gray-600 dark:text-gray-300">
-            {{ row.tariff ? `${row.tariff.name} · ${row.tariff.monthlyPrice.toFixed(2)} PLN` : 'Brak taryfy' }}
-          </div>
-        </template>
-
-        <template #device-data="{ row }">
-          <div class="text-sm text-gray-600 dark:text-gray-300">
-            {{ row.device ? `${row.device.hostname} ${row.device.ipAddress ? `(${row.device.ipAddress})` : ''}` : 'Wszystkie urządzenia' }}
-          </div>
-        </template>
-
-        <template #active-data="{ row }">
-          <UBadge :color="row.active ? 'emerald' : 'gray'" variant="soft">
-            {{ row.active ? 'Aktywna' : 'Wyłączona' }}
+        <template #active-cell="{ row }">
+          <UBadge :color="(row.original || row).active ? 'success' : 'neutral'" variant="soft">
+            {{ (row.original || row).active ? 'Aktywna' : 'Wyłączona' }}
           </UBadge>
         </template>
 
-        <template #actions-data="{ row }">
+        <template #actions-cell="{ row }">
           <div class="flex gap-2">
-            <UButton size="xs" color="gray" variant="ghost" icon="i-heroicons-pencil-square" @click="openEditModal(row)" />
-            <UButton size="xs" :color="row.active ? 'yellow' : 'emerald'" variant="ghost" icon="i-heroicons-power" @click="toggleSubscription(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeSubscription(row)" />
+            <UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-pencil" :aria-label="`Edytuj subskrypcję ${getItemCode(row.original || row)}`" @click="openEditModal(row.original || row)" />
+            <UButton size="xs" :color="(row.original || row).active ? 'warning' : 'success'" variant="ghost" :icon="(row.original || row).active ? 'i-lucide-power-off' : 'i-lucide-power'" :aria-label="`${(row.original || row).active ? 'Dezaktywuj' : 'Aktywuj'} subskrypcję ${getItemCode(row.original || row)}`" @click="toggleSubscription(row.original || row)" />
+            <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" :aria-label="`Usuń subskrypcję ${getItemCode(row.original || row)}`" @click="removeSubscription(row.original || row)" />
           </div>
         </template>
       </UTable>
@@ -56,48 +38,47 @@
         <form class="space-y-4 p-4" @submit.prevent="saveSubscription">
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Klient" required>
-              <USelect v-model="form.customerId" :items="customerOptions" label-key="label" />
+              <USelect v-model="form.customerId" :items="customerOptions" label-key="label" aria-label="Wybierz klienta" />
             </UFormField>
             <UFormField label="Taryfa" required>
-              <USelect v-model="form.tariffId" :items="tariffOptions" label-key="label" />
+              <USelect v-model="form.tariffId" :items="tariffOptions" label-key="label" aria-label="Wybierz taryfę" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Urządzenie">
-              <USelect v-model="form.deviceId" :items="deviceOptions" label-key="label" />
+              <USelect v-model="form.deviceId" :items="deviceOptions" label-key="label" aria-label="Wybierz urządzenie" />
             </UFormField>
             <UFormField label="Technologia">
-              <USelect v-model="form.technology" :items="technologyOptions" label-key="label" />
+              <USelect v-model="form.technology" :items="technologyOptions" label-key="label" aria-label="Wybierz technologię" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Start" required>
-              <UInput v-model="form.startDate" type="date" />
+              <UInput v-model="form.startDate" type="date" aria-label="Data rozpoczęcia subskrypcji" />
             </UFormField>
             <UFormField label="Koniec">
-              <UInput v-model="form.endDate" type="date" />
+              <UInput v-model="form.endDate" type="date" aria-label="Data zakończenia subskrypcji" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Download (Mbps)">
-              <UInput v-model="form.speedDownMbps" type="number" />
+              <UInput v-model="form.speedDownMbps" type="number" aria-label="Prędkość pobierania w Mbps" />
             </UFormField>
             <UFormField label="Upload (Mbps)">
-              <UInput v-model="form.speedUpMbps" type="number" />
+              <UInput v-model="form.speedUpMbps" type="number" aria-label="Prędkość wysyłania w Mbps" />
             </UFormField>
           </div>
 
-          <label class="flex items-center gap-3 text-sm">
-            <input v-model="form.active" type="checkbox" class="rounded border-gray-300">
-            <span>Subskrypcja aktywna</span>
-          </label>
+          <div class="pt-2">
+            <UCheckbox v-model="form.active" label="Subskrypcja aktywna" />
+          </div>
 
-          <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isModalOpen = false" />
-            <UButton type="submit" color="primary" :loading="isSaving" label="Zapisz" />
+          <div class="flex justify-end gap-2 pt-2">
+            <UButton color="neutral" variant="ghost" label="Anuluj" aria-label="Anuluj edycję subskrypcji" @click="isModalOpen = false" />
+            <UButton type="submit" color="primary" :loading="isSaving" label="Zapisz" aria-label="Zapisz subskrypcję" />
           </div>
         </form>
       </UCard>
@@ -106,14 +87,35 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
+const getCustomerLabel = (item) => {
+  if (!item?.customer) return 'Brak klienta'
+  return `${item.customer.customerCode} · ${item.customer.firstName} ${item.customer.lastName}`
+}
+
+const getTariffLabel = (item) => {
+  if (!item?.tariff) return 'Brak taryfy'
+  return `${item.tariff.name} · ${Number(item.tariff.monthlyPrice || 0).toFixed(2)} PLN`
+}
+
+const getDeviceLabel = (item) => {
+  if (!item?.device) return 'Wszystkie urządzenia'
+  return `${item.device.hostname}${item.device.ipAddress ? ` (${item.device.ipAddress})` : ''}`
+}
+
+const getItemCode = (item) => {
+  return item?.customer?.customerCode || item?.customerId || item?.id || ''
+}
+
 const columns = [
-  { accessorKey: 'customer', header: 'Klient' },
-  { accessorKey: 'tariff', header: 'Taryfa' },
-  { accessorKey: 'device', header: 'Urządzenie' },
+  { id: 'customer', header: 'Klient', accessorFn: (row) => getCustomerLabel(row) },
+  { id: 'tariff', header: 'Taryfa', accessorFn: (row) => getTariffLabel(row) },
+  { id: 'device', header: 'Urządzenie', accessorFn: (row) => getDeviceLabel(row) },
   { accessorKey: 'technology', header: 'Technologia' },
   { accessorKey: 'startDate', header: 'Start' },
-  { accessorKey: 'active', header: 'Status' },
-  { accessorKey: 'actions', header: 'Akcje' }
+  { id: 'active', header: 'Status' },
+  { id: 'actions', header: 'Akcje' }
 ]
 
 const technologyOptions = [
@@ -171,7 +173,11 @@ const loadCustomerDevices = async (customerId) => {
     return
   }
 
-  customerDevices.value = await $fetch(`/api/v1/subscriptions/customer-nodes/${customerId}`)
+  try {
+    customerDevices.value = await $fetch(`/api/v1/subscriptions/customer-nodes/${customerId}`)
+  } catch {
+    customerDevices.value = []
+  }
 }
 
 watch(() => form.customerId, async (customerId) => {
@@ -201,21 +207,25 @@ const openCreateModal = async () => {
 }
 
 const openEditModal = async (row) => {
-  const subscription = await $fetch(`/api/v1/subscriptions/${row.id}`)
-  Object.assign(form, {
-    id: subscription.id,
-    customerId: subscription.customerId,
-    tariffId: subscription.tariffId,
-    deviceId: subscription.deviceId,
-    startDate: subscription.startDate,
-    endDate: subscription.endDate || '',
-    active: !!subscription.active,
-    technology: subscription.technology,
-    speedDownMbps: subscription.speedDownMbps ?? '',
-    speedUpMbps: subscription.speedUpMbps ?? ''
-  })
-  await loadCustomerDevices(subscription.customerId)
-  isModalOpen.value = true
+  try {
+    const subscription = await $fetch(`/api/v1/subscriptions/${row.id}`)
+    Object.assign(form, {
+      id: subscription.id,
+      customerId: subscription.customerId,
+      tariffId: subscription.tariffId,
+      deviceId: subscription.deviceId,
+      startDate: subscription.startDate,
+      endDate: subscription.endDate || '',
+      active: !!subscription.active,
+      technology: subscription.technology,
+      speedDownMbps: subscription.speedDownMbps ?? '',
+      speedUpMbps: subscription.speedUpMbps ?? ''
+    })
+    await loadCustomerDevices(subscription.customerId)
+    isModalOpen.value = true
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się pobrać danych subskrypcji.', color: 'error' })
+  }
 }
 
 const saveSubscription = async () => {
@@ -235,27 +245,42 @@ const saveSubscription = async () => {
 
     if (form.id) {
       await $fetch(`/api/v1/subscriptions/${form.id}`, { method: 'PUT', body: payload })
+      toast.add({ title: 'Sukces', description: 'Subskrypcja została zaktualizowana.', color: 'success' })
     } else {
       await $fetch('/api/v1/subscriptions', { method: 'POST', body: payload })
+      toast.add({ title: 'Sukces', description: 'Nowa subskrypcja została dodana.', color: 'success' })
     }
 
     isModalOpen.value = false
     resetForm()
     customerDevices.value = []
     await refreshSubscriptions()
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się zapisać subskrypcji.', color: 'error' })
   } finally {
     isSaving.value = false
   }
 }
 
 const toggleSubscription = async (row) => {
-  await $fetch(`/api/v1/subscriptions/${row.id}/toggle`, { method: 'POST' })
-  await refreshSubscriptions()
+  try {
+    await $fetch(`/api/v1/subscriptions/${row.id}/toggle`, { method: 'POST' })
+    toast.add({ title: 'Sukces', description: 'Zmieniono status subskrypcji.', color: 'success' })
+    await refreshSubscriptions()
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się zmienić statusu subskrypcji.', color: 'error' })
+  }
 }
 
 const removeSubscription = async (row) => {
-  if (!confirm(`Usunąć subskrypcję klienta ${row.customer?.customerCode || row.customerId}?`)) return
-  await $fetch(`/api/v1/subscriptions/${row.id}`, { method: 'DELETE' })
-  await refreshSubscriptions()
+  const code = row.customer?.customerCode || row.customerId
+  if (!confirm(`Usunąć subskrypcję klienta ${code}?`)) return
+  try {
+    await $fetch(`/api/v1/subscriptions/${row.id}`, { method: 'DELETE' })
+    toast.add({ title: 'Sukces', description: 'Subskrypcja została usunięta.', color: 'success' })
+    await refreshSubscriptions()
+  } catch {
+    toast.add({ title: 'Błąd', description: 'Nie udało się usunąć subskrypcji.', color: 'error' })
+  }
 }
 </script>
