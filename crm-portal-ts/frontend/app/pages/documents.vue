@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dokumenty</h1>
         <p class="text-sm text-gray-500">Upload, pobieranie i usuwanie dokumentów w aktywnym baseline TS/Nuxt</p>
       </div>
-      <UButton color="primary" icon="i-heroicons-plus" label="Dodaj dokument" @click="openCreateModal" />
+      <UButton color="primary" icon="i-lucide-plus" label="Dodaj dokument" aria-label="Dodaj dokument" @click="openCreateModal" />
     </div>
 
     <UCard>
@@ -14,18 +14,20 @@
           <div class="flex flex-1 gap-3">
             <UInput
               v-model="search"
-              icon="i-heroicons-magnifying-glass-20-solid"
+              icon="i-lucide-search"
               placeholder="Szukaj po tytule, typie, notatkach lub nazwie pliku..."
+              aria-label="Szukaj dokumentów"
               class="flex-1"
             />
             <USelect
               v-model="customerFilter"
               :items="customerOptionsWithEmpty"
               label-key="label"
+              aria-label="Filtruj według klienta"
               class="w-full md:w-72"
             />
           </div>
-          <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshDocuments" />
+          <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" label="Odśwież" aria-label="Odśwież listę dokumentów" @click="refreshDocuments" />
         </div>
       </template>
 
@@ -53,8 +55,8 @@
 
         <template #actions-data="{ row }">
           <div class="flex items-center gap-2">
-            <UButton size="xs" color="primary" variant="ghost" icon="i-heroicons-arrow-down-tray" @click="downloadDocument(row)" />
-            <UButton size="xs" color="red" variant="ghost" icon="i-heroicons-trash" @click="removeDocument(row)" />
+            <UButton size="xs" color="primary" variant="ghost" icon="i-lucide-download" :aria-label="`Pobierz dokument ${row.title}`" @click="downloadDocument(row)" />
+            <UButton size="xs" color="error" variant="ghost" icon="i-lucide-trash-2" :aria-label="`Usuń dokument ${row.title}`" @click="removeDocument(row)" />
           </div>
         </template>
       </UTable>
@@ -69,23 +71,24 @@
         <form class="space-y-4 p-4" @submit.prevent="saveDocument">
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Tytuł" required>
-              <UInput v-model="form.title" />
+              <UInput v-model="form.title" aria-label="Tytuł dokumentu" />
             </UFormField>
 
             <UFormField label="Typ dokumentu" required>
-              <USelect v-model="form.docType" :items="docTypeOptions" label-key="label" />
+              <USelect v-model="form.docType" :items="docTypeOptions" label-key="label" aria-label="Typ dokumentu" />
             </UFormField>
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <UFormField label="Klient">
-              <USelect v-model="form.customerId" :items="customerOptionsWithEmpty" label-key="label" />
+              <USelect v-model="form.customerId" :items="customerOptionsWithEmpty" label-key="label" aria-label="Wybierz klienta" />
             </UFormField>
 
             <UFormField label="Plik" required>
               <input
                 :key="fileInputKey"
                 type="file"
+                aria-label="Wybierz plik z dysku"
                 class="block w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900"
                 @change="onFileChange"
               >
@@ -93,7 +96,7 @@
           </div>
 
           <UFormField label="Notatki">
-            <UTextarea v-model="form.notes" :data="4" />
+            <UTextarea v-model="form.notes" :rows="4" aria-label="Notatki do dokumentu" />
           </UFormField>
 
           <div v-if="selectedFileName" class="rounded-lg border border-gray-200 dark:border-gray-800 p-3 text-sm text-gray-600 dark:text-gray-300">
@@ -112,6 +115,8 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const columns = [
   { accessorKey: 'title', header: 'Tytuł' },
   { accessorKey: 'customer', header: 'Klient' },
@@ -252,6 +257,11 @@ const formatFileSize = (bytes) => {
 
 const saveDocument = async () => {
   if (!selectedFileBase64.value || !selectedFileName.value) {
+    toast.add({
+      title: 'Brak pliku',
+      description: 'Wybierz plik do załadowania.',
+      color: 'warning'
+    })
     return
   }
 
@@ -269,9 +279,20 @@ const saveDocument = async () => {
         contentBase64: selectedFileBase64.value
       }
     })
+    toast.add({
+      title: 'Sukces',
+      description: 'Dokument został pomyślnie dodany.',
+      color: 'success'
+    })
     isModalOpen.value = false
     resetForm()
     await refreshDocuments()
+  } catch (err) {
+    toast.add({
+      title: 'Błąd',
+      description: err?.data?.message || err?.message || 'Nie udało się zapisać dokumentu.',
+      color: 'error'
+    })
   } finally {
     isSaving.value = false
   }
@@ -286,7 +307,20 @@ const removeDocument = async (row) => {
     return
   }
 
-  await $fetch(`/api/v1/documents/${row.id}`, { method: 'DELETE' })
-  await refreshDocuments()
+  try {
+    await $fetch(`/api/v1/documents/${row.id}`, { method: 'DELETE' })
+    toast.add({
+      title: 'Usunięto',
+      description: `Dokument "${row.title}" został usunięty.`,
+      color: 'neutral'
+    })
+    await refreshDocuments()
+  } catch (err) {
+    toast.add({
+      title: 'Błąd',
+      description: err?.data?.message || err?.message || 'Nie udało się usunąć dokumentu.',
+      color: 'error'
+    })
+  }
 }
 </script>
