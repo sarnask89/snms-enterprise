@@ -1,8 +1,8 @@
 <template>
   <div class="p-8 max-w-5xl mx-auto">
     <div class="flex items-center gap-4 mb-8">
-      <div class="p-3 rounded-2xl bg-primary-500/10 text-primary-500">
-        <UIcon name="i-heroicons-sparkles" class="w-8 h-8" />
+      <div class="p-3 rounded-2xl bg-primary/10 text-primary">
+        <UIcon name="i-lucide-sparkles" class="w-8 h-8" />
       </div>
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">AI Architekt Modułów</h1>
@@ -16,7 +16,7 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="font-bold">Czat z Architektem</h3>
-            <UButton icon="i-heroicons-trash" color="gray" variant="ghost" size="xs" @click="clearChat" />
+            <UButton icon="i-lucide-trash-2" color="neutral" variant="ghost" size="xs" aria-label="Wyczyść historię czatu" @click="clearChat" />
           </div>
         </template>
 
@@ -25,7 +25,7 @@
             v-for="(msg, index) in messages"
             :key="index"
             class="p-4 rounded-2xl max-w-[90%] text-sm"
-            :class="msg.role === 'user' ? 'bg-primary-500 text-white self-end' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 self-start'"
+            :class="msg.role === 'user' ? 'bg-primary text-primary-foreground self-end' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 self-start'"
           >
             <div v-if="msg.role === 'assistant'" class="prose dark:prose-invert prose-xs">
               {{ msg.content }}
@@ -37,14 +37,15 @@
           </div>
         </div>
 
-        <form @submit.prevent="sendMessage" class="flex gap-2">
+        <form class="flex gap-2" @submit.prevent="sendMessage">
           <UInput
             v-model="input"
             placeholder="Opisz moduł, który chcesz zbudować..."
+            aria-label="Opis nowego modułu"
             class="flex-1"
             :disabled="isLoading"
           />
-          <UButton type="submit" icon="i-heroicons-paper-airplane" :loading="isLoading" />
+          <UButton type="submit" icon="i-lucide-send" aria-label="Wyślij wiadomość do AI Architekta" :loading="isLoading" />
         </form>
       </UCard>
 
@@ -56,9 +57,10 @@
               <h3 class="font-bold">Wygenerowana Specyfikacja</h3>
               <UButton 
                 v-if="lastSpec" 
-                icon="i-heroicons-cpu-chip" 
+                icon="i-lucide-cpu"
                 label="Wdróż Moduł" 
-                color="green" 
+                color="success"
+                aria-label="Wdróż wygenerowany moduł"
                 :loading="isImplementing"
                 @click="implementModule" 
               />
@@ -69,13 +71,13 @@
              <pre class="text-[10px] bg-gray-900 text-green-400 p-4 rounded-lg"><code>{{ lastSpec }}</code></pre>
           </div>
           <div v-else class="flex flex-col items-center justify-center h-64 text-gray-400">
-            <UIcon name="i-heroicons-document-magnifying-glass" class="w-12 h-12 mb-2" />
+            <UIcon name="i-lucide-file-search" class="w-12 h-12 mb-2" />
             <p>Jeszcze nie wygenerowano specyfikacji</p>
           </div>
         </UCard>
 
         <UAlert
-          icon="i-heroicons-information-circle"
+          icon="i-lucide-info"
           color="primary"
           variant="soft"
           title="Uwaga dotycząca bezpieczeństwa"
@@ -88,6 +90,7 @@
 
 <script setup>
 const config = useRuntimeConfig()
+const toast = useToast()
 const input = ref('')
 const isLoading = ref(false)
 const isImplementing = ref(false)
@@ -166,9 +169,17 @@ const implementModule = async () => {
       method: 'POST',
       body: { spec: lastSpec.value }
     })
-    alert(`Wdrożono pomyślnie! Utworzono pliki:\n` + res.files.join('\n'))
+    toast.add({
+      title: 'Wdrożono pomyślnie!',
+      description: `Utworzono pliki:\n` + (res.files || []).join('\n'),
+      color: 'success'
+    })
   } catch (error) {
-    alert(`Błąd wdrażania: ${error.data?.message || error.message}`)
+    toast.add({
+      title: 'Błąd wdrażania',
+      description: error.data?.message || error.message || 'Nie udalo się wdrożyć modułu.',
+      color: 'error'
+    })
   } finally {
     isImplementing.value = false
   }
