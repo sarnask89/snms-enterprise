@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { In } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDevice, NetNode } from "../models/network.js";
 import { LocationStreet } from "../models/location.js";
@@ -28,11 +29,13 @@ router.get("/pit-uke/export", async (_req, res) => {
             },
             order: { id: "ASC" },
         });
-        const streetIds = devices
+        // Optimization: Deduplicate street IDs to prevent sending thousands of duplicate parameters
+        // to the database and replace deprecated findByIds with TypeORM In operator query.
+        const streetIds = Array.from(new Set(devices
             .map((device) => device.customer?.locationStreetId)
-            .filter((id) => Number.isInteger(id));
+            .filter((id) => Number.isInteger(id))));
         const streets = streetIds.length > 0
-            ? await locationStreetRepo.findByIds(streetIds)
+            ? await locationStreetRepo.findBy({ id: In(streetIds) })
             : [];
         const streetMap = new Map(streets.map((street) => [street.id, street.name]));
         const rows = [

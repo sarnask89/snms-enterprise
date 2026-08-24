@@ -52,6 +52,9 @@ function parseDateString(value, fallback) {
 }
 function serializeTariff(tariff) {
     const subscriptions = tariff.subscriptions ?? [];
+    const subscriptionCount = typeof tariff.subscriptionCount === "number"
+        ? tariff.subscriptionCount
+        : subscriptions.length;
     return {
         id: tariff.id,
         name: tariff.name,
@@ -61,7 +64,7 @@ function serializeTariff(tariff) {
         speedDownMbps: tariff.speedDownMbps ?? null,
         speedUpMbps: tariff.speedUpMbps ?? null,
         vatRateId: tariff.vatRateId ?? null,
-        subscriptionCount: subscriptions.length,
+        subscriptionCount,
     };
 }
 function serializeInvoice(invoice) {
@@ -146,9 +149,11 @@ router.get("/tariffs", async (req, res) => {
     try {
         const search = String(req.query.q ?? "").trim();
         const active = String(req.query.active ?? "").trim();
+        // Optimization: Use loadRelationCountAndMap instead of leftJoinAndSelect to avoid loading
+        // and instantiating full Subscription entities into memory when fetching tariff list.
         const query = tariffRepo
             .createQueryBuilder("tariff")
-            .leftJoinAndSelect("tariff.subscriptions", "subscription")
+            .loadRelationCountAndMap("tariff.subscriptionCount", "tariff.subscriptions")
             .orderBy("tariff.id", "ASC");
         if (search) {
             query.andWhere(new Brackets((qb) => {
