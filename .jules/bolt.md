@@ -1,0 +1,3 @@
+## 2026-08-25 - Batch Address Resolution in TypeORM List Serialization
+**Learning:** Sequential entity resolution during API list serialization (e.g. `resolveTerytAddress` running 5 separate queries per item in `Promise.all(items.map(...))`) creates a critical N+1 database bottleneck, running up to 100 queries for a single 20-item page.
+**Action:** Use TypeORM's `In()` operator to batch-fetch all required related entity IDs across the entire list at once in parallel queries, then perform address hierarchy resolutions in-memory using hash maps. This drops database queries for list responses from O(N) to O(1) (at most 5 queries total).
