@@ -7,6 +7,8 @@
         icon="i-heroicons-chat-bubble-left-ellipsis-solid"
         size="xl"
         color="primary"
+        aria-label="Open AI Assistant"
+        :aria-expanded="isOpen"
         class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
         @click="isOpen = true"
       />
@@ -41,6 +43,7 @@
               color="white"
               variant="ghost"
               size="xs"
+              aria-label="Close AI Assistant"
               @click="isOpen = false"
             />
           </div>
@@ -67,6 +70,7 @@
             <UInput
               v-model="input"
               placeholder="Type command or ask AI..."
+              aria-label="Type command or ask AI"
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
@@ -75,6 +79,7 @@
               type="submit" 
               icon="i-heroicons-paper-airplane" 
               color="primary" 
+              aria-label="Send message to AI"
               :loading="isLoading"
             />
           </form>
