@@ -1,0 +1,3 @@
+## 2026-08-26 - TypeORM Bulk Updates for Default Settings Flags
+**Learning:** Sequential entity fetches and loop `save()` calls for updating default flags (`isDefault`) across records (e.g. divisions, VAT rates, number plans) cause O(N) database queries. TypeORM `createQueryBuilder().update(Entity).set({ isDefault: false }).where(...)` executes a single SQL `UPDATE` query, eliminating O(N) database round-trips.
+**Action:** When updating exclusive boolean flags like `isDefault` across table entities, use TypeORM `createQueryBuilder().update()` bulk updates instead of loading entities with `find()`/`findBy()` and iterating in JS loops.
