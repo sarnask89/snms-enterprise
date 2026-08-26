@@ -77,43 +77,42 @@ function serializeNumberPlan(row) {
             : null,
     };
 }
+// Optimization: Bulk update `isDefault` flag in a single SQL query instead of fetching all entities and saving each sequentially (O(N) -> O(1) DB round-trips).
 async function clearDefaultDivision(excludedId) {
-    const rows = excludedId
-        ? await divisionRepo.findBy({})
-        : await divisionRepo.findBy({});
-    for (const row of rows) {
-        if (excludedId && row.id === excludedId) {
-            continue;
-        }
-        if (row.isDefault) {
-            row.isDefault = false;
-            await divisionRepo.save(row);
-        }
+    const qb = divisionRepo
+        .createQueryBuilder()
+        .update(Division)
+        .set({ isDefault: false })
+        .where("isDefault = :isDefault", { isDefault: true });
+    if (excludedId !== undefined) {
+        qb.andWhere("id != :excludedId", { excludedId });
     }
+    await qb.execute();
 }
+// Optimization: Bulk update default VAT rate in a single SQL query (O(N) -> O(1) DB round-trips).
 async function clearDefaultVatRate(excludedId) {
-    const rows = await vatRateRepo.findBy({});
-    for (const row of rows) {
-        if (excludedId && row.id === excludedId) {
-            continue;
-        }
-        if (row.isDefault) {
-            row.isDefault = false;
-            await vatRateRepo.save(row);
-        }
+    const qb = vatRateRepo
+        .createQueryBuilder()
+        .update(VatRate)
+        .set({ isDefault: false })
+        .where("isDefault = :isDefault", { isDefault: true });
+    if (excludedId !== undefined) {
+        qb.andWhere("id != :excludedId", { excludedId });
     }
+    await qb.execute();
 }
+// Optimization: Bulk update default number plan by docType in a single SQL query (O(N) -> O(1) DB round-trips).
 async function clearDefaultNumberPlan(docType, excludedId) {
-    const rows = await numberPlanRepo.findBy({ docType });
-    for (const row of rows) {
-        if (excludedId && row.id === excludedId) {
-            continue;
-        }
-        if (row.isDefault) {
-            row.isDefault = false;
-            await numberPlanRepo.save(row);
-        }
+    const qb = numberPlanRepo
+        .createQueryBuilder()
+        .update(NumberPlan)
+        .set({ isDefault: false })
+        .where("docType = :docType", { docType })
+        .andWhere("isDefault = :isDefault", { isDefault: true });
+    if (excludedId !== undefined) {
+        qb.andWhere("id != :excludedId", { excludedId });
     }
+    await qb.execute();
 }
 router.get("/divisions", async (_req, res) => {
     try {
