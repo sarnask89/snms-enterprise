@@ -8,7 +8,7 @@
     <tr>
       <td>{{ d.title }}</td>
       <td>{{ d.doc_type }}</td>
-      <td>{% if d.customer_id %}{{ customers.get(d.customer_id).customer_code if customers.get(d.customer_id) else d.customer_id }}{% else %}—{% endif %}</td>
+      <td>{% if d.customer %}{{ d.customer.customer_code }}{% elif d.customer_id %}{{ d.customer_id }}{% else %}—{% endif %}</td>
       <td>{{ d.created_at }}</td>
     </tr>
     {% else %}
