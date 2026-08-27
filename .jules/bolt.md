@@ -1,0 +1,3 @@
+## 2026-08-27 - Eager load relations over full-table dictionary fetches in document endpoints
+**Learning:** In Jinja list views where foreign key relations (like Customer) are rendered, fetching the entire foreign table into an in-memory dictionary (`customers = {c.id: c for c in db.scalars(select(models.Customer)).all()}`) scales poorly as O(N) memory and time as customer records grow. Using SQLAlchemy `joinedload(models.Document.customer)` performs a single SQL JOIN and loads only the required related records.
+**Action:** When displaying related entity properties in list views, always use SQLAlchemy `joinedload` or `selectinload` instead of fetching full referenced tables into dictionaries.
