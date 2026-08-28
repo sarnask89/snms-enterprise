@@ -41,9 +41,12 @@ router.get("/", async (req, res) => {
                     .orWhere("customer.customerCode LIKE :term", { term: `%${term}%` });
             }));
         }
+        // Bolt performance optimization: use leftJoin with column projection (.addSelect) instead of leftJoinAndSelect
+        // to load only the required customer properties (id, firstName, lastName) rather than the entire customer entity.
         const deviceQuery = customerDeviceRepo
             .createQueryBuilder("device")
-            .leftJoinAndSelect("device.customer", "customer")
+            .leftJoin("device.customer", "customer")
+            .addSelect(["customer.id", "customer.firstName", "customer.lastName"])
             .orderBy("device.hostname", "ASC")
             .take(10);
         for (const term of terms) {
