@@ -4,9 +4,11 @@
       <!-- The Floating Button -->
       <UButton
         v-if="!isOpen"
-        icon="i-heroicons-chat-bubble-left-ellipsis-solid"
+        icon="i-lucide-message-square"
         size="xl"
         color="primary"
+        aria-label="Open AI Assistant"
+        :aria-expanded="isOpen"
         class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
         @click="isOpen = true"
       />
@@ -24,23 +26,25 @@
           class="bg-primary-500 text-white p-3 flex justify-between items-center cursor-move select-none"
         >
           <div class="flex items-center gap-2 font-bold">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             CRM Assistant
           </div>
           <div class="flex items-center gap-1">
-             <UButton
-              :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
-              :color="systemContext ? 'green' : 'white'"
-              variant="ghost"
-              size="xs"
-              label="API Doc"
-              @click="promptForContext"
-            />
             <UButton
-              icon="i-heroicons-x-mark"
+              :icon="systemContext ? 'i-lucide-file-check' : 'i-lucide-file-plus'"
               color="white"
               variant="ghost"
               size="xs"
+              label="API Doc"
+              aria-label="Configure API documentation context"
+              @click="promptForContext"
+            />
+            <UButton
+              icon="i-lucide-x"
+              color="white"
+              variant="ghost"
+              size="xs"
+              aria-label="Close AI Assistant"
               @click="isOpen = false"
             />
           </div>
@@ -63,25 +67,26 @@
 
         <!-- Input Area -->
         <div class="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <form @submit.prevent="sendMessage" class="flex gap-2">
+          <form class="flex gap-2" @submit.prevent="sendMessage">
             <UInput
               v-model="input"
               placeholder="Type command or ask AI..."
+              aria-label="Type command or ask AI"
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
             />
             <UButton 
               type="submit" 
-              icon="i-heroicons-paper-airplane" 
+              icon="i-lucide-send"
               color="primary" 
+              aria-label="Send message to AI"
               :loading="isLoading"
             />
           </form>
         </div>
       </div>
-
-         </div>
+    </div>
   </ClientOnly>
 </template>
 

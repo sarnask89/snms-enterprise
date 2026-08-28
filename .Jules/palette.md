@@ -1,0 +1,3 @@
+## 2025-05-18 - Accessible English ARIA Labels & Lucide Icons for Floating Assistant
+**Learning:** Floating overlay components (like `AiAssistant.vue`) that utilize interactive toggle buttons, context modals, and input forms require accessible ARIA labels in English to match their interface language, along with `:aria-expanded` attributes on toggle elements, satisfying WCAG 2.5.3 (Label in Name).
+**Action:** Always provide matching visual and screen reader ARIA labels (`aria-label`, `:aria-expanded`) when modernizing legacy Heroicons to Lucide icon components on floating user assistance elements.
