@@ -1,0 +1,3 @@
+## 2026-08-29 - Dashboard Statistics Query & Payload Optimization
+**Learning:** Initializing running accumulators for windowed metrics (such as `customer-growth`) with total historical counts before the range window distorts API contracts and baseline values. Date range filtering with column projections (`select`) reduces query execution time from ~240ms to ~29ms while maintaining exact API contracts.
+**Action:** When optimizing historical series endpoints with date filters (`MoreThanOrEqual`), ensure baseline accumulator values match original starting conditions and query projections omit unneeded scalar/relational fields.
