@@ -1,0 +1,3 @@
+## 2026-08-30 - Optimize Financial Summary Endpoint with Column Projections & Date Range Filtering
+**Learning:** `GET /financial-summary` in TypeORM endpoints can become a major latency and memory bottleneck if full entity tables (`find()`) are loaded without column selection or date bounds. Using `select` projections and `MoreThanOrEqual` date range filtering limits database retrieval strictly to relevant columns and active 12-month summary windows.
+**Action:** When creating or optimizing summary/dashboard endpoints over financial ledgers or event logs, always specify explicit `select` arrays and date filters instead of unbounded full-entity fetches.
