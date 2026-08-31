@@ -3,7 +3,7 @@ import { ILike } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
-import { resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
+import { batchResolveTerytAddresses, resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
 export const router = Router();
 const deviceRepo = AppDataSource.getRepository(CustomerDevice);
 function parseOptionalString(value) {
@@ -40,8 +40,27 @@ async function buildInstallationAddress(device) {
         streetId: device.installationStreetId,
     });
 }
-async function serializeDevice(device) {
-    const installationAddress = await buildInstallationAddress(device);
+function getInstallationInputKey(device) {
+    return `${device.installationStateId ?? ""}:${device.installationDistrictId ?? ""}:${device.installationCommuneId ?? ""}:${device.installationCityId ?? ""}:${device.installationStreetId ?? ""}`;
+}
+async function serializeDevice(device, resolvedAddressMap) {
+    const hasTerytIds = [
+        device.installationStateId,
+        device.installationDistrictId,
+        device.installationCommuneId,
+        device.installationCityId,
+        device.installationStreetId,
+    ].some((value) => value !== null && value !== undefined);
+    let installationAddress = null;
+    if (hasTerytIds) {
+        if (resolvedAddressMap) {
+            const key = getInstallationInputKey(device);
+            installationAddress = resolvedAddressMap.get(key) ?? null;
+        }
+        else {
+            installationAddress = await buildInstallationAddress(device);
+        }
+    }
     return {
         id: device.id,
         customerId: device.customerId,
@@ -266,8 +285,17 @@ router.get("/", async (req, res) => {
             relations: ["customer"],
             order: { hostname: "ASC" },
         });
+        // Batch resolve TERYT addresses across all returned device records to eliminate N+1 queries
+        const addressInputs = items.map((device) => ({
+            stateId: device.installationStateId,
+            districtId: device.installationDistrictId,
+            communeId: device.installationCommuneId,
+            cityId: device.installationCityId,
+            streetId: device.installationStreetId,
+        }));
+        const resolvedAddressMap = await batchResolveTerytAddresses(addressInputs);
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        res.json(await Promise.all(items.map((item) => serializeDevice(item, resolvedAddressMap))));
     }
     catch (error) {
         console.error("Error fetching customer devices:", error);
