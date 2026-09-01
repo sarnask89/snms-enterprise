@@ -76,12 +76,25 @@ function serializeDevice(device) {
 router.get("/", async (req, res) => {
     try {
         const search = String(req.query.q ?? "").trim();
+        // Optimization: Use targeted column projections instead of fetching entire entity models for joined relations.
+        // This reduces SQL payload size, database IO, and memory allocation overhead.
         const devices = await deviceRepo
             .createQueryBuilder("device")
-            .leftJoinAndSelect("device.ipNetwork", "ipNetwork")
-            .leftJoinAndSelect("device.netNode", "netNode")
-            .leftJoinAndSelect("device.customer", "customer")
-            .leftJoinAndSelect("device.accessProfile", "accessProfile")
+            .leftJoin("device.ipNetwork", "ipNetwork")
+            .addSelect(["ipNetwork.id", "ipNetwork.name", "ipNetwork.cidr"])
+            .leftJoin("device.netNode", "netNode")
+            .addSelect(["netNode.id", "netNode.name", "netNode.locationDetail"])
+            .leftJoin("device.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .leftJoin("device.accessProfile", "accessProfile")
+            .addSelect([
+            "accessProfile.id",
+            "accessProfile.driver",
+            "accessProfile.host",
+            "accessProfile.port",
+            "accessProfile.username",
+            "accessProfile.enablePasswordCiphertext",
+        ])
             .where(search
             ? new Brackets((qb) => {
                 qb.where("device.name LIKE :search", { search: `%${search}%` })
