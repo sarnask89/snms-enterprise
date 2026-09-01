@@ -1,0 +1,3 @@
+## 2026-09-01 - TypeORM Column Projections vs Eager `leftJoinAndSelect` for Related Entities
+**Learning:** Using `leftJoinAndSelect` on queries returning list collections hydryates full entity instances and fetches all columns across joined tables. Replacing this with `.leftJoin()` and targeted `.addSelect()` projections significantly reduces SQL result set payload size, database IO, and Node.js object memory allocation overhead while keeping serialised output schema intact.
+**Action:** When fetching list endpoints in TypeORM routers, default to targeted `.leftJoin()` + `.addSelect()` projections for joined relations instead of full entity `leftJoinAndSelect`.
