@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import { LocationCity, LocationCommune, LocationDistrict, LocationState, LocationStreet, } from "./models/location.js";
 import { getDefaultArea } from "./teryt_defaults.js";
@@ -77,6 +78,138 @@ async function loadStreet(id) {
             },
         },
     }) : null;
+}
+/**
+ * Bolt optimization: Batch-resolves TERYT address entities across multiple inputs in bulk,
+ * eliminating N+1 database queries when serializing lists of entities (e.g. customers or devices).
+ */
+export async function batchResolveTerytAddresses(inputs) {
+    if (inputs.length === 0) {
+        return [];
+    }
+    const streetIds = Array.from(new Set(inputs.map((i) => i.streetId).filter((id) => id !== undefined && id !== null)));
+    const cityIds = Array.from(new Set(inputs.map((i) => i.cityId).filter((id) => id !== undefined && id !== null)));
+    const communeIds = Array.from(new Set(inputs.map((i) => i.communeId).filter((id) => id !== undefined && id !== null)));
+    const districtIds = Array.from(new Set(inputs.map((i) => i.districtId).filter((id) => id !== undefined && id !== null)));
+    const stateIds = Array.from(new Set(inputs.map((i) => i.stateId).filter((id) => id !== undefined && id !== null)));
+    const streets = streetIds.length > 0
+        ? await streetRepo.find({
+            where: { id: In(streetIds) },
+            relations: {
+                city: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
+                },
+                commune: { district: { state: true } },
+            },
+        })
+        : [];
+    const streetMap = new Map(streets.map((s) => [s.id, s]));
+    const fetchedCityIds = new Set(cityIds);
+    for (const street of streets) {
+        if (street.cityId) {
+            fetchedCityIds.delete(street.cityId);
+        }
+    }
+    const remainingCityIds = Array.from(fetchedCityIds);
+    const cities = remainingCityIds.length > 0
+        ? await cityRepo.find({
+            where: { id: In(remainingCityIds) },
+            relations: {
+                district: { state: true },
+                commune: { district: { state: true } },
+            },
+        })
+        : [];
+    const cityMap = new Map(cities.map((c) => [c.id, c]));
+    const fetchedCommuneIds = new Set(communeIds);
+    for (const street of streets) {
+        if (street.communeId)
+            fetchedCommuneIds.delete(street.communeId);
+        if (street.city?.communeId)
+            fetchedCommuneIds.delete(street.city.communeId);
+    }
+    for (const city of cities) {
+        if (city.communeId)
+            fetchedCommuneIds.delete(city.communeId);
+    }
+    const remainingCommuneIds = Array.from(fetchedCommuneIds);
+    const communes = remainingCommuneIds.length > 0
+        ? await communeRepo.find({
+            where: { id: In(remainingCommuneIds) },
+            relations: { district: { state: true } },
+        })
+        : [];
+    const communeMap = new Map(communes.map((c) => [c.id, c]));
+    const fetchedDistrictIds = new Set(districtIds);
+    for (const street of streets) {
+        if (street.commune?.districtId)
+            fetchedDistrictIds.delete(street.commune.districtId);
+        if (street.city?.districtId)
+            fetchedDistrictIds.delete(street.city.districtId);
+        if (street.city?.commune?.districtId)
+            fetchedDistrictIds.delete(street.city.commune.districtId);
+    }
+    for (const city of cities) {
+        if (city.districtId)
+            fetchedDistrictIds.delete(city.districtId);
+        if (city.commune?.districtId)
+            fetchedDistrictIds.delete(city.commune.districtId);
+    }
+    for (const commune of communes) {
+        if (commune.districtId)
+            fetchedDistrictIds.delete(commune.districtId);
+    }
+    const remainingDistrictIds = Array.from(fetchedDistrictIds);
+    const districts = remainingDistrictIds.length > 0
+        ? await districtRepo.find({
+            where: { id: In(remainingDistrictIds) },
+            relations: { state: true },
+        })
+        : [];
+    const districtMap = new Map(districts.map((d) => [d.id, d]));
+    const fetchedStateIds = new Set(stateIds);
+    for (const street of streets) {
+        if (street.commune?.district?.stateId)
+            fetchedStateIds.delete(street.commune.district.stateId);
+        if (street.city?.district?.stateId)
+            fetchedStateIds.delete(street.city.district.stateId);
+        if (street.city?.commune?.district?.stateId)
+            fetchedStateIds.delete(street.city.commune.district.stateId);
+    }
+    for (const city of cities) {
+        if (city.district?.stateId)
+            fetchedStateIds.delete(city.district.stateId);
+        if (city.commune?.district?.stateId)
+            fetchedStateIds.delete(city.commune.district.stateId);
+    }
+    for (const commune of communes) {
+        if (commune.district?.stateId)
+            fetchedStateIds.delete(commune.district.stateId);
+    }
+    for (const district of districts) {
+        if (district.stateId)
+            fetchedStateIds.delete(district.stateId);
+    }
+    const remainingStateIds = Array.from(fetchedStateIds);
+    const states = remainingStateIds.length > 0
+        ? await stateRepo.find({ where: { id: In(remainingStateIds) } })
+        : [];
+    const stateMap = new Map(states.map((s) => [s.id, s]));
+    return inputs.map((input) => {
+        const street = input.streetId ? streetMap.get(input.streetId) ?? null : null;
+        const city = street?.city ?? (input.cityId ? cityMap.get(input.cityId) ?? null : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? communeMap.get(input.communeId) ?? null : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? districtMap.get(input.districtId) ?? null : null);
+        const state = district?.state ?? (input.stateId ? stateMap.get(input.stateId) ?? null : null);
+        return {
+            state: state ?? null,
+            district: district ?? null,
+            commune: commune ?? null,
+            city: city ?? null,
+            street: street ?? null,
+        };
+    });
 }
 export async function resolveTerytAddress(input) {
     const street = await loadStreet(input.streetId);
