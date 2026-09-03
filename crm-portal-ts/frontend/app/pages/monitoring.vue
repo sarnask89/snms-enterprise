@@ -5,7 +5,15 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Monitoring runtime</h1>
         <p class="text-sm text-gray-500">Lokalny monitoring urządzeń i ruchu na aktywnym backendzie TS.</p>
       </div>
-      <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
+      <UButton
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-refresh-cw"
+        label="Odśwież"
+        aria-label="Odśwież dane monitoringu"
+        :loading="isRefreshing"
+        @click="refreshAll"
+      />
     </div>
 
     <div class="grid md:grid-cols-2 xl:grid-cols-5 gap-4">
@@ -48,13 +56,20 @@
             label-key="label"
             placeholder="Wybierz urządzenie"
           />
-          <UButton color="primary" :loading="isLoadingDeviceStats" label="Pobierz statystyki urządzenia" @click="loadDeviceStats" />
+          <UButton
+            color="primary"
+            :loading="isLoadingDeviceStats"
+            :disabled="!selectedNetDeviceId"
+            label="Pobierz statystyki urządzenia"
+            aria-label="Pobierz statystyki urządzenia sieciowego"
+            @click="loadDeviceStats"
+          />
 
           <div v-if="deviceStats" class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 text-sm space-y-2">
-            <div>Samples: {{ deviceStats.labels.length }}</div>
-            <div>CPU last: {{ deviceStats.datasets[0]?.data?.[deviceStats.datasets[0].data.length - 1] ?? 0 }}</div>
-            <div>Traffic in last: {{ deviceStats.datasets[1]?.data?.[deviceStats.datasets[1].data.length - 1] ?? 0 }} Mbps</div>
-            <div>Traffic out last: {{ deviceStats.datasets[2]?.data?.[deviceStats.datasets[2].data.length - 1] ?? 0 }} Mbps</div>
+            <div>Samples: {{ deviceStats.labels?.length ?? 0 }}</div>
+            <div>CPU last: {{ deviceStats.datasets?.[0]?.data?.[deviceStats.datasets[0].data.length - 1] ?? 0 }}</div>
+            <div>Traffic in last: {{ deviceStats.datasets?.[1]?.data?.[deviceStats.datasets[1].data.length - 1] ?? 0 }} Mbps</div>
+            <div>Traffic out last: {{ deviceStats.datasets?.[2]?.data?.[deviceStats.datasets[2].data.length - 1] ?? 0 }} Mbps</div>
           </div>
         </div>
       </UCard>
@@ -68,13 +83,26 @@
         </template>
 
         <div class="space-y-4">
-          <UInput v-model="customerDeviceId" type="number" placeholder="ID urządzenia klienta" />
-          <UButton color="primary" variant="soft" :loading="isLoadingCustomerStats" label="Pobierz statystyki klienta" @click="loadCustomerStats" />
+          <UInput
+            v-model="customerDeviceId"
+            type="number"
+            placeholder="ID urządzenia klienta"
+            aria-label="ID urządzenia klienta"
+          />
+          <UButton
+            color="primary"
+            variant="soft"
+            :loading="isLoadingCustomerStats"
+            :disabled="!customerDeviceId"
+            label="Pobierz statystyki klienta"
+            aria-label="Pobierz statystyki urządzenia klienta"
+            @click="loadCustomerStats"
+          />
 
           <div v-if="customerStats" class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 text-sm space-y-2">
-            <div>Samples: {{ customerStats.labels.length }}</div>
-            <div>Inbound last: {{ customerStats.in_mbps[customerStats.in_mbps.length - 1] ?? 0 }} Mbps</div>
-            <div>Outbound last: {{ customerStats.out_mbps[customerStats.out_mbps.length - 1] ?? 0 }} Mbps</div>
+            <div>Samples: {{ customerStats.labels?.length ?? 0 }}</div>
+            <div>Inbound last: {{ customerStats.in_mbps?.[customerStats.in_mbps.length - 1] ?? 0 }} Mbps</div>
+            <div>Outbound last: {{ customerStats.out_mbps?.[customerStats.out_mbps.length - 1] ?? 0 }} Mbps</div>
           </div>
         </div>
       </UCard>
@@ -110,12 +138,15 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const selectedNetDeviceId = ref(null)
 const customerDeviceId = ref('')
 const deviceStats = ref(null)
 const customerStats = ref(null)
 const isLoadingDeviceStats = ref(false)
 const isLoadingCustomerStats = ref(false)
+const isRefreshing = ref(false)
 
 const eventColumns = [
   { accessorKey: 'action', header: 'Akcja' },
@@ -129,15 +160,31 @@ const { data: globalStats, refresh: refreshGlobalStats } = await useFetch('/api/
 const deviceOptions = computed(() => {
   return (summary.value?.devices || []).map((device) => ({
     value: device.id,
-    header: `${device.name} (${device.status})`
+    label: `${device.name} (${device.status})`
   }))
 })
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshSummary(),
-    refreshGlobalStats()
-  ])
+  isRefreshing.value = true
+  try {
+    await Promise.all([
+      refreshSummary(),
+      refreshGlobalStats()
+    ])
+    toast.add({
+      title: 'Odświeżono',
+      description: 'Dane monitoringu zostały zaktualizowane.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd',
+      description: 'Nie udało się odświeżyć danych monitoringu.',
+      color: 'error'
+    })
+  } finally {
+    isRefreshing.value = false
+  }
 }
 
 const loadDeviceStats = async () => {
@@ -148,6 +195,17 @@ const loadDeviceStats = async () => {
   isLoadingDeviceStats.value = true
   try {
     deviceStats.value = await $fetch(`/api/v1/monitoring/devices/${selectedNetDeviceId.value}/stats`)
+    toast.add({
+      title: 'Pobrano statystyki',
+      description: 'Pomyślnie załadowano statystyki urządzenia sieciowego.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd',
+      description: 'Nie udało się pobrać statystyk urządzenia.',
+      color: 'error'
+    })
   } finally {
     isLoadingDeviceStats.value = false
   }
@@ -161,6 +219,17 @@ const loadCustomerStats = async () => {
   isLoadingCustomerStats.value = true
   try {
     customerStats.value = await $fetch(`/api/v1/monitoring/customer-devices/${customerDeviceId.value}/stats`)
+    toast.add({
+      title: 'Pobrano statystyki',
+      description: 'Pomyślnie załadowano statystyki urządzenia klienta.',
+      color: 'success'
+    })
+  } catch {
+    toast.add({
+      title: 'Błąd',
+      description: 'Nie udało się pobrać statystyk urządzenia klienta.',
+      color: 'error'
+    })
   } finally {
     isLoadingCustomerStats.value = false
   }
