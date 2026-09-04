@@ -247,6 +247,7 @@ const userMenuItems = computed(() => [[{
             :label="collapsed ? undefined : (currentUser?.username ?? 'Gość')"
             :icon="currentUser ? 'i-lucide-user-check' : 'i-lucide-user'"
             :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
+            :aria-label="currentUser?.username ? 'Profil użytkownika ' + currentUser.username : 'Profil użytkownika'"
             color="neutral"
             variant="ghost"
             block
