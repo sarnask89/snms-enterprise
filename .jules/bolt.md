@@ -1,0 +1,3 @@
+## 2026-09-04 - TypeORM Stats Aggregation & Column Projection Optimization
+**Learning:** Calling `find()` without select projections on high-traffic statistics endpoints loads all table columns and full entity objects into Node.js memory. Replacing full-table entity loads with `count()`, `countBy()`, column selection (`select: [...]`), and date range filtering (`MoreThanOrEqual`) drastically reduces memory allocation, payload size, and query execution time.
+**Action:** Always prefer `count()`, `countBy()`, or `select` options in TypeORM dashboard and stats queries to avoid unnecessary full-entity instantiations.
