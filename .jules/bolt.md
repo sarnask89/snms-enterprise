@@ -1,0 +1,3 @@
+## 2026-09-05 - Batch TERYT Address Resolution for Entity Listing Endpoints
+**Learning:** Resolving TERYT address relations individually per item during customer (`GET /customers`) and device (`GET /customer-devices`) list serialization caused up to $O(N)$ database queries per page render. Batching unique street, city, commune, district, and state IDs across the array using TypeORM's `In()` operator consolidates all location resolution into 5 bulk queries.
+**Action:** Always extract foreign location keys across collections and pass batch-resolved lookup maps into item serializers when returning paginated lists.
