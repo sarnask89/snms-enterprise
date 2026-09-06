@@ -252,6 +252,7 @@ const userMenuItems = computed(() => [[{
             block
             :square="collapsed"
             class="data-[state=open]:bg-elevated"
+            :aria-label="currentUser?.username ? 'Profil użytkownika ' + currentUser.username : 'Profil użytkownika'"
           />
         </UDropdownMenu>
       </template>
