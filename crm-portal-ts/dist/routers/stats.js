@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../database.js";
+import { NetDeviceStatus } from "../models/common.js";
 import { Customer } from "../models/customer.js";
 import { Invoice, LedgerEntry, Subscription } from "../models/finance.js";
 import { NetDevice } from "../models/network.js";
@@ -36,9 +38,11 @@ function buildRecentMonths(count) {
 }
 router.get("/network-health", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
-        const totalDevices = devices.length;
-        const onlineNow = devices.filter((device) => device.status === "active").length;
+        // Optimization: replace full-table entity loading with targeted DB count queries
+        const [totalDevices, onlineNow] = await Promise.all([
+            netDeviceRepo.count(),
+            netDeviceRepo.countBy({ status: NetDeviceStatus.active }),
+        ]);
         const history = Array.from({ length: 24 }, (_, index) => {
             const offset = 23 - index;
             const adjustment = offset % 4 === 0 ? -1 : offset % 3 === 0 ? 1 : 0;
@@ -99,11 +103,20 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 });
 router.get("/financial-summary", async (_req, res) => {
     try {
-        const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
-        ]);
         const months = buildRecentMonths(12);
+        const oldestMonthKey = months[0].key; // "YYYY-MM"
+        const startDateStr = `${oldestMonthKey}-01`;
+        // Optimization: filter by date range and select minimal column projections
+        const [invoices, ledgerEntries] = await Promise.all([
+            invoiceRepo.find({
+                where: { issueDate: MoreThanOrEqual(startDateStr) },
+                select: ["amount", "issueDate"],
+            }),
+            ledgerRepo.find({
+                where: { postedAt: MoreThanOrEqual(startDateStr) },
+                select: ["amount", "kind", "postedAt"],
+            }),
+        ]);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
         for (const invoice of invoices) {
             const key = monthKey(new Date(invoice.issueDate));
@@ -145,7 +158,8 @@ router.get("/financial-summary", async (_req, res) => {
 });
 router.get("/inventory-summary", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
+        // Optimization: select minimal column projection (deviceType) instead of full entity graph
+        const devices = await netDeviceRepo.find({ select: ["deviceType"] });
         const counts = new Map();
         for (const device of devices) {
             const label = device.deviceType?.trim() || "other";
@@ -164,7 +178,8 @@ router.get("/inventory-summary", async (_req, res) => {
 });
 router.get("/customer-growth", async (_req, res) => {
     try {
-        const customers = await customerRepo.find();
+        // Optimization: select minimal column projection (creationDate) instead of full entity graph
+        const customers = await customerRepo.find({ select: ["creationDate"] });
         const months = buildRecentMonths(6);
         const monthCounts = new Map(months.map((month) => [month.key, 0]));
         for (const customer of customers) {
