@@ -1,0 +1,3 @@
+## 2026-09-07 - TypeORM Stats Aggregation & Column Projections
+**Learning:** Calling `find()` on entire entity tables for dashboard stats endpoints (like `/financial-summary`, `/network-health`, `/inventory-summary`, `/customer-growth`) loads full entity graphs into Node.js memory, causing noticeable response latency (e.g. ~260ms down to ~29ms). Replacing `find()` with `count()`, `countBy()`, column selection (`select: [...]`), and date range filtering (`MoreThanOrEqual`) drastically reduces DB I/O and payload parsing time.
+**Action:** When querying stats or aggregate reporting endpoints in TypeORM, always select minimal scalar column projections or use direct DB aggregate count methods instead of loading full model instances.
