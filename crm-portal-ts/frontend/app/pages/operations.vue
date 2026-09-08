@@ -6,8 +6,8 @@
         <p class="text-sm text-gray-500">Standardowy widok roboczy dla discovery, importu i zdalnych testów Mikrotik API oraz Dasan SSH.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
-        <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT GML" @click="downloadPitExport" />
+        <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" label="Odśwież" aria-label="Odśwież operacje sieciowe" @click="refreshAll" />
+        <UButton color="primary" icon="i-lucide-download" label="Pobierz PIT GML" aria-label="Pobierz raport PIT w formacie GML" @click="downloadPitExport" />
       </div>
     </div>
 
@@ -81,7 +81,7 @@
           </div>
 
           <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isSavingProfile" label="Zapisz profil" />
+            <UButton type="submit" color="primary" :loading="isSavingProfile" label="Zapisz profil" aria-label="Zapisz profil dostępu" />
           </div>
         </form>
       </UCard>
@@ -96,12 +96,12 @@
 
         <UTable :data="accessProfiles || []" :columns="profileColumns">
           <template #hasPassword-data="{ row }">
-            <UBadge :color="row.hasPassword ? 'green' : 'gray'" variant="soft">
+            <UBadge :color="row.hasPassword ? 'success' : 'neutral'" variant="soft">
               {{ row.hasPassword ? 'has secret' : 'missing' }}
             </UBadge>
           </template>
           <template #hasEnablePassword-data="{ row }">
-            <UBadge :color="row.hasEnablePassword ? 'green' : 'gray'" variant="soft">
+            <UBadge :color="row.hasEnablePassword ? 'success' : 'neutral'" variant="soft">
               {{ row.hasEnablePassword ? 'yes' : 'no' }}
             </UBadge>
           </template>
@@ -109,11 +109,12 @@
             <div class="flex justify-end">
               <UButton
                 size="xs"
-                color="gray"
+                color="neutral"
                 variant="soft"
-                icon="i-heroicons-bolt"
+                icon="i-lucide-zap"
                 :loading="activeProfileTestId === row.id"
                 label="Test połączenia"
+                :aria-label="`Test połączenia dla profilu #${row.id}`"
                 @click="runProfileTest(row.id)"
               />
             </div>
@@ -125,7 +126,7 @@
             Test profilu #{{ profileTestResult.profile.id }}: {{ profileTestResult.result.driver }}
           </div>
           <div class="mt-2 flex flex-wrap items-center gap-3">
-            <UBadge :color="profileTestResult.result.ok ? 'green' : 'red'" variant="soft">
+            <UBadge :color="profileTestResult.result.ok ? 'success' : 'error'" variant="soft">
               {{ profileTestResult.result.ok ? 'Połączenie OK' : 'Błąd połączenia' }}
             </UBadge>
             <span
@@ -151,7 +152,7 @@
 
         <UTable :data="discoveryDevices || []" :columns="deviceColumns">
           <template #readyForDiscovery-data="{ row }">
-            <UBadge :color="row.readyForDiscovery ? 'green' : 'amber'" variant="soft">
+            <UBadge :color="row.readyForDiscovery ? 'success' : 'warning'" variant="soft">
               {{ row.readyForDiscovery ? 'ready' : 'needs profile' }}
             </UBadge>
           </template>
@@ -161,10 +162,11 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-bolt"
+                icon="i-lucide-zap"
                 :disabled="!row.readyForDiscovery"
                 :loading="activeScanDeviceId === row.id"
                 label="Skanuj"
+                :aria-label="`Uruchom skanowanie dla urządzenia ${row.name || row.id}`"
                 @click="runScan(row.id)"
               />
             </div>
@@ -188,7 +190,7 @@
 
         <UTable :data="discoverySessions || []" :columns="sessionColumns">
           <template #status-data="{ row }">
-            <UBadge :color="row.status === 'succeeded' ? 'green' : row.status === 'failed' ? 'red' : 'amber'" variant="soft">
+            <UBadge :color="row.status === 'succeeded' ? 'success' : row.status === 'failed' ? 'error' : 'warning'" variant="soft">
               {{ row.status }}
             </UBadge>
           </template>
@@ -196,20 +198,22 @@
             <div class="flex justify-end gap-2">
               <UButton
                 size="xs"
-                color="gray"
+                color="neutral"
                 variant="soft"
-                icon="i-heroicons-eye"
+                icon="i-lucide-eye"
                 :loading="activeSessionId === row.id && isLoadingSessionRecords"
                 label="Rekordy"
+                :aria-label="`Pokaż rekordy dla sesji #${row.id}`"
                 @click="loadSessionRecords(row.id)"
               />
               <UButton
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-arrow-down-tray"
+                icon="i-lucide-download"
                 :loading="autoImportingSessionId === row.id"
                 label="Auto-import"
+                :aria-label="`Uruchom auto-import dla sesji #${row.id}`"
                 @click="runAutoImport(row.id)"
               />
             </div>
@@ -252,7 +256,7 @@
 
         <UTable :data="sessionRecords" :columns="recordColumns">
           <template #recordStatus-data="{ row }">
-            <UBadge :color="row.recordStatus === 'active' || row.recordStatus === 'bound' ? 'green' : 'gray'" variant="soft">
+            <UBadge :color="row.recordStatus === 'active' || row.recordStatus === 'bound' ? 'success' : 'neutral'" variant="soft">
               {{ row.recordStatus || 'n/a' }}
             </UBadge>
           </template>
@@ -262,8 +266,9 @@
                 size="xs"
                 color="primary"
                 variant="soft"
-                icon="i-heroicons-arrow-down-circle"
+                icon="i-lucide-arrow-down-to-line"
                 label="Wybierz"
+                :aria-label="`Wybierz rekord ${row.hostname || row.id} do importu`"
                 @click="selectRecord(row)"
               />
             </div>
@@ -298,7 +303,7 @@
           </UFormField>
 
           <UFormField label="Komentarz">
-            <UTextarea v-model="recordImportForm.comment" :data="2" />
+            <UTextarea v-model="recordImportForm.comment" :rows="2" />
           </UFormField>
 
           <div class="flex justify-end">
@@ -308,6 +313,7 @@
               :disabled="!selectedRecord"
               :loading="isImportingRecord"
               label="Importuj rekord"
+              aria-label="Importuj wybrany rekord"
             />
           </div>
         </form>
@@ -322,7 +328,7 @@
               <h2 class="font-semibold text-lg">Zaimportowane urządzenia</h2>
               <p class="text-sm text-gray-500">Customer-devices po imporcie discovery</p>
             </div>
-            <UInput v-model="leaseSearch" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Szukaj IP, MAC, serial..." class="w-72" />
+            <UInput v-model="leaseSearch" icon="i-lucide-search" placeholder="Szukaj IP, MAC, serial..." aria-label="Szukaj zaimportowanych urządzeń" class="w-72" />
           </div>
         </template>
 
@@ -344,8 +350,8 @@
               <p class="text-sm text-gray-500">Readiness, sync lease i live test z urządzenia dostępowego</p>
             </div>
             <div class="flex flex-wrap gap-2">
-              <UButton color="gray" variant="soft" icon="i-heroicons-bolt" label="Readiness" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
-              <UButton color="primary" variant="soft" icon="i-heroicons-signal" label="Test zdalny" :loading="isRunningRemoteTest" @click="runRemoteTest" />
+              <UButton color="neutral" variant="soft" icon="i-lucide-zap" label="Readiness" aria-label="Sprawdź gotowość lokalną dla urządzenia" :loading="isCheckingDiagnostics" @click="runDiagnostics" />
+              <UButton color="primary" variant="soft" icon="i-lucide-activity" label="Test zdalny" aria-label="Uruchom test zdalny dla urządzenia" :loading="isRunningRemoteTest" @click="runRemoteTest" />
             </div>
           </div>
         </template>
@@ -355,7 +361,7 @@
         </UFormField>
 
         <div v-if="diagnosticsResult" class="mt-4 space-y-3">
-          <UBadge :color="diagnosticsResult.ready ? 'green' : 'red'" variant="soft">
+          <UBadge :color="diagnosticsResult.ready ? 'success' : 'error'" variant="soft">
             {{ diagnosticsResult.ready ? 'Gotowe lokalnie' : 'Brakuje danych lokalnych' }}
           </UBadge>
 
@@ -363,8 +369,9 @@
             <UButton
               color="primary"
               variant="soft"
-              icon="i-heroicons-arrow-path-rounded-square"
+              icon="i-lucide-refresh-cw"
               label="Sync lease"
+              aria-label="Zsynchronizuj lease dla urządzenia"
               :loading="isSyncingLease"
               @click="syncLease"
             />
@@ -373,7 +380,7 @@
           <div class="space-y-2">
             <div v-for="check in diagnosticsResult.checks" :key="check.key" class="flex items-center justify-between gap-4 text-sm">
               <span>{{ check.label }}</span>
-              <UBadge :color="check.ok ? 'green' : check.severity === 'blocking' ? 'red' : 'amber'" variant="soft">
+              <UBadge :color="check.ok ? 'success' : check.severity === 'blocking' ? 'error' : 'warning'" variant="soft">
                 {{ check.ok ? 'OK' : check.severity }}
               </UBadge>
             </div>
@@ -390,12 +397,12 @@
           <div class="font-medium text-gray-900 dark:text-white">
             Remote test: {{ remoteTestResult.remoteDiagnostics.driver }}
           </div>
-          <UBadge :color="remoteTestResult.remoteDiagnostics.ok ? 'green' : 'red'" variant="soft">
+          <UBadge :color="remoteTestResult.remoteDiagnostics.ok ? 'success' : 'error'" variant="soft">
             {{ remoteTestResult.remoteDiagnostics.ok ? 'PASS' : 'FAIL' }}
           </UBadge>
           <div v-for="check in remoteTestResult.remoteDiagnostics.checks" :key="check.key" class="flex items-center justify-between gap-4">
             <span>{{ check.label }}</span>
-            <UBadge :color="check.ok ? 'green' : check.severity === 'blocking' ? 'red' : 'amber'" variant="soft">
+            <UBadge :color="check.ok ? 'success' : check.severity === 'blocking' ? 'error' : 'warning'" variant="soft">
               {{ check.ok ? 'OK' : check.severity }}
             </UBadge>
           </div>
@@ -441,11 +448,11 @@
           </div>
 
           <UFormField label="Komentarz">
-            <UTextarea v-model="leaseForm.comment" :data="2" />
+            <UTextarea v-model="leaseForm.comment" :rows="2" />
           </UFormField>
 
           <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" />
+            <UButton type="submit" color="primary" :loading="isImportingLease" label="Importuj lease" aria-label="Ręczny import lease" />
           </div>
         </form>
       </UCard>
@@ -481,11 +488,11 @@
           </div>
 
           <UFormField label="Komentarz">
-            <UTextarea v-model="networkForm.comment" :data="2" />
+            <UTextarea v-model="networkForm.comment" :rows="2" />
           </UFormField>
 
           <div class="flex justify-end">
-            <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" />
+            <UButton type="submit" color="primary" :loading="isImportingNetwork" label="Importuj sieć" aria-label="Ręczny import sieci" />
           </div>
         </form>
       </UCard>
@@ -495,6 +502,7 @@
 
 <script setup>
 const route = useRoute()
+const toast = useToast()
 const leaseSearch = ref('')
 const diagnosticsDeviceId = ref('')
 const diagnosticsResult = ref(null)
@@ -708,13 +716,26 @@ const asNumberOrNull = (value) => {
 }
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshDiscoveryDevices(),
-    refreshAccessProfiles(),
-    refreshDiscoverySessions(),
-    refreshPitSync(),
-    refreshImportedLeases()
-  ])
+  try {
+    await Promise.all([
+      refreshDiscoveryDevices(),
+      refreshAccessProfiles(),
+      refreshDiscoverySessions(),
+      refreshPitSync(),
+      refreshImportedLeases()
+    ])
+    toast.add({
+      title: 'Dane zaktualizowane',
+      description: 'Pomyślnie odświeżono stan operacji sieciowych.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd odświeżania',
+      description: err.message || 'Nie udało się odświeżyć danych operacji.',
+      color: 'error'
+    })
+  }
 }
 
 const saveAccessProfile = async () => {
@@ -749,6 +770,17 @@ const saveAccessProfile = async () => {
       refreshDiscoveryDevices(),
       refreshAccessProfiles()
     ])
+    toast.add({
+      title: 'Profil dostępu zapisany',
+      description: 'Zapisano konfigurację profilu live-connect.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd zapisu profilu',
+      description: err.message || 'Wystąpił błąd podczas zapisywania profilu dostępu.',
+      color: 'error'
+    })
   } finally {
     isSavingProfile.value = false
   }
@@ -767,6 +799,17 @@ const runScan = async (deviceId) => {
       refreshDiscoverySessions(),
       refreshImportedLeases()
     ])
+    toast.add({
+      title: 'Skanowanie zakończone',
+      description: `Utworzono sesję discovery #${result.session.id} (${result.records.length} rekordów).`,
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd skanowania',
+      description: err.message || 'Wystąpił błąd podczas uruchamiania skanu live.',
+      color: 'error'
+    })
   } finally {
     activeScanDeviceId.value = null
   }
@@ -777,6 +820,18 @@ const runProfileTest = async (profileId) => {
   try {
     profileTestResult.value = await $fetch(`/api/v1/network-discovery/access-profiles/${profileId}/test`, {
       method: 'POST'
+    })
+    const ok = profileTestResult.value?.result?.ok
+    toast.add({
+      title: ok ? 'Połączenie udane' : 'Błąd połączenia',
+      description: ok ? 'Profil dostępu odpowiada prawidłowo.' : 'Nie udało się nawiązać połączenia z urządzeniem.',
+      color: ok ? 'success' : 'error'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd testu profilu',
+      description: err.message || 'Wystąpił problem podczas testowania profilu.',
+      color: 'error'
     })
   } finally {
     activeProfileTestId.value = null
@@ -789,6 +844,17 @@ const loadSessionRecords = async (sessionId) => {
   try {
     sessionRecords.value = await $fetch(`/api/v1/network-discovery/sessions/${sessionId}/records`)
     selectedRecord.value = null
+    toast.add({
+      title: 'Załadowano rekordy',
+      description: `Załadowano rekordy stagingowe dla sesji #${sessionId}.`,
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd ładowania rekordów',
+      description: err.message || 'Nie udało się pobrać rekordów sesji.',
+      color: 'error'
+    })
   } finally {
     isLoadingSessionRecords.value = false
   }
@@ -813,6 +879,17 @@ const runAutoImport = async (sessionId) => {
       refreshImportedLeases(),
       refreshDiscoverySessions()
     ])
+    toast.add({
+      title: 'Auto-import zakończony',
+      description: `Zaimportowano ${result.summary.importedCustomerDevices} urządzeń oraz ${result.summary.createdCustomers} klientów.`,
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd auto-importu',
+      description: err.message || 'Wystąpił błąd podczas automatycznego importu sesji.',
+      color: 'error'
+    })
   } finally {
     autoImportingSessionId.value = null
   }
@@ -821,6 +898,11 @@ const runAutoImport = async (sessionId) => {
 const selectRecord = (record) => {
   selectedRecord.value = record
   recordImportForm.name = record.hostname || ''
+  toast.add({
+    title: 'Wybrano rekord',
+    description: `Wybrano ${record.recordKind} ${record.hostname || `#${record.id}`}.`,
+    color: 'neutral'
+  })
 }
 
 const importSelectedRecord = async () => {
@@ -857,6 +939,17 @@ const importSelectedRecord = async () => {
       refreshImportedLeases(),
       refreshPitSync()
     ])
+    toast.add({
+      title: 'Rekord zaimportowany',
+      description: 'Pomyślnie zaimportowano wybrany rekord discovery.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd importu rekordu',
+      description: err.message || 'Wystąpił problem podczas importowania rekordu.',
+      color: 'error'
+    })
   } finally {
     isImportingRecord.value = false
   }
@@ -895,6 +988,17 @@ const importLease = async () => {
       refreshImportedLeases(),
       refreshPitSync()
     ])
+    toast.add({
+      title: 'Lease zaimportowany',
+      description: 'Pomyślnie dodano urządzenie klienta i zarejestrowano lease.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd importu lease',
+      description: err.message || 'Nie udało się zaimportować lease.',
+      color: 'error'
+    })
   } finally {
     isImportingLease.value = false
   }
@@ -924,6 +1028,17 @@ const importNetwork = async () => {
       comment: ''
     })
     await refreshPitSync()
+    toast.add({
+      title: 'Sieć zaimportowana',
+      description: 'Pomyślnie utworzono sieć IP.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd importu sieci',
+      description: err.message || 'Nie udało się zaimportować sieci IP.',
+      color: 'error'
+    })
   } finally {
     isImportingNetwork.value = false
   }
@@ -941,6 +1056,17 @@ const runDiagnostics = async () => {
     diagnosticsResult.value = await $fetch(`/api/v1/diagnostics/check/${diagnosticsDeviceId.value}`, {
       method: 'POST'
     })
+    toast.add({
+      title: 'Diagnostyka wykonana',
+      description: diagnosticsResult.value?.ready ? 'Urządzenie jest gotowe lokalnie.' : 'Wykryto zastrzeżenia lokalne.',
+      color: diagnosticsResult.value?.ready ? 'success' : 'warning'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd diagnostyki',
+      description: err.message || 'Wystąpił problem podczas diagnostyki.',
+      color: 'error'
+    })
   } finally {
     isCheckingDiagnostics.value = false
   }
@@ -955,6 +1081,18 @@ const runRemoteTest = async () => {
   try {
     remoteTestResult.value = await $fetch(`/api/v1/diagnostics/remote-test/${diagnosticsDeviceId.value}`, {
       method: 'POST'
+    })
+    const ok = remoteTestResult.value?.remoteDiagnostics?.ok
+    toast.add({
+      title: ok ? 'Test zdalny PASS' : 'Test zdalny FAIL',
+      description: ok ? 'Test zdalny zakończony pomyślnie.' : 'Wykryto błędy w komunikacji zdalnej.',
+      color: ok ? 'success' : 'error'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd testu zdalnego',
+      description: err.message || 'Wystąpił błąd podczas testu zdalnego.',
+      color: 'error'
     })
   } finally {
     isRunningRemoteTest.value = false
@@ -972,19 +1110,43 @@ const syncLease = async () => {
       method: 'POST'
     })
     await refreshImportedLeases()
+    toast.add({
+      title: 'Synchronizacja lease',
+      description: leaseSyncResult.value?.synced ? 'Pomyślnie zsynchronizowano lease.' : 'Brak zmian do synchronizacji.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd synchronizacji',
+      description: err.message || 'Wystąpił błąd podczas synchronizacji lease.',
+      color: 'error'
+    })
   } finally {
     isSyncingLease.value = false
   }
 }
 
 const downloadPitExport = async () => {
-  const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'pit-net-nodes.gml'
-  link.click()
-  URL.revokeObjectURL(url)
+  try {
+    const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'pit-net-nodes.gml'
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.add({
+      title: 'Pobrano plik PIT GML',
+      description: 'Plik z węzłami sieciowymi został wygenerowany i pobrany.',
+      color: 'success'
+    })
+  } catch (err) {
+    toast.add({
+      title: 'Błąd pobierania',
+      description: err.message || 'Nie udało się pobrać raportu PIT GML.',
+      color: 'error'
+    })
+  }
 }
 
 const applyRoutePrefill = () => {
