@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import { LocationCity, LocationCommune, LocationDistrict, LocationState, LocationStreet, } from "./models/location.js";
 import { getDefaultArea } from "./teryt_defaults.js";
@@ -91,6 +92,123 @@ export async function resolveTerytAddress(input) {
         city: city ?? null,
         street: street ?? null,
     };
+}
+/**
+ * Batch resolves TERYT addresses for an array of inputs in a single set of queries,
+ * avoiding N+1 database lookups when serializing lists of entities.
+ */
+export async function batchResolveTerytAddresses(inputs) {
+    if (!inputs || inputs.length === 0) {
+        return [];
+    }
+    // 1. Batch load Streets
+    const streetIds = Array.from(new Set(inputs.map((i) => i.streetId).filter((id) => id !== undefined && id !== null)));
+    const streetMap = new Map();
+    if (streetIds.length > 0) {
+        const streets = await streetRepo.find({
+            where: { id: In(streetIds) },
+            relations: {
+                city: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
+                },
+                commune: {
+                    district: { state: true },
+                },
+            },
+        });
+        for (const street of streets) {
+            streetMap.set(street.id, street);
+        }
+    }
+    // 2. Batch load Cities for missing street cities or direct cityIds
+    const cityIds = Array.from(new Set(inputs.map((input) => {
+        const street = input.streetId ? streetMap.get(input.streetId) : null;
+        return street?.city ? null : input.cityId;
+    }).filter((id) => id !== undefined && id !== null)));
+    const cityMap = new Map();
+    if (cityIds.length > 0) {
+        const cities = await cityRepo.find({
+            where: { id: In(cityIds) },
+            relations: {
+                district: { state: true },
+                commune: { district: { state: true } },
+            },
+        });
+        for (const city of cities) {
+            cityMap.set(city.id, city);
+        }
+    }
+    // 3. Batch load Communes for missing street/city communes or direct communeIds
+    const communeIds = Array.from(new Set(inputs.map((input) => {
+        const street = input.streetId ? streetMap.get(input.streetId) : null;
+        const city = street?.city ?? (input.cityId ? cityMap.get(input.cityId) : null);
+        const commune = street?.commune ?? city?.commune;
+        return commune ? null : input.communeId;
+    }).filter((id) => id !== undefined && id !== null)));
+    const communeMap = new Map();
+    if (communeIds.length > 0) {
+        const communes = await communeRepo.find({
+            where: { id: In(communeIds) },
+            relations: {
+                district: { state: true },
+            },
+        });
+        for (const commune of communes) {
+            communeMap.set(commune.id, commune);
+        }
+    }
+    // 4. Batch load Districts for missing commune/city districts or direct districtIds
+    const districtIds = Array.from(new Set(inputs.map((input) => {
+        const street = input.streetId ? streetMap.get(input.streetId) : null;
+        const city = street?.city ?? (input.cityId ? cityMap.get(input.cityId) : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? communeMap.get(input.communeId) : null);
+        const district = commune?.district ?? city?.district;
+        return district ? null : input.districtId;
+    }).filter((id) => id !== undefined && id !== null)));
+    const districtMap = new Map();
+    if (districtIds.length > 0) {
+        const districts = await districtRepo.find({
+            where: { id: In(districtIds) },
+            relations: { state: true },
+        });
+        for (const district of districts) {
+            districtMap.set(district.id, district);
+        }
+    }
+    // 5. Batch load States for missing district states or direct stateIds
+    const stateIds = Array.from(new Set(inputs.map((input) => {
+        const street = input.streetId ? streetMap.get(input.streetId) : null;
+        const city = street?.city ?? (input.cityId ? cityMap.get(input.cityId) : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? communeMap.get(input.communeId) : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? districtMap.get(input.districtId) : null);
+        const state = district?.state;
+        return state ? null : input.stateId;
+    }).filter((id) => id !== undefined && id !== null)));
+    const stateMap = new Map();
+    if (stateIds.length > 0) {
+        const states = await stateRepo.find({
+            where: { id: In(stateIds) },
+        });
+        for (const state of states) {
+            stateMap.set(state.id, state);
+        }
+    }
+    // 6. Assemble resolved address for each input
+    return inputs.map((input) => {
+        const street = input.streetId ? streetMap.get(input.streetId) ?? null : null;
+        const city = street?.city ?? (input.cityId ? cityMap.get(input.cityId) ?? null : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? communeMap.get(input.communeId) ?? null : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? districtMap.get(input.districtId) ?? null : null);
+        const state = district?.state ?? (input.stateId ? stateMap.get(input.stateId) ?? null : null);
+        return {
+            state,
+            district,
+            commune,
+            city,
+            street,
+        };
+    });
 }
 export async function resolveParsedStreetWithinDefaultArea(streetName) {
     const normalizedStreet = normalizeAddressToken(streetName);
