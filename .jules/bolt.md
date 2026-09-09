@@ -1,0 +1,3 @@
+## 2026-09-09 - Batch TERYT Address Resolution in List Serialization
+**Learning:** List endpoints (`GET /customers` and `GET /customer-devices`) were executing up to 5 DB queries per item during serialization (`resolveTerytAddress`), causing an $O(N)$ N+1 query problem. Batching TERYT entity resolution using TypeORM `In()` bulk queries reduces query overhead from up to $5N$ queries down to $O(1)$ (maximum 5 queries per list request).
+**Action:** When serializing lists containing nested relational addresses or references, pre-fetch/batch-fetch all referenced entity IDs using `In()` before mapping records to serializers.

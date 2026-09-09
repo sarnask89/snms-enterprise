@@ -9,6 +9,7 @@ import {
 } from "../models/customer.js";
 import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
@@ -102,9 +103,15 @@ async function buildCorrespondenceAddress(customer: Customer) {
     });
 }
 
-async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
+async function serializeCustomer(
+    customer: CustomerWithRelations,
+    includeDetails = false,
+    preResolvedCorrespondenceAddress?: ResolvedTerytAddress | null,
+) {
     const groups = customer.groups ?? [];
-    const correspondenceAddress = await buildCorrespondenceAddress(customer);
+    const correspondenceAddress = preResolvedCorrespondenceAddress !== undefined
+        ? preResolvedCorrespondenceAddress
+        : await buildCorrespondenceAddress(customer);
 
     return {
         id: customer.id,
@@ -481,8 +488,18 @@ router.get("/", async (req, res) => {
 
         const [items, total] = await qb.getManyAndCount();
 
+        const terytInputs = items.map((customer) => ({
+            stateId: customer.correspondenceStateId ?? undefined,
+            districtId: customer.correspondenceDistrictId ?? undefined,
+            communeId: customer.correspondenceCommuneId ?? undefined,
+            cityId: customer.correspondenceCityId ?? customer.locationCityId ?? undefined,
+            streetId: customer.correspondenceStreetId ?? customer.locationStreetId ?? undefined,
+        }));
+
+        const resolvedAddresses = await batchResolveTerytAddresses(terytInputs);
+
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer))));
+        res.json(await Promise.all(items.map((customer, index) => serializeCustomer(customer, false, resolvedAddresses[index]))));
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ message: "Internal server error" });
