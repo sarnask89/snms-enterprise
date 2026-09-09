@@ -1,0 +1,3 @@
+## 2026-09-09 - AI Assistant Component Micro-UX & Accessibility Modernization
+**Learning:** Floating overlay controls and chat widgets require explicit `aria-label` and `:aria-expanded` attributes to ensure screen reader users can discover and operate floating action triggers. In Nuxt UI v4, updating legacy `i-heroicons-*` to `i-lucide-*` and using semantic color tokens (`success`, `neutral`) ensures visual consistency, while reactive `watch` with `nextTick` auto-scrolling guarantees users immediately see incoming chat responses without manual feed scrolling.
+**Action:** Always pair floating trigger buttons with `:aria-expanded` states, explicit ARIA labels, `nextTick` auto-scroll behavior for dynamic feeds, and `<UModal>` dialogs for secondary configuration workflows.
