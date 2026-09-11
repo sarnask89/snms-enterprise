@@ -73,7 +73,7 @@
             />
             <UButton 
               type="submit" 
-              icon="i-heroicons-paper-airplane" 
+              icon="i-heroicons-paper-airplane"
               color="primary" 
               :loading="isLoading"
             />
