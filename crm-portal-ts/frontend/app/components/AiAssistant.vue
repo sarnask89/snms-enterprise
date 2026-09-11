@@ -4,12 +4,10 @@
       <!-- The Floating Button -->
       <UButton
         v-if="!isOpen"
-        icon="i-lucide-message-square"
+        icon="i-heroicons-chat-bubble-left-ellipsis-solid"
         size="xl"
         color="primary"
         class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
-        aria-label="Open AI Assistant"
-        :aria-expanded="isOpen"
         @click="isOpen = true"
       />
 
@@ -26,32 +24,30 @@
           class="bg-primary-500 text-white p-3 flex justify-between items-center cursor-move select-none"
         >
           <div class="flex items-center gap-2 font-bold">
-            <UIcon name="i-lucide-sparkles" />
+            <UIcon name="i-heroicons-sparkles" />
             CRM Assistant
           </div>
           <div class="flex items-center gap-1">
-            <UButton
-              :icon="systemContext ? 'i-lucide-file-check' : 'i-lucide-file-plus'"
+             <UButton
+              :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
               :color="systemContext ? 'green' : 'white'"
               variant="ghost"
               size="xs"
               label="API Doc"
-              aria-label="Configure API documentation context"
               @click="promptForContext"
             />
             <UButton
-              icon="i-lucide-x"
+              icon="i-heroicons-x-mark"
               color="white"
               variant="ghost"
               size="xs"
-              aria-label="Close AI Assistant"
               @click="isOpen = false"
             />
           </div>
         </div>
 
         <!-- Chat Feed -->
-        <div ref="chatFeedContainer" class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
+        <div class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
           <div
             v-for="(msg, index) in messages"
             :key="index"
@@ -74,44 +70,23 @@
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
-              aria-label="Type command or ask AI"
             />
             <UButton 
               type="submit" 
-              icon="i-lucide-send"
+              icon="i-heroicons-paper-airplane"
               color="primary" 
               :loading="isLoading"
-              aria-label="Send message to AI"
             />
           </form>
         </div>
       </div>
 
-      <!-- Context Modal -->
-      <UModal v-model:open="isContextModalOpen" title="Configure System Context">
-        <template #content>
-          <div class="p-4 space-y-4">
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Paste custom API documentation or system instructions to guide the AI assistant.
-            </p>
-            <UTextarea
-              v-model="tempContext"
-              placeholder="Paste API docs or custom context..."
-              :rows="6"
-            />
-            <div class="flex justify-end gap-2">
-              <UButton label="Cancel" color="neutral" variant="ghost" @click="isContextModalOpen = false" />
-              <UButton label="Save Context" color="primary" @click="saveContext" />
-            </div>
-          </div>
-        </template>
-      </UModal>
-    </div>
+         </div>
   </ClientOnly>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
@@ -122,7 +97,6 @@ const isContextModalOpen = ref(false)
 const input = ref('')
 const systemContext = ref('')
 const tempContext = ref('')
-const chatFeedContainer = ref(null)
 
 const messages = ref([
   { role: 'assistant', content: 'Hi! I am your CRM Architect. Paste some API documentation (using the button above) or ask me to build a module.' }
@@ -142,25 +116,9 @@ onMounted(() => {
 
 useDraggable(chatWindow, { handle: chatHandle, onMove: (pos) => { x.value = pos.x; y.value = pos.y } })
 
-const scrollToBottom = () => {
-  nextTick(() => {
-    if (chatFeedContainer.value) {
-      chatFeedContainer.value.scrollTop = chatFeedContainer.value.scrollHeight
-    }
-  })
-}
-
-watch(messages, scrollToBottom, { deep: true })
-watch(isLoading, scrollToBottom)
-
 const promptForContext = () => {
   tempContext.value = systemContext.value
   isContextModalOpen.value = true
-}
-
-const saveContext = () => {
-  systemContext.value = tempContext.value
-  isContextModalOpen.value = false
 }
 
 const sendMessage = async () => {
