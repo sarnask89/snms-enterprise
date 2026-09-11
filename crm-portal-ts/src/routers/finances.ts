@@ -64,8 +64,10 @@ function parseDateString(value: unknown, fallback?: string) {
     return parsed ?? fallback;
 }
 
-function serializeTariff(tariff: Tariff) {
-    const subscriptions = tariff.subscriptions ?? [];
+function serializeTariff(tariff: Tariff & { subscriptionCount?: number }) {
+    const count = typeof tariff.subscriptionCount === "number"
+        ? tariff.subscriptionCount
+        : (tariff.subscriptions?.length ?? 0);
 
     return {
         id: tariff.id,
@@ -76,7 +78,7 @@ function serializeTariff(tariff: Tariff) {
         speedDownMbps: tariff.speedDownMbps ?? null,
         speedUpMbps: tariff.speedUpMbps ?? null,
         vatRateId: tariff.vatRateId ?? null,
-        subscriptionCount: subscriptions.length,
+        subscriptionCount: count,
     };
 }
 
@@ -167,9 +169,10 @@ router.get("/tariffs", async (req, res) => {
         const search = String(req.query.q ?? "").trim();
         const active = String(req.query.active ?? "").trim();
 
+        // Use loadRelationCountAndMap instead of eager leftJoinAndSelect to prevent loading entire child subscription entity trees into memory
         const query = tariffRepo
             .createQueryBuilder("tariff")
-            .leftJoinAndSelect("tariff.subscriptions", "subscription")
+            .loadRelationCountAndMap("tariff.subscriptionCount", "tariff.subscriptions")
             .orderBy("tariff.id", "ASC");
 
         if (search) {

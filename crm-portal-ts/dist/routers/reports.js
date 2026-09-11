@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AppDataSource } from "../database.js";
+import { In } from "typeorm";
 import { CustomerDevice, NetNode } from "../models/network.js";
 import { LocationStreet } from "../models/location.js";
 export const router = Router();
@@ -28,11 +29,12 @@ router.get("/pit-uke/export", async (_req, res) => {
             },
             order: { id: "ASC" },
         });
-        const streetIds = devices
+        // Deduplicate street IDs to prevent duplicate database queries and replace deprecated findByIds
+        const uniqueStreetIds = Array.from(new Set(devices
             .map((device) => device.customer?.locationStreetId)
-            .filter((id) => Number.isInteger(id));
-        const streets = streetIds.length > 0
-            ? await locationStreetRepo.findByIds(streetIds)
+            .filter((id) => Number.isInteger(id))));
+        const streets = uniqueStreetIds.length > 0
+            ? await locationStreetRepo.findBy({ id: In(uniqueStreetIds) })
             : [];
         const streetMap = new Map(streets.map((street) => [street.id, street.name]));
         const rows = [
