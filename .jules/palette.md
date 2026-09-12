@@ -1,3 +1,0 @@
-## 2026-09-12 - Accessible Checkboxes and Dynamic Action Toast Feedback in Nuxt UI v4
-**Learning:** Standardizing UI controls from native HTML `<input type="checkbox">` elements to Nuxt UI `<UCheckbox>` components enhances keyboard navigation and screen reader support across lists. Incorporating `useToast()` notifications provides visual feedback for async CRUD operations while maintaining crucial user confirmation guardrails before destructive actions like entity deletion.
-**Action:** Replace native input elements with Nuxt UI form controls, add explicit Polish ARIA labels to all action triggers, provide toast notifications for async feedback, and retain standard confirmation checks before destructive operations.

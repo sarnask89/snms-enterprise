@@ -259,10 +259,6 @@ const saveGroup = async () => {
 }
 
 const removeGroup = async (row) => {
-  if (!confirm(`Czy na pewno chcesz usunąć grupę "${row.name}"?`)) {
-    return
-  }
-
   try {
     await $fetch(`/api/v1/customer-groups/${row.id}`, { method: 'DELETE' })
     toast.add({
