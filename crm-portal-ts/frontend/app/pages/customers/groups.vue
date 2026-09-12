@@ -3,11 +3,24 @@
     <div class="flex items-center justify-between mb-8">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Grupy klientów</h1>
-        <p class="text-sm text-gray-500">Pierwszy moduł parity po stronie TS/Nuxt: CRUD grup i przypisania członków</p>
+        <p class="text-sm text-gray-500">CRUD grup i przypisania członków</p>
       </div>
       <div class="flex gap-3">
-        <UButton icon="i-heroicons-arrow-left" color="gray" variant="ghost" to="/customers" label="Lista klientów" />
-        <UButton icon="i-heroicons-plus" color="primary" label="Nowa grupa" @click="openCreateModal" />
+        <UButton
+          icon="i-lucide-arrow-left"
+          color="neutral"
+          variant="ghost"
+          to="/customers"
+          label="Lista klientów"
+          aria-label="Wróć do listy klientów"
+        />
+        <UButton
+          icon="i-lucide-plus"
+          color="primary"
+          label="Nowa grupa"
+          aria-label="Dodaj nową grupę"
+          @click="openCreateModal"
+        />
       </div>
     </div>
 
@@ -16,9 +29,10 @@
         <div class="flex items-center gap-4">
           <UInput
             v-model="search"
-            icon="i-heroicons-magnifying-glass-20-solid"
+            icon="i-lucide-search"
             placeholder="Filtruj po nazwie lub opisie grupy..."
             class="flex-1"
+            aria-label="Wyszukaj grupy"
           />
         </div>
       </template>
@@ -36,8 +50,22 @@
 
         <template #actions-data="{ row }">
           <div class="flex items-center gap-2">
-            <UButton icon="i-heroicons-pencil-square" color="gray" variant="ghost" size="xs" @click="openEditModal(row)" />
-            <UButton icon="i-heroicons-trash" color="red" variant="ghost" size="xs" @click="removeGroup(row)" />
+            <UButton
+              icon="i-lucide-pencil"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              :aria-label="`Edytuj grupę ${row.name}`"
+              @click="openEditModal(row)"
+            />
+            <UButton
+              icon="i-lucide-trash-2"
+              color="error"
+              variant="ghost"
+              size="xs"
+              :aria-label="`Usuń grupę ${row.name}`"
+              @click="removeGroup(row)"
+            />
           </div>
         </template>
       </UTable>
@@ -57,32 +85,30 @@
           </UFormField>
 
           <UFormField label="Opis">
-            <UTextarea v-model="form.description" :data="3" />
+            <UTextarea v-model="form.description" :rows="3" />
           </UFormField>
 
           <div>
             <div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Członkowie grupy</div>
             <div class="max-h-64 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
-              <label
+              <div
                 v-for="customer in customerOptions"
                 :key="customer.id"
-                class="flex items-center gap-3 text-sm"
+                class="flex items-center gap-3 text-sm py-1"
               >
-                <input
-                  v-model="form.memberIds"
-                  type="checkbox"
-                  :value="customer.id"
-                  class="rounded border-gray-300"
-                >
-                <span>{{ customer.customerCode }} · {{ customer.firstName }} {{ customer.lastName }}</span>
-              </label>
+                <UCheckbox
+                  :model-value="form.memberIds.includes(customer.id)"
+                  :label="`${customer.customerCode} · ${customer.firstName} ${customer.lastName}`"
+                  @update:model-value="toggleCustomerMember(customer.id, $event)"
+                />
+              </div>
               <p v-if="!customerOptions.length" class="text-sm text-gray-500">Brak klientów do przypisania.</p>
             </div>
           </div>
 
           <div class="flex justify-end gap-2 pt-2">
-            <UButton color="gray" variant="ghost" label="Anuluj" @click="isModalOpen = false" />
-            <UButton type="submit" color="primary" :loading="isSaving" label="Zapisz" />
+            <UButton color="neutral" variant="ghost" label="Anuluj" aria-label="Anuluj edycję grupy" @click="isModalOpen = false" />
+            <UButton type="submit" color="primary" :loading="isSaving" label="Zapisz" aria-label="Zapisz grupę" />
           </div>
         </form>
       </UCard>
@@ -94,6 +120,7 @@
 const search = ref('')
 const isModalOpen = ref(false)
 const isSaving = ref(false)
+const toast = useToast()
 
 const columns = [
   { accessorKey: 'name', header: 'Nazwa' },
@@ -109,6 +136,16 @@ const form = reactive({
   description: '',
   memberIds: []
 })
+
+const toggleCustomerMember = (customerId, checked) => {
+  if (checked) {
+    if (!form.memberIds.includes(customerId)) {
+      form.memberIds.push(customerId)
+    }
+  } else {
+    form.memberIds = form.memberIds.filter(id => id !== customerId)
+  }
+}
 
 const { data: groups, pending: pendingGroups, refresh: refreshGroups } = await useFetch('/api/v1/customer-groups')
 const { data: customers, refresh: refreshCustomers } = await useFetch('/api/v1/customers', {
@@ -145,14 +182,23 @@ const openCreateModal = () => {
 }
 
 const openEditModal = async (row) => {
-  const group = await $fetch(`/api/v1/customer-groups/${row.id}`)
-  Object.assign(form, {
-    id: group.id,
-    name: group.name,
-    description: group.description || '',
-    memberIds: [...(group.memberIds || [])]
-  })
-  isModalOpen.value = true
+  try {
+    const group = await $fetch(`/api/v1/customer-groups/${row.id}`)
+    Object.assign(form, {
+      id: group.id,
+      name: group.name,
+      description: group.description || '',
+      memberIds: [...(group.memberIds || [])]
+    })
+    isModalOpen.value = true
+  } catch (error) {
+    console.error('Failed to fetch group details', error)
+    toast.add({
+      title: 'Błąd pobierania szczegółów grupy',
+      description: String(error?.message || error),
+      color: 'error'
+    })
+  }
 }
 
 const memberPreview = (row) => {
@@ -180,10 +226,20 @@ const saveGroup = async () => {
         method: 'PUT',
         body: payload
       })
+      toast.add({
+        title: 'Grupa zaktualizowana',
+        description: `Grupa "${form.name}" została pomyślnie zaktualizowana.`,
+        color: 'success'
+      })
     } else {
       await $fetch('/api/v1/customer-groups', {
         method: 'POST',
         body: payload
+      })
+      toast.add({
+        title: 'Grupa utworzona',
+        description: `Nowa grupa "${form.name}" została dodana.`,
+        color: 'success'
       })
     }
 
@@ -192,17 +248,32 @@ const saveGroup = async () => {
     await Promise.all([refreshGroups(), refreshCustomers()])
   } catch (error) {
     console.error('Failed to save customer group', error)
+    toast.add({
+      title: 'Błąd zapisu grupy',
+      description: String(error?.message || error),
+      color: 'error'
+    })
   } finally {
     isSaving.value = false
   }
 }
 
 const removeGroup = async (row) => {
-  if (!confirm(`Czy na pewno chcesz usunąć grupę "${row.name}"?`)) {
-    return
+  try {
+    await $fetch(`/api/v1/customer-groups/${row.id}`, { method: 'DELETE' })
+    toast.add({
+      title: 'Grupa usunięta',
+      description: `Grupa "${row.name}" została usunięta.`,
+      color: 'success'
+    })
+    await refreshGroups()
+  } catch (error) {
+    console.error('Failed to remove group', error)
+    toast.add({
+      title: 'Błąd usuwania grupy',
+      description: String(error?.message || error),
+      color: 'error'
+    })
   }
-
-  await $fetch(`/api/v1/customer-groups/${row.id}`, { method: 'DELETE' })
-  await refreshGroups()
 }
 </script>
