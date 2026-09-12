@@ -1,0 +1,3 @@
+## 2026-09-12 - Stats Endpoints SQL Projection & Count Optimization
+**Learning:** In TypeORM endpoints that compute counts or date-windowed aggregations (like `/network-health`, `/financial-summary`, `/inventory-summary`, `/customer-growth`), using full `find()` fetches without date filtering or column selection creates significant memory overhead and SQL payload serialization cost. Replacing full array fetches with `count()`, `countBy()`, `select: [...]`, and `MoreThanOrEqual()` date bounds drastically reduces IO and processing latency.
+**Action:** When working on stats and dashboard endpoints in TypeScript/TypeORM, always apply `select` projections and SQL `count()` / `MoreThanOrEqual()` date filters instead of loading full entity models into Node.js memory.
