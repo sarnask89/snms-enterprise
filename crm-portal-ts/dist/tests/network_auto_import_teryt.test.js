@@ -26,12 +26,13 @@ test("auto-import Mikrotik comment maps managed default city and street to TERYT
     process.env.CRM_ADMIN_PASSWORD = "Admin123!";
     process.env.CRM_ENV = "production";
     process.env.NODE_ENV = "production";
-    const [{ startServer }, { AppDataSource }, { NetDevice, NetworkDiscoveryRecord, NetworkDiscoverySession }, { NetDeviceStatus }, { autoImportDiscoverySession }] = await Promise.all([
+    const [{ startServer }, { AppDataSource }, { NetDevice, NetworkDiscoveryRecord, NetworkDiscoverySession }, { NetDeviceStatus }, { autoImportDiscoverySession }, { batchResolveTerytAddresses }] = await Promise.all([
         import("../app.js"),
         import("../database.js"),
         import("../models/network.js"),
         import("../models/common.js"),
         import("../services/network_auto_import.js"),
+        import("../teryt_address_links.js"),
     ]);
     const server = await startServer(0);
     t.after(async () => {
@@ -184,5 +185,29 @@ test("auto-import Mikrotik comment maps managed default city and street to TERYT
     assert.ok(importedDevice.installationStreetId);
     assert.equal(importedDevice.installationCity, "Warszawa");
     assert.equal(importedDevice.installationStreet, "ul. Koseły Romana");
+    const batchResolved = await batchResolveTerytAddresses([
+        {
+            stateId: importedCustomer.correspondenceStateId,
+            districtId: importedCustomer.correspondenceDistrictId,
+            communeId: importedCustomer.correspondenceCommuneId,
+            cityId: importedCustomer.correspondenceCityId,
+            streetId: importedCustomer.correspondenceStreetId,
+        },
+        {
+            stateId: importedDevice.installationStateId,
+            districtId: importedDevice.installationDistrictId,
+            communeId: importedDevice.installationCommuneId,
+            cityId: importedDevice.installationCityId,
+            streetId: importedDevice.installationStreetId,
+        },
+        {},
+    ]);
+    assert.equal(batchResolved.length, 3);
+    assert.equal(batchResolved[0]?.city?.name, "Warszawa");
+    assert.equal(batchResolved[0]?.street?.name, "ul. Koseły Romana");
+    assert.equal(batchResolved[1]?.city?.name, "Warszawa");
+    assert.equal(batchResolved[1]?.street?.name, "ul. Koseły Romana");
+    assert.equal(batchResolved[2]?.city, null);
+    assert.equal(batchResolved[2]?.street, null);
 });
 //# sourceMappingURL=network_auto_import_teryt.test.js.map

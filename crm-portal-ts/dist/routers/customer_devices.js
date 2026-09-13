@@ -3,7 +3,7 @@ import { ILike } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
-import { resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
+import { batchResolveTerytAddresses, resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
 export const router = Router();
 const deviceRepo = AppDataSource.getRepository(CustomerDevice);
 function parseOptionalString(value) {
@@ -21,7 +21,10 @@ function parseStatus(value, fallback = CustomerDeviceStatus.active) {
     const candidate = String(value ?? "").trim();
     return Object.values(CustomerDeviceStatus).includes(candidate) ? candidate : fallback;
 }
-async function buildInstallationAddress(device) {
+async function buildInstallationAddress(device, preResolvedAddress) {
+    if (preResolvedAddress !== undefined) {
+        return preResolvedAddress;
+    }
     const hasTerytIds = [
         device.installationStateId,
         device.installationDistrictId,
@@ -40,8 +43,8 @@ async function buildInstallationAddress(device) {
         streetId: device.installationStreetId,
     });
 }
-async function serializeDevice(device) {
-    const installationAddress = await buildInstallationAddress(device);
+async function serializeDevice(device, preResolvedAddress) {
+    const installationAddress = await buildInstallationAddress(device, preResolvedAddress);
     return {
         id: device.id,
         customerId: device.customerId,
@@ -266,8 +269,15 @@ router.get("/", async (req, res) => {
             relations: ["customer"],
             order: { hostname: "ASC" },
         });
+        const resolvedAddresses = await batchResolveTerytAddresses(items.map((device) => ({
+            stateId: device.installationStateId,
+            districtId: device.installationDistrictId,
+            communeId: device.installationCommuneId,
+            cityId: device.installationCityId,
+            streetId: device.installationStreetId,
+        })));
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        res.json(await Promise.all(items.map((item, index) => serializeDevice(item, resolvedAddresses[index]))));
     }
     catch (error) {
         console.error("Error fetching customer devices:", error);
