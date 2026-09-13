@@ -1,0 +1,3 @@
+## 2026-09-13 - Batch TERYT Address Resolution for Customer and Device Lists
+**Learning:** List endpoints (`GET /customers` and `GET /customer-devices`) were generating N+1 database queries during serialization by calling `resolveTerytAddress()` per row. For a page of 20 items, this caused 20–100 individual database queries sequentially.
+**Action:** Created `batchResolveTerytAddresses` in `crm-portal-ts/src/teryt_address_links.ts` using TypeORM `In()` queries and `Promise.all` to batch-fetch streets, cities, communes, districts, and states in 5 queries total for the entire list (O(1) database roundtrips), cutting list serialization time significantly.

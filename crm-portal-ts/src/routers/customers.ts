@@ -9,6 +9,7 @@ import {
 } from "../models/customer.js";
 import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
@@ -78,7 +79,11 @@ function parseDateString(value: unknown) {
     return parseOptionalString(value);
 }
 
-async function buildCorrespondenceAddress(customer: Customer) {
+async function buildCorrespondenceAddress(customer: Customer, preResolvedAddress?: ResolvedTerytAddress | null) {
+    if (preResolvedAddress !== undefined) {
+        return preResolvedAddress;
+    }
+
     const hasTerytIds = [
         customer.correspondenceStateId,
         customer.correspondenceDistrictId,
@@ -102,9 +107,13 @@ async function buildCorrespondenceAddress(customer: Customer) {
     });
 }
 
-async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
+async function serializeCustomer(
+    customer: CustomerWithRelations,
+    includeDetails = false,
+    preResolvedAddress?: ResolvedTerytAddress | null,
+) {
     const groups = customer.groups ?? [];
-    const correspondenceAddress = await buildCorrespondenceAddress(customer);
+    const correspondenceAddress = await buildCorrespondenceAddress(customer, preResolvedAddress);
 
     return {
         id: customer.id,
@@ -481,8 +490,18 @@ router.get("/", async (req, res) => {
 
         const [items, total] = await qb.getManyAndCount();
 
+        const resolvedAddresses = await batchResolveTerytAddresses(
+            items.map((customer) => ({
+                stateId: customer.correspondenceStateId,
+                districtId: customer.correspondenceDistrictId,
+                communeId: customer.correspondenceCommuneId,
+                cityId: customer.correspondenceCityId ?? customer.locationCityId,
+                streetId: customer.correspondenceStreetId ?? customer.locationStreetId,
+            })),
+        );
+
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer))));
+        res.json(await Promise.all(items.map((customer, index) => serializeCustomer(customer, false, resolvedAddresses[index]))));
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ message: "Internal server error" });
