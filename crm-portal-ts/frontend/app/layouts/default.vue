@@ -257,11 +257,18 @@ const userMenuItems = computed(() => [[{
       </template>
     </UDashboardSidebar>
 
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary"
+    >
+      Przejdź do treści głównej
+    </a>
+
     <UDashboardSearch :groups="groups" />
 
-    <div class="min-w-0 flex-1">
+    <main id="main-content" tabindex="-1" class="min-w-0 flex-1 outline-none">
       <slot />
-    </div>
+    </main>
 
     <AiAssistant />
   </UDashboardGroup>

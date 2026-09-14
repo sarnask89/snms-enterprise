@@ -74,6 +74,8 @@ test('operator shell source uses dashboard template primitives and exposes key n
   assert.match(layoutSource, /<UDashboardSidebar/)
   assert.match(layoutSource, /<UDashboardSearchButton/)
   assert.match(layoutSource, /<UNavigationMenu/)
+  assert.match(layoutSource, /href="#main-content"/)
+  assert.match(layoutSource, /<main id="main-content"/)
   assert.match(layoutSource, /label:\s*'Abonenci'/)
   assert.match(layoutSource, /label:\s*'Urządzenia klientów'/)
   assert.match(layoutSource, /label:\s*'Administracja'/)
