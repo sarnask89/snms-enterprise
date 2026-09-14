@@ -3,7 +3,7 @@ import { ILike } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
-import { resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
+import { batchResolveTerytAddresses, resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
 export const router = Router();
 const deviceRepo = AppDataSource.getRepository(CustomerDevice);
 function parseOptionalString(value) {
@@ -40,8 +40,10 @@ async function buildInstallationAddress(device) {
         streetId: device.installationStreetId,
     });
 }
-async function serializeDevice(device) {
-    const installationAddress = await buildInstallationAddress(device);
+async function serializeDevice(device, preResolvedAddress) {
+    const installationAddress = preResolvedAddress !== undefined
+        ? preResolvedAddress
+        : await buildInstallationAddress(device);
     return {
         id: device.id,
         customerId: device.customerId,
@@ -266,8 +268,17 @@ router.get("/", async (req, res) => {
             relations: ["customer"],
             order: { hostname: "ASC" },
         });
+        // Bolt ⚡ Optimization: Batch-resolve installation TERYT addresses across all devices in O(1) batch queries instead of O(N) sequential queries.
+        const addressInputs = items.map((device) => ({
+            stateId: device.installationStateId ?? undefined,
+            districtId: device.installationDistrictId ?? undefined,
+            communeId: device.installationCommuneId ?? undefined,
+            cityId: device.installationCityId ?? undefined,
+            streetId: device.installationStreetId ?? undefined,
+        }));
+        const resolvedAddresses = await batchResolveTerytAddresses(addressInputs);
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        res.json(await Promise.all(items.map((item, idx) => serializeDevice(item, resolvedAddresses[idx]))));
     }
     catch (error) {
         console.error("Error fetching customer devices:", error);
