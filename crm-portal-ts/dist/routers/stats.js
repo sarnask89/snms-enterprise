@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { Customer } from "../models/customer.js";
 import { Invoice, LedgerEntry, Subscription } from "../models/finance.js";
@@ -99,11 +100,25 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 });
 router.get("/financial-summary", async (_req, res) => {
     try {
-        const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
-        ]);
+        // Optimize financial summary query by restricting records to the relevant 12-month window
+        // and retrieving only necessary columns (`issueDate`, `amount`, `postedAt`, `kind`).
+        // Reduces database IO & payload processing time from O(Total Records) to O(Recent 12 Months Records).
         const months = buildRecentMonths(12);
+        const startDate = new Date();
+        startDate.setDate(1);
+        startDate.setMonth(startDate.getMonth() - 11);
+        startDate.setHours(0, 0, 0, 0);
+        const startDateStr = startDate.toISOString().slice(0, 10);
+        const [invoices, ledgerEntries] = await Promise.all([
+            invoiceRepo.find({
+                select: ["issueDate", "amount"],
+                where: { issueDate: MoreThanOrEqual(startDateStr) },
+            }),
+            ledgerRepo.find({
+                select: ["postedAt", "kind", "amount"],
+                where: { postedAt: MoreThanOrEqual(startDateStr) },
+            }),
+        ]);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
         for (const invoice of invoices) {
             const key = monthKey(new Date(invoice.issueDate));
