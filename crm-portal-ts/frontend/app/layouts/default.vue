@@ -184,7 +184,14 @@ const userMenuItems = computed(() => [[{
 </script>
 
 <template>
-  <UDashboardGroup unit="rem">
+  <div>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+    >
+      Przejdź do treści głównej
+    </a>
+    <UDashboardGroup unit="rem">
     <UDashboardSidebar
       id="default"
       v-model:open="open"
@@ -259,10 +266,11 @@ const userMenuItems = computed(() => [[{
 
     <UDashboardSearch :groups="groups" />
 
-    <div class="min-w-0 flex-1">
+    <main id="main-content" tabindex="-1" class="min-w-0 flex-1">
       <slot />
-    </div>
+    </main>
 
     <AiAssistant />
   </UDashboardGroup>
+  </div>
 </template>
