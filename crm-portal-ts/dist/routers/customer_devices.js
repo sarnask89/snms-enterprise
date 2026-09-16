@@ -3,7 +3,7 @@ import { ILike } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
-import { resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
+import { batchResolveTerytAddresses, resolveTerytAddress, serializeTerytEntry, } from "../teryt_address_links.js";
 export const router = Router();
 const deviceRepo = AppDataSource.getRepository(CustomerDevice);
 function parseOptionalString(value) {
@@ -40,8 +40,10 @@ async function buildInstallationAddress(device) {
         streetId: device.installationStreetId,
     });
 }
-async function serializeDevice(device) {
-    const installationAddress = await buildInstallationAddress(device);
+async function serializeDevice(device, preResolvedAddress) {
+    const installationAddress = preResolvedAddress !== undefined
+        ? preResolvedAddress
+        : await buildInstallationAddress(device);
     return {
         id: device.id,
         customerId: device.customerId,
@@ -267,7 +269,15 @@ router.get("/", async (req, res) => {
             order: { hostname: "ASC" },
         });
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        // Optimize: Batch resolve TERYT addresses across all items to prevent N+1 database queries during serialization
+        const addressMap = await batchResolveTerytAddresses(items.map((item) => ({
+            stateId: item.installationStateId,
+            districtId: item.installationDistrictId,
+            communeId: item.installationCommuneId,
+            cityId: item.installationCityId,
+            streetId: item.installationStreetId,
+        })));
+        res.json(await Promise.all(items.map((item, index) => serializeDevice(item, addressMap.get(index) ?? null))));
     }
     catch (error) {
         console.error("Error fetching customer devices:", error);
