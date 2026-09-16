@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import {
     LocationCity,
@@ -107,6 +108,89 @@ async function loadStreet(id?: number) {
             },
         },
     }) : null;
+}
+
+export async function batchResolveTerytAddresses(inputs: TerytIdInput[]): Promise<Map<number, ResolvedTerytAddress>> {
+    const streetIds = new Set<number>();
+    const cityIds = new Set<number>();
+    const communeIds = new Set<number>();
+    const districtIds = new Set<number>();
+    const stateIds = new Set<number>();
+
+    for (const input of inputs) {
+        if (input.streetId) streetIds.add(input.streetId);
+        if (input.cityId) cityIds.add(input.cityId);
+        if (input.communeId) communeIds.add(input.communeId);
+        if (input.districtId) districtIds.add(input.districtId);
+        if (input.stateId) stateIds.add(input.stateId);
+    }
+
+    const [streets, cities, communes, districts, states] = await Promise.all([
+        streetIds.size > 0
+            ? streetRepo.find({
+                where: { id: In([...streetIds]) },
+                relations: {
+                    city: {
+                        district: { state: true },
+                        commune: { district: { state: true } },
+                    },
+                    commune: { district: { state: true } },
+                },
+            })
+            : [],
+        cityIds.size > 0
+            ? cityRepo.find({
+                where: { id: In([...cityIds]) },
+                relations: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
+                },
+            })
+            : [],
+        communeIds.size > 0
+            ? communeRepo.find({
+                where: { id: In([...communeIds]) },
+                relations: { district: { state: true } },
+            })
+            : [],
+        districtIds.size > 0
+            ? districtRepo.find({
+                where: { id: In([...districtIds]) },
+                relations: { state: true },
+            })
+            : [],
+        stateIds.size > 0
+            ? stateRepo.find({
+                where: { id: In([...stateIds]) },
+            })
+            : [],
+    ]);
+
+    const streetMap = new Map(streets.map((s) => [s.id, s]));
+    const cityMap = new Map(cities.map((c) => [c.id, c]));
+    const communeMap = new Map(communes.map((c) => [c.id, c]));
+    const districtMap = new Map(districts.map((d) => [d.id, d]));
+    const stateMap = new Map(states.map((s) => [s.id, s]));
+
+    const resultMap = new Map<number, ResolvedTerytAddress>();
+
+    inputs.forEach((input, index) => {
+        const street = input.streetId ? (streetMap.get(input.streetId) ?? null) : null;
+        const city = street?.city ?? (input.cityId ? (cityMap.get(input.cityId) ?? null) : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? (communeMap.get(input.communeId) ?? null) : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? (districtMap.get(input.districtId) ?? null) : null);
+        const state = district?.state ?? (input.stateId ? (stateMap.get(input.stateId) ?? null) : null);
+
+        resultMap.set(index, {
+            state: state ?? null,
+            district: district ?? null,
+            commune: commune ?? null,
+            city: city ?? null,
+            street: street ?? null,
+        });
+    });
+
+    return resultMap;
 }
 
 export async function resolveTerytAddress(input: TerytIdInput): Promise<ResolvedTerytAddress> {
