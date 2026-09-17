@@ -4,9 +4,11 @@ import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
+    type TerytIdInput,
 } from "../teryt_address_links.js";
 
 export const router = Router();
@@ -53,8 +55,13 @@ async function buildInstallationAddress(device: CustomerDevice) {
     });
 }
 
-async function serializeDevice(device: CustomerDevice) {
-    const installationAddress = await buildInstallationAddress(device);
+async function serializeDevice(
+    device: CustomerDevice,
+    preResolvedAddress?: ResolvedTerytAddress | null
+) {
+    const installationAddress = preResolvedAddress !== undefined
+        ? preResolvedAddress
+        : await buildInstallationAddress(device);
 
     return {
         id: device.id,
@@ -294,8 +301,18 @@ router.get("/", async (req, res) => {
             order: { hostname: "ASC" },
         });
 
+        const terytInputs: TerytIdInput[] = items.map((device) => ({
+            stateId: device.installationStateId,
+            districtId: device.installationDistrictId,
+            communeId: device.installationCommuneId,
+            cityId: device.installationCityId,
+            streetId: device.installationStreetId,
+        }));
+
+        const resolvedAddresses = await batchResolveTerytAddresses(terytInputs);
+
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+        res.json(await Promise.all(items.map((item, index) => serializeDevice(item, resolvedAddresses[index]))));
     } catch (error) {
         console.error("Error fetching customer devices:", error);
         res.status(500).json({ message: "Internal server error" });
