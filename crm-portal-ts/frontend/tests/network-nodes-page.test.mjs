@@ -12,6 +12,7 @@ test('network nodes page uses dashboard table flow and avoids raw confirm or che
   assert.match(source, /<UDashboardToolbar>/)
   assert.match(source, /<UTable/)
   assert.match(source, /<UDropdownMenu/)
+  assert.match(source, /:aria-label="`Więcej akcji dla węzła \${row\.name}`"/)
   assert.match(source, /<UCheckbox v-model="form\.hasPower"/)
   assert.match(source, /<UCheckbox v-model="form\.hasEnvControl"/)
   assert.match(source, /Usuń węzeł/)

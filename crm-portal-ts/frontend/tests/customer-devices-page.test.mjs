@@ -13,6 +13,7 @@ test('customer devices list uses Nuxt UI table and vendor/type filters', () => {
   assert.match(source, /<UDashboardNavbar title="Urządzenia klientów"/)
   assert.match(source, /<UTable/)
   assert.match(source, /<UDropdownMenu/)
+  assert.match(source, /:aria-label="`Więcej akcji dla urządzenia \${row\.hostname}`"/)
   assert.match(source, /deviceTypeFilter/)
   assert.match(source, /vendorFilter/)
   assert.match(source, /statusFilter/)
