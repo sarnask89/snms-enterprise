@@ -510,6 +510,7 @@ const confirmDelete = async () => {
                 color="neutral"
                 variant="ghost"
                 class="ml-auto"
+                :aria-label="`Więcej akcji dla urządzenia ${row.hostname}`"
               />
             </UDropdownMenu>
           </div>
