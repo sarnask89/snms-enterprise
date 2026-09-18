@@ -419,7 +419,14 @@ const confirmDelete = async () => {
         </template>
 
         <template #right>
-          <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Odśwież" @click="refresh" />
+          <UButton
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-refresh-cw"
+            label="Odśwież"
+            aria-label="Odśwież listę urządzeń klientów"
+            @click="refresh"
+          />
         </template>
       </UDashboardNavbar>
 
@@ -430,14 +437,30 @@ const confirmDelete = async () => {
             class="w-full max-w-md"
             icon="i-lucide-search"
             placeholder="Szukaj po hoście, IP, MAC lub adresie..."
+            aria-label="Wyszukiwanie w urządzeniach klientów"
           />
         </template>
 
         <template #right>
           <div class="flex flex-wrap items-center gap-2">
-            <USelect v-model="statusFilter" :items="statusItems" class="min-w-32" />
-            <USelect v-model="deviceTypeFilter" :items="typeItems" class="min-w-32" />
-            <USelect v-model="vendorFilter" :items="vendorItems" class="min-w-36" />
+            <USelect
+              v-model="statusFilter"
+              :items="statusItems"
+              class="min-w-32"
+              aria-label="Filtruj według statusu"
+            />
+            <USelect
+              v-model="deviceTypeFilter"
+              :items="typeItems"
+              class="min-w-32"
+              aria-label="Filtruj według typu urządzenia"
+            />
+            <USelect
+              v-model="vendorFilter"
+              :items="vendorItems"
+              class="min-w-36"
+              aria-label="Filtruj według źródła/vendora"
+            />
           </div>
         </template>
       </UDashboardToolbar>
