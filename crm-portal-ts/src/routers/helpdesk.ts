@@ -24,18 +24,18 @@ function parseTicketStatus(value: unknown, fallback = TicketStatus.open) {
     return Object.values(TicketStatus).includes(candidate) ? candidate : fallback;
 }
 
-function serializeQueue(queue: HelpdeskQueue) {
+function serializeQueue(queue: HelpdeskQueue & { categoryCount?: number; ticketCount?: number }) {
     return {
         id: queue.id,
         name: queue.name,
         description: queue.description ?? null,
         sortOrder: queue.sortOrder,
-        categoryCount: queue.categories?.length ?? 0,
-        ticketCount: queue.tickets?.length ?? 0,
+        categoryCount: queue.categoryCount ?? queue.categories?.length ?? 0,
+        ticketCount: queue.ticketCount ?? queue.tickets?.length ?? 0,
     };
 }
 
-function serializeCategory(category: HelpdeskCategory) {
+function serializeCategory(category: HelpdeskCategory & { ticketCount?: number }) {
     return {
         id: category.id,
         queueId: category.queueId,
@@ -47,7 +47,7 @@ function serializeCategory(category: HelpdeskCategory) {
                 name: category.queue.name,
             }
             : null,
-        ticketCount: category.tickets?.length ?? 0,
+        ticketCount: category.ticketCount ?? category.tickets?.length ?? 0,
     };
 }
 
@@ -88,10 +88,16 @@ function serializeTicket(ticket: SupportTicket) {
 
 router.get("/queues", async (_req, res) => {
     try {
-        const queues = await queueRepo.find({
-            relations: { categories: true, tickets: true },
-            order: { sortOrder: "ASC", id: "ASC" },
-        });
+        // Bolt ⚡ Performance Optimization: Replace full child relation loading with TypeORM loadRelationCountAndMap.
+        // Eager-loading `categories` and `tickets` full entity arrays creates unnecessary memory overhead and Cartesian products.
+        // Mapping counts directly via SQL COUNT aggregations reduces query payload size and memory allocation.
+        const queues = await queueRepo
+            .createQueryBuilder("queue")
+            .loadRelationCountAndMap("queue.categoryCount", "queue.categories")
+            .loadRelationCountAndMap("queue.ticketCount", "queue.tickets")
+            .orderBy("queue.sortOrder", "ASC")
+            .addOrderBy("queue.id", "ASC")
+            .getMany();
 
         res.json(queues.map((queue) => serializeQueue(queue)));
     } catch (error) {
@@ -175,10 +181,15 @@ router.delete("/queues/:id", async (req, res) => {
 
 router.get("/categories", async (_req, res) => {
     try {
-        const categories = await categoryRepo.find({
-            relations: { queue: true, tickets: true },
-            order: { id: "ASC" },
-        });
+        // Bolt ⚡ Performance Optimization: Replace full tickets relation loading with loadRelationCountAndMap.
+        // Eager-loading full ticket entity collections per category creates heavy N+1/Cartesian product memory pressure.
+        // Counting tickets via SQL COUNT subquery keeps payload small and prevents entity allocation overhead.
+        const categories = await categoryRepo
+            .createQueryBuilder("category")
+            .leftJoinAndSelect("category.queue", "queue")
+            .loadRelationCountAndMap("category.ticketCount", "category.tickets")
+            .orderBy("category.id", "ASC")
+            .getMany();
 
         res.json(categories.map((category) => serializeCategory(category)));
     } catch (error) {
