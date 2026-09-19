@@ -185,6 +185,13 @@ const userMenuItems = computed(() => [[{
 
 <template>
   <UDashboardGroup unit="rem">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:shadow-lg focus:outline-none"
+    >
+      Przejdź do treści głównej
+    </a>
+
     <UDashboardSidebar
       id="default"
       v-model:open="open"
@@ -251,6 +258,7 @@ const userMenuItems = computed(() => [[{
             variant="ghost"
             block
             :square="collapsed"
+            :aria-label="currentUser?.username ? 'Profil użytkownika ' + currentUser.username : 'Profil użytkownika'"
             class="data-[state=open]:bg-elevated"
           />
         </UDropdownMenu>
@@ -259,9 +267,9 @@ const userMenuItems = computed(() => [[{
 
     <UDashboardSearch :groups="groups" />
 
-    <div class="min-w-0 flex-1">
+    <main id="main-content" tabindex="-1" class="min-w-0 flex-1 outline-none">
       <slot />
-    </div>
+    </main>
 
     <AiAssistant />
   </UDashboardGroup>

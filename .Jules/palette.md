@@ -1,0 +1,3 @@
+## 2025-05-18 - Dashboard Sidebar Collapsed State & Skip Link Accessibility
+**Learning:** Collapsible sidebars in layout shells leave icon-only buttons (like user profile menus) without accessible names when collapsed unless explicitly provided via dynamic `:aria-label`. Additionally, single-page application dashboard shells require a skip-to-content link pointing to a semantic `<main id="main-content" tabindex="-1">` landmark for WCAG 2.1 SC 2.4.1 compliance.
+**Action:** When working on application layout shells, ensure `<main id="main-content" tabindex="-1">` wraps the main slot, provide a skip-link (`sr-only focus:not-sr-only`), and ensure trigger buttons inside collapsed sidebars have explicit, context-aware `aria-label` attributes.
