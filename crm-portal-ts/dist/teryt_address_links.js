@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import { LocationCity, LocationCommune, LocationDistrict, LocationState, LocationStreet, } from "./models/location.js";
 import { getDefaultArea } from "./teryt_defaults.js";
@@ -91,6 +92,128 @@ export async function resolveTerytAddress(input) {
         city: city ?? null,
         street: street ?? null,
     };
+}
+/**
+ * Performance Optimization: Batch resolves TERYT addresses for an array of inputs using SQL `In()` operators.
+ * Reduces database query complexity from O(N) sequential entity fetches to O(1) batched round-trips.
+ */
+export async function batchResolveTerytAddresses(inputs) {
+    if (inputs.length === 0) {
+        return [];
+    }
+    const streetIds = new Set();
+    const cityIds = new Set();
+    const communeIds = new Set();
+    const districtIds = new Set();
+    const stateIds = new Set();
+    for (const input of inputs) {
+        if (input.streetId)
+            streetIds.add(input.streetId);
+        if (input.cityId)
+            cityIds.add(input.cityId);
+        if (input.communeId)
+            communeIds.add(input.communeId);
+        if (input.districtId)
+            districtIds.add(input.districtId);
+        if (input.stateId)
+            stateIds.add(input.stateId);
+    }
+    const streetsMap = new Map();
+    const citiesMap = new Map();
+    const communesMap = new Map();
+    const districtsMap = new Map();
+    const statesMap = new Map();
+    const recordRelations = (street, city, commune, district, state) => {
+        if (street && !streetsMap.has(street.id))
+            streetsMap.set(street.id, street);
+        if (city && !citiesMap.has(city.id))
+            citiesMap.set(city.id, city);
+        if (commune && !communesMap.has(commune.id))
+            communesMap.set(commune.id, commune);
+        if (district && !districtsMap.has(district.id))
+            districtsMap.set(district.id, district);
+        if (state && !statesMap.has(state.id))
+            statesMap.set(state.id, state);
+    };
+    if (streetIds.size > 0) {
+        const streets = await streetRepo.find({
+            where: { id: In(Array.from(streetIds)) },
+            relations: {
+                city: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
+                },
+                commune: {
+                    district: { state: true },
+                },
+            },
+        });
+        for (const st of streets) {
+            recordRelations(st, st.city, st.commune ?? st.city?.commune, st.commune?.district ?? st.city?.district, st.commune?.district?.state ?? st.city?.district?.state);
+        }
+    }
+    const missingCityIds = Array.from(cityIds).filter((id) => !citiesMap.has(id));
+    if (missingCityIds.length > 0) {
+        const cities = await cityRepo.find({
+            where: { id: In(missingCityIds) },
+            relations: {
+                district: { state: true },
+                commune: { district: { state: true } },
+            },
+        });
+        for (const c of cities) {
+            recordRelations(null, c, c.commune, c.district ?? c.commune?.district, c.district?.state ?? c.commune?.district?.state);
+        }
+    }
+    const missingCommuneIds = Array.from(communeIds).filter((id) => !communesMap.has(id));
+    if (missingCommuneIds.length > 0) {
+        const communes = await communeRepo.find({
+            where: { id: In(missingCommuneIds) },
+            relations: {
+                district: { state: true },
+            },
+        });
+        for (const cm of communes) {
+            recordRelations(null, null, cm, cm.district, cm.district?.state);
+        }
+    }
+    const missingDistrictIds = Array.from(districtIds).filter((id) => !districtsMap.has(id));
+    if (missingDistrictIds.length > 0) {
+        const districts = await districtRepo.find({
+            where: { id: In(missingDistrictIds) },
+            relations: { state: true },
+        });
+        for (const d of districts) {
+            recordRelations(null, null, null, d, d.state);
+        }
+    }
+    const missingStateIds = Array.from(stateIds).filter((id) => !statesMap.has(id));
+    if (missingStateIds.length > 0) {
+        const states = await stateRepo.find({
+            where: { id: In(missingStateIds) },
+        });
+        for (const s of states) {
+            recordRelations(null, null, null, null, s);
+        }
+    }
+    return inputs.map((input) => {
+        const hasTerytIds = [
+            input.stateId,
+            input.districtId,
+            input.communeId,
+            input.cityId,
+            input.streetId,
+        ].some((v) => v !== null && v !== undefined);
+        if (!hasTerytIds) {
+            return { state: null, district: null, commune: null, city: null, street: null };
+        }
+        const street = input.streetId ? (streetsMap.get(input.streetId) ?? null) : null;
+        const city = street?.city ?? (input.cityId ? (citiesMap.get(input.cityId) ?? null) : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? (communesMap.get(input.communeId) ?? null) : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? (districtsMap.get(input.districtId) ?? null) : null);
+        const state = district?.state ?? (input.stateId ? (statesMap.get(input.stateId) ?? null) : null);
+        return { state, district, commune, city, street };
+    });
 }
 export async function resolveParsedStreetWithinDefaultArea(streetName) {
     const normalizedStreet = normalizeAddressToken(streetName);

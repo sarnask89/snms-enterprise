@@ -1,0 +1,3 @@
+## 2026-09-19 - Batch Resolving Address Entities via SQL In() Operator
+**Learning:** Sequential entity serialization functions calling singular `findOne` lookups (e.g. `resolveTerytAddress`) inside `Promise.all(items.map(...))` introduce an $O(N)$ N+1 query bottleneck on list endpoints (`GET /customers`, `GET /customer_devices`). Batch fetching all address IDs in a single query pass with TypeORM's `In()` operator and linking them in-memory reduces DB round-trips from $O(N)$ to $O(1)$.
+**Action:** When serializing entity collections with linked lookup tables, gather all foreign keys up-front, execute a single batch `In()` query pass, and pass the resolved map into the serializer.
