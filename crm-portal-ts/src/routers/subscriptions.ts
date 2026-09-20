@@ -73,10 +73,18 @@ function serializeSubscription(subscription: Subscription) {
 
 router.get("/", async (_req, res) => {
     try {
-        const rows = await subscriptionRepo.find({
-            relations: { customer: true, tariff: true, device: true },
-            order: { id: "DESC" },
-        });
+        // Optimization: Use createQueryBuilder with explicit leftJoin and addSelect to fetch only required fields
+        // for serialized subscriptions instead of full entity loads on customer, tariff, and device relations.
+        const rows = await subscriptionRepo
+            .createQueryBuilder("subscription")
+            .leftJoin("subscription.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .leftJoin("subscription.tariff", "tariff")
+            .addSelect(["tariff.id", "tariff.name", "tariff.monthlyPrice"])
+            .leftJoin("subscription.device", "device")
+            .addSelect(["device.id", "device.hostname", "device.ipAddress"])
+            .orderBy("subscription.id", "DESC")
+            .getMany();
 
         res.json(rows.map((subscription) => serializeSubscription(subscription)));
     } catch (error) {

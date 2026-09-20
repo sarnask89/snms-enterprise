@@ -1,0 +1,3 @@
+## 2026-09-20 - Targeted Column Projections for Relation-Heavy Listing Endpoints
+**Learning:** TypeORM's default `find({ relations: { ... } })` loads full entity objects for all related records, transferring unnecessary database columns (such as password hashes, configuration blobs, or large text fields) and creating high memory overhead during entity object construction.
+**Action:** Replace `find({ relations })` on list endpoints with `createQueryBuilder("entity").leftJoin("entity.relation", "alias").addSelect(["alias.field1", "alias.field2"])` to project only the specific fields required by serialization.
