@@ -2,7 +2,7 @@
   <div class="p-8 max-w-5xl mx-auto">
     <div class="flex items-center gap-4 mb-8">
       <div class="p-3 rounded-2xl bg-primary-500/10 text-primary-500">
-        <UIcon name="i-heroicons-sparkles" class="w-8 h-8" />
+        <UIcon name="i-lucide-sparkles" class="w-8 h-8" />
       </div>
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">AI Architekt Modułów</h1>
@@ -16,11 +16,21 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="font-bold">Czat z Architektem</h3>
-            <UButton icon="i-heroicons-trash" color="gray" variant="ghost" size="xs" @click="clearChat" />
+            <UButton
+              icon="i-lucide-trash-2"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              aria-label="Wyczyść historię czatu"
+              @click="clearChat"
+            />
           </div>
         </template>
 
-        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50 dark:bg-gray-950 rounded-lg mb-4">
+        <div
+          ref="chatFeedRef"
+          class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50 dark:bg-gray-950 rounded-lg mb-4"
+        >
           <div
             v-for="(msg, index) in messages"
             :key="index"
@@ -41,10 +51,16 @@
           <UInput
             v-model="input"
             placeholder="Opisz moduł, który chcesz zbudować..."
+            aria-label="Opis modułu do zbudowania"
             class="flex-1"
             :disabled="isLoading"
           />
-          <UButton type="submit" icon="i-heroicons-paper-airplane" :loading="isLoading" />
+          <UButton
+            type="submit"
+            icon="i-lucide-send"
+            aria-label="Wyślij wiadomość do AI Architekta"
+            :loading="isLoading"
+          />
         </form>
       </UCard>
 
@@ -56,9 +72,10 @@
               <h3 class="font-bold">Wygenerowana Specyfikacja</h3>
               <UButton 
                 v-if="lastSpec" 
-                icon="i-heroicons-cpu-chip" 
+                icon="i-lucide-zap"
                 label="Wdróż Moduł" 
-                color="green" 
+                aria-label="Wdróż wygenerowany moduł"
+                color="success"
                 :loading="isImplementing"
                 @click="implementModule" 
               />
@@ -69,13 +86,13 @@
              <pre class="text-[10px] bg-gray-900 text-green-400 p-4 rounded-lg"><code>{{ lastSpec }}</code></pre>
           </div>
           <div v-else class="flex flex-col items-center justify-center h-64 text-gray-400">
-            <UIcon name="i-heroicons-document-magnifying-glass" class="w-12 h-12 mb-2" />
+            <UIcon name="i-lucide-file-search" class="w-12 h-12 mb-2" />
             <p>Jeszcze nie wygenerowano specyfikacji</p>
           </div>
         </UCard>
 
         <UAlert
-          icon="i-heroicons-information-circle"
+          icon="i-lucide-info"
           color="primary"
           variant="soft"
           title="Uwaga dotycząca bezpieczeństwa"
@@ -88,10 +105,12 @@
 
 <script setup>
 const config = useRuntimeConfig()
+const toast = useToast()
 const input = ref('')
 const isLoading = ref(false)
 const isImplementing = ref(false)
 const lastSpec = ref('')
+const chatFeedRef = ref(null)
 
 // Samouczek wbudowany w powitanie!
 const messages = ref([
@@ -108,9 +127,21 @@ Po prostu opisz, czego potrzebujesz. Na przykład:
 Kiedy wygeneruję specyfikację z kodem, kliknij zielony przycisk **"Wdróż Moduł"**, a ja zapiszę go prosto w Twoim projekcie! Jak zaczynamy? 🚀` }
 ])
 
+const scrollToBottom = async () => {
+  await nextTick()
+  if (chatFeedRef.value) {
+    chatFeedRef.value.scrollTop = chatFeedRef.value.scrollHeight
+  }
+}
+
 const clearChat = () => {
   messages.value = [messages.value[0]]
   lastSpec.value = ''
+  toast.add({
+    title: 'Czat wyczyszczony',
+    description: 'Przywrócono domyślną wiadomość powitalną.',
+    color: 'neutral'
+  })
 }
 
 const sendMessage = async () => {
@@ -120,6 +151,7 @@ const sendMessage = async () => {
   messages.value.push({ role: 'user', content: userText })
   input.value = ''
   isLoading.value = true
+  await scrollToBottom()
 
   try {
     const response = await fetch(`${config.public.ollamaUrl}/api/chat`, {
@@ -152,8 +184,15 @@ const sendMessage = async () => {
     const content = data.message.content
     messages.value.push({ role: 'assistant', content })
     lastSpec.value = content
+    await scrollToBottom()
   } catch {
     messages.value.push({ role: 'assistant', content: '❌ Błąd połączenia z serwerem Ollama. Upewnij się, że działa.' })
+    toast.add({
+      title: 'Błąd połączenia',
+      description: 'Błąd połączenia z serwerem Ollama. Upewnij się, że usługa działa.',
+      color: 'error'
+    })
+    await scrollToBottom()
   } finally {
     isLoading.value = false
   }
@@ -166,9 +205,17 @@ const implementModule = async () => {
       method: 'POST',
       body: { spec: lastSpec.value }
     })
-    alert(`Wdrożono pomyślnie! Utworzono pliki:\n` + res.files.join('\n'))
+    toast.add({
+      title: 'Wdrożono pomyślnie!',
+      description: `Utworzono pliki: ${res.files?.join(', ') || ''}`,
+      color: 'success'
+    })
   } catch (error) {
-    alert(`Błąd wdrażania: ${error.data?.message || error.message}`)
+    toast.add({
+      title: 'Błąd wdrażania',
+      description: error.data?.message || error.message || 'Nie udało się wdrożyć modułu.',
+      color: 'error'
+    })
   } finally {
     isImplementing.value = false
   }
