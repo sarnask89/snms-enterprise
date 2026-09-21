@@ -9,7 +9,6 @@ import {
 } from "../models/customer.js";
 import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
 import {
-    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
@@ -103,15 +102,9 @@ async function buildCorrespondenceAddress(customer: Customer) {
     });
 }
 
-async function serializeCustomer(
-    customer: CustomerWithRelations,
-    includeDetails = false,
-    preResolvedAddress?: ResolvedTerytAddress | null,
-) {
+async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
     const groups = customer.groups ?? [];
-    const correspondenceAddress = preResolvedAddress !== undefined
-        ? preResolvedAddress
-        : await buildCorrespondenceAddress(customer);
+    const correspondenceAddress = await buildCorrespondenceAddress(customer);
 
     return {
         id: customer.id,
@@ -488,18 +481,8 @@ router.get("/", async (req, res) => {
 
         const [items, total] = await qb.getManyAndCount();
 
-        // ⚡ Performance Optimization: Batch resolve TERYT correspondence addresses across list items
-        const addressInputs = items.map((customer) => ({
-            stateId: customer.correspondenceStateId ?? undefined,
-            districtId: customer.correspondenceDistrictId ?? undefined,
-            communeId: customer.correspondenceCommuneId ?? undefined,
-            cityId: customer.correspondenceCityId ?? customer.locationCityId ?? undefined,
-            streetId: customer.correspondenceStreetId ?? customer.locationStreetId ?? undefined,
-        }));
-        const resolvedAddresses = await batchResolveTerytAddresses(addressInputs);
-
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((customer, index) => serializeCustomer(customer, false, resolvedAddresses[index]))));
+        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer))));
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ message: "Internal server error" });
