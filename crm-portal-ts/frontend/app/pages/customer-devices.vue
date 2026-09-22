@@ -430,14 +430,15 @@ const confirmDelete = async () => {
             class="w-full max-w-md"
             icon="i-lucide-search"
             placeholder="Szukaj po hoście, IP, MAC lub adresie..."
+            aria-label="Wyszukiwanie w urządzeniach klientów"
           />
         </template>
 
         <template #right>
           <div class="flex flex-wrap items-center gap-2">
-            <USelect v-model="statusFilter" :items="statusItems" class="min-w-32" />
-            <USelect v-model="deviceTypeFilter" :items="typeItems" class="min-w-32" />
-            <USelect v-model="vendorFilter" :items="vendorItems" class="min-w-36" />
+            <USelect v-model="statusFilter" :items="statusItems" class="min-w-32" aria-label="Filtruj według statusu" />
+            <USelect v-model="deviceTypeFilter" :items="typeItems" class="min-w-32" aria-label="Filtruj według typu urządzenia" />
+            <USelect v-model="vendorFilter" :items="vendorItems" class="min-w-36" aria-label="Filtruj według źródła/vendora" />
           </div>
         </template>
       </UDashboardToolbar>
@@ -510,6 +511,7 @@ const confirmDelete = async () => {
                 color="neutral"
                 variant="ghost"
                 class="ml-auto"
+                :aria-label="`Opcje dla urządzenia ${row.hostname}`"
               />
             </UDropdownMenu>
           </div>
