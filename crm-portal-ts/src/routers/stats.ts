@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../database.js";
 import { Customer } from "../models/customer.js";
 import { Invoice, LedgerEntry, Subscription } from "../models/finance.js";
@@ -116,12 +117,22 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 
 router.get("/financial-summary", async (_req, res) => {
     try {
-        const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
-        ]);
-
         const months = buildRecentMonths(12);
+        const cutoffDateStr = `${months[0].key}-01`;
+
+        // ⚡ Bolt: Optimize financial summary by filtering records at the database level
+        // with MoreThanOrEqual date cutoff and selecting only necessary column projections.
+        // This avoids fetching full table scans and unneeded columns for multi-year historical data into JS memory.
+        const [invoices, ledgerEntries] = await Promise.all([
+            invoiceRepo.find({
+                where: { issueDate: MoreThanOrEqual(cutoffDateStr) },
+                select: ["issueDate", "amount"],
+            }),
+            ledgerRepo.find({
+                where: { postedAt: MoreThanOrEqual(cutoffDateStr) },
+                select: ["postedAt", "amount", "kind"],
+            }),
+        ]);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
 
         for (const invoice of invoices) {
