@@ -226,6 +226,7 @@ const confirmDelete = async () => {
             class="w-full max-w-md"
             icon="i-lucide-search"
             placeholder="Szukaj po nazwie, lokalizacji lub typie..."
+            aria-label="Wyszukiwanie w węzłach sieciowych"
           />
         </template>
       </UDashboardToolbar>
@@ -279,7 +280,13 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" class="ml-auto" />
+              <UButton
+                icon="i-lucide-ellipsis-vertical"
+                color="neutral"
+                variant="ghost"
+                class="ml-auto"
+                :aria-label="`Opcje dla węzła ${row.name}`"
+              />
             </UDropdownMenu>
           </div>
         </template>
