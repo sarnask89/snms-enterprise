@@ -1,0 +1,3 @@
+## 2026-09-22 - SQL Date Filtering & Column Selection for Dashboard Summary Endpoints
+**Learning:** Dashboard and statistics endpoints in TypeORM applications often load entire historical tables (`repo.find()`) when only recent time-window data and a few fields (e.g. `issueDate`, `postedAt`, `amount`, `kind`) are used for aggregations. Filtering by `MoreThanOrEqual` date range cutoffs and using explicit `select` column projections directly in TypeORM queries avoids full table scans, reduces DB/network payload sizes, and lowers JS garbage collection overhead.
+**Action:** Always check stats and analytics endpoints for unbounded `find()` queries, and replace them with DB-level date filtering (`MoreThanOrEqual`) and selective column projections (`select`).
