@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../database.js";
+import { NetDeviceStatus } from "../models/common.js";
 import { Customer } from "../models/customer.js";
 import { Invoice, LedgerEntry, Subscription } from "../models/finance.js";
 import { NetDevice } from "../models/network.js";
@@ -45,9 +47,11 @@ function buildRecentMonths(count: number) {
 
 router.get("/network-health", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
-        const totalDevices = devices.length;
-        const onlineNow = devices.filter((device) => device.status === "active").length;
+        // Optimization: Use TypeORM count() and countBy() instead of fetching all NetDevice entities
+        const [totalDevices, onlineNow] = await Promise.all([
+            netDeviceRepo.count(),
+            netDeviceRepo.countBy({ status: NetDeviceStatus.active }),
+        ]);
 
         const history = Array.from({ length: 24 }, (_, index) => {
             const offset = 23 - index;
@@ -116,12 +120,29 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 
 router.get("/financial-summary", async (_req, res) => {
     try {
+        const months = buildRecentMonths(12);
+        // Optimization: Filter invoices and ledger entries by 12-month date range
+        // and project only needed columns instead of loading entire tables into memory
+        const startDate = new Date();
+        startDate.setDate(1);
+        startDate.setMonth(startDate.getMonth() - 11);
+        startDate.setHours(0, 0, 0, 0);
+
         const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
+            invoiceRepo.find({
+                select: ["amount", "issueDate"],
+                where: {
+                    issueDate: MoreThanOrEqual(startDate.toISOString().slice(0, 10)),
+                },
+            }),
+            ledgerRepo.find({
+                select: ["amount", "kind", "postedAt"],
+                where: {
+                    postedAt: MoreThanOrEqual(startDate.toISOString()),
+                },
+            }),
         ]);
 
-        const months = buildRecentMonths(12);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
 
         for (const invoice of invoices) {
@@ -165,12 +186,20 @@ router.get("/financial-summary", async (_req, res) => {
 
 router.get("/inventory-summary", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
+        // Optimization: Use SQL COUNT and GROUP BY deviceType aggregation instead of full entity scan
+        const rawCounts = await netDeviceRepo
+            .createQueryBuilder("device")
+            .select("device.deviceType", "deviceType")
+            .addSelect("COUNT(device.id)", "count")
+            .groupBy("device.deviceType")
+            .getRawMany<{ deviceType: string | null; count: string | number }>();
+
         const counts = new Map<string, number>();
 
-        for (const device of devices) {
-            const label = device.deviceType?.trim() || "other";
-            counts.set(label, (counts.get(label) ?? 0) + 1);
+        for (const row of rawCounts) {
+            const label = row.deviceType?.trim() || "other";
+            const current = counts.get(label) ?? 0;
+            counts.set(label, current + Number(row.count ?? 0));
         }
 
         const ordered = [...counts.entries()].sort(([left], [right]) => left.localeCompare(right));
@@ -187,8 +216,21 @@ router.get("/inventory-summary", async (_req, res) => {
 
 router.get("/customer-growth", async (_req, res) => {
     try {
-        const customers = await customerRepo.find();
         const months = buildRecentMonths(6);
+        // Optimization: Filter customers created in the 6-month window
+        // and select only creationDate column instead of fetching full customer records
+        const startDate = new Date();
+        startDate.setDate(1);
+        startDate.setMonth(startDate.getMonth() - 5);
+        startDate.setHours(0, 0, 0, 0);
+
+        const customers = await customerRepo.find({
+            select: ["creationDate"],
+            where: {
+                creationDate: MoreThanOrEqual(startDate.toISOString().slice(0, 10)),
+            },
+        });
+
         const monthCounts = new Map(months.map((month) => [month.key, 0]));
 
         for (const customer of customers) {
