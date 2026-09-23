@@ -185,6 +185,13 @@ const userMenuItems = computed(() => [[{
 
 <template>
   <UDashboardGroup unit="rem">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+    >
+      Przejdź do treści głównej
+    </a>
+
     <UDashboardSidebar
       id="default"
       v-model:open="open"
@@ -245,6 +252,7 @@ const userMenuItems = computed(() => [[{
         >
           <UButton
             :label="collapsed ? undefined : (currentUser?.username ?? 'Gość')"
+            :aria-label="collapsed ? (currentUser?.username ? 'Profil użytkownika ' + currentUser.username : 'Profil użytkownika') : undefined"
             :icon="currentUser ? 'i-lucide-user-check' : 'i-lucide-user'"
             :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
             color="neutral"
@@ -259,9 +267,9 @@ const userMenuItems = computed(() => [[{
 
     <UDashboardSearch :groups="groups" />
 
-    <div class="min-w-0 flex-1">
+    <main id="main-content" tabindex="-1" class="min-w-0 flex-1 outline-none">
       <slot />
-    </div>
+    </main>
 
     <AiAssistant />
   </UDashboardGroup>
