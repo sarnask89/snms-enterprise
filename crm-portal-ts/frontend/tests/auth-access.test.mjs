@@ -79,6 +79,10 @@ test('operator shell source uses dashboard template primitives and exposes key n
   assert.match(layoutSource, /label:\s*'Administracja'/)
   assert.match(layoutSource, /label:\s*'Monitoring'/)
   assert.match(layoutSource, /Wyloguj' : 'Zaloguj'|'Wyloguj' : 'Zaloguj'|Zaloguj/)
+  assert.match(layoutSource, /href="#main-content"/)
+  assert.match(layoutSource, /Przejdź do treści głównej/)
+  assert.match(layoutSource, /<main id="main-content" tabindex="-1"/)
+  assert.match(layoutSource, /:aria-label="collapsed \?/)
 })
 
 test('operator shell resolves truthful page labels from dashboard navigation for the architect route', () => {
