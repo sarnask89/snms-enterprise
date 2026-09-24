@@ -1,0 +1,3 @@
+## 2025-05-18 - Contextual ARIA Labels for Table Action Ellipsis Buttons
+**Learning:** Nuxt UI `UDropdownMenu` trigger buttons (`UButton` with `i-lucide-ellipsis-vertical`) inside `UTable` action columns render without text. Without explicit `:aria-label`, screen readers announce them as ambiguous "button" elements without context as to which row/entity the menu belongs to.
+**Action:** Always attach dynamic, contextual Polish ARIA labels (e.g. `:aria-label="\`Opcje klienta \${row.displayName}\`"` or `:aria-label="\`Opcje urządzenia \${row.name}\`"` ) to icon-only action dropdown trigger buttons in data tables.

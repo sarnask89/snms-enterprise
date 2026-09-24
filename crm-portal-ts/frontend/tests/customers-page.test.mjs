@@ -14,6 +14,7 @@ test('customers index follows dashboard table layout with inline create flow and
   assert.match(source, /Nowy abonent/, 'index should keep create flow visible in-page')
   assert.match(source, /<UTable/, 'index should render the customer list through UTable')
   assert.match(source, /<UDropdownMenu/, 'index should keep row actions behind an optional dropdown')
+  assert.match(source, /:aria-label="`Opcje klienta \${row\.displayName}`"/, 'index should provide accessible ARIA label on table row action button')
   assert.match(source, /auto-import|manualny/, 'index should label source badges clearly')
   assert.match(source, /Aktywny|Zawieszony|Zakończony/, 'index should keep readable status labels')
   assert.match(source, /Otwórz dossier/, 'index should keep the explicit dossier action visible')

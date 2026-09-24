@@ -12,6 +12,7 @@ test('network devices page uses dashboard shell and exposes backbone management 
   assert.match(source, /<UDashboardToolbar>/, 'page should expose dashboard toolbar filters')
   assert.match(source, /<UTable/, 'page should render through UTable')
   assert.match(source, /<UDropdownMenu/, 'row actions should live behind a dropdown')
+  assert.match(source, /:aria-label="`Opcje urządzenia \${row\.name}`"/, 'page should provide accessible ARIA label on table row action button')
   assert.match(source, /SNMP community/, 'page should expose SNMP community field')
   assert.match(source, /Login URL/, 'page should expose login URL field')
   assert.match(source, /Driver discovery/, 'page should expose discovery driver field')
