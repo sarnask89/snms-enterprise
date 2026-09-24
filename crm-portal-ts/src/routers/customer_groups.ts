@@ -42,49 +42,24 @@ function serializeGroup(group: CustomerGroup, includeMembers = false) {
     };
 }
 
-// Bolt ⚡ Optimization: Selective column projection for joined Customer entity
-// Avoids SELECT * on joined Customer table with 50+ columns (PESEL, password hashes, address fields)
-const CUSTOMER_SUMMARY_FIELDS = [
-    "customer.id",
-    "customer.customerCode",
-    "customer.firstName",
-    "customer.lastName",
-    "customer.email",
-    "customer.status",
-];
-
-async function getGroupWithCustomerSummary(id: number) {
-    return groupRepo
-        .createQueryBuilder("group")
-        .leftJoin("group.customers", "customer")
-        .addSelect(CUSTOMER_SUMMARY_FIELDS)
-        .where("group.id = :id", { id })
-        .getOne();
-}
-
 async function assignMembers(group: CustomerGroup, memberIds: number[]) {
     if (memberIds.length === 0) {
         group.customers = [];
         return;
     }
 
-    // Bolt ⚡ Optimization: Project only fields needed for serialization
     group.customers = await customerRepo.find({
         where: { id: In(memberIds) },
-        select: ["id", "customerCode", "firstName", "lastName", "email", "status"],
         order: { lastName: "ASC", firstName: "ASC" },
     });
 }
 
 router.get("/", async (_req, res) => {
     try {
-        // Bolt ⚡ Optimization: Query customer summary fields instead of full entity join
-        const groups = await groupRepo
-            .createQueryBuilder("group")
-            .leftJoin("group.customers", "customer")
-            .addSelect(CUSTOMER_SUMMARY_FIELDS)
-            .orderBy("group.name", "ASC")
-            .getMany();
+        const groups = await groupRepo.find({
+            relations: { customers: true },
+            order: { name: "ASC" },
+        });
 
         res.json(groups.map((group) => serializeGroup(group, true)));
     } catch (error) {
@@ -96,7 +71,10 @@ router.get("/", async (_req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const id = Number.parseInt(req.params.id, 10);
-        const group = await getGroupWithCustomerSummary(id);
+        const group = await groupRepo.findOne({
+            where: { id },
+            relations: { customers: true },
+        });
 
         if (!group) {
             return res.status(404).json({ message: "Customer group not found" });
@@ -126,7 +104,10 @@ router.post("/", async (req, res) => {
         await assignMembers(group, memberIds);
         await groupRepo.save(group);
 
-        const savedGroup = await getGroupWithCustomerSummary(group.id);
+        const savedGroup = await groupRepo.findOne({
+            where: { id: group.id },
+            relations: { customers: true },
+        });
 
         res.status(201).json(serializeGroup(savedGroup ?? group, true));
     } catch (error) {
@@ -138,7 +119,10 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try {
         const id = Number.parseInt(req.params.id, 10);
-        const group = await getGroupWithCustomerSummary(id);
+        const group = await groupRepo.findOne({
+            where: { id },
+            relations: { customers: true },
+        });
 
         if (!group) {
             return res.status(404).json({ message: "Customer group not found" });
@@ -162,7 +146,10 @@ router.put("/:id", async (req, res) => {
         await assignMembers(group, memberIds);
         await groupRepo.save(group);
 
-        const savedGroup = await getGroupWithCustomerSummary(group.id);
+        const savedGroup = await groupRepo.findOne({
+            where: { id: group.id },
+            relations: { customers: true },
+        });
 
         res.json(serializeGroup(savedGroup ?? group, true));
     } catch (error) {
@@ -174,12 +161,10 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const id = Number.parseInt(req.params.id, 10);
-        const group = await groupRepo
-            .createQueryBuilder("group")
-            .leftJoin("group.customers", "customer")
-            .addSelect(["customer.id"])
-            .where("group.id = :id", { id })
-            .getOne();
+        const group = await groupRepo.findOne({
+            where: { id },
+            relations: { customers: true },
+        });
 
         if (!group) {
             return res.status(404).json({ message: "Customer group not found" });
