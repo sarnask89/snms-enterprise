@@ -191,6 +191,7 @@ const confirmDelete = async () => {
             v-model="search"
             class="w-full max-w-md"
             icon="i-lucide-search"
+            aria-label="Wyszukiwanie w sieciach IP"
             placeholder="Szukaj po nazwie, CIDR, bramie lub VLAN..."
           />
         </template>
@@ -241,7 +242,13 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" class="ml-auto" />
+              <UButton
+                icon="i-lucide-ellipsis-vertical"
+                color="neutral"
+                variant="ghost"
+                class="ml-auto"
+                :aria-label="'Opcje sieci ' + row.name"
+              />
             </UDropdownMenu>
           </div>
         </template>
