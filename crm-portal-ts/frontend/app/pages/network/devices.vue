@@ -349,15 +349,16 @@ const confirmDelete = async () => {
             v-model="search"
             class="w-full max-w-md"
             icon="i-lucide-search"
+            aria-label="Wyszukiwanie w urządzeniach sieciowych"
             placeholder="Szukaj po nazwie, IP, typie, driverze lub serialu..."
           />
         </template>
 
         <template #right>
           <div class="flex flex-wrap items-center gap-2">
-            <USelect v-model="statusFilter" :items="statusItems" class="min-w-36" />
-            <USelect v-model="driverFilter" :items="driverItems" class="min-w-40" />
-            <USelect v-model="deviceTypeFilter" :items="deviceTypeItems" class="min-w-32" />
+            <USelect v-model="statusFilter" :items="statusItems" class="min-w-36" aria-label="Filtruj według statusu" />
+            <USelect v-model="driverFilter" :items="driverItems" class="min-w-40" aria-label="Filtruj według drivera" />
+            <USelect v-model="deviceTypeFilter" :items="deviceTypeItems" class="min-w-32" aria-label="Filtruj według typu urządzenia" />
           </div>
         </template>
       </UDashboardToolbar>
@@ -429,7 +430,13 @@ const confirmDelete = async () => {
         <template #actions-data="{ row }">
           <div class="text-right">
             <UDropdownMenu :items="getRowItems(row)" :content="{ align: 'end' }">
-              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" class="ml-auto" />
+              <UButton
+                icon="i-lucide-ellipsis-vertical"
+                color="neutral"
+                variant="ghost"
+                class="ml-auto"
+                :aria-label="'Opcje urządzenia ' + row.name"
+              />
             </UDropdownMenu>
           </div>
         </template>
