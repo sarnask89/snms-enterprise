@@ -52,6 +52,7 @@ function parseDateString(value, fallback) {
 }
 function serializeTariff(tariff) {
     const subscriptions = tariff.subscriptions ?? [];
+    const subscriptionCount = tariff.subscriptionCount ?? subscriptions.length;
     return {
         id: tariff.id,
         name: tariff.name,
@@ -61,7 +62,7 @@ function serializeTariff(tariff) {
         speedDownMbps: tariff.speedDownMbps ?? null,
         speedUpMbps: tariff.speedUpMbps ?? null,
         vatRateId: tariff.vatRateId ?? null,
-        subscriptionCount: subscriptions.length,
+        subscriptionCount,
     };
 }
 function serializeInvoice(invoice) {
@@ -146,9 +147,11 @@ router.get("/tariffs", async (req, res) => {
     try {
         const search = String(req.query.q ?? "").trim();
         const active = String(req.query.active ?? "").trim();
+        // Bolt ⚡: Replace eager leftJoinAndSelect with loadRelationCountAndMap
+        // to compute subscription counts in SQL without loading full child Subscription objects.
         const query = tariffRepo
             .createQueryBuilder("tariff")
-            .leftJoinAndSelect("tariff.subscriptions", "subscription")
+            .loadRelationCountAndMap("tariff.subscriptionCount", "tariff.subscriptions")
             .orderBy("tariff.id", "ASC");
         if (search) {
             query.andWhere(new Brackets((qb) => {
@@ -274,9 +277,12 @@ router.get("/invoices", async (req, res) => {
         const search = String(req.query.q ?? "").trim();
         const status = String(req.query.status ?? "").trim();
         const kind = String(req.query.kind ?? "").trim();
+        // Bolt ⚡: Replace full customer relation join with targeted column projections
+        // to reduce database payload and memory footprint.
         const query = invoiceRepo
             .createQueryBuilder("invoice")
-            .leftJoinAndSelect("invoice.customer", "customer")
+            .leftJoin("invoice.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
             .orderBy("invoice.id", "DESC");
         if (search) {
             query.andWhere("invoice.number LIKE :search", { search: `%${search}%` });
@@ -414,10 +420,13 @@ router.delete("/invoices/:id", async (req, res) => {
 });
 router.get("/payments", async (_req, res) => {
     try {
-        const rows = await paymentRepo.find({
-            relations: { customer: true },
-            order: { id: "DESC" },
-        });
+        // Bolt ⚡: Replace full relation fetch with query builder and targeted customer column projections.
+        const rows = await paymentRepo
+            .createQueryBuilder("payment")
+            .leftJoin("payment.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .orderBy("payment.id", "DESC")
+            .getMany();
         res.json(rows.map((payment) => serializeRecurringPayment(payment)));
     }
     catch (error) {
@@ -464,10 +473,13 @@ router.delete("/payments/:id", async (req, res) => {
 });
 router.get("/balance", async (_req, res) => {
     try {
-        const rows = await ledgerRepo.find({
-            relations: { customer: true },
-            order: { postedAt: "DESC" },
-        });
+        // Bolt ⚡: Replace full relation fetch with query builder and targeted customer column projections.
+        const rows = await ledgerRepo
+            .createQueryBuilder("entry")
+            .leftJoin("entry.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .orderBy("entry.postedAt", "DESC")
+            .getMany();
         res.json(rows.map((entry) => serializeLedgerEntry(entry)));
     }
     catch (error) {
@@ -512,10 +524,13 @@ router.delete("/balance/:id", async (req, res) => {
 });
 router.get("/cash", async (_req, res) => {
     try {
-        const rows = await cashRepo.find({
-            relations: { customer: true },
-            order: { issuedAt: "DESC" },
-        });
+        // Bolt ⚡: Replace full relation fetch with query builder and targeted customer column projections.
+        const rows = await cashRepo
+            .createQueryBuilder("receipt")
+            .leftJoin("receipt.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .orderBy("receipt.issuedAt", "DESC")
+            .getMany();
         res.json(rows.map((receipt) => serializeCashReceipt(receipt)));
     }
     catch (error) {
