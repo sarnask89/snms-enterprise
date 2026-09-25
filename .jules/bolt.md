@@ -1,3 +1,0 @@
-## 2026-09-25 - Selective Relation Projections for Finance Endpoints
-**Learning:** TypeORM `.find({ relations: { customer: true } })` or `.leftJoinAndSelect("entity.customer", "customer")` loads every single column of the `customer` table (including large address fields, PESEL/NIP, notes, timestamps), resulting in inflated SQL payloads and memory overhead when listing invoices, payments, ledger entries, or cash receipts.
-**Action:** Use `.leftJoin("entity.customer", "customer").addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])` to retrieve only required customer columns, and `loadRelationCountAndMap` to compute child counts directly in SQL.
