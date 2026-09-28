@@ -479,7 +479,26 @@ router.delete("/invoices/:id", async (req, res) => {
 
 router.get("/payments", async (_req, res) => {
     try {
+        // Bolt ⚡ Optimization: Select only necessary customer fields in find() projection
+        // instead of loading all customer columns (address, contact details, notes, etc.),
+        // reducing SQL payload size and memory allocation overhead.
         const rows = await paymentRepo.find({
+            select: {
+                id: true,
+                customerId: true,
+                name: true,
+                amount: true,
+                intervalMonths: true,
+                dayOfMonth: true,
+                active: true,
+                nextRun: true,
+                customer: {
+                    id: true,
+                    customerCode: true,
+                    firstName: true,
+                    lastName: true,
+                },
+            },
             relations: { customer: true },
             order: { id: "DESC" },
         });
@@ -534,7 +553,28 @@ router.delete("/payments/:id", async (req, res) => {
 
 router.get("/balance", async (_req, res) => {
     try {
+        // Bolt ⚡ Optimization: Use createQueryBuilder with leftJoin and targeted column projections
+        // for customer fields instead of full entity eager loading (relations: { customer: true }).
+        // This avoids fetching unused customer columns (address, contact details, notes, etc.),
+        // reducing SQL payload size and memory allocation overhead.
+        // Bolt ⚡ Optimization: Select only necessary customer fields in find() projection
+        // instead of loading all customer columns (address, contact details, notes, etc.),
+        // reducing SQL payload size and memory allocation overhead.
         const rows = await ledgerRepo.find({
+            select: {
+                id: true,
+                customerId: true,
+                amount: true,
+                kind: true,
+                description: true,
+                postedAt: true,
+                customer: {
+                    id: true,
+                    customerCode: true,
+                    firstName: true,
+                    lastName: true,
+                },
+            },
             relations: { customer: true },
             order: { postedAt: "DESC" },
         });
@@ -587,7 +627,27 @@ router.delete("/balance/:id", async (req, res) => {
 
 router.get("/cash", async (_req, res) => {
     try {
+        // Bolt ⚡ Optimization: Use createQueryBuilder with leftJoin and targeted column projections
+        // for customer fields instead of full entity eager loading (relations: { customer: true }).
+        // This avoids fetching unused customer columns (address, contact details, notes, etc.),
+        // reducing SQL payload size and memory allocation overhead.
+        // Bolt ⚡ Optimization: Select only necessary customer fields in find() projection
+        // instead of loading all customer columns (address, contact details, notes, etc.),
+        // reducing SQL payload size and memory allocation overhead.
         const rows = await cashRepo.find({
+            select: {
+                id: true,
+                customerId: true,
+                amount: true,
+                description: true,
+                issuedAt: true,
+                customer: {
+                    id: true,
+                    customerCode: true,
+                    firstName: true,
+                    lastName: true,
+                },
+            },
             relations: { customer: true },
             order: { issuedAt: "DESC" },
         });
