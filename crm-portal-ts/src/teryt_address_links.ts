@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import {
     LocationCity,
@@ -123,6 +124,96 @@ export async function resolveTerytAddress(input: TerytIdInput): Promise<Resolved
         city: city ?? null,
         street: street ?? null,
     };
+}
+
+export async function batchResolveTerytAddresses(inputs: TerytIdInput[]): Promise<Map<string, ResolvedTerytAddress>> {
+    const makeKey = (input: TerytIdInput) =>
+        `${input.stateId ?? ""}:${input.districtId ?? ""}:${input.communeId ?? ""}:${input.cityId ?? ""}:${input.streetId ?? ""}`;
+
+    const uniqueInputs = new Map<string, TerytIdInput>();
+    for (const input of inputs) {
+        const key = makeKey(input);
+        if (!uniqueInputs.has(key)) {
+            uniqueInputs.set(key, input);
+        }
+    }
+
+    const streetIds = new Set<number>();
+    const cityIds = new Set<number>();
+    const communeIds = new Set<number>();
+    const districtIds = new Set<number>();
+    const stateIds = new Set<number>();
+
+    for (const input of uniqueInputs.values()) {
+        if (input.streetId) streetIds.add(input.streetId);
+        if (input.cityId) cityIds.add(input.cityId);
+        if (input.communeId) communeIds.add(input.communeId);
+        if (input.districtId) districtIds.add(input.districtId);
+        if (input.stateId) stateIds.add(input.stateId);
+    }
+
+    // Perform batched queries across unique IDs
+    const [streets, cities, communes, districts, states] = await Promise.all([
+        streetIds.size > 0
+            ? streetRepo.find({
+                where: { id: In(Array.from(streetIds)) },
+                relations: {
+                    city: { district: { state: true }, commune: { district: { state: true } } },
+                    commune: { district: { state: true } },
+                },
+            })
+            : Promise.resolve([]),
+        cityIds.size > 0
+            ? cityRepo.find({
+                where: { id: In(Array.from(cityIds)) },
+                relations: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
+                },
+            })
+            : Promise.resolve([]),
+        communeIds.size > 0
+            ? communeRepo.find({
+                where: { id: In(Array.from(communeIds)) },
+                relations: { district: { state: true } },
+            })
+            : Promise.resolve([]),
+        districtIds.size > 0
+            ? districtRepo.find({
+                where: { id: In(Array.from(districtIds)) },
+                relations: { state: true },
+            })
+            : Promise.resolve([]),
+        stateIds.size > 0
+            ? stateRepo.findBy({ id: In(Array.from(stateIds)) })
+            : Promise.resolve([]),
+    ]);
+
+    const streetMap = new Map(streets.map((s) => [s.id, s]));
+    const cityMap = new Map(cities.map((c) => [c.id, c]));
+    const communeMap = new Map(communes.map((cm) => [cm.id, cm]));
+    const districtMap = new Map(districts.map((d) => [d.id, d]));
+    const stateMap = new Map(states.map((st) => [st.id, st]));
+
+    const resultMap = new Map<string, ResolvedTerytAddress>();
+
+    for (const [key, input] of uniqueInputs.entries()) {
+        const street = input.streetId ? streetMap.get(input.streetId) ?? null : null;
+        const city = street?.city ?? (input.cityId ? cityMap.get(input.cityId) ?? null : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId ? communeMap.get(input.communeId) ?? null : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId ? districtMap.get(input.districtId) ?? null : null);
+        const state = district?.state ?? (input.stateId ? stateMap.get(input.stateId) ?? null : null);
+
+        resultMap.set(key, {
+            state: state ?? null,
+            district: district ?? null,
+            commune: commune ?? null,
+            city: city ?? null,
+            street: street ?? null,
+        });
+    }
+
+    return resultMap;
 }
 
 export async function resolveParsedStreetWithinDefaultArea(streetName: string | null | undefined): Promise<ResolvedTerytAddress | null> {

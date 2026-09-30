@@ -1,0 +1,3 @@
+## 2026-09-30 - Batch TERYT Address Resolution for Customer and Device Endpoints
+**Learning:** Calling sequential `resolveTerytAddress()` queries inside `Promise.all(items.map(...))` results in N+1 database round-trips (up to 5 DB calls per row) during list serialization for `GET /customers` and `GET /customer-devices`.
+**Action:** Extract location input IDs across the list, batch-fetch unique `LocationState`, `LocationDistrict`, `LocationCommune`, `LocationCity`, and `LocationStreet` entities in parallel using TypeORM's `In(...)` operator (`batchResolveTerytAddresses`), and pass a pre-resolved address lookup map into list row serialization functions.
