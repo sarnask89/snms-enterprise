@@ -9,9 +9,11 @@ import {
 } from "../models/customer.js";
 import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
+    type TerytIdInput,
 } from "../teryt_address_links.js";
 import { type CustomerDevice } from "../models/network.js";
 
@@ -78,7 +80,7 @@ function parseDateString(value: unknown) {
     return parseOptionalString(value);
 }
 
-async function buildCorrespondenceAddress(customer: Customer) {
+function getCorrespondenceAddressInput(customer: Customer): TerytIdInput | null {
     const hasTerytIds = [
         customer.correspondenceStateId,
         customer.correspondenceDistrictId,
@@ -93,18 +95,39 @@ async function buildCorrespondenceAddress(customer: Customer) {
         return null;
     }
 
-    return await resolveTerytAddress({
+    return {
         stateId: customer.correspondenceStateId,
         districtId: customer.correspondenceDistrictId,
         communeId: customer.correspondenceCommuneId,
         cityId: customer.correspondenceCityId ?? customer.locationCityId,
         streetId: customer.correspondenceStreetId ?? customer.locationStreetId,
-    });
+    };
 }
 
-async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
+function makeAddressKey(input: TerytIdInput) {
+    return `${input.stateId ?? ""}:${input.districtId ?? ""}:${input.communeId ?? ""}:${input.cityId ?? ""}:${input.streetId ?? ""}`;
+}
+
+async function buildCorrespondenceAddress(customer: Customer, addressMap?: Map<string, ResolvedTerytAddress>) {
+    const input = getCorrespondenceAddressInput(customer);
+    if (!input) {
+        return null;
+    }
+
+    if (addressMap) {
+        return addressMap.get(makeAddressKey(input)) ?? null;
+    }
+
+    return await resolveTerytAddress(input);
+}
+
+async function serializeCustomer(
+    customer: CustomerWithRelations,
+    includeDetails = false,
+    addressMap?: Map<string, ResolvedTerytAddress>
+) {
     const groups = customer.groups ?? [];
-    const correspondenceAddress = await buildCorrespondenceAddress(customer);
+    const correspondenceAddress = await buildCorrespondenceAddress(customer, addressMap);
 
     return {
         id: customer.id,
@@ -481,8 +504,15 @@ router.get("/", async (req, res) => {
 
         const [items, total] = await qb.getManyAndCount();
 
+        const addressInputs: TerytIdInput[] = [];
+        for (const item of items) {
+            const input = getCorrespondenceAddressInput(item);
+            if (input) addressInputs.push(input);
+        }
+        const addressMap = addressInputs.length > 0 ? await batchResolveTerytAddresses(addressInputs) : new Map();
+
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer))));
+        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer, false, addressMap))));
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ message: "Internal server error" });
