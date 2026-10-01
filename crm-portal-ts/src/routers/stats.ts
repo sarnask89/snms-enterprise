@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { LessThan, MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../database.js";
+import { NetDeviceStatus } from "../models/common.js";
 import { Customer } from "../models/customer.js";
 import { Invoice, LedgerEntry, Subscription } from "../models/finance.js";
 import { NetDevice } from "../models/network.js";
@@ -45,9 +47,11 @@ function buildRecentMonths(count: number) {
 
 router.get("/network-health", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
-        const totalDevices = devices.length;
-        const onlineNow = devices.filter((device) => device.status === "active").length;
+        // Optimize: Use DB COUNT queries instead of fetching all device rows into memory
+        const [totalDevices, onlineNow] = await Promise.all([
+            netDeviceRepo.count(),
+            netDeviceRepo.countBy({ status: NetDeviceStatus.active }),
+        ]);
 
         const history = Array.from({ length: 24 }, (_, index) => {
             const offset = 23 - index;
@@ -116,12 +120,26 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 
 router.get("/financial-summary", async (_req, res) => {
     try {
+        const months = buildRecentMonths(12);
+        // Optimize: Filter DB queries to the 12-month window and project only required columns
+        const startMonthKey = months[0].key; // e.g. "2025-10"
+        const startDateIso = `${startMonthKey}-01`;
+
         const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
+            invoiceRepo.find({
+                select: ["issueDate", "amount"],
+                where: {
+                    issueDate: MoreThanOrEqual(startDateIso),
+                },
+            }),
+            ledgerRepo.find({
+                select: ["postedAt", "kind", "amount"],
+                where: {
+                    postedAt: MoreThanOrEqual(startDateIso),
+                },
+            }),
         ]);
 
-        const months = buildRecentMonths(12);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
 
         for (const invoice of invoices) {
@@ -165,12 +183,18 @@ router.get("/financial-summary", async (_req, res) => {
 
 router.get("/inventory-summary", async (_req, res) => {
     try {
-        const devices = await netDeviceRepo.find();
-        const counts = new Map<string, number>();
+        // Optimize: Use SQL COUNT + GROUP BY directly to aggregate device counts in DB
+        const rawCounts = await netDeviceRepo
+            .createQueryBuilder("device")
+            .select("device.deviceType", "deviceType")
+            .addSelect("COUNT(device.id)", "count")
+            .groupBy("device.deviceType")
+            .getRawMany<{ deviceType: string | null; count: string | number }>();
 
-        for (const device of devices) {
-            const label = device.deviceType?.trim() || "other";
-            counts.set(label, (counts.get(label) ?? 0) + 1);
+        const counts = new Map<string, number>();
+        for (const row of rawCounts) {
+            const label = row.deviceType?.trim() || "other";
+            counts.set(label, (counts.get(label) ?? 0) + Number(row.count));
         }
 
         const ordered = [...counts.entries()].sort(([left], [right]) => left.localeCompare(right));
@@ -187,18 +211,34 @@ router.get("/inventory-summary", async (_req, res) => {
 
 router.get("/customer-growth", async (_req, res) => {
     try {
-        const customers = await customerRepo.find();
         const months = buildRecentMonths(6);
-        const monthCounts = new Map(months.map((month) => [month.key, 0]));
+        const startMonthKey = months[0].key;
+        const startDateIso = `${startMonthKey}-01`;
 
-        for (const customer of customers) {
+        // Optimize: DB count for historical baseline + selective creationDate fetch for recent 6 months
+        const [priorCount, recentCustomers] = await Promise.all([
+            customerRepo.count({
+                where: {
+                    creationDate: LessThan(startDateIso),
+                },
+            }),
+            customerRepo.find({
+                select: ["creationDate"],
+                where: {
+                    creationDate: MoreThanOrEqual(startDateIso),
+                },
+            }),
+        ]);
+
+        const monthCounts = new Map(months.map((month) => [month.key, 0]));
+        for (const customer of recentCustomers) {
             const key = monthKey(new Date(customer.creationDate));
             if (monthCounts.has(key)) {
                 monthCounts.set(key, (monthCounts.get(key) ?? 0) + 1);
             }
         }
 
-        let runningTotal = 0;
+        let runningTotal = priorCount;
         const values = months.map((month) => {
             runningTotal += monthCounts.get(month.key) ?? 0;
             return runningTotal;
