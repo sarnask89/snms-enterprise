@@ -244,6 +244,7 @@ const userMenuItems = computed(() => [[{
           :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
         >
           <UButton
+            :aria-label="currentUser?.username ? 'Profil użytkownika ' + currentUser.username : 'Profil użytkownika'"
             :label="collapsed ? undefined : (currentUser?.username ?? 'Gość')"
             :icon="currentUser ? 'i-lucide-user-check' : 'i-lucide-user'"
             :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"

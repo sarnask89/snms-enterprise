@@ -78,6 +78,7 @@ test('operator shell source uses dashboard template primitives and exposes key n
   assert.match(layoutSource, /label:\s*'Urządzenia klientów'/)
   assert.match(layoutSource, /label:\s*'Administracja'/)
   assert.match(layoutSource, /label:\s*'Monitoring'/)
+  assert.match(layoutSource, /:aria-label="currentUser\?\.username \? 'Profil użytkownika ' \+ currentUser\.username : 'Profil użytkownika'"/)
   assert.match(layoutSource, /Wyloguj' : 'Zaloguj'|'Wyloguj' : 'Zaloguj'|Zaloguj/)
 })
 
