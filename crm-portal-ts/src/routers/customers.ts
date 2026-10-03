@@ -9,9 +9,11 @@ import {
 } from "../models/customer.js";
 import { CustomerStatus, CustomerType, PaymentMethod } from "../models/common.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
+    type TerytIdInput,
 } from "../teryt_address_links.js";
 import { type CustomerDevice } from "../models/network.js";
 
@@ -102,9 +104,8 @@ async function buildCorrespondenceAddress(customer: Customer) {
     });
 }
 
-async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
+function serializeCustomerWithAddress(customer: CustomerWithRelations, correspondenceAddress: ResolvedTerytAddress | null, includeDetails = false) {
     const groups = customer.groups ?? [];
-    const correspondenceAddress = await buildCorrespondenceAddress(customer);
 
     return {
         id: customer.id,
@@ -190,6 +191,11 @@ async function serializeCustomer(customer: CustomerWithRelations, includeDetails
             }))
             : undefined,
     };
+}
+
+async function serializeCustomer(customer: CustomerWithRelations, includeDetails = false) {
+    const correspondenceAddress = await buildCorrespondenceAddress(customer);
+    return serializeCustomerWithAddress(customer, correspondenceAddress, includeDetails);
 }
 
 function hasAnyTerytAddressInput(payload: Record<string, unknown>) {
@@ -482,7 +488,64 @@ router.get("/", async (req, res) => {
         const [items, total] = await qb.getManyAndCount();
 
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((customer) => serializeCustomer(customer))));
+
+        // Batch resolve TERYT correspondence addresses to prevent N+1 queries during list serialization
+        const inputs: TerytIdInput[] = items
+            .filter((c) =>
+                [
+                    c.correspondenceStateId,
+                    c.correspondenceDistrictId,
+                    c.correspondenceCommuneId,
+                    c.correspondenceCityId,
+                    c.correspondenceStreetId,
+                    c.locationCityId,
+                    c.locationStreetId,
+                ].some((val) => val != null)
+            )
+            .map((c) => ({
+                stateId: c.correspondenceStateId,
+                districtId: c.correspondenceDistrictId,
+                communeId: c.correspondenceCommuneId,
+                cityId: c.correspondenceCityId ?? c.locationCityId,
+                streetId: c.correspondenceStreetId ?? c.locationStreetId,
+            }));
+
+        const resolvedMap = await batchResolveTerytAddresses(inputs);
+
+        const serialized = items.map((customer) => {
+            const targetCityId = customer.correspondenceCityId ?? customer.locationCityId;
+            const targetStreetId = customer.correspondenceStreetId ?? customer.locationStreetId;
+
+            const hasTerytIds = [
+                customer.correspondenceStateId,
+                customer.correspondenceDistrictId,
+                customer.correspondenceCommuneId,
+                customer.correspondenceCityId,
+                customer.correspondenceStreetId,
+                customer.locationCityId,
+                customer.locationStreetId,
+            ].some((val) => val != null);
+
+            let resolved: ResolvedTerytAddress | null = null;
+            if (hasTerytIds) {
+                for (const [input, addr] of resolvedMap.entries()) {
+                    if (
+                        input.stateId === customer.correspondenceStateId &&
+                        input.districtId === customer.correspondenceDistrictId &&
+                        input.communeId === customer.correspondenceCommuneId &&
+                        input.cityId === targetCityId &&
+                        input.streetId === targetStreetId
+                    ) {
+                        resolved = addr;
+                        break;
+                    }
+                }
+            }
+
+            return serializeCustomerWithAddress(customer, resolved);
+        });
+
+        res.json(serialized);
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ message: "Internal server error" });

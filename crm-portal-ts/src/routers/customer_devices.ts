@@ -4,9 +4,11 @@ import { AppDataSource } from "../database.js";
 import { CustomerDeviceStatus } from "../models/common.js";
 import { CustomerDevice } from "../models/network.js";
 import {
+    batchResolveTerytAddresses,
     resolveTerytAddress,
     serializeTerytEntry,
     type ResolvedTerytAddress,
+    type TerytIdInput,
 } from "../teryt_address_links.js";
 
 export const router = Router();
@@ -53,9 +55,7 @@ async function buildInstallationAddress(device: CustomerDevice) {
     });
 }
 
-async function serializeDevice(device: CustomerDevice) {
-    const installationAddress = await buildInstallationAddress(device);
-
+function serializeDeviceWithAddress(device: CustomerDevice, installationAddress: ResolvedTerytAddress | null) {
     return {
         id: device.id,
         customerId: device.customerId,
@@ -105,6 +105,11 @@ async function serializeDevice(device: CustomerDevice) {
             }
             : null,
     };
+}
+
+async function serializeDevice(device: CustomerDevice) {
+    const installationAddress = await buildInstallationAddress(device);
+    return serializeDeviceWithAddress(device, installationAddress);
 }
 
 function hasAnyTerytAddressInput(payload: Record<string, unknown>) {
@@ -295,7 +300,58 @@ router.get("/", async (req, res) => {
         });
 
         res.set("X-Total-Count", total.toString());
-        res.json(await Promise.all(items.map((item) => serializeDevice(item))));
+
+        // Batch resolve TERYT addresses to prevent N+1 queries during list serialization
+        const inputs: TerytIdInput[] = items
+            .filter((device) =>
+                [
+                    device.installationStateId,
+                    device.installationDistrictId,
+                    device.installationCommuneId,
+                    device.installationCityId,
+                    device.installationStreetId,
+                ].some((val) => val != null)
+            )
+            .map((device) => ({
+                stateId: device.installationStateId,
+                districtId: device.installationDistrictId,
+                communeId: device.installationCommuneId,
+                cityId: device.installationCityId,
+                streetId: device.installationStreetId,
+            }));
+
+        const resolvedMap = await batchResolveTerytAddresses(inputs);
+
+        const serialized = items.map((device) => {
+            const hasTerytIds = [
+                device.installationStateId,
+                device.installationDistrictId,
+                device.installationCommuneId,
+                device.installationCityId,
+                device.installationStreetId,
+            ].some((val) => val != null);
+
+            let resolved: ResolvedTerytAddress | null = null;
+            if (hasTerytIds) {
+                // Find matching address in resolvedMap by comparing input IDs
+                for (const [input, addr] of resolvedMap.entries()) {
+                    if (
+                        input.stateId === device.installationStateId &&
+                        input.districtId === device.installationDistrictId &&
+                        input.communeId === device.installationCommuneId &&
+                        input.cityId === device.installationCityId &&
+                        input.streetId === device.installationStreetId
+                    ) {
+                        resolved = addr;
+                        break;
+                    }
+                }
+            }
+
+            return serializeDeviceWithAddress(device, resolved);
+        });
+
+        res.json(serialized);
     } catch (error) {
         console.error("Error fetching customer devices:", error);
         res.status(500).json({ message: "Internal server error" });
