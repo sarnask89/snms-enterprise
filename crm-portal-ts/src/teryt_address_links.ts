@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { AppDataSource } from "./database.js";
 import {
     LocationCity,
@@ -123,6 +124,110 @@ export async function resolveTerytAddress(input: TerytIdInput): Promise<Resolved
         city: city ?? null,
         street: street ?? null,
     };
+}
+
+/**
+ * Batch resolves TERYT addresses for multiple inputs in at most 5 database queries (1 per table),
+ * avoiding N+1 queries when serializing lists of entities with TERYT location IDs.
+ */
+export async function batchResolveTerytAddresses(inputs: TerytIdInput[]): Promise<Map<TerytIdInput, ResolvedTerytAddress>> {
+    const resultMap = new Map<TerytIdInput, ResolvedTerytAddress>();
+    if (!inputs.length) {
+        return resultMap;
+    }
+
+    // 1. Collect street IDs and batch load
+    const streetIds = Array.from(new Set(inputs.map((i) => i.streetId).filter((id): id is number => id != null)));
+    const streets = streetIds.length
+        ? await streetRepo.find({
+            where: { id: In(streetIds) },
+            relations: {
+                city: {
+                    district: { state: true },
+                    commune: { district: { state: true } },
+                },
+                commune: { district: { state: true } },
+            },
+        })
+        : [];
+    const streetMap = new Map(streets.map((s) => [s.id, s]));
+
+    // 2. Collect city IDs (from inputs + loaded streets) and batch load missing
+    const neededCityIds = new Set<number>();
+    for (const input of inputs) {
+        if (input.cityId != null) neededCityIds.add(input.cityId);
+    }
+    const missingCityIds = Array.from(neededCityIds);
+    const cities = missingCityIds.length
+        ? await cityRepo.find({
+            where: { id: In(missingCityIds) },
+            relations: {
+                district: { state: true },
+                commune: { district: { state: true } },
+            },
+        })
+        : [];
+    const cityMap = new Map(cities.map((c) => [c.id, c]));
+
+    // 3. Collect commune IDs
+    const neededCommuneIds = new Set<number>();
+    for (const input of inputs) {
+        if (input.communeId != null) neededCommuneIds.add(input.communeId);
+    }
+    const missingCommuneIds = Array.from(neededCommuneIds);
+    const communes = missingCommuneIds.length
+        ? await communeRepo.find({
+            where: { id: In(missingCommuneIds) },
+            relations: { district: { state: true } },
+        })
+        : [];
+    const communeMap = new Map(communes.map((c) => [c.id, c]));
+
+    // 4. Collect district IDs
+    const neededDistrictIds = new Set<number>();
+    for (const input of inputs) {
+        if (input.districtId != null) neededDistrictIds.add(input.districtId);
+    }
+    const missingDistrictIds = Array.from(neededDistrictIds);
+    const districts = missingDistrictIds.length
+        ? await districtRepo.find({
+            where: { id: In(missingDistrictIds) },
+            relations: { state: true },
+        })
+        : [];
+    const districtMap = new Map(districts.map((d) => [d.id, d]));
+
+    // 5. Collect state IDs
+    const neededStateIds = new Set<number>();
+    for (const input of inputs) {
+        if (input.stateId != null) neededStateIds.add(input.stateId);
+    }
+    const missingStateIds = Array.from(neededStateIds);
+    const states = missingStateIds.length
+        ? await stateRepo.find({
+            where: { id: In(missingStateIds) },
+        })
+        : [];
+    const stateMap = new Map(states.map((s) => [s.id, s]));
+
+    // Assemble resolved address for each input
+    for (const input of inputs) {
+        const street = input.streetId != null ? streetMap.get(input.streetId) ?? null : null;
+        const city = street?.city ?? (input.cityId != null ? cityMap.get(input.cityId) ?? null : null);
+        const commune = street?.commune ?? city?.commune ?? (input.communeId != null ? communeMap.get(input.communeId) ?? null : null);
+        const district = commune?.district ?? city?.district ?? (input.districtId != null ? districtMap.get(input.districtId) ?? null : null);
+        const state = district?.state ?? (input.stateId != null ? stateMap.get(input.stateId) ?? null : null);
+
+        resultMap.set(input, {
+            state: state ?? null,
+            district: district ?? null,
+            commune: commune ?? null,
+            city: city ?? null,
+            street: street ?? null,
+        });
+    }
+
+    return resultMap;
 }
 
 export async function resolveParsedStreetWithinDefaultArea(streetName: string | null | undefined): Promise<ResolvedTerytAddress | null> {
