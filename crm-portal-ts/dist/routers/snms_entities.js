@@ -244,10 +244,13 @@ router.get("/messages", async (req, res) => {
         const search = String(req.query.q ?? "").trim();
         const status = parseOptionalString(req.query.status);
         const customerId = parseOptionalInteger(req.query.customerId);
+        // Optimization: Use selective column projections for customer and template relations to reduce SQL payload size and memory footprint.
         const qb = messageRepo
             .createQueryBuilder("message")
-            .leftJoinAndSelect("message.customer", "customer")
-            .leftJoinAndSelect("message.template", "template")
+            .leftJoin("message.customer", "customer")
+            .addSelect(["customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .leftJoin("message.template", "template")
+            .addSelect(["template.id", "template.name"])
             .orderBy("message.id", "DESC");
         if (search) {
             qb.andWhere(new Brackets((subQuery) => {
@@ -260,7 +263,7 @@ router.get("/messages", async (req, res) => {
             qb.andWhere("message.status = :status", { status });
         }
         if (customerId) {
-            qb.andWhere("message.customer_id = :customerId", { customerId });
+            qb.andWhere("message.customerId = :customerId", { customerId });
         }
         const rows = await qb.getMany();
         res.json(rows.map((row) => serializeMessage(row)));
@@ -407,10 +410,13 @@ router.delete("/messages/:id", async (req, res) => {
 });
 router.get("/timetable", async (_req, res) => {
     try {
-        const rows = await eventRepo.find({
-            relations: { customer: true },
-            order: { startsAt: "DESC" },
-        });
+        // Optimization: Use createQueryBuilder with selective column projections to avoid eager loading all customer fields.
+        const rows = await eventRepo
+            .createQueryBuilder("event")
+            .leftJoin("event.customer", "customer")
+            .addSelect(["event", "customer.id", "customer.customerCode", "customer.firstName", "customer.lastName"])
+            .orderBy("event.startsAt", "DESC")
+            .getMany();
         res.json(rows.map((row) => serializeCalendarEvent(row)));
     }
     catch (error) {
@@ -542,11 +548,16 @@ router.delete("/timetable/:id", async (req, res) => {
 router.get("/traffic-stats", async (req, res) => {
     try {
         const deviceId = parseOptionalInteger(req.query.deviceId);
-        const rows = await trafficStatRepo.find({
-            where: deviceId ? { deviceId } : {},
-            relations: { device: true },
-            order: { periodStart: "DESC" },
-        });
+        // Optimization: Use createQueryBuilder with selective column projections to avoid eager loading all customer device fields.
+        const qb = trafficStatRepo
+            .createQueryBuilder("stat")
+            .leftJoin("stat.device", "device")
+            .addSelect(["stat", "device.id", "device.hostname", "device.ipAddress"])
+            .orderBy("stat.periodStart", "DESC");
+        if (deviceId) {
+            qb.where("stat.deviceId = :deviceId", { deviceId });
+        }
+        const rows = await qb.getMany();
         res.json(rows.map((row) => serializeTrafficStat(row)));
     }
     catch (error) {
