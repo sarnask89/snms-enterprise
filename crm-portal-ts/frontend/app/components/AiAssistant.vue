@@ -4,9 +4,11 @@
       <!-- The Floating Button -->
       <UButton
         v-if="!isOpen"
-        icon="i-heroicons-chat-bubble-left-ellipsis-solid"
+        icon="i-lucide-message-square"
         size="xl"
         color="primary"
+        aria-label="Open AI Assistant"
+        :aria-expanded="isOpen"
         class="fixed bottom-6 right-6 shadow-2xl rounded-full w-14 h-14 flex items-center justify-center animate-bounce-slow z-50"
         @click="isOpen = true"
       />
@@ -24,30 +26,32 @@
           class="bg-primary-500 text-white p-3 flex justify-between items-center cursor-move select-none"
         >
           <div class="flex items-center gap-2 font-bold">
-            <UIcon name="i-heroicons-sparkles" />
+            <UIcon name="i-lucide-sparkles" />
             CRM Assistant
           </div>
           <div class="flex items-center gap-1">
-             <UButton
-              :icon="systemContext ? 'i-heroicons-document-check' : 'i-heroicons-document-plus'"
+            <UButton
+              :icon="systemContext ? 'i-lucide-file-check' : 'i-lucide-file-plus'"
               :color="systemContext ? 'green' : 'white'"
               variant="ghost"
               size="xs"
               label="API Doc"
+              aria-label="Configure API documentation context"
               @click="promptForContext"
             />
             <UButton
-              icon="i-heroicons-x-mark"
+              icon="i-lucide-x"
               color="white"
               variant="ghost"
               size="xs"
+              aria-label="Close AI Assistant"
               @click="isOpen = false"
             />
           </div>
         </div>
 
         <!-- Chat Feed -->
-        <div class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
+        <div ref="chatFeed" class="flex-1 h-[450px] overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950">
           <div
             v-for="(msg, index) in messages"
             :key="index"
@@ -67,26 +71,58 @@
             <UInput
               v-model="input"
               placeholder="Type command or ask AI..."
+              aria-label="Type command or ask AI"
               class="flex-1"
               autocomplete="off"
               :disabled="isLoading"
             />
-            <UButton 
-              type="submit" 
-              icon="i-heroicons-paper-airplane" 
-              color="primary" 
+            <UButton
+              type="submit"
+              icon="i-lucide-send"
+              color="primary"
+              aria-label="Send message to AI"
               :loading="isLoading"
             />
           </form>
         </div>
       </div>
 
-         </div>
+      <!-- System Context Modal -->
+      <UModal
+        v-model:open="isContextModalOpen"
+        title="Configure API Context"
+        description="Provide additional API documentation or context for the AI Assistant."
+      >
+        <template #body>
+          <div class="p-4 space-y-4">
+            <UTextarea
+              v-model="tempContext"
+              placeholder="Paste API documentation or system instructions..."
+              :rows="6"
+              aria-label="API documentation context text"
+            />
+            <div class="flex justify-end gap-2">
+              <UButton
+                label="Cancel"
+                color="neutral"
+                variant="ghost"
+                @click="isContextModalOpen = false"
+              />
+              <UButton
+                label="Save Context"
+                color="primary"
+                @click="saveContext"
+              />
+            </div>
+          </div>
+        </template>
+      </UModal>
+    </div>
   </ClientOnly>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
@@ -97,6 +133,7 @@ const isContextModalOpen = ref(false)
 const input = ref('')
 const systemContext = ref('')
 const tempContext = ref('')
+const chatFeed = ref(null)
 
 const messages = ref([
   { role: 'assistant', content: 'Hi! I am your CRM Architect. Paste some API documentation (using the button above) or ask me to build a module.' }
@@ -116,9 +153,22 @@ onMounted(() => {
 
 useDraggable(chatWindow, { handle: chatHandle, onMove: (pos) => { x.value = pos.x; y.value = pos.y } })
 
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (chatFeed.value) {
+      chatFeed.value.scrollTop = chatFeed.value.scrollHeight
+    }
+  })
+}
+
 const promptForContext = () => {
   tempContext.value = systemContext.value
   isContextModalOpen.value = true
+}
+
+const saveContext = () => {
+  systemContext.value = tempContext.value
+  isContextModalOpen.value = false
 }
 
 const sendMessage = async () => {
@@ -127,6 +177,7 @@ const sendMessage = async () => {
   const userText = input.value.trim()
   messages.value.push({ role: 'user', content: userText })
   input.value = ''
+  scrollToBottom()
 
   // 1. Check for Agent Commands
   if (userText.startsWith('/agent')) {
@@ -143,6 +194,7 @@ const sendMessage = async () => {
         messages.value.push({ role: 'assistant', content: `❌ Failed to start agent.` })
       }
       isLoading.value = false
+      scrollToBottom()
       return
     }
 
@@ -150,14 +202,15 @@ const sendMessage = async () => {
       isLoading.value = true
       try {
         const res = await $fetch('/api/agent/status')
-        messages.value.push({ 
-          role: 'assistant', 
-          content: `🤖 Agent is ${res.isRunning ? 'RUNNING' : 'STOPPED'}.\n\nLast logs:\n${res.logs || 'No logs yet.'}` 
+        messages.value.push({
+          role: 'assistant',
+          content: `🤖 Agent is ${res.isRunning ? 'RUNNING' : 'STOPPED'}.\n\nLast logs:\n${res.logs || 'No logs yet.'}`
         })
       } catch {
         messages.value.push({ role: 'assistant', content: `❌ Failed to fetch agent status.` })
       }
       isLoading.value = false
+      scrollToBottom()
       return
     }
   }
@@ -171,17 +224,20 @@ const sendMessage = async () => {
     if (userText.toLowerCase().includes('test')) {
       messages.value.push({ role: 'assistant', content: `Routing to diagnostics for ${mac}...` })
       router.push(`/network/devices/test/${mac}`)
+      scrollToBottom()
       return
     }
     if (userText.toLowerCase().includes('info')) {
       messages.value.push({ role: 'assistant', content: `Opening client profile for ${mac}...` })
       router.push(`/customers/device/${mac}`)
+      scrollToBottom()
       return
     }
   }
 
-  // 2. Send to Ollama for Generation/Chat
+  // 3. Send to Ollama for Generation/Chat
   isLoading.value = true
+  scrollToBottom()
   const config = useRuntimeConfig()
   const ollamaUrl = config.public.ollamaUrl || 'http://localhost:11434'
   const ollamaModel = config.public.ollamaModel || 'deepseek-coder:1.3b'
@@ -205,6 +261,7 @@ const sendMessage = async () => {
     messages.value.push({ role: 'assistant', content: '❌ Error connecting to Ollama. Make sure the server is running on port 11434.' })
   } finally {
     isLoading.value = false
+    scrollToBottom()
   }
 }
 </script>
