@@ -116,12 +116,25 @@ router.get("/customer-traffic/:customerId", async (req, res) => {
 
 router.get("/financial-summary", async (_req, res) => {
     try {
+        const months = buildRecentMonths(12);
+        const startDate = `${months[0].key}-01`;
+
+        // Bolt Performance Optimization:
+        // Filter invoices & ledger entries by the 12-month window boundary at SQL level
+        // and project only required scalar fields to prevent loading full table historical entities into memory.
         const [invoices, ledgerEntries] = await Promise.all([
-            invoiceRepo.find(),
-            ledgerRepo.find(),
+            invoiceRepo
+                .createQueryBuilder("invoice")
+                .select(["invoice.amount", "invoice.issueDate"])
+                .where("invoice.issueDate >= :startDate", { startDate })
+                .getMany(),
+            ledgerRepo
+                .createQueryBuilder("ledger")
+                .select(["ledger.amount", "ledger.postedAt", "ledger.kind"])
+                .where("ledger.postedAt >= :startDate", { startDate })
+                .getMany(),
         ]);
 
-        const months = buildRecentMonths(12);
         const byMonth = new Map(months.map((month) => [month.key, { revenue: 0, expense: 0 }]));
 
         for (const invoice of invoices) {
