@@ -6,9 +6,32 @@
         <p class="text-sm text-gray-500">Statystyki runtime TS, globalne wyszukiwanie oraz eksporty raportowe.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-path" label="Odśwież" @click="refreshAll" />
-        <UButton color="primary" icon="i-heroicons-arrow-down-tray" label="Pobierz PIT CSV" @click="downloadPitCsv" />
-        <UButton color="primary" variant="soft" icon="i-heroicons-map" label="Pobierz PIT GML" @click="downloadPitGml" />
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-refresh-cw"
+          label="Odśwież"
+          aria-label="Odśwież statystyki analityczne"
+          :loading="isRefreshing"
+          @click="refreshAll"
+        />
+        <UButton
+          color="primary"
+          icon="i-lucide-download"
+          label="Pobierz PIT CSV"
+          aria-label="Pobierz raport PIT CSV"
+          :loading="isDownloadingPitCsv"
+          @click="downloadPitCsv"
+        />
+        <UButton
+          color="primary"
+          variant="soft"
+          icon="i-lucide-map"
+          label="Pobierz PIT GML"
+          aria-label="Pobierz mapę PIT GML"
+          :loading="isDownloadingPitGml"
+          @click="downloadPitGml"
+        />
       </div>
     </div>
 
@@ -41,8 +64,21 @@
         </template>
 
         <div class="flex gap-3">
-          <UInput v-model="searchQuery" class="flex-1" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Minimum 3 znaki..." />
-          <UButton color="primary" :loading="isSearching" label="Szukaj" @click="runSearch" />
+          <UInput
+            v-model="searchQuery"
+            class="flex-1"
+            icon="i-lucide-search"
+            placeholder="Minimum 3 znaki..."
+            aria-label="Wyszukaj klientów i urządzenia"
+            @keyup.enter="runSearch"
+          />
+          <UButton
+            color="primary"
+            :loading="isSearching"
+            label="Szukaj"
+            aria-label="Uruchom wyszukiwanie"
+            @click="runSearch"
+          />
         </div>
 
         <div v-if="searchResults" class="mt-4 space-y-4">
@@ -93,9 +129,14 @@
 </template>
 
 <script setup>
+const toast = useToast()
+
 const searchQuery = ref('')
 const searchResults = ref(null)
 const isSearching = ref(false)
+const isRefreshing = ref(false)
+const isDownloadingPitCsv = ref(false)
+const isDownloadingPitGml = ref(false)
 
 const customerColumns = [
   { accessorKey: 'customerCode', header: 'Kod' },
@@ -119,14 +160,22 @@ const { data: pitSummary, refresh: refreshPitSummary } = await useFetch('/api/v1
 const { data: passportNodes, refresh: refreshPassportNodes } = await useFetch('/api/v1/reports/passport/map')
 
 const refreshAll = async () => {
-  await Promise.all([
-    refreshNetworkHealth(),
-    refreshInventorySummary(),
-    refreshFinancialSummary(),
-    refreshCustomerGrowth(),
-    refreshPitSummary(),
-    refreshPassportNodes()
-  ])
+  isRefreshing.value = true
+  try {
+    await Promise.all([
+      refreshNetworkHealth(),
+      refreshInventorySummary(),
+      refreshFinancialSummary(),
+      refreshCustomerGrowth(),
+      refreshPitSummary(),
+      refreshPassportNodes()
+    ])
+    toast.add({ title: 'Dane analityczne zostały odświeżone', color: 'success' })
+  } catch (err) {
+    toast.add({ title: 'Błąd podczas odświeżania danych', description: err.message, color: 'error' })
+  } finally {
+    isRefreshing.value = false
+  }
 }
 
 const runSearch = async () => {
@@ -136,6 +185,7 @@ const runSearch = async () => {
       customers: [],
       devices: []
     }
+    toast.add({ title: 'Wpisz co najmniej 3 znaki, aby wyszukać', color: 'warning' })
     return
   }
 
@@ -144,6 +194,9 @@ const runSearch = async () => {
     searchResults.value = await $fetch('/api/v1/search', {
       query: { q: searchQuery.value.trim() }
     })
+    toast.add({ title: 'Wyszukiwanie zakończone', color: 'success' })
+  } catch (err) {
+    toast.add({ title: 'Błąd wyszukiwania', description: err.message, color: 'error' })
   } finally {
     isSearching.value = false
   }
@@ -159,12 +212,28 @@ const downloadBlob = (blob, filename) => {
 }
 
 const downloadPitCsv = async () => {
-  const blob = await $fetch('/api/v1/reports/pit-uke/export', { responseType: 'blob' })
-  downloadBlob(blob, 'pit_uke_export.csv')
+  isDownloadingPitCsv.value = true
+  try {
+    const blob = await $fetch('/api/v1/reports/pit-uke/export', { responseType: 'blob' })
+    downloadBlob(blob, 'pit_uke_export.csv')
+    toast.add({ title: 'Pobrano raport PIT CSV', color: 'success' })
+  } catch (err) {
+    toast.add({ title: 'Błąd podczas pobierania PIT CSV', description: err.message, color: 'error' })
+  } finally {
+    isDownloadingPitCsv.value = false
+  }
 }
 
 const downloadPitGml = async () => {
-  const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
-  downloadBlob(blob, 'pit-net-nodes.gml')
+  isDownloadingPitGml.value = true
+  try {
+    const blob = await $fetch('/api/v1/pit/export/nodes', { responseType: 'blob' })
+    downloadBlob(blob, 'pit-net-nodes.gml')
+    toast.add({ title: 'Pobrano mapę PIT GML', color: 'success' })
+  } catch (err) {
+    toast.add({ title: 'Błąd podczas pobierania PIT GML', description: err.message, color: 'error' })
+  } finally {
+    isDownloadingPitGml.value = false
+  }
 }
 </script>
